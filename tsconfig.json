@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "outDir": "dist",
+        "target": "ES2017",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "module": "ESNext",
+        "esModuleInterop": true,
+    },
+    "exclude": [
+        "node_modules",
+        "website",
+        "dist"
+    ]
+}

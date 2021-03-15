@@ -1,0 +1,22 @@
+{
+  "name": "ourabot",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "tsc && node --experimental-json-modules dist/src/index.js"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/MrAuro/OuraBot.git",
+  "author": "Auro <35087590+MrAuro@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "twitch": "^4.5.1",
+    "twitch-auth": "^4.5.1",
+    "twitch-chat-client": "^4.5.1",
+    "twitch-eventsub": "^4.5.1",
+    "twitch-eventsub-ngrok": "^4.5.1"
+  }
+}
