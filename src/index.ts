@@ -52,6 +52,19 @@ async function main() {
 
     await chatClient.connect();
 
+    
+    for(var i = 0; i < clientConfig.automatedMessages.length; i++) {
+        var cMsg = clientConfig.automatedMessages[i];
+        console.log(cMsg);
+        setInterval(function () {
+            sendAutomatedMessage(cMsg);
+        }, cMsg.interval * 60000);
+    }
+
+    async function sendAutomatedMessage(foo) {
+        chatClient.say(foo.channel, foo.message);
+    }
+
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
     });
