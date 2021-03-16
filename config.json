@@ -1,5 +1,12 @@
 {
     "username": "oura_bot",
     "prefix": "$",
-    "owner": "auror6s"
+    "owner": "auror6s",
+    "automatedMessages": [
+        {
+            "channel": "auror6s",
+            "message": "automated message",
+            "interval": 0.1
+        }
+    ]
 }
