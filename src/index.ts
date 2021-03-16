@@ -52,17 +52,25 @@ async function main() {
 
     await chatClient.connect();
 
-    
-    for(var i = 0; i < clientConfig.automatedMessages.length; i++) {
-        var cMsg = clientConfig.automatedMessages[i];
+    const autoMsgResp = await axios.get('http://localhost:5000/message/automsg/');
+
+    for (var i = 0; i < autoMsgResp.data.length; i++) {
+        var cMsg = autoMsgResp.data[i];
         console.log(cMsg);
         setInterval(function () {
             sendAutomatedMessage(cMsg);
-        }, cMsg.interval * 60000);
+        }, cMsg.timer * 60000);
     }
 
     async function sendAutomatedMessage(foo) {
-        chatClient.say(foo.channel, foo.message);
+        if (foo.online == true) {
+             var channelResp = await axios.get(`https://api.twitch.tv/helix/streams?user_login=${foo.channel.replace('#', '')}`, { headers: {Authorization: `Bearer ${tokenData.accessToken}`, 'Client-Id': process.env.APP_CLIENTID}});
+            if(channelResp.data.data.length != 0) {
+                chatClient.say(foo.channel, foo.message);
+            }
+        } else {
+            chatClient.say(foo.channel, foo.message);
+        }
     }
 
     chatClient.onJoin((channel, user) => {
@@ -143,17 +151,17 @@ async function main() {
             case 'clip':
                 try {
                     let clipsResp = await axios.get('http://localhost:5000/clip/');
-                    if(clipsResp.status != 200) return chatClient.say(channel, "There was an error reaching the internal API");
+                    if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
 
                     let discordData;
 
-                    for(var i = 0; i < clipsResp.data.length; i++) {
-                        if(clipsResp.data[i].channel === channel.replace('#', '')) {
+                    for (var i = 0; i < clipsResp.data.length; i++) {
+                        if (clipsResp.data[i].channel === channel.replace('#', '')) {
                             discordData = clipsResp.data[i];
                         }
                     }
 
-                    if(!discordData) {
+                    if (!discordData) {
                         return chatClient.say(channel, 'This channel does not have the clips command enabled!');
                     }
 
