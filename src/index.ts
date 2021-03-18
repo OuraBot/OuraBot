@@ -64,8 +64,10 @@ async function main() {
 
     async function sendAutomatedMessage(foo) {
         if (foo.online == true) {
-             var channelResp = await axios.get(`https://api.twitch.tv/helix/streams?user_login=${foo.channel.replace('#', '')}`, { headers: {Authorization: `Bearer ${tokenData.accessToken}`, 'Client-Id': process.env.APP_CLIENTID}});
-            if(channelResp.data.data.length != 0) {
+            var channelResp = await axios.get(`https://api.twitch.tv/helix/streams?user_login=${foo.channel.replace('#', '')}`, {
+                headers: { Authorization: `Bearer ${tokenData.accessToken}`, 'Client-Id': process.env.APP_CLIENTID },
+            });
+            if (channelResp.data.data.length != 0) {
                 chatClient.say(foo.channel, foo.message);
             }
         } else {
@@ -91,26 +93,20 @@ async function main() {
 
             case 'follownuke':
                 if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
-                    const resp = await axios.get('http://localhost:5000/follownuke/');
+                    const resp = await axios.get(`http://localhost:5000/follownuke/${channel.replace('#', '')}/`);
 
-                    var channelFollows = [];
-                    if (!parseInt(args[1])) return chatClient.say(channel, 'Your first argument is not a number!');
+                    let channelFollows = resp.data.follows;
+                    if (channelFollows.length == 0) return chatClient.say('auror6s', 'There were no follows found in the database');
 
-                    for (var i = 0; i < resp.data.length; i++) {
-                        if (resp.data[i].channel === channel.replace('#', '')) {
-                            channelFollows.push(resp.data[i]);
-                        }
-                    }
-
-                    channelFollows = channelFollows.slice(-parseInt(args[1]));
-
-                    console.log('one');
-                    console.log('two');
-                    console.log('three');
+                    let amountToBan = Math.abs(-parseInt(args[1]));
+                    if (amountToBan > 50) return chatClient.say(channel, 'I can only ban up to 50 users at a time!');
+                    channelFollows = channelFollows.slice(amountToBan);
 
                     for (var i = 0; i < channelFollows.length; i++) {
-                        var userToBan = channelFollows[i].user;
-                        chatClient.ban('auror6s', userToBan);
+                        var userToBan = channelFollows[i];
+                        chatClient.ban(channel, userToBan).catch((err) => {
+                            console.log(err);
+                        });
                     }
                 }
                 break;
