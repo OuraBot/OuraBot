@@ -98,9 +98,9 @@ async function main() {
                     let channelFollows = resp.data.follows;
                     if (channelFollows.length == 0) return chatClient.say('auror6s', 'There were no follows found in the database');
 
-                    let amountToBan = Math.abs(-parseInt(args[1]));
+                    let amountToBan = parseInt(args[1]);
                     if (amountToBan > 50) return chatClient.say(channel, 'I can only ban up to 50 users at a time!');
-                    channelFollows = channelFollows.slice(amountToBan);
+                    channelFollows = channelFollows.slice(-amountToBan);
 
                     for (var i = 0; i < channelFollows.length; i++) {
                         var userToBan = channelFollows[i];
@@ -273,12 +273,12 @@ async function main() {
                     const channelData = response.data[i];
                     const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
                         if (channelData.response === 'none') {
-                            axios.post('http://localhost:5000/follownuke/add', { user: e.userName, channel: e.broadcasterName, channelID: e.broadcasterId }).then(async (response) => {
+                            axios.post(`http://localhost:5000/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
                                 console.log(`Added ${e.userName} to the follow/add database`);
                             });
                         } else {
                             chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                            axios.post('http://localhost:5000/follownuke/add', { user: e.userName, channel: e.broadcasterName, channelID: e.broadcasterId }).then(async (response) => {
+                            axios.post(`http://localhost:5000/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
                                 console.log(`Added ${e.userName} to the follow/add database`);
                             });
                         }
