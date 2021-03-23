@@ -3,7 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "start": "tsc && node --experimental-json-modules dist/src/index.js"
+    "start": "tsc && node --experimental-json-modules dist/src/index.js",
+    "build": "tsc",
+    "run": "node --experimental-json-modules dist/src/index.js"
   },
   "main": "index.js",
   "repository": "https://github.com/MrAuro/OuraBot.git",

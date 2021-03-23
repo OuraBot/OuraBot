@@ -1,6 +1,6 @@
 {
     "username": "oura_bot",
-    "prefix": "$",
+    "prefix": "!",
     "owner": "auror6s",
     "automatedMessages": [
         {
