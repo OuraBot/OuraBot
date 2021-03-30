@@ -13,6 +13,8 @@ import clientConfig from '../config.json';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+const internalAPI = 'http://localhost:5000' || process.env.INTERNALAPI
+
 const onCooldown = new Set();
 
 async function main() {
@@ -40,7 +42,7 @@ async function main() {
     const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
     await listener.listen();
 
-    const listenResp = await axios.get('http://localhost:5000/listen/');
+    const listenResp = await axios.get(`${internalAPI}/listen/`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
 
     console.log(channelsToListenIn);
@@ -52,7 +54,7 @@ async function main() {
 
     await chatClient.connect();
 
-    const autoMsgResp = await axios.get('http://localhost:5000/message/automsg/');
+    const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
 
     for (var i = 0; i < autoMsgResp.data.length; i++) {
         var cMsg = autoMsgResp.data[i];
@@ -93,7 +95,7 @@ async function main() {
 
             case 'follownuke':
                 if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
-                    const resp = await axios.get(`http://localhost:5000/follownuke/${channel.replace('#', '')}/`);
+                    const resp = await axios.get(`${internalAPI}/follownuke/${channel.replace('#', '')}/`);
 
                     let channelFollows = resp.data.follows;
                     if (channelFollows.length == 0) return chatClient.say('auror6s', 'There were no follows found in the database');
@@ -133,7 +135,7 @@ async function main() {
                     channel: args[1],
                 };
 
-                axios.post('http://localhost:5000/listen/add', data).then((resp) => {
+                axios.post(`${internalAPI}/listen/add`, data).then((resp) => {
                     if (resp.status == 200) {
                         chatClient.join(args[1]);
                         chatClient.say(channel, `Joined ${args[1]} and added to database!`);
@@ -146,7 +148,7 @@ async function main() {
 
             case 'clip':
                 try {
-                    let clipsResp = await axios.get('http://localhost:5000/clip/');
+                    let clipsResp = await axios.get(`${internalAPI}/clip/`);
                     if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
 
                     let discordData;
@@ -237,6 +239,7 @@ async function main() {
                         }, 60000);
                     }
                 } catch (err) {
+                    console.error(err);
                     chatClient.say('auror6s', `🚨 ERROR: ${err}`);
                 }
                 break;
@@ -266,19 +269,19 @@ async function main() {
     */
 
     axios
-        .get('http://localhost:5000/eventsub/follow/')
+        .get(`${internalAPI}/eventsub/follow/`)
         .then(async (response) => {
             if (response.data.length > 0) {
                 for (var i = 0; i < response.data.length; i++) {
                     const channelData = response.data[i];
                     const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
                         if (channelData.response === 'none') {
-                            axios.post(`http://localhost:5000/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
+                            axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
                                 console.log(`Added ${e.userName} to the follow/add database`);
                             });
                         } else {
                             chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                            axios.post(`http://localhost:5000/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
+                            axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
                                 console.log(`Added ${e.userName} to the follow/add database`);
                             });
                         }
@@ -291,7 +294,7 @@ async function main() {
         });
 
     axios
-        .get('http://localhost:5000/eventsub/subscribe/')
+        .get(`${internalAPI}/eventsub/subscribe/`)
         .then(async (response) => {
             if (response.data.length > 0) {
                 for (var i = 0; i < response.data.length; i++) {
