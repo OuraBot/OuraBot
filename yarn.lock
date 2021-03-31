@@ -1069,10 +1069,10 @@ twitch-auth@^4.5.1, twitch-auth@^4.5.2, twitch-auth@^4.5.3:
     twitch-api-call "^4.5.3"
     twitch-common "^4.5.3"
 
-twitch-chat-client@^4.5.1:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/twitch-chat-client/-/twitch-chat-client-4.5.1.tgz#3347e442cb82e5892cbdd604ac5427149da2ac5a"
-  integrity sha512-XpWepfOH+vYseQdNI+OZ+um5vYuZng/OAbeAKkSHrHzWKLtjhwJY6CmYs3sL04J6GUM4GMYvmk5E7DNL83M25Q==
+twitch-chat-client@^4.5.3:
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/twitch-chat-client/-/twitch-chat-client-4.5.3.tgz#3cf8bfa538b0f441ad4b1430f9140a3ea5eb9eb3"
+  integrity sha512-cfYBuU0pnBPvOdh7WVce7SW1tki4JsFdkD9ahwMLsF62SMTgi9OYMa1IBvc4dZxa7bKmNReiPYPLblME62yOXw==
   dependencies:
     "@d-fischer/cache-decorators" "^2.1.1"
     "@d-fischer/deprecate" "^2.0.2"
@@ -1082,8 +1082,8 @@ twitch-chat-client@^4.5.1:
     "@d-fischer/typed-event-emitter" "^3.2.2"
     ircv3 "^0.26.13"
     tslib "^2.0.3"
-    twitch-auth "^4.5.1"
-    twitch-common "^4.5.1"
+    twitch-auth "^4.5.3"
+    twitch-common "^4.5.3"
 
 twitch-common@^4.5.1, twitch-common@^4.5.2, twitch-common@^4.5.3:
   version "4.5.3"
