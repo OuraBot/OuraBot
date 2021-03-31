@@ -1045,7 +1045,7 @@ tweetnacl@^1.0.3:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
-twitch-api-call@^4.5.1, twitch-api-call@^4.5.3:
+twitch-api-call@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/twitch-api-call/-/twitch-api-call-4.5.3.tgz#23eb7502cd75d4ac443422f89134ea8f3bfe385f"
   integrity sha512-JiqNzbRprQZQJnJudLvheYW2ECgbDqQoZMJ9Gjmu6Klfk1pDX7XRLmlAi5SgXXgjgyr3qn2kW/TfOlWoQTitpQ==
@@ -1117,10 +1117,10 @@ twitch-eventsub@^4.5.2:
     twitch-auth "^4.5.2"
     twitch-common "^4.5.2"
 
-twitch@^4.5.1:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/twitch/-/twitch-4.5.1.tgz#334450efb8fe18ee2d4e3c732dbe4c037e2318c8"
-  integrity sha512-IqMydKJsPgYAhixRc+pNVlH0CYxkbsYqP9xeaKYjwRT/HQJGGJiiWvEh5+/4FDsgeMtXjrdQedUnjfcti4NNug==
+twitch@^4.5.3:
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/twitch/-/twitch-4.5.3.tgz#2ea68c55509eb2f12109f37b0e0f4bd9488d16e0"
+  integrity sha512-pZRaGo72UOMUF4Qhw6rdtzhI+shxeWggFdk3/2AB7dfncUv4GF0W0vVH/ikPFujL5N+mO6itsmc/urBnGGvaMQ==
   dependencies:
     "@d-fischer/cache-decorators" "^2.1.1"
     "@d-fischer/deprecate" "^2.0.2"
@@ -1129,9 +1129,9 @@ twitch@^4.5.1:
     "@d-fischer/shared-utils" "^3.0.1"
     top-package "^1.0.0"
     tslib "^2.0.3"
-    twitch-api-call "^4.5.1"
-    twitch-auth "^4.5.1"
-    twitch-common "^4.5.1"
+    twitch-api-call "^4.5.3"
+    twitch-auth "^4.5.3"
+    twitch-common "^4.5.3"
 
 unbox-primitive@^1.0.0:
   version "1.0.0"
