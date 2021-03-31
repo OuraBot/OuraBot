@@ -15,7 +15,7 @@
     "axios": "^0.21.1",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "twitch": "^4.5.1",
+    "twitch": "^4.5.3",
     "twitch-auth": "^4.5.3",
     "twitch-chat-client": "^4.5.1",
     "twitch-eventsub": "^4.5.2",
