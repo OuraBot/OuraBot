@@ -1,19 +1,20 @@
 import { RefreshableAuthProvider, StaticAuthProvider, ClientCredentialsAuthProvider } from 'twitch-auth';
-import { ChatClient, ChatUser } from 'twitch-chat-client';
+import { ChatClient, ChatUser, ClearChat } from 'twitch-chat-client';
 import { promises as fs } from 'fs';
 import { ApiClient } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 
+import ms from 'ms';
 import axios from 'axios';
-import Discord from 'discord.js';
+import Discord, { BaseManager } from 'discord.js';
 
 import clientConfig from '../config.json';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const internalAPI = 'http://localhost:5000' || process.env.INTERNALAPI
+const internalAPI = 'http://10.0.0.97:5000' || process.env.INTERNALAPI;
 
 const onCooldown = new Set();
 
@@ -89,26 +90,72 @@ async function main() {
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
-                console.log(channel);
-                console.log(msg.userInfo.userName);
+                let awchidResp = await axios({
+                    method: 'GET',
+                    url: `https://customapi.aidenwallis.co.uk/api/v1/twitch/toID/${channel.replace('#', '')}`,
+                });
+                console.log(awchidResp.data);
                 break;
 
             case 'follownuke':
                 if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
-                    const resp = await axios.get(`${internalAPI}/follownuke/${channel.replace('#', '')}/`);
-
-                    let channelFollows = resp.data.follows;
-                    if (channelFollows.length == 0) return chatClient.say('auror6s', 'There were no follows found in the database');
-
-                    let amountToBan = parseInt(args[1]);
-                    if (amountToBan > 50) return chatClient.say(channel, 'I can only ban up to 50 users at a time!');
-                    channelFollows = channelFollows.slice(-amountToBan);
-
-                    for (var i = 0; i < channelFollows.length; i++) {
-                        var userToBan = channelFollows[i];
-                        chatClient.ban(channel, userToBan).catch((err) => {
-                            console.log(err);
+                    if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
+                    let timeToCallback = Math.abs(ms(args[1]));
+                    try {
+                        // get channel id
+                        let awchidResp = await axios({
+                            method: 'GET',
+                            url: `https://customapi.aidenwallis.co.uk/api/v1/twitch/toID/${channel.replace('#', '')}`,
+                            timeout: 5000,
                         });
+
+                        // initialize an empty array
+                        // this should be cleandd up
+                        let followsResponse = [];
+
+                        // get follows from twitch api
+                        // find only the latest 100 follows
+                        let followsResp = await axios({
+                            method: 'GET',
+                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100`,
+                            headers: {
+                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                'Client-Id': process.env.APP_CLIENTID,
+                            },
+                            timeout: 5000,
+                        });
+
+                        // WIP --- FIX! PAGINATION/CURSOR NOT WORKING
+                        /*
+                        // paginate at the end of the last request
+                        let followsResp2 = await axios({
+                            method: 'GET',
+                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&after${followsResp.data.pagination.cursor}&first=100&`,
+                            headers: {
+                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                'Client-Id': process.env.APP_CLIENTID,
+                            },
+                            timeout: 5000,
+                        });
+
+                        followsResponse = followsResp.data.data.concat(followsResp2.data.data);
+                        */
+                        followsResponse = followsResp.data.data;
+
+                        let callbackTime = Date.now() - timeToCallback;
+
+                        let banArray = followsResponse.filter((follow) => {
+                            let followTime = new Date(follow.followed_at).getTime();
+                            if (callbackTime < followTime) return true;
+                        });
+                        let finalArr2 = banArray.map((user) => user.from_login);
+                        console.table(finalArr2);
+                        for (var i = 0; i < finalArr2.length; i++) {
+                            chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
+                        }
+                    } catch (err) {
+                        chatClient.say(channel, `There was an error: ${err}`);
+                        console.error(err);
                     }
                 }
                 break;
