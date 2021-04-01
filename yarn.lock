@@ -1057,7 +1057,7 @@ twitch-api-call@^4.5.3:
     tslib "^2.0.3"
     twitch-common "^4.5.3"
 
-twitch-auth@^4.5.1, twitch-auth@^4.5.2, twitch-auth@^4.5.3:
+twitch-auth@^4.5.2, twitch-auth@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/twitch-auth/-/twitch-auth-4.5.3.tgz#66996451dd40979920c332afe061d05d565b7842"
   integrity sha512-PISO4XVPikP7kRUDK3+IwoPPS0v3MpsvTJHDKIDR3IylGjFD1PjoZLye/UdrQwX/dPtwR+nveU0SwonZbydh0A==
@@ -1085,7 +1085,7 @@ twitch-chat-client@^4.5.3:
     twitch-auth "^4.5.3"
     twitch-common "^4.5.3"
 
-twitch-common@^4.5.1, twitch-common@^4.5.2, twitch-common@^4.5.3:
+twitch-common@^4.5.2, twitch-common@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/twitch-common/-/twitch-common-4.5.3.tgz#c2c92c1bfd2ede77608ccdb8bcd977d1a5a2daf1"
   integrity sha512-/bp4wqJQkySdxmynVlNX+qQJ70ZSKp1D1JDmYjBWihdhMBA2armeVQNfZ6y8HGcKL/HM7vEdmNx8wCGbWnnJaw==
