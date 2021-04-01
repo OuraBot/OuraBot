@@ -1057,7 +1057,7 @@ twitch-api-call@^4.5.3:
     tslib "^2.0.3"
     twitch-common "^4.5.3"
 
-twitch-auth@^4.5.2, twitch-auth@^4.5.3:
+twitch-auth@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/twitch-auth/-/twitch-auth-4.5.3.tgz#66996451dd40979920c332afe061d05d565b7842"
   integrity sha512-PISO4XVPikP7kRUDK3+IwoPPS0v3MpsvTJHDKIDR3IylGjFD1PjoZLye/UdrQwX/dPtwR+nveU0SwonZbydh0A==
@@ -1085,7 +1085,7 @@ twitch-chat-client@^4.5.3:
     twitch-auth "^4.5.3"
     twitch-common "^4.5.3"
 
-twitch-common@^4.5.2, twitch-common@^4.5.3:
+twitch-common@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/twitch-common/-/twitch-common-4.5.3.tgz#c2c92c1bfd2ede77608ccdb8bcd977d1a5a2daf1"
   integrity sha512-/bp4wqJQkySdxmynVlNX+qQJ70ZSKp1D1JDmYjBWihdhMBA2armeVQNfZ6y8HGcKL/HM7vEdmNx8wCGbWnnJaw==
@@ -1104,18 +1104,18 @@ twitch-eventsub-ngrok@^4.5.3:
     ngrok "^3.4.0"
     tslib "^2.0.3"
 
-twitch-eventsub@^4.5.2:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/twitch-eventsub/-/twitch-eventsub-4.5.2.tgz#79770fb600ed8b8f0c8da0177d751edb67680cc4"
-  integrity sha512-TuI5Pm2siqQwkiX/Mgzh57Vvr2JipKGeO0KSJfeWpfZ04Ow0T6PsqAPEFfjfN37kHdO/lr/oiFZy7QX3U5s3wA==
+twitch-eventsub@^4.5.3:
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/twitch-eventsub/-/twitch-eventsub-4.5.3.tgz#32c042427242ca63d5b060d873852de7c3baaf13"
+  integrity sha512-DidVtYh+tO/aagWbx8Qe+N4EQHOAldeO05dKYQpLugvQ6G5XfXVKTjptfU5Uw36WDvZTe48Szig2jCeNID808Q==
   dependencies:
     "@d-fischer/logger" "^3.1.0"
     "@d-fischer/raw-body" "^2.4.3"
     "@d-fischer/shared-utils" "^3.0.1"
     httpanda "^0.4.4"
     tslib "^2.0.3"
-    twitch-auth "^4.5.2"
-    twitch-common "^4.5.2"
+    twitch-auth "^4.5.3"
+    twitch-common "^4.5.3"
 
 twitch@^4.5.3:
   version "4.5.3"
