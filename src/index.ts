@@ -125,21 +125,26 @@ async function main() {
                             timeout: 5000,
                         });
 
-                        // cursor for paginating
-                        let pagCursor = followsResp.data.pagination.cursor;
+                        // check if user has more than 100 followrs
+                        if (followsResp.data.total > 101) {
+                            // cursor for paginating
+                            let pagCursor = followsResp.data.pagination.cursor;
 
-                        // paginate at the end of the last request
-                        let followsResp2 = await axios({
-                            method: 'GET',
-                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100&after=${pagCursor}`,
-                            headers: {
-                                Authorization: `Bearer ${tokenData.accessToken}`,
-                                'Client-Id': process.env.APP_CLIENTID,
-                            },
-                            timeout: 5000,
-                        });
+                            // paginate at the end of the last request
+                            let followsResp2 = await axios({
+                                method: 'GET',
+                                url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100&after${pagCursor}`,
+                                headers: {
+                                    Authorization: `Bearer ${tokenData.accessToken}`,
+                                    'Client-Id': process.env.APP_CLIENTID,
+                                },
+                                timeout: 5000,
+                            });
 
-                        followsResponse = followsResp.data.data.concat(followsResp2.data.data);
+                            followsResponse = followsResp.data.data.concat(followsResp2.data.data);
+                        } else {
+                            followsResponse = followsResp.data.data;
+                        }
 
                         let callbackTime = Date.now() - timeToCallback;
 
@@ -148,6 +153,7 @@ async function main() {
                             if (callbackTime < followTime) return true;
                         });
                         let finalArr2 = banArray.map((user) => user.from_login);
+                        chatClient.say(channel, `Follownuking ${finalArr2.length} users`)
                         for (var i = 0; i < finalArr2.length; i++) {
                             chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
                         }
