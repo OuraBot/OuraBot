@@ -125,12 +125,13 @@ async function main() {
                             timeout: 5000,
                         });
 
-                        // WIP --- FIX! PAGINATION/CURSOR NOT WORKING
-                        /*
+                        // cursor for paginating
+                        let pagCursor = followsResp.data.pagination.cursor;
+
                         // paginate at the end of the last request
                         let followsResp2 = await axios({
                             method: 'GET',
-                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&after${followsResp.data.pagination.cursor}&first=100&`,
+                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100&after=${pagCursor}`,
                             headers: {
                                 Authorization: `Bearer ${tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
@@ -139,8 +140,6 @@ async function main() {
                         });
 
                         followsResponse = followsResp.data.data.concat(followsResp2.data.data);
-                        */
-                        followsResponse = followsResp.data.data;
 
                         let callbackTime = Date.now() - timeToCallback;
 
@@ -149,7 +148,6 @@ async function main() {
                             if (callbackTime < followTime) return true;
                         });
                         let finalArr2 = banArray.map((user) => user.from_login);
-                        console.table(finalArr2);
                         for (var i = 0; i < finalArr2.length; i++) {
                             chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
                         }
