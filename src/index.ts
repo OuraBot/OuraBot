@@ -84,8 +84,8 @@ async function main() {
 
     chatClient.onMessage(async (channel, user, message, msg) => {
         if (user === clientConfig.username) return;
-        if (!message.startsWith(clientConfig.prefix)) return;
-        var args: string[] = message.substr(clientConfig.prefix.length).split(' ');
+        if (!message.startsWith(process.env.PREFIX)) return;
+        var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
 
         switch (args[0]) {
             case 'ping':
