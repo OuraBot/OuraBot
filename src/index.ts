@@ -67,10 +67,7 @@ async function main() {
 
     async function sendAutomatedMessage(foo) {
         if (foo.online == true) {
-            var channelResp = await axios.get(`https://api.twitch.tv/helix/streams?user_login=${foo.channel.replace('#', '')}`, {
-                headers: { Authorization: `Bearer ${tokenData.accessToken}`, 'Client-Id': process.env.APP_CLIENTID },
-            });
-            if (channelResp.data.data.length != 0) {
+            if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
                 chatClient.say(foo.channel, foo.message);
             }
         } else {
@@ -90,11 +87,7 @@ async function main() {
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
-                let awchidResp = await axios({
-                    method: 'GET',
-                    url: `https://customapi.aidenwallis.co.uk/api/v1/twitch/toID/${channel.replace('#', '')}`,
-                });
-                console.log(awchidResp.data);
+                chatClient.say(channel, `${args[1]} ${((await apiClient.helix.streams.getStreamByUserName(args[1])) == null ? false : true) ? 'is online' : 'is offline'}`);
                 break;
 
             case 'follownuke':
@@ -102,12 +95,7 @@ async function main() {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
                     let timeToCallback = Math.abs(ms(args[1]));
                     try {
-                        // get channel id
-                        let awchidResp = await axios({
-                            method: 'GET',
-                            url: `https://customapi.aidenwallis.co.uk/api/v1/twitch/toID/${channel.replace('#', '')}`,
-                            timeout: 5000,
-                        });
+                        let _channelID =  (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id
 
                         // initialize an empty array
                         // this should be cleandd up
@@ -117,7 +105,7 @@ async function main() {
                         // find only the latest 100 follows
                         let followsResp = await axios({
                             method: 'GET',
-                            url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100`,
+                            url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100`,
                             headers: {
                                 Authorization: `Bearer ${tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
@@ -133,7 +121,7 @@ async function main() {
                             // paginate at the end of the last request
                             let followsResp2 = await axios({
                                 method: 'GET',
-                                url: `https://api.twitch.tv/helix/users/follows?to_id=${awchidResp.data}&first=100&after${pagCursor}`,
+                                url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100&after${pagCursor}`,
                                 headers: {
                                     Authorization: `Bearer ${tokenData.accessToken}`,
                                     'Client-Id': process.env.APP_CLIENTID,
@@ -153,7 +141,7 @@ async function main() {
                             if (callbackTime < followTime) return true;
                         });
                         let finalArr2 = banArray.map((user) => user.from_login);
-                        chatClient.say(channel, `Follownuking ${finalArr2.length} users`)
+                        chatClient.say(channel, `Follownuking ${finalArr2.length} users`);
                         for (var i = 0; i < finalArr2.length; i++) {
                             chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
                         }
