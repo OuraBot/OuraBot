@@ -58,21 +58,20 @@ async function main() {
     const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
 
     for (var i = 0; i < autoMsgResp.data.length; i++) {
-        var cMsg = autoMsgResp.data[i];
-        console.log(cMsg);
-        setInterval(function () {
-            sendAutomatedMessage(cMsg);
-        }, cMsg.timer * 60000);
+        sendAutomatedMessage(autoMsgResp.data[i]);
     }
 
     async function sendAutomatedMessage(foo) {
-        if (foo.online == true) {
-            if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
+        setInterval(async function () {
+            if (foo.online == true) {
+                if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
+                    chatClient.say(foo.channel, foo.message);
+                }
+            } else {
                 chatClient.say(foo.channel, foo.message);
             }
-        } else {
-            chatClient.say(foo.channel, foo.message);
-        }
+        }, foo.timer * 60000);
+        
     }
 
     chatClient.onJoin((channel, user) => {
