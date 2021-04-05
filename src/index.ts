@@ -14,9 +14,23 @@ import clientConfig from '../config.json';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const internalAPI = 'http://10.0.0.97:5000' || process.env.INTERNALAPI;
+const internalAPI = process.env.INTERNALAPI || 'http://10.0.0.97:5000';
 
+let commandCacheData = [];
+let commandCacheTimer = 0;
 const onCooldown = new Set();
+const customOnCooldown = new Set();
+
+/*
+[
+    "auror6s": {
+        [{command: "gsdkljfg"}, {command:"hirtitky"}]
+    },
+    "demonjoefrance": {
+        [{command: "sdfgh"}, {command: "sdfhdj"}]
+    },
+]
+*/
 
 async function main() {
     console.log(`${clientConfig.username} is starting...`);
@@ -71,7 +85,6 @@ async function main() {
                 chatClient.say(foo.channel, foo.message);
             }
         }, foo.timer * 60000);
-        
     }
 
     chatClient.onJoin((channel, user) => {
@@ -80,13 +93,36 @@ async function main() {
 
     chatClient.onMessage(async (channel, user, message, msg) => {
         if (user === clientConfig.username) return;
+        var Rargs: string[] = message.split(' ');
+
+        let ccommandResp = await axios({
+            method: 'GET',
+            url: `${internalAPI}/message/command/${channel.replace('#', '')}`,
+        });
+
+        let obj = ccommandResp.data;
+        console.log(obj);
+        for (var i = 0; i < obj.length; i++) {
+            if (Rargs[0] === obj[i].command) {
+                if (!customOnCooldown.has(`${obj[i].command}${user}${channel}`)) {
+                    chatClient.say(channel, obj[i].response);
+                    customOnCooldown.add(`${obj[i].command}${user}${channel}`);
+                    setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
+                }
+            }
+        }
+        function clearCooldown(foo) {
+            customOnCooldown.delete(`${foo}${user}${channel}`);
+        }
+
         if (!message.startsWith(process.env.PREFIX)) return;
-        var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
+        var args: string[] = message.split(' ');
 
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
-                chatClient.say(channel, `${args[1]} ${((await apiClient.helix.streams.getStreamByUserName(args[1])) == null ? false : true) ? 'is online' : 'is offline'}`);
+                let ppogpgogpog = await axios.get(`http://localhost:5001/message/command/auror6s`);
+                console.log(ppogpgogpog.data);
                 break;
 
             case 'follownuke':
@@ -94,7 +130,7 @@ async function main() {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
                     let timeToCallback = Math.abs(ms(args[1]));
                     try {
-                        let _channelID =  (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id
+                        let _channelID = (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id;
 
                         // initialize an empty array
                         // this should be cleandd up
@@ -181,6 +217,12 @@ async function main() {
                         chatClient.say(channel, `Failed with status code ${resp.status}`);
                     }
                 });
+
+                break;
+
+            case 'c-add':
+                if (user != clientConfig.owner) return;
+                if (!args[1]) return;
 
                 break;
 
@@ -313,16 +355,10 @@ async function main() {
                 for (var i = 0; i < response.data.length; i++) {
                     const channelData = response.data[i];
                     const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
-                        if (channelData.response === 'none') {
-                            axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
-                                console.log(`Added ${e.userName} to the follow/add database`);
-                            });
-                        } else {
-                            chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                            axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
-                                console.log(`Added ${e.userName} to the follow/add database`);
-                            });
-                        }
+                        chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
+                        axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
+                            console.log(`Added ${e.userName} to the follow/add database`);
+                        });
                     });
                 }
             }
