@@ -105,7 +105,23 @@ async function main() {
         for (var i = 0; i < obj.length; i++) {
             if (Rargs[0] === obj[i].command) {
                 if (!customOnCooldown.has(`${obj[i].command}${user}${channel}`)) {
-                    chatClient.say(channel, obj[i].response);
+
+                    // make this better \/
+                    let updatedResponse = obj[i].response.replace('$<sender>', user.replace('#', '')).replace('$<channel>', channel.replace('#', '')).replace('$<args1>', Rargs[1]).replace('$<args2>', Rargs[2]).replace('$<sArgs1>', Rargs[1] == undefined ? user : Rargs[1]);
+                    
+                    let finalStr = updatedResponse;
+
+                    if(updatedResponse.indexOf('$fetchURL(') != -1) {
+                        var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                        var end_pos = updatedResponse.indexOf(')',start_pos);
+                        var text_to_get = updatedResponse.substring(start_pos,end_pos);
+    
+                        let customResp = await axios.get(text_to_get, { timeout: 5000 });
+                        finalStr = (updatedResponse).replace(`$fetchURL(${text_to_get})`, customResp.data)
+                    }
+
+                    chatClient.say(channel, finalStr);
+
                     customOnCooldown.add(`${obj[i].command}${user}${channel}`);
                     setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
                 }
