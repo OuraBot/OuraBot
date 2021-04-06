@@ -1045,18 +1045,6 @@ tweetnacl@^1.0.3:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
-twitch-api-call@^4.5.3:
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/twitch-api-call/-/twitch-api-call-4.5.3.tgz#23eb7502cd75d4ac443422f89134ea8f3bfe385f"
-  integrity sha512-JiqNzbRprQZQJnJudLvheYW2ECgbDqQoZMJ9Gjmu6Klfk1pDX7XRLmlAi5SgXXgjgyr3qn2kW/TfOlWoQTitpQ==
-  dependencies:
-    "@d-fischer/cross-fetch" "^4.0.2"
-    "@d-fischer/qs" "^7.0.2"
-    "@types/node-fetch" "^2.5.7"
-    node-fetch "^2.6.1"
-    tslib "^2.0.3"
-    twitch-common "^4.5.3"
-
 twitch-api-call@^4.5.4:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/twitch-api-call/-/twitch-api-call-4.5.4.tgz#cf7df566121544b8661dffb42ef316d02b46c71f"
@@ -1097,7 +1085,7 @@ twitch-chat-client@^4.5.4:
     twitch-auth "^4.5.4"
     twitch-common "^4.5.4"
 
-twitch-common@^4.5.3, twitch-common@^4.5.4:
+twitch-common@^4.5.4:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/twitch-common/-/twitch-common-4.5.4.tgz#45830328d99f0eacde84d78df0e7fd7473e36c89"
   integrity sha512-f1x/wNYe3JUV0cqcFRiRHVDnMHskVM3Lt1fb5lbA4ZxfJdXOsQd5kkm3PcdJKYEA5bDl8mB4HktrGB8eTom63g==
@@ -1129,10 +1117,10 @@ twitch-eventsub@^4.5.4:
     twitch-auth "^4.5.4"
     twitch-common "^4.5.4"
 
-twitch@^4.5.3:
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/twitch/-/twitch-4.5.3.tgz#2ea68c55509eb2f12109f37b0e0f4bd9488d16e0"
-  integrity sha512-pZRaGo72UOMUF4Qhw6rdtzhI+shxeWggFdk3/2AB7dfncUv4GF0W0vVH/ikPFujL5N+mO6itsmc/urBnGGvaMQ==
+twitch@^4.5.4:
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/twitch/-/twitch-4.5.4.tgz#b3123d01e638aa6caca06e4a70372964c3bd9b6b"
+  integrity sha512-1AoFTavYos2uBHgYn/iYwU9332q4TorbtsbIhKObhUYSbHd2Vp5ZlDA/3LEw1ZVZu8ej/O6NEWaR0sF4/hFPXw==
   dependencies:
     "@d-fischer/cache-decorators" "^2.1.1"
     "@d-fischer/deprecate" "^2.0.2"
@@ -1141,9 +1129,9 @@ twitch@^4.5.3:
     "@d-fischer/shared-utils" "^3.0.1"
     top-package "^1.0.0"
     tslib "^2.0.3"
-    twitch-api-call "^4.5.3"
-    twitch-auth "^4.5.3"
-    twitch-common "^4.5.3"
+    twitch-api-call "^4.5.4"
+    twitch-auth "^4.5.4"
+    twitch-common "^4.5.4"
 
 unbox-primitive@^1.0.0:
   version "1.0.0"
