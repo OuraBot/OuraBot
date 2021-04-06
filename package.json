@@ -20,6 +20,6 @@
     "twitch-auth": "^4.5.3",
     "twitch-chat-client": "^4.5.4",
     "twitch-eventsub": "^4.5.4",
-    "twitch-eventsub-ngrok": "^4.5.3"
+    "twitch-eventsub-ngrok": "^4.5.4"
   }
 }

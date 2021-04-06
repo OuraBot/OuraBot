@@ -1094,10 +1094,10 @@ twitch-common@^4.5.4:
     "@d-fischer/shared-utils" "^3.0.1"
     tslib "^2.0.3"
 
-twitch-eventsub-ngrok@^4.5.3:
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/twitch-eventsub-ngrok/-/twitch-eventsub-ngrok-4.5.3.tgz#ea7988b8e8ebb71d1d66403fd18a96f198d5a75c"
-  integrity sha512-MYJdvDS27hQd+drFo55KxiCNwWTMeHJ1KkSjs7Yq3dxAdnfPEuXtNXE36ELK+Ut/sllhWr7CQgve20U1/ogdrg==
+twitch-eventsub-ngrok@^4.5.4:
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/twitch-eventsub-ngrok/-/twitch-eventsub-ngrok-4.5.4.tgz#0509fbb07ff80f2943f685f23685638058280a86"
+  integrity sha512-V/+BUOi7LKXNRBGdQ8jKCUdSHMt2cafM7/2Ww4pubsJuKOzszHv1X11zcou5xNAckTReNBXQ2p6J2eubDO0Qjw==
   dependencies:
     "@d-fischer/portfinder" "^1.0.28"
     "@d-fischer/shared-utils" "^3.0.1"
