@@ -105,23 +105,30 @@ async function main() {
         for (var i = 0; i < obj.length; i++) {
             if (Rargs[0] === obj[i].command) {
                 if (!customOnCooldown.has(`${obj[i].command}${user}${channel}`)) {
-
                     // make this better \/
-                    let updatedResponse = obj[i].response.replace('$<sender>', user.replace('#', '')).replace('$<channel>', channel.replace('#', '')).replace('$<args1>', Rargs[1]).replace('$<args2>', Rargs[2]).replace('$<sArgs1>', Rargs[1] == undefined ? user : Rargs[1]);
-                    
+                    let updatedResponse = obj[i].response
+                        .replace('$<sender>', user.replace('#', ''))
+                        .replace('$<channel>', channel.replace('#', ''))
+                        .replace('$<args1>', Rargs[1])
+                        .replace('$<args2>', Rargs[2])
+                        .replace('$<sArgs1>', Rargs[1] == undefined ? user : Rargs[1]);
+
                     let finalStr = updatedResponse;
 
-                    if(updatedResponse.indexOf('$fetchURL(') != -1) {
+                    if (updatedResponse.indexOf('$fetchURL(') != -1) {
                         var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                        var end_pos = updatedResponse.indexOf(')',start_pos);
-                        var text_to_get = updatedResponse.substring(start_pos,end_pos);
-    
-                        let customResp = await axios.get(text_to_get, { timeout: 5000 }).then(data => {
-                            finalStr = (updatedResponse).replace(`$fetchURL(${text_to_get})`, data.data);
-                            chatClient.say(channel, finalStr);
-                        }).catch(err => {
-                            chatClient.say(channel, `Error: ${err}`);
-                        });
+                        var end_pos = updatedResponse.indexOf(')', start_pos);
+                        var text_to_get = updatedResponse.substring(start_pos, end_pos);
+
+                        let customResp = await axios
+                            .get(text_to_get, { timeout: 5000 })
+                            .then((data) => {
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, data.data);
+                                chatClient.say(channel, finalStr);
+                            })
+                            .catch((err) => {
+                                chatClient.say(channel, `Error: ${err}`);
+                            });
                     }
 
                     customOnCooldown.add(`${obj[i].command}${user}${channel}`);
@@ -135,7 +142,7 @@ async function main() {
 
         if (!message.startsWith(process.env.PREFIX)) return;
         var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
-        console.table(args)
+        console.table(args);
 
         switch (args[0]) {
             case 'ping':
@@ -213,6 +220,27 @@ async function main() {
                 for (var i = 0; i < splitResp.length; i++) {
                     chatClient.say(channel, splitResp[i]);
                 }
+                break;
+
+            // !remindme in 5m microwave
+            // !remindme in <time> <title>
+            case 'remindme':
+                if (args[1] === 'in') {
+                    // this is disgusting
+                    let time = args[2];
+                    let timeout = Math.abs(ms(time));
+                    if (timeout > 21600000) {
+                        return chatClient.say(channel, 'I can only remind you in up to 6 hours!');
+                    }
+                    setTimeout(function () {
+                        args.splice(0, 3);
+                        let comment = args.length == 0 ? '<no comment>' : args.join(' ');
+                        chatClient.say(channel, `@${user}, "${comment}" from ${ms(timeout, { long: true })} ago`);
+                    }, timeout);
+                } else {
+                    chatClient.say(channel, 'Please use this format: !remindme in <time> <comment>');
+                }
+
                 break;
 
             case 'reconnect':
