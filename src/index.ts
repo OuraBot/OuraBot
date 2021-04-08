@@ -116,11 +116,13 @@ async function main() {
                         var end_pos = updatedResponse.indexOf(')',start_pos);
                         var text_to_get = updatedResponse.substring(start_pos,end_pos);
     
-                        let customResp = await axios.get(text_to_get, { timeout: 5000 });
-                        finalStr = (updatedResponse).replace(`$fetchURL(${text_to_get})`, customResp.data)
+                        let customResp = await axios.get(text_to_get, { timeout: 5000 }).then(data => {
+                            finalStr = (updatedResponse).replace(`$fetchURL(${text_to_get})`, data.data);
+                            chatClient.say(channel, finalStr);
+                        }).catch(err => {
+                            chatClient.say(channel, `Error: ${err}`);
+                        });
                     }
-
-                    chatClient.say(channel, finalStr);
 
                     customOnCooldown.add(`${obj[i].command}${user}${channel}`);
                     setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
@@ -132,7 +134,8 @@ async function main() {
         }
 
         if (!message.startsWith(process.env.PREFIX)) return;
-        var args: string[] = message.split(' ');
+        var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
+        console.table(args)
 
         switch (args[0]) {
             case 'ping':
