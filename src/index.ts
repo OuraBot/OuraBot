@@ -79,10 +79,44 @@ async function main() {
         setInterval(async function () {
             if (foo.online == true) {
                 if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
-                    chatClient.say(foo.channel, foo.message);
+                    let updatedResponse = foo.message;
+                    let finalStr = updatedResponse;
+
+                    if (updatedResponse.indexOf('$fetchURL(') != -1) {
+                        var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                        var end_pos = updatedResponse.indexOf(')', start_pos);
+                        var text_to_get = updatedResponse.substring(start_pos, end_pos);
+
+                        let customResp = await axios
+                            .get(text_to_get, { timeout: 5000 })
+                            .then((data) => {
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, data.data);
+                                chatClient.say(foo.channel, finalStr);
+                            })
+                            .catch((err) => {
+                                chatClient.say(foo.channel, `Error: ${err}`);
+                            });
+                    }
                 }
             } else {
-                chatClient.say(foo.channel, foo.message);
+                let updatedResponse = foo.message;
+                let finalStr = updatedResponse;
+
+                if (updatedResponse.indexOf('$fetchURL(') != -1) {
+                    var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                    var end_pos = updatedResponse.indexOf(')', start_pos);
+                    var text_to_get = updatedResponse.substring(start_pos, end_pos);
+
+                    let customResp = await axios
+                        .get(text_to_get, { timeout: 5000 })
+                        .then((data) => {
+                            finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, data.data);
+                            chatClient.say(foo.channel, finalStr);
+                        })
+                        .catch((err) => {
+                            chatClient.say(foo.channel, `Error: ${err}`);
+                        });
+                }
             }
         }, foo.timer * 60000);
     }
@@ -147,8 +181,6 @@ async function main() {
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
-                let ppogpgogpog = await axios.get(`http://localhost:5001/message/command/auror6s`);
-                console.log(ppogpgogpog.data);
                 break;
 
             case 'follownuke':
