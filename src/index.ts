@@ -36,7 +36,7 @@ const customOnCooldown = new Set();
 */
 
 async function main() {
-    console.log(`${clientConfig.username} is starting...`);
+    console.log(`${process.env.USERNAME} is starting...`);
     const clientId = process.env.APP_CLIENTID;
     const clientSecret = process.env.APP_SECRET;
     const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
@@ -143,7 +143,7 @@ async function main() {
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
-        if (user === clientConfig.username) return;
+        if (user === process.env.USERNAME) return;
         var Rargs: string[] = message.split(' ');
 
         let ccommandResp = await axios({
@@ -233,7 +233,7 @@ async function main() {
                         let formData = new FormData();
                         formData.append('api_dev_key', process.env.PASTEBIN_KEY);
                         formData.append('api_option', 'paste');
-                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${clientConfig.username} | ${moment().format('HH:MM MM/DD/YY')}`);
+                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${process.env.USERNAME} | ${moment().format('HH:MM MM/DD/YY')}`);
                         formData.append('api_paste_code', apiPostCode);
                         axios
                             .post('https://pastebin.com/api/api_post.php', formData, {
