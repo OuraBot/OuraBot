@@ -440,9 +440,6 @@ async function main() {
                     const channelData = response.data[i];
                     const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
                         chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                        axios.post(`${internalAPI}/follownuke/${e.broadcasterName.toLowerCase()}/add`, { user: e.userName }).then(async (response) => {
-                            console.log(`Added ${e.userName} to the follow/add database`);
-                        });
                     });
                 }
             }
