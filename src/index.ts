@@ -91,9 +91,14 @@ async function main() {
                             .get(customURL, { timeout: 5000 })
                             .then(function (response) {
                                 let re = /(\).).+?(?=\s|$)/;
-                                let objTarget = finalStr.match(re)[0].substring(2);
-                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                chatClient.say(foo.channel, finalStr);
+                                if (finalStr.match(re)) {
+                                    let objTarget = finalStr.match(re)[0].substring(2);
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                    chatClient.say(channel, finalStr);
+                                } else {
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                    chatClient.say(channel, finalStr);
+                                }
                             })
                             .catch(function (err) {
                                 chatClient.say(foo.channel, `Error: ${err}`);
@@ -113,9 +118,14 @@ async function main() {
                         .get(customURL, { timeout: 5000 })
                         .then(function (response) {
                             let re = /(\).).+?(?=\s|$)/;
-                            let objTarget = finalStr.match(re)[0].substring(2);
-                            finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                            chatClient.say(foo.channel, finalStr);
+                                if (finalStr.match(re)) {
+                                    let objTarget = finalStr.match(re)[0].substring(2);
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                    chatClient.say(channel, finalStr);
+                                } else {
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                    chatClient.say(channel, finalStr);
+                                }
                         })
                         .catch(function (err) {
                             chatClient.say(foo.channel, `Error: ${err}`);
@@ -161,9 +171,14 @@ async function main() {
                             .get(customURL, { timeout: 5000 })
                             .then(function (response) {
                                 let re = /(\).).+?(?=\s|$)/;
-                                let objTarget = finalStr.match(re)[0].substring(2);
-                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                chatClient.say(channel, finalStr);
+                                if (finalStr.match(re)) {
+                                    let objTarget = finalStr.match(re)[0].substring(2);
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                    chatClient.say(channel, finalStr);
+                                } else {
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                    chatClient.say(channel, finalStr);
+                                }
                             })
                             .catch(function (err) {
                                 chatClient.say(channel, `Error: ${err}`);
