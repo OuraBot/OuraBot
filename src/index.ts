@@ -168,10 +168,16 @@ async function main() {
                             .catch(function (err) {
                                 chatClient.say(channel, `Error: ${err}`);
                             });
+                    } else {
+                        chatClient.say(channel, finalStr + ' 1');
                     }
 
-                    customOnCooldown.add(`${obj[i].command}${user}${channel}`);
-                    setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
+                    if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
+                    } else {
+                        customOnCooldown.add(`${obj[i].command}${user}${channel}`);
+                        setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
+                    }
                 }
             }
         }
