@@ -94,10 +94,10 @@ async function main() {
                                 if (finalStr.match(re)) {
                                     let objTarget = finalStr.match(re)[0].substring(2);
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    chatClient.say(channel, finalStr);
+                                    chatClient.say(foo.channel, finalStr);
                                 } else {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    chatClient.say(channel, finalStr);
+                                    chatClient.say(foo.channel, finalStr);
                                 }
                             })
                             .catch(function (err) {
@@ -121,10 +121,10 @@ async function main() {
                                 if (finalStr.match(re)) {
                                     let objTarget = finalStr.match(re)[0].substring(2);
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    chatClient.say(channel, finalStr);
+                                    chatClient.say(foo.channel, finalStr);
                                 } else {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    chatClient.say(channel, finalStr);
+                                    chatClient.say(foo.channel, finalStr);
                                 }
                         })
                         .catch(function (err) {
