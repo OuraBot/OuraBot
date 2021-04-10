@@ -5,10 +5,13 @@ import { ApiClient } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 
+import FormData from 'form-data';
+import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
 import Discord, { BaseManager } from 'discord.js';
 
+import clientCommands from '../commands.json';
 import clientConfig from '../config.json';
 
 import * as dotenv from 'dotenv';
@@ -118,14 +121,14 @@ async function main() {
                         .get(customURL, { timeout: 5000 })
                         .then(function (response) {
                             let re = /(\).).+?(?=\s|$)/;
-                                if (finalStr.match(re)) {
-                                    let objTarget = finalStr.match(re)[0].substring(2);
-                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    chatClient.say(foo.channel, finalStr);
-                                } else {
-                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    chatClient.say(foo.channel, finalStr);
-                                }
+                            if (finalStr.match(re)) {
+                                let objTarget = finalStr.match(re)[0].substring(2);
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                chatClient.say(foo.channel, finalStr);
+                            } else {
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                chatClient.say(foo.channel, finalStr);
+                            }
                         })
                         .catch(function (err) {
                             chatClient.say(foo.channel, `Error: ${err}`);
@@ -207,6 +210,46 @@ async function main() {
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
+                break;
+
+            case 'commands':
+                axios
+                    .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
+                    .then((data) => {
+                        let apiPostCode = `Custom Commands:\n\n`;
+
+                        for(var i = 0; i < data.data.length; i++) {
+                            apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`
+                        }
+
+                        apiPostCode = apiPostCode + `Global Commands:\n\n`
+
+                        for(var i = 0; i < clientCommands.length; i++) {
+                            apiPostCode = apiPostCode + `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`
+                        }
+
+                        apiPostCode = apiPostCode + `Bot made by @AuroR6S`
+
+                        let formData = new FormData();
+                        formData.append('api_dev_key', process.env.PASTEBIN_KEY);
+                        formData.append('api_option', 'paste');
+                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${clientConfig.username} | ${moment().format('HH:MM MM/DD/YY')}`);
+                        formData.append('api_paste_code', apiPostCode);
+                        axios
+                            .post('https://pastebin.com/api/api_post.php', formData, {
+                                headers: formData.getHeaders(),
+                            })
+                            .then((data) => {
+                                chatClient.say(channel, data.data)
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
+                    })
+                    .catch((err) => {
+                        chatClient.say(channel, `Error: ${err}`);
+                    });
+
                 break;
 
             case 'follownuke':
