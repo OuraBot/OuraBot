@@ -1,0 +1,51 @@
+[
+    {
+        "command": "ping",
+        "description": "Pings the bot",
+        "usage": "!ping",
+        "permission": "None",
+        "cooldown": 0
+    },
+    {
+        "command": "commands",
+        "description": "Returns a pastebin link of all the commands",
+        "usage": "!commands",
+        "permission": "None",
+        "cooldown": 10
+    },
+    {
+        "command": "follownuke",
+        "description": "Bans the last X members",
+        "usage": "!folownuke <time, 5m, 10m>",
+        "permission": "Mod",
+        "cooldown": 0
+    },
+    {
+        "command": "filesayfast",
+        "description": "Reads off a file",
+        "usage": "!filesayfast <pastebin raw url>",
+        "permission": "Owner",
+        "cooldown": 0
+    },
+    {
+        "command": "remindme",
+        "description": "Sets a reminder <6hr max>",
+        "usage": "!remindme <time, 5m, 10m> <description>",
+        "permission": "None",
+        "cooldown": 0
+    },
+    {
+        "command": "listen",
+        "description": "Joins a channel",
+        "usage": "!listen <channel>",
+        "permission": "Owner",
+        "cooldown": 0
+    },
+    {
+        "command": "clip",
+        "description": "Clips the last 30 seconds and sends it to the Discord",
+        "usage": "!clip <title>",
+        "permission": "None",
+        "cooldown": 0
+    }
+]
