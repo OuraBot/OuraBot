@@ -5,7 +5,6 @@ import { ApiClient } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 
-import FormData from 'form-data';
 import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
@@ -62,7 +61,10 @@ async function main() {
 
     const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
-
+    if(process.env.DEBUG === 'TRUE') {
+        channelsToListenIn = [clientConfig.owner];
+        console.log(`STARTING IN DEBUG MODE`)
+    }
     console.log(channelsToListenIn);
 
     const chatClient = new ChatClient(auth, {
@@ -216,7 +218,7 @@ async function main() {
                 axios
                     .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
                     .then((data) => {
-                        let apiPostCode = `Custom Commands:\n\n`;
+                        let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
 
                         for(var i = 0; i < data.data.length; i++) {
                             apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`
@@ -228,19 +230,11 @@ async function main() {
                             apiPostCode = apiPostCode + `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`
                         }
 
-                        apiPostCode = apiPostCode + `Bot made by @AuroR6S`
-
-                        let formData = new FormData();
-                        formData.append('api_dev_key', process.env.PASTEBIN_KEY);
-                        formData.append('api_option', 'paste');
-                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}`);
-                        formData.append('api_paste_code', apiPostCode);
+                        apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
                         axios
-                            .post('https://pastebin.com/api/api_post.php', formData, {
-                                headers: formData.getHeaders(),
-                            })
+                            .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
                             .then((data) => {
-                                chatClient.say(channel, data.data)
+                                chatClient.say(channel, `${process.env.HASTEBIN_SERVER}/${data.data.key}`)
                             })
                             .catch((err) => {
                                 console.log(err);
