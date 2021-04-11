@@ -36,7 +36,7 @@ const customOnCooldown = new Set();
 */
 
 async function main() {
-    console.log(`${process.env.USERNAME} is starting...`);
+    console.log(`${process.env.CLIENT_USERNAME} is starting...`);
     const clientId = process.env.APP_CLIENTID;
     const clientSecret = process.env.APP_SECRET;
     const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
@@ -60,7 +60,7 @@ async function main() {
     const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
     await listener.listen();
 
-    const listenResp = await axios.get(`${internalAPI}/listen/`);
+    const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
 
     console.log(channelsToListenIn);
@@ -143,7 +143,7 @@ async function main() {
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
-        if (user === process.env.USERNAME) return;
+        if (user === process.env.CLIENT_USERNAME) return;
         var Rargs: string[] = message.split(' ');
 
         let ccommandResp = await axios({
@@ -233,7 +233,7 @@ async function main() {
                         let formData = new FormData();
                         formData.append('api_dev_key', process.env.PASTEBIN_KEY);
                         formData.append('api_option', 'paste');
-                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${process.env.USERNAME} | ${moment().format('HH:MM MM/DD/YY')}`);
+                        formData.append('api_paste_name', `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}`);
                         formData.append('api_paste_code', apiPostCode);
                         axios
                             .post('https://pastebin.com/api/api_post.php', formData, {
@@ -358,7 +358,7 @@ async function main() {
                     channel: args[1],
                 };
 
-                axios.post(`${internalAPI}/listen/add`, data).then((resp) => {
+                axios.post(`${internalAPI}/listen/add/${process.env.CLIENT_USERNAME}`, data).then((resp) => {
                     if (resp.status == 200) {
                         chatClient.join(args[1]);
                         chatClient.say(channel, `Joined ${args[1]} and added to database!`);
