@@ -189,7 +189,7 @@ async function main() {
                                 chatClient.say(channel, `Error: ${err}`);
                             });
                     } else {
-                        chatClient.say(channel, finalStr + ' 1');
+                        chatClient.say(channel, finalStr);
                     }
 
                     if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
