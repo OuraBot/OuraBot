@@ -83,6 +83,7 @@ async function main() {
 
     async function sendAutomatedMessage(foo) {
         setInterval(async function () {
+            if (foo.bot !== clientConfig.username) return;
             if (foo.online == true) {
                 if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
                     let updatedResponse = foo.message;
@@ -109,6 +110,8 @@ async function main() {
                             .catch(function (err) {
                                 chatClient.say(foo.channel, `Error: ${err}`);
                             });
+                    } else {
+                        chatClient.say(foo.channel, foo.message);
                     }
                 }
             } else {
@@ -136,6 +139,8 @@ async function main() {
                         .catch(function (err) {
                             chatClient.say(foo.channel, `Error: ${err}`);
                         });
+                } else {
+                    chatClient.say(foo.channel, foo.message);
                 }
             }
         }, foo.timer * 60000);
