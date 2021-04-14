@@ -5,6 +5,7 @@ import { ApiClient } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 
+import { inspect } from 'util';
 import { exec } from 'child_process';
 import moment from 'moment';
 import ms from 'ms';
@@ -345,6 +346,22 @@ async function main() {
                     chatClient.say(channel, 'Please use this format: !remindme in <time> <comment>');
                 }
 
+                break;
+
+            case 'eval':
+                if (user != clientConfig.owner) return;
+                args.shift();
+                const code = args.join(' ');
+                let evaled = eval(code);
+
+                if (typeof evaled !== 'string') evaled = inspect(evaled);
+
+                chatClient.say(channel, clean(evaled));
+
+                function clean(text) {
+                    if (typeof text === 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
+                    else return text;
+                }
                 break;
 
             case 'pull':
