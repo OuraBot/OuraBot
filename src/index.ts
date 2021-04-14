@@ -345,7 +345,7 @@ async function main() {
             case 'pull':
                 if (user != clientConfig.owner) return;
 
-                exec('git pull', (error, stdout, stderr) => {
+                exec('git pull origin main', (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
                     if (stderr) chatClient.say(channel, `Error: ${stderr}`);
 
