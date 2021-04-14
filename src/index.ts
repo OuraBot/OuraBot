@@ -365,7 +365,28 @@ async function main() {
 
             case 'c-add':
                 if (user != clientConfig.owner) return;
-                if (!args[1]) return;
+                if (!args[1] || !args[2]) return;
+
+                let _command = args[1];
+
+                // ⠿⠋⠈⠄⣈⣉⣛⣿ 
+                // ⠁⠄⠄⠛⡻⣿⣻⣿ 
+                // ⣇⠄⠄⠸⡇⢸⠿⣿ 
+                // ⣿⣿⣷⣄⠉⠄⣻⣿
+
+                args.shift();
+                args.shift();
+
+                let cmdData = {
+                    command: _command,
+                    response: args.join(' '),
+                    channel: channel.replace('#', ''),
+                    cooldown: 5
+                }
+
+                axios.post(`${internalAPI}/message/command/`, cmdData).then(data => {
+                    chatClient.say(channel, `Added command: "${data.data.command}" with the response of: ${data.data.response}`)
+                })
 
                 break;
 
