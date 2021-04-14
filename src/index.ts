@@ -354,6 +354,16 @@ async function main() {
                 });
 
                 break;
+
+            case 'version':
+                exec('git rev-parse HEAD', (error, stdout, stderr) => {
+                    if (error) chatClient.say(channel, `Error: "${error.message}`);
+                    if (stderr) chatClient.say(channel, `Error: ${stderr}`);
+
+                    chatClient.say(channel, `CoolCat Commit: ${stdout.slice(0, 7)}`);
+                });
+                break;
+
             case 'reconnect':
                 if (user != clientConfig.owner) return;
                 await chatClient.reconnect();
