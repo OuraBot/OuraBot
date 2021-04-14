@@ -84,7 +84,7 @@ async function main() {
 
     async function sendAutomatedMessage(foo) {
         setInterval(async function () {
-            if (foo.bot !== clientConfig.username) return;
+            if (foo.bot !== process.env.CLIENT_USERNAME) return;
             if (foo.online == true) {
                 if ((await apiClient.helix.streams.getStreamByUserName(foo.channel.replace('#', ''))) == null ? false : true) {
                     let updatedResponse = foo.message;
