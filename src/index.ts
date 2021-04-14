@@ -5,6 +5,7 @@ import { ApiClient } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 
+import { exec } from 'child_process';
 import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
@@ -61,9 +62,9 @@ async function main() {
 
     const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
-    if(process.env.DEBUG === 'TRUE') {
+    if (process.env.DEBUG === 'TRUE') {
         channelsToListenIn = [clientConfig.owner];
-        console.log(`STARTING IN DEBUG MODE`)
+        console.log(`STARTING IN DEBUG MODE`);
     }
     console.log(channelsToListenIn);
 
@@ -220,21 +221,23 @@ async function main() {
                     .then((data) => {
                         let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
 
-                        for(var i = 0; i < data.data.length; i++) {
-                            apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`
+                        for (var i = 0; i < data.data.length; i++) {
+                            apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
                         }
 
-                        apiPostCode = apiPostCode + `Global Commands:\n\n`
+                        apiPostCode = apiPostCode + `Global Commands:\n\n`;
 
-                        for(var i = 0; i < clientCommands.length; i++) {
-                            apiPostCode = apiPostCode + `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`
+                        for (var i = 0; i < clientCommands.length; i++) {
+                            apiPostCode =
+                                apiPostCode +
+                                `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`;
                         }
 
                         apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
                         axios
                             .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
                             .then((data) => {
-                                chatClient.say(channel, `${process.env.HASTEBIN_SERVER}/${data.data.key}`)
+                                chatClient.say(channel, `${process.env.HASTEBIN_SERVER}/${data.data.key}`);
                             })
                             .catch((err) => {
                                 console.log(err);
@@ -339,6 +342,18 @@ async function main() {
 
                 break;
 
+            case 'pull':
+                if (user != clientConfig.owner) return;
+
+                exec('git pull', (error, stdout, stderr) => {
+                    if (error) chatClient.say(channel, `Error: "${error.message}`);
+                    if (stderr) chatClient.say(channel, `Error: ${stderr}`);
+
+                    chatClient.say(channel, `VisLaud 👉 ${stdout}`);
+                    process.exit();
+                });
+
+                break;
             case 'reconnect':
                 if (user != clientConfig.owner) return;
                 await chatClient.reconnect();
@@ -369,9 +384,9 @@ async function main() {
 
                 let _command = args[1];
 
-                // ⠿⠋⠈⠄⣈⣉⣛⣿ 
-                // ⠁⠄⠄⠛⡻⣿⣻⣿ 
-                // ⣇⠄⠄⠸⡇⢸⠿⣿ 
+                // ⠿⠋⠈⠄⣈⣉⣛⣿
+                // ⠁⠄⠄⠛⡻⣿⣻⣿
+                // ⣇⠄⠄⠸⡇⢸⠿⣿
                 // ⣿⣿⣷⣄⠉⠄⣻⣿
 
                 args.shift();
@@ -381,12 +396,12 @@ async function main() {
                     command: _command,
                     response: args.join(' '),
                     channel: channel.replace('#', ''),
-                    cooldown: 5
-                }
+                    cooldown: 5,
+                };
 
-                axios.post(`${internalAPI}/message/command/`, cmdData).then(data => {
-                    chatClient.say(channel, `Added command: "${data.data.command}" with the response of: ${data.data.response}`)
-                })
+                axios.post(`${internalAPI}/message/command/`, cmdData).then((data) => {
+                    chatClient.say(channel, `Added command: "${data.data.command}" with the response of: ${data.data.response}`);
+                });
 
                 break;
 
