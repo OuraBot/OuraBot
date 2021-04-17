@@ -371,7 +371,7 @@ async function main() {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
                     if (stderr) chatClient.say(channel, `StdError: ${stderr}`);
 
-                    chatClient.say(channel, `VisLaud 👉 ${stdout}`);
+                    chatClient.say(channel, `VisLaud 👉 ${stdout || stderr}`);
                     process.exit();
                 });
 
