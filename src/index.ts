@@ -369,7 +369,7 @@ async function main() {
 
                 exec('git pull origin main', (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
-                    if (stderr) chatClient.say(channel, `Error: ${stderr}`);
+                    if (stderr) chatClient.say(channel, `StdError: ${stderr}`);
 
                     chatClient.say(channel, `VisLaud 👉 ${stdout}`);
                     process.exit();
