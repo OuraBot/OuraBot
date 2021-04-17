@@ -377,10 +377,11 @@ async function main() {
 
                 break;
 
+            case 'commit':
             case 'version':
                 exec('git rev-parse HEAD', (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
-                    if (stderr) chatClient.say(channel, `Error: ${stderr}`);
+                    if (stderr) chatClient.say(channel, `StdError: ${stderr}`);
 
                     chatClient.say(channel, `CoolCat Commit: ${stdout.slice(0, 7)}`);
                 });
