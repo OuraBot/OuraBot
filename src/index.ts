@@ -333,8 +333,8 @@ async function main() {
                     // this is disgusting
                     let time = args[2];
                     let timeout = Math.abs(ms(time));
-                    if (timeout > 21600000) {
-                        return chatClient.say(channel, 'I can only remind you in up to 6 hours!');
+                    if (timeout > 21600000 * 2) {
+                        return chatClient.say(channel, 'I can only remind you in up to 12 hours!');
                     }
                     chatClient.say(channel, `@${user}, Reminder set for ${ms(timeout, { long: true })} from now`);
                     setTimeout(function () {
