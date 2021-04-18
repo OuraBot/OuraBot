@@ -24,6 +24,7 @@ let commandCacheData = [];
 let commandCacheTimer = 0;
 const onCooldown = new Set();
 const customOnCooldown = new Set();
+const _onCooldown = new Set();
 
 /*
 [
@@ -266,13 +267,14 @@ async function main() {
                         // this should be cleandd up
                         let followsResponse = [];
 
+                        let _tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
                         // get follows from twitch api
                         // find only the latest 100 follows
                         let followsResp = await axios({
                             method: 'GET',
                             url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100`,
                             headers: {
-                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                Authorization: `Bearer ${_tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
                             },
                             timeout: 5000,
@@ -288,7 +290,7 @@ async function main() {
                                 method: 'GET',
                                 url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100&after${pagCursor}`,
                                 headers: {
-                                    Authorization: `Bearer ${tokenData.accessToken}`,
+                                    Authorization: `Bearer ${_tokenData.accessToken}`,
                                     'Client-Id': process.env.APP_CLIENTID,
                                 },
                                 timeout: 5000,
@@ -438,12 +440,29 @@ async function main() {
 
                 break;
 
+            case 'bing':
+                if (!_onCooldown.has(`bing${user}${channel}`)) {
+                    let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
+                    chatClient.say(channel, `:tf: 🔔 @${chatters[Math.floor(Math.random() * chatters.length)]}`);
+
+                    if (msg.userInfo.isBroadcaster) {
+                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
+                    } else {
+                        _onCooldown.add(`bing${user}${channel}`);
+                        setTimeout(function() {
+                            _onCooldown.delete(`bing${user}${channel}`);
+                        }, 30 * 1000);
+                    }
+                }
+                break;
+
             case 'clip':
                 try {
                     let clipsResp = await axios.get(`${internalAPI}/clip/`);
                     if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
 
                     let discordData;
+                    let _tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
 
                     for (var i = 0; i < clipsResp.data.length; i++) {
                         if (clipsResp.data[i].channel === channel.replace('#', '')) {
@@ -461,7 +480,7 @@ async function main() {
                             method: 'GET',
                             url: `https://api.twitch.tv/helix/streams?user_login=${channel.replace('#', '')}`,
                             headers: {
-                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                Authorization: `Bearer ${_tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
                             },
                         });
@@ -472,7 +491,7 @@ async function main() {
                             method: 'POST',
                             url: `https://api.twitch.tv/helix/clips?broadcaster_id=${msg.channelId}`,
                             headers: {
-                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                Authorization: `Bearer ${_tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
                             },
                         });
@@ -485,7 +504,7 @@ async function main() {
                             method: 'GET',
                             url: `https://api.twitch.tv/helix/clips?id=${clippedResp.data.data[0].id}`,
                             headers: {
-                                Authorization: `Bearer ${tokenData.accessToken}`,
+                                Authorization: `Bearer ${_tokenData.accessToken}`,
                                 'Client-Id': process.env.APP_CLIENTID,
                             },
                         });
@@ -497,7 +516,7 @@ async function main() {
                                 method: 'POST',
                                 url: `https://api.twitch.tv/helix/clips?broadcaster_id=${msg.channelId}`,
                                 headers: {
-                                    Authorization: `Bearer ${tokenData.accessToken}`,
+                                    Authorization: `Bearer ${_tokenData.accessToken}`,
                                     'Client-Id': process.env.APP_CLIENTID,
                                 },
                             });
@@ -506,7 +525,7 @@ async function main() {
                                 method: 'GET',
                                 url: `https://api.twitch.tv/helix/clips?id=${clippedResp.data.data[0].id}`,
                                 headers: {
-                                    Authorization: `Bearer ${tokenData.accessToken}`,
+                                    Authorization: `Bearer ${_tokenData.accessToken}`,
                                     'Client-Id': process.env.APP_CLIENTID,
                                 },
                             });
