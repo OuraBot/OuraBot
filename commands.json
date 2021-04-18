@@ -47,5 +47,12 @@
         "usage": "!clip <title>",
         "permission": "None",
         "cooldown": 0
+    },
+    {
+        "command": "bing",
+        "description": "Pings a random user",
+        "usage": "!bing",
+        "permission": "None",
+        "cooldown": 30
     }
 ]
