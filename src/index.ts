@@ -316,6 +316,16 @@ async function main() {
                             .catch((err) => {
                                 console.log(err);
                             });
+
+                        axios
+                            .post(`${process.env.HASTEBIN_SERVER}/documents`, finalArr2.map((e) => `/ban ${e}`).join('\n'))
+                            .then((data) => {
+                                chatClient.say(channel, `Ban List: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
+
                         chatClient.say(channel, `Follownuking ${finalArr2.length} users`);
                         for (var i = 0; i < finalArr2.length; i++) {
                             chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
