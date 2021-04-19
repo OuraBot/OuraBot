@@ -54,5 +54,12 @@
         "usage": "!bing",
         "permission": "None",
         "cooldown": 30
+    },
+    {
+        "command": "query",
+        "description": "Queries the Wolfram Alpha API",
+        "usage": "!query <query>",
+        "permission": "None",
+        "cooldown": 30
     }
 ]

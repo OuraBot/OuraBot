@@ -431,6 +431,24 @@ async function main() {
 
                 break;
 
+            case 'query':
+                if (!_onCooldown.has(`query${user}`)) {
+                    args.shift();
+                    if (args.length === 0) return chatClient.say(channel, 'Please provide a query');
+                    let url = `http://api.wolframalpha.com/v1/result?appid=${process.env.WOLFRAM_ALPHA_KEY}&i=${args.join('+')}`;
+                    chatClient.say(channel, (await axios.get(url)).data);
+
+                    if (user.replace('#', '') === clientConfig.owner) {
+                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
+                    } else {
+                        _onCooldown.add(`query${user}`);
+                        setTimeout(function () {
+                            _onCooldown.delete(`query${user}$`);
+                        }, 30 * 1000);
+                    }
+                }
+                break;
+
             case 'c-add':
                 if (user != clientConfig.owner) return;
                 if (!args[1] || !args[2]) return;
