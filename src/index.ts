@@ -476,7 +476,7 @@ async function main() {
                     axios
                         .get(`https://api.ivr.fi/logs/rq/${targetChannel}/${targetUser}`)
                         .then((resp) => {
-                            chatClient.say(channel, `"${resp.data.message}", by ${resp.data.user} from ${resp.data.time}`);
+                            chatClient.say(channel, `"${(resp.data.message).replace(/(auro)/ig, 'A_uro')}", by ${resp.data.user} from ${resp.data.time}`);
                         })
                         .catch((err) => {
                             chatClient.say(channel, err);
