@@ -30,7 +30,7 @@
     {
         "command": "remindme",
         "description": "Sets a reminder <6hr max>",
-        "usage": "!remindme <time, 5m, 10m> <description>",
+        "usage": "!remindme <time, 5m, 10m> <description?>",
         "permission": "None",
         "cooldown": 0
     },
@@ -44,9 +44,9 @@
     {
         "command": "clip",
         "description": "Clips the last 30 seconds and sends it to the Discord",
-        "usage": "!clip <title>",
+        "usage": "!clip <title?>",
         "permission": "None",
-        "cooldown": 0
+        "cooldown": 60
     },
     {
         "command": "bing",
@@ -61,5 +61,12 @@
         "usage": "!query <query>",
         "permission": "None",
         "cooldown": 30
+    },
+    {
+        "command": "rl",
+        "description": "Fetches a random quote with the justlog API",
+        "usage": "!rl <user?> <channel?>",
+        "permission": "None",
+        "cooldown": 5
     }
 ]
