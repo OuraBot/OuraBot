@@ -492,6 +492,32 @@ async function main() {
                 }
                 break;
 
+            case 'rl':
+                if (!_onCooldown.has(`rl${user}${channel}`)) {
+                    let targetUser = args[1] || user;
+                    let targetChannel = args[2] || channel.replace('#', '');
+
+                    axios
+                        .get(`https://api.ivr.fi/logs/rq/${targetChannel}/${targetUser}`)
+                        .then((resp) => {
+                            chatClient.say(channel, `"${resp.data.message}", by ${resp.data.user} from ${resp.data.time}`);
+                        })
+                        .catch((err) => {
+                            chatClient.say(channel, err);
+                        });
+
+                    if (msg.userInfo.isBroadcaster) {
+                        //
+                    } else {
+                        _onCooldown.add(`rl${user}${channel}`);
+                        setTimeout(function () {
+                            _onCooldown.delete(`rl${user}${channel}`);
+                        }, 5 * 1000);
+                    }
+                }
+
+                break;
+
             case 'clip':
                 try {
                     let clipsResp = await axios.get(`${internalAPI}/clip/`);
