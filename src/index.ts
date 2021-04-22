@@ -26,6 +26,9 @@ const onCooldown = new Set();
 const customOnCooldown = new Set();
 const _onCooldown = new Set();
 
+// followunke days limit
+const MAX_DAYS_TO_CALLBACK = 3;
+
 /*
 [
     "auror6s": {
@@ -261,74 +264,47 @@ async function main() {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
                     let timeToCallback = Math.abs(ms(args[1]));
                     try {
-                        let _channelID = (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id;
+                        // get the channel id
+                        let channelID = (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id;
 
-                        // initialize an empty array
-                        // this should be cleandd up
-                        let followsResponse = [];
+                        // get the time to callback for
+                        let timeToCallback = Math.abs(ms(args[1]));
 
-                        let _tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
-                        // get follows from twitch api
-                        // find only the latest 100 follows
-                        let followsResp = await axios({
-                            method: 'GET',
-                            url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100`,
-                            headers: {
-                                Authorization: `Bearer ${_tokenData.accessToken}`,
-                                'Client-Id': process.env.APP_CLIENTID,
-                            },
-                            timeout: 5000,
-                        });
-
-                        // check if user has more than 100 followrs
-                        if (followsResp.data.total > 101) {
-                            // cursor for paginating
-                            let pagCursor = followsResp.data.pagination.cursor;
-
-                            // paginate at the end of the last request
-                            let followsResp2 = await axios({
-                                method: 'GET',
-                                url: `https://api.twitch.tv/helix/users/follows?to_id=${_channelID}&first=100&after${pagCursor}`,
-                                headers: {
-                                    Authorization: `Bearer ${_tokenData.accessToken}`,
-                                    'Client-Id': process.env.APP_CLIENTID,
-                                },
-                                timeout: 5000,
-                            });
-
-                            followsResponse = followsResp.data.data.concat(followsResp2.data.data);
-                        } else {
-                            followsResponse = followsResp.data.data;
+                        // ignore the max days to callback if the user is the bot owner
+                        if (user !== clientConfig.owner) {
+                            //                   \/ 1 hr  \/ 24hrs                \/ (3) days
+                            if (timeToCallback > 3600000 * 24 * MAX_DAYS_TO_CALLBACK) return chatClient.say(channel, `I can only recall back to ${MAX_DAYS_TO_CALLBACK} days`);
                         }
 
                         let callbackTime = Date.now() - timeToCallback;
 
-                        let banArray = followsResponse.filter((follow) => {
-                            let followTime = new Date(follow.followed_at).getTime();
-                            if (callbackTime < followTime) return true;
-                        });
-                        let finalArr2 = banArray.map((user) => user.from_login);
-                        axios
-                            .post(`${process.env.HASTEBIN_SERVER}/documents`, finalArr2.map((e) => `/unban ${e}`).join('\n'))
-                            .then((data) => {
-                                chatClient.say(channel, `Unban List: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
+                        // initizlize an empty array to contain all the users to ban
+                        let users = [];
 
-                        axios
-                            .post(`${process.env.HASTEBIN_SERVER}/documents`, finalArr2.map((e) => `/ban ${e}`).join('\n'))
-                            .then((data) => {
-                                chatClient.say(channel, `Ban List: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
+                        // use twitchjs's async iteration
+                        let followsResp = apiClient.helix.users.getFollowsPaginated({ followedUser: channelID });
+                        for await (const user of followsResp) {
+                            let followTime = new Date(user.followDate).getTime();
+                            if (callbackTime > followTime) {
+                                break;
+                            } else {
+                                users.push(user.userName);
+                            }
+                        }
 
-                        chatClient.say(channel, `Follownuking ${finalArr2.length} users`);
-                        for (var i = 0; i < finalArr2.length; i++) {
-                            chatClient.say(channel, `/ban ${finalArr2[i]} Follownuke`);
+                        // hastebin server
+                        try {
+                            let unbanList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/unban ${u}`).join('\n'));
+                            let banList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/ban ${u}`).join('\n'));
+
+                            chatClient.say(channel, `Banning ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`);
+                        } catch (err) {
+                            chatClient.say(channel, `There was an error with the Hastebin server: ${err}`);
+                        }
+
+                        // finally, loop through users array and ban each user
+                        for (const user of users) {
+                            chatClient.say(channel, `/ban ${user}`);
                         }
                     } catch (err) {
                         chatClient.say(channel, `There was an error: ${err}`);
