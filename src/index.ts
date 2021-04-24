@@ -512,8 +512,7 @@ async function main() {
                         return chatClient.say(channel, 'This channel does not have the clips command enabled!');
                     }
 
-                    if (onCooldown.has(channel)) {
-                    } else {
+                    if (!_onCooldown.has(`clip${channel}`)) {
                         let channelResp = await axios({
                             method: 'GET',
                             url: `https://api.twitch.tv/helix/streams?user_login=${channel.replace('#', '')}`,
@@ -582,10 +581,12 @@ async function main() {
 
                         chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
 
-                        onCooldown.add(channel);
+                        _onCooldown.add(`clip${channel}`);
                         setTimeout(() => {
-                            onCooldown.delete(channel);
-                        }, 60000);
+                            _onCooldown.delete(`clip${channel}`);
+                        }, 30000);
+                    } else {
+                        
                     }
                 } catch (err) {
                     console.error(err);
