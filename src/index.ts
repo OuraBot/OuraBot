@@ -29,6 +29,9 @@ const _onCooldown = new Set();
 // followunke days limit
 const MAX_DAYS_TO_CALLBACK = 3;
 
+// clip wait time
+const TIME_TO_WAIT_CLIP = 5000;
+
 /*
 [
     "auror6s": {
@@ -45,7 +48,7 @@ async function main() {
     const clientId = process.env.APP_CLIENTID;
     const clientSecret = process.env.APP_SECRET;
     const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
-    const auth = new RefreshableAuthProvider(new StaticAuthProvider(clientId, tokenData.accessToken), {
+    const auth = new RefreshableAuthProvider(new StaticAuthProvider(clientId, tokenData.accessToken, ['clips:edit', 'chat:read', 'chat:edit', 'channel:moderate']), {
         clientSecret,
         refreshToken: tokenData.refreshToken,
         expiry: tokenData.expiryTimestamp === null ? null : new Date(tokenData.expiryTimestamp),
@@ -61,6 +64,7 @@ async function main() {
 
     const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
     const apiClient = new ApiClient({ authProvider });
+    const apiClient2 = new ApiClient({ authProvider: auth });
     await apiClient.helix.eventSub.deleteAllSubscriptions();
     const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
     await listener.listen();
@@ -76,6 +80,7 @@ async function main() {
     const chatClient = new ChatClient(auth, {
         channels: channelsToListenIn,
         botLevel: 'none',
+        logger: { minLevel: 'info' },
     });
 
     await chatClient.connect();
@@ -297,7 +302,10 @@ async function main() {
                             let unbanList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/unban ${u}`).join('\n'));
                             let banList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/ban ${u}`).join('\n'));
 
-                            chatClient.say(channel, `Banning ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`);
+                            chatClient.say(
+                                channel,
+                                `Banning ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`
+                            );
                         } catch (err) {
                             chatClient.say(channel, `There was an error with the Hastebin server: ${err}`);
                         }
@@ -476,7 +484,7 @@ async function main() {
                     axios
                         .get(`https://api.ivr.fi/logs/rq/${targetChannel}/${targetUser}`)
                         .then((resp) => {
-                            chatClient.say(channel, `"${(resp.data.message).replace(/(auro)/ig, 'A_uro')}", by ${resp.data.user} from ${resp.data.time}`);
+                            chatClient.say(channel, `"${resp.data.message.replace(/(auro)/gi, 'A_uro')}", by ${resp.data.user} from ${resp.data.time}`);
                         })
                         .catch((err) => {
                             chatClient.say(channel, err);
@@ -500,7 +508,6 @@ async function main() {
                     if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
 
                     let discordData;
-                    let _tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
 
                     for (var i = 0; i < clipsResp.data.length; i++) {
                         if (clipsResp.data[i].channel === channel.replace('#', '')) {
@@ -512,84 +519,45 @@ async function main() {
                         return chatClient.say(channel, 'This channel does not have the clips command enabled!');
                     }
 
-                    if (!_onCooldown.has(`clip${channel}`)) {
-                        let channelResp = await axios({
-                            method: 'GET',
-                            url: `https://api.twitch.tv/helix/streams?user_login=${channel.replace('#', '')}`,
-                            headers: {
-                                Authorization: `Bearer ${_tokenData.accessToken}`,
-                                'Client-Id': process.env.APP_CLIENTID,
-                            },
-                        });
+                    // Channel ID & If stream is online
+                    let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
 
-                        if (channelResp.data.data[0]?.type !== 'live') return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
+                    console.log(streamResp.id, streamResp.userId);
 
-                        var clippedResp = await axios({
-                            method: 'POST',
-                            url: `https://api.twitch.tv/helix/clips?broadcaster_id=${msg.channelId}`,
-                            headers: {
-                                Authorization: `Bearer ${_tokenData.accessToken}`,
-                                'Client-Id': process.env.APP_CLIENTID,
-                            },
-                        });
+                    // Check if the stream response is null, meaning it isnt live
+                    if (streamResp == null) return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
 
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, GivePLZ Creating your clip...`);
-                        // Give the twitch api 5 seconds to create a clip
-                        // Using a hard coded number is bad, but even after awaiting for the clip to be generated, the twitch api doesnt immediately create it
-                        await new Promise((r) => setTimeout(r, 5000));
-                        var clippedGetResp = await axios({
-                            method: 'GET',
-                            url: `https://api.twitch.tv/helix/clips?id=${clippedResp.data.data[0].id}`,
-                            headers: {
-                                Authorization: `Bearer ${_tokenData.accessToken}`,
-                                'Client-Id': process.env.APP_CLIENTID,
-                            },
-                        });
+                    // Create the clip
+                    chatClient.say(channel, `/me @${msg.userInfo.userName}, GivePLZ Creating your clip...`);
+                    let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
 
-                        // Check if the clip was actually created
-                        if (clippedGetResp.data.data.length == 0) {
-                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
-                            clippedResp = await axios({
-                                method: 'POST',
-                                url: `https://api.twitch.tv/helix/clips?broadcaster_id=${msg.channelId}`,
-                                headers: {
-                                    Authorization: `Bearer ${_tokenData.accessToken}`,
-                                    'Client-Id': process.env.APP_CLIENTID,
-                                },
-                            });
-                            await new Promise((r) => setTimeout(r, 10000));
-                            clippedGetResp = await axios({
-                                method: 'GET',
-                                url: `https://api.twitch.tv/helix/clips?id=${clippedResp.data.data[0].id}`,
-                                headers: {
-                                    Authorization: `Bearer ${_tokenData.accessToken}`,
-                                    'Client-Id': process.env.APP_CLIENTID,
-                                },
-                            });
-                        }
-                        if (clippedGetResp.data.data.length == 0) {
-                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
-                        }
+                    // Give the twitch api 5 seconds to create a clip
+                    await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP));
+                    let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
 
-                        // initialize the discord webhook
-                        var dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
-
-                        args.shift(); // args.join(" ").replace("@", "");
-                        var clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
-                        // prettier-ignore
-                        await dcWebhook.send(`**${channelResp.data.data[0].user_name}** playing ${channelResp.data.data[0].game_name} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${clippedGetResp.data.data[0].thumbnail_url.split('/')[3].split('-')[0]}-${clippedGetResp.data.data[0].thumbnail_url.split('/')[3].split('-')[1]}-${clippedGetResp.data.data[0].thumbnail_url.split('/')[3].split('-')[2]}.mp4`);
-
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
-
-                        _onCooldown.add(`clip${channel}`);
-                        setTimeout(() => {
-                            _onCooldown.delete(`clip${channel}`);
-                        }, 30000);
-                    } else {
-                        
+                    // Check if the clip was actually created
+                    if (getClipResp == null) {
+                        chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
+                        clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
+                        await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
+                        getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
                     }
+                    if (getClipResp == null) {
+                        chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
+                    }
+
+                    // initialize the discord webhook
+                    let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
+
+                    args.shift(); // args.join(" ").replace("@", "");
+                    let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
+                    // prettier-ignore
+                    await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
+
+                    chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
                 } catch (err) {
                     console.error(err);
+                    chatClient.say(channel, `Error: ${err}`);
                     chatClient.say('auror6s', `🚨 ERROR: ${err}`);
                 }
                 break;
