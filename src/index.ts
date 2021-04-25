@@ -503,62 +503,72 @@ async function main() {
                 break;
 
             case 'clip':
-                try {
-                    let clipsResp = await axios.get(`${internalAPI}/clip/`);
-                    if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
+                if (!_onCooldown.has(`clip${channel}`)) {
+                    try {
+                        let clipsResp = await axios.get(`${internalAPI}/clip/`);
+                        if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
 
-                    let discordData;
+                        let discordData;
 
-                    for (var i = 0; i < clipsResp.data.length; i++) {
-                        if (clipsResp.data[i].channel === channel.replace('#', '')) {
-                            discordData = clipsResp.data[i];
+                        for (var i = 0; i < clipsResp.data.length; i++) {
+                            if (clipsResp.data[i].channel === channel.replace('#', '')) {
+                                discordData = clipsResp.data[i];
+                            }
                         }
+
+                        if (!discordData) {
+                            return chatClient.say(channel, 'This channel does not have the clips command enabled!');
+                        }
+
+                        // Channel ID & If stream is online
+                        let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+
+                        console.log(streamResp.id, streamResp.userId);
+
+                        // Check if the stream response is null, meaning it isnt live
+                        if (streamResp == null) return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
+
+                        // Create the clip
+                        chatClient.say(channel, `/me @${msg.userInfo.userName}, GivePLZ Creating your clip...`);
+                        let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
+
+                        // Give the twitch api 5 seconds to create a clip
+                        await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP));
+                        let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+
+                        // Check if the clip was actually created
+                        if (getClipResp == null) {
+                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
+                            clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
+                            await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
+                            getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+                        }
+                        if (getClipResp == null) {
+                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
+                        }
+
+                        // initialize the discord webhook
+                        let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
+
+                        args.shift(); // args.join(" ").replace("@", "");
+                        let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
+                        // prettier-ignore
+                        await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
+
+                        chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
+
+                        _onCooldown.add(`clip${channel}`);
+                        console.log(_onCooldown);
+                        setTimeout(function () {
+                            _onCooldown.delete(`clip${channel}`);
+                        }, 30000);
+                    } catch (err) {
+                        console.error(err);
+                        chatClient.say(channel, `Error: ${err}`);
+                        chatClient.say('auror6s', `🚨 ERROR: ${err}`);
                     }
-
-                    if (!discordData) {
-                        return chatClient.say(channel, 'This channel does not have the clips command enabled!');
-                    }
-
-                    // Channel ID & If stream is online
-                    let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
-
-                    console.log(streamResp.id, streamResp.userId);
-
-                    // Check if the stream response is null, meaning it isnt live
-                    if (streamResp == null) return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
-
-                    // Create the clip
-                    chatClient.say(channel, `/me @${msg.userInfo.userName}, GivePLZ Creating your clip...`);
-                    let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
-
-                    // Give the twitch api 5 seconds to create a clip
-                    await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP));
-                    let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
-
-                    // Check if the clip was actually created
-                    if (getClipResp == null) {
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
-                        clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
-                        await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
-                        getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
-                    }
-                    if (getClipResp == null) {
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
-                    }
-
-                    // initialize the discord webhook
-                    let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
-
-                    args.shift(); // args.join(" ").replace("@", "");
-                    let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
-                    // prettier-ignore
-                    await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
-
-                    chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
-                } catch (err) {
-                    console.error(err);
-                    chatClient.say(channel, `Error: ${err}`);
-                    chatClient.say('auror6s', `🚨 ERROR: ${err}`);
+                } else {
+                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`)
                 }
                 break;
         }
