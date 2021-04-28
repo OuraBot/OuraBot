@@ -118,7 +118,7 @@ async function main() {
                                 }
                             })
                             .catch(function (err) {
-                                chatClient.say(foo.channel, `Error: ${err}`);
+                                chatClient.say(foo.channel, `Error while fetching "${customURL}": ${err}`);
                             });
                     } else {
                         chatClient.say(foo.channel, foo.message);
@@ -147,7 +147,7 @@ async function main() {
                             }
                         })
                         .catch(function (err) {
-                            chatClient.say(foo.channel, `Error: ${err}`);
+                            chatClient.say(foo.channel, `Error while fetching "${customURL}": ${err}`);
                         });
                 } else {
                     chatClient.say(foo.channel, foo.message);
@@ -373,7 +373,7 @@ async function main() {
 
                 exec('git pull origin main', (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
-                    if (stderr) chatClient.say(channel, `StdError: ${stderr}`);
+                    if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr}`);
 
                     chatClient.say(channel, `VisLaud 👉 ${stdout || stderr}`);
                     process.exit();
