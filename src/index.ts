@@ -26,6 +26,11 @@ const onCooldown = new Set();
 const customOnCooldown = new Set();
 const _onCooldown = new Set();
 
+moment.relativeTimeThreshold('s', 60);
+moment.relativeTimeThreshold('m', 60);
+moment.relativeTimeThreshold('h', 24);
+moment.relativeTimeThreshold('d', 31);
+
 // followunke days limit
 const MAX_DAYS_TO_CALLBACK = 3;
 
@@ -381,6 +386,88 @@ async function main() {
 
                 break;
 
+            case 'subbage':
+            case 'sa':
+                if (!_onCooldown.has(`sa${channel}`)) {
+                    let targetUser = args[1] || user;
+                    let targetChannel = args[2] || channel.replace('#', '');
+
+                    axios
+                        .get(`https://api.ivr.fi/twitch/subage/${targetUser}/${targetChannel}`)
+                        .then((resp) => {
+                            if (resp.data.subscribed) {
+                                let tier = resp.data.meta.tier;
+                                let dnr = resp.data.meta.dnr;
+                                let endsAt = resp.data.meta?.endsAt;
+                                let renewsAt = resp.data.meta?.renewsAt;
+                                let gift = resp.data.meta?.gift;
+
+                                let saReturn: string;
+
+                                let streak = resp.data.streak?.months ? ` with a streak of ${resp.data.streak.months} months` : '';
+
+                                if (resp.data.hidden) {
+                                    if (resp.data.meta.type === 'paid') {
+                                        if (dnr) {
+                                            // prettier-ignore
+                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                        } else {
+                                            // prettier-ignore
+                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier with a Tier ${tier} sub ${streak} and renews ${moment(renewsAt).fromNow()}`;
+                                        }
+                                    } else if (resp.data.meta.type === 'gift') {
+                                        // prettier-ignore
+                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a gifted subscription by ${gift.name} and ends ${moment(endsAt).fromNow()}`;
+                                    } else if (resp.data.meta.type === 'prime') {
+                                        // prettier-ignore
+                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Prime subscription and ends ${moment(endsAt).fromNow()}`;
+                                    }
+                                } else {
+                                    if (resp.data.meta.type === 'paid') {
+                                        if (dnr) {
+                                            // prettier-ignore
+                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                        } else {
+                                            // prettier-ignore
+                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews ${moment(renewsAt).fromNow()}`;
+                                        }
+                                    } else if (resp.data.meta.type === 'gift') {
+                                        // prettier-ignore
+                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                    } else if (resp.data.meta.type === 'prime') {
+                                        // prettier-ignore
+                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                    }
+                                }
+
+                                chatClient.say(channel, `@${msg.userInfo.userName}, ${saReturn}`);
+                            } else {
+                                if (resp.data.cumulative.months > 0) {
+                                    // prettier-ignore
+                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has previously been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} months, however it ended ${moment(resp.data.cumulative?.end).fromNow()}`);
+                                } else {
+                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has never been subscribed to ${resp.data.channel}`);
+                                }
+                            }
+
+                            _onCooldown.add(`sa${channel}`);
+                            console.log(_onCooldown);
+                            setTimeout(function () {
+                                _onCooldown.delete(`sa${channel}`);
+                            }, 5000);
+                        })
+                        .catch((err) => {
+                            if (err.response.status == 404) {
+                                chatClient.say(channel, `Error: ${err.response.data.error}`);
+                            } else {
+                                chatClient.say(channel, err);
+                            }
+                        });
+                } else {
+                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
+                }
+                break;
+
             case 'commit':
             case 'version':
                 exec('git rev-parse HEAD', (error, stdout, stderr) => {
@@ -568,7 +655,7 @@ async function main() {
                         chatClient.say('auror6s', `🚨 ERROR: ${err}`);
                     }
                 } else {
-                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`)
+                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
                 }
                 break;
         }
