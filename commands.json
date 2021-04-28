@@ -68,5 +68,12 @@
         "usage": "!rl <user?> <channel?>",
         "permission": "None",
         "cooldown": 5
+    },
+    {
+        "command": "subbage",
+        "description": "Checks a user's subscription to a channel",
+        "usage": "!subbage <user?> <channel?>",
+        "permission": "None",
+        "cooldown": 5000
     }
 ]
