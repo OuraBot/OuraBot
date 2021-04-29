@@ -1,0 +1,29 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: twitch-chat-client
+    versions:
+    - 4.5.2
+    - 4.5.3
+    - 4.5.5
+  - dependency-name: twitch-auth
+    versions:
+    - 4.5.2
+    - 4.5.4
+    - 4.5.5
+  - dependency-name: twitch-eventsub-ngrok
+    versions:
+    - 4.5.2
+    - 4.5.5
+  - dependency-name: twitch-eventsub
+    versions:
+    - 4.5.5
+  - dependency-name: twitch
+    versions:
+    - 4.5.2
+    - 4.5.5
