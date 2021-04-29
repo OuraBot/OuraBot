@@ -169,12 +169,21 @@ async function main() {
         if (user === process.env.CLIENT_USERNAME) return;
         var Rargs: string[] = message.split(' ');
 
-        let ccommandResp = await axios({
-            method: 'GET',
-            url: `${internalAPI}/message/command/${channel.replace('#', '')}`,
-        });
+        let channelAllData = (await axios.get(`${internalAPI}/message/all/${channel.replace('#', '')}`)).data;
 
-        let obj = ccommandResp.data;
+        let _obj = channelAllData.terms;
+        if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+            //
+        } else {
+            for (var i = 0; i < _obj.length; i++) {
+                let re = new RegExp(_obj[i].regex, 'gi');
+                if (message.match(re)) {
+                    return chatClient.say(channel, _obj[i].response.replace('${user}', user));
+                }
+            }
+        }
+
+        let obj = channelAllData.commands;
         for (var i = 0; i < obj.length; i++) {
             if (Rargs[0] === obj[i].command) {
                 if (!customOnCooldown.has(`${obj[i].command}${user}${channel}`)) {
