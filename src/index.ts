@@ -677,8 +677,6 @@ async function main() {
 
     // USING HARD CODED FOR NOW
     chatClient.onStandardPayForward((channel, user, forwardInfo, msg) => {
-        if (channel !== '#demonjoefrance') return;
-
         if (forwardInfo?.originalGifterDisplayName) {
             chatClient.say(channel, `${forwardInfo.displayName} just paid forward their gifted sub from @${forwardInfo.originalGifterDisplayName} PogChamp`);
         } else {
@@ -687,8 +685,6 @@ async function main() {
     });
 
     chatClient.onSub((channel, user, subInfo, msg) => {
-        if (channel !== '#demonjoefrance') return;
-
         if (subInfo.isPrime) {
             if (subInfo.months > 1) {
                 chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
@@ -719,8 +715,6 @@ async function main() {
     });
 
     chatClient.onResub((channel, user, subInfo, msg) => {
-        if (channel !== '#demonjoefrance') return;
-
         if (subInfo.isPrime) {
             if (subInfo.months > 1) {
                 chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
@@ -751,14 +745,10 @@ async function main() {
     });
 
     chatClient.onSubExtend((channel, user, subInfo, msg) => {
-        if (channel !== '#demonjoefrance') return;
-
         chatClient.say(channel, `${subInfo.displayName} is extending their subscription for ${subInfo.months} PogChamp`);
     });
 
     chatClient.onSubGift((channel, user, subInfo, msg) => {
-        if (channel !== '#demonjoefrance') return;
-
         if (subInfo?.gifter) {
             chatClient.say(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by @${subInfo.gifterDisplayName}! Be sure to thank your gifter! PogChamp`);
         } else {
