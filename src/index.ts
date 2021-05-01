@@ -163,7 +163,7 @@ async function main() {
 
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
-        chatClient.say(channel, `MrDestructoid Joined channel!`);
+        // chatClient.say(channel, `MrDestructoid Joined channel!`);
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
@@ -524,6 +524,7 @@ async function main() {
                     if (resp.status == 200) {
                         chatClient.join(args[1]);
                         chatClient.say(channel, `Joined ${args[1]} and added to database!`);
+                        chatClient.say(`#${args[1]}`, `MrDestructoid Joined channel!`);
                     } else {
                         chatClient.say(channel, `Failed with status code ${resp.status}`);
                     }
