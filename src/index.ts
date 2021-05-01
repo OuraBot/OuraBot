@@ -178,7 +178,11 @@ async function main() {
             for (var i = 0; i < _obj.length; i++) {
                 let re = new RegExp(_obj[i].regex, 'gi');
                 if (message.match(re)) {
-                    return chatClient.say(channel, _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`));
+                    let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
+                    let splitStr = finalStr.split('$(newline)');
+                    for (var i = 0; i < splitStr.length; i++) {
+                        chatClient.say(channel, splitStr[i].replace('${user}', user));
+                    }
                 }
             }
         }
