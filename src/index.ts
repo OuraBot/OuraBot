@@ -177,12 +177,27 @@ async function main() {
             //
         } else {
             for (var i = 0; i < _obj.length; i++) {
-                let re = new RegExp(_obj[i].regex, 'gi');
-                if (message.match(re)) {
-                    let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
-                    let splitStr = finalStr.split('$(newline)');
-                    for (var i = 0; i < splitStr.length; i++) {
-                        chatClient.say(channel, splitStr[i].replace('${user}', user));
+                if (_obj[i].sub == true) {
+                    if (msg.userInfo.isSubscriber) {
+                        //
+                    } else {
+                        let re = new RegExp(_obj[i].regex, 'gi');
+                        if (message.match(re)) {
+                            let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
+                            let splitStr = finalStr.split('$(newline)');
+                            for (var i = 0; i < splitStr.length; i++) {
+                                chatClient.say(channel, splitStr[i].replace('${user}', user));
+                            }
+                        }
+                    }
+                } else {
+                    let re = new RegExp(_obj[i].regex, 'gi');
+                    if (message.match(re)) {
+                        let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
+                        let splitStr = finalStr.split('$(newline)');
+                        for (var i = 0; i < splitStr.length; i++) {
+                            chatClient.say(channel, splitStr[i].replace('${user}', user));
+                        }
                     }
                 }
             }
