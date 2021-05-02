@@ -2,10 +2,6 @@
 
 ## Terms:
 
-`${user}` -> user who fired the event
-`${ag}` -> term title
-`$(newline)` -> new message
-
 | replacement | description           |
 |-------------|-----------------------|
 | ${user}     | sender of the command |
