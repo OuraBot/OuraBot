@@ -760,6 +760,94 @@ async function main() {
         }
     });
 
+    // MAKE EVENTS FOR:
+    //          chatCLient.onGiftPaidUpgrade;
+    //          chatClient.onPrimePaidUpgrade
+
+    // HOW THE SUB JSON SHOULD BE:
+    /*
+        giftPaidUpgrade: {
+            displayName: "auror6s",
+            gifterDisplayName: "sharkpog3145",
+            plan: "Tier 3"
+        },
+        onPrimePaidUpgrade: {
+            displayName: "auror6s",
+            plan: "Tier 2"
+        },
+        onResub: {
+            displayName: "auror6s",
+            isPrime: true,
+            months: 12,
+            plan: "Prime",
+            planName: "Prime",
+            streak?: 4
+        },
+        onStandardPayForward: {
+            displayName: "auror6s",
+            originalGifterDisplayName?: "sharkpog3145",
+            
+        },
+        onSub: {
+            displayName: "auror6s",
+            isPrime: true,
+            months: 12,
+            plan: "Prime",
+            planName: "Prime",
+            streak?: 4
+        },
+        onSubExtend: {
+            displayName: "auror6s",
+            months: 3,
+            plan: "2000"
+        },
+        onSubGift: {
+            displayName: "auror6s",
+            giftDuration: 1,
+            gifterDisplayName?: "sharkpog3145",
+            gifterGiftCount?: 2,
+            months: 4,
+            plan: "1000",
+            planName: "Tier 1",
+            streak?: 2
+        }
+
+        -
+
+        giftPaidUpgrade: {
+            gifted: "",
+            anon: ""
+        },
+        onPrimePaidUpgrade: "",
+        onSubExtend: "",
+        onSubGift: {
+            gifted: "",
+            anon: ""
+        },
+        onStandardPayForward: {
+            gifted: "${displayName} just paid forward their gifted sub from ${originalGifterDisplay}",
+            anon: "${displayName} just paid forward their gifted sub"
+        },
+        onResub: {
+            prime: "",
+            primeStreak: "",
+            one: "",
+            oneStreak: "",
+            two: "",
+            twoStreak: "",
+            three: "",
+            threeStreak: ""
+        },
+        onSub: {
+            primeNew: "",$tuc
+            tierOneNew: "",
+            tierTwoNew: "",
+            tierThreeNew: ""
+        },
+
+
+    */
+
     chatClient.onSubExtend((channel, user, subInfo, msg) => {
         chatClient.say(channel, `${subInfo.displayName} is extending their subscription for ${subInfo.months} PogChamp`);
     });
