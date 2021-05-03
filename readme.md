@@ -49,3 +49,39 @@
 | replacement    | description       |
 |----------------|-------------------|
 | ${displayName} | gifted user       |
+
+### onSub
+
+#### onSub_primeNew
+
+| replacement    | description  |
+|----------------|--------------|
+| ${displayName} | gifted user  |
+| ${planName}    | type of plan |
+
+#### onSub_tierOneNew
+
+| replacement    | description  |
+|----------------|--------------|
+| ${displayName} | gifted user  |
+| ${planName}    | type of plan |
+
+#### onSub_tierTwoNew
+
+| replacement    | description  |
+|----------------|--------------|
+| ${displayName} | gifted user  |
+| ${planName}    | type of plan |
+
+
+#### onSub_tierThreeNew
+
+| replacement    | description  |
+|----------------|--------------|
+| ${displayName} | gifted user  |
+| ${planName}    | type of plan |
+
+
+
+
+
