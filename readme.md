@@ -192,4 +192,19 @@
 | ${planName}    | plan name   |
 | ${months}      | months      |
 
+### onGiftPaidUpgrade
 
+[Information about a subscription that was upgraded from a gift.](https://d-fischer.github.io/versions/4.5/twitch-chat-client/reference/interfaces/ChatSubGiftUpgradeInfo.html)
+
+#### onGiftPaidUpgrade_gifted
+
+| replacement    | description |
+|----------------|-------------|
+| ${displayName} | gifted user |
+| ${gifterName}  | gifter name |
+
+#### onGiftPaidUpgrade_anon
+
+| replacement    | description |
+|----------------|-------------|
+| ${displayName} | gifted user |
