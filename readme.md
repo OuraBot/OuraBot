@@ -170,3 +170,26 @@
 |----------------|---------------|
 | ${displayName} | gifted user   |
 | ${months}      | months subbed |
+
+### onSubGift
+
+[Information about a subscription that was gifted.](https://d-fischer.github.io/versions/4.5/twitch-chat-client/reference/interfaces/ChatSubGiftInfo.html)
+
+#### onSubGift_gifted
+
+| replacement    | description |
+|----------------|-------------|
+| ${displayName} | gifted user |
+| ${planName}    | plan name   |
+| ${gifterName}  | gifter name |
+| ${months}      | months      |
+
+#### onSubGift_gifted
+
+| replacement    | description |
+|----------------|-------------|
+| ${displayName} | gifted user |
+| ${planName}    | plan name   |
+| ${months}      | months      |
+
+
