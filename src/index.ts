@@ -1,3 +1,12 @@
+/*
+    TODO BEFORE MERGE:
+
+    [ ] Remove hostname value from chatClient Options
+    [ ] Remove testing interval
+    [ ] Remove "demonjoefrance" from debug listens list
+
+*/
+
 import { RefreshableAuthProvider, StaticAuthProvider, ClientCredentialsAuthProvider } from 'twitch-auth';
 import { ChatClient, ChatUser, ClearChat } from 'twitch-chat-client';
 import { promises as fs } from 'fs';
@@ -10,7 +19,7 @@ import { exec } from 'child_process';
 import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
-import Discord, { BaseManager } from 'discord.js';
+import Discord from 'discord.js';
 
 import clientCommands from '../commands.json';
 import clientConfig from '../config.json';
@@ -77,15 +86,16 @@ async function main() {
     const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
     if (process.env.DEBUG === 'TRUE') {
-        channelsToListenIn = [clientConfig.owner];
+        channelsToListenIn = [clientConfig.owner, 'demonjoefrance'];
         console.log(`STARTING IN DEBUG MODE`);
     }
     console.log(channelsToListenIn);
 
-    const chatClient = new ChatClient(auth, {
-        channels: channelsToListenIn,
-        botLevel: 'none',
+    const chatClient = ChatClient.anonymous({
+        hostName: 'irc.fdgt.dev',
+        webSocket: false,
         logger: { minLevel: 'info' },
+        ssl: false,
     });
 
     await chatClient.connect();
@@ -95,6 +105,12 @@ async function main() {
     for (var i = 0; i < autoMsgResp.data.length; i++) {
         sendAutomatedMessage(autoMsgResp.data[i]);
     }
+
+    setInterval(function () {}, 5000);
+
+    chatClient.onSub((channel, user, subInfo, msg) => {
+        console.log(subInfo.displayName);
+    });
 
     async function sendAutomatedMessage(foo) {
         setInterval(async function () {
@@ -691,172 +707,130 @@ async function main() {
         }
     });
 
-    // USING HARD CODED FOR NOW
+    // ✅
     chatClient.onStandardPayForward((channel, user, forwardInfo, msg) => {
         if (forwardInfo?.originalGifterDisplayName) {
-            chatClient.say(channel, `${forwardInfo.displayName} just paid forward their gifted sub from @${forwardInfo.originalGifterDisplayName} PogChamp`);
+            console.log(channel, `${forwardInfo.displayName} just paid forward their gifted sub from @${forwardInfo.originalGifterDisplayName} PogChamp`);
         } else {
-            chatClient.say(channel, `${forwardInfo.displayName} just paid forward their anonymous gifted sub! PogChamp`);
+            console.log(channel, `${forwardInfo.displayName} just paid forward their anonymous gifted sub! PogChamp`);
         }
     });
 
+    // ✅
     chatClient.onSub((channel, user, subInfo, msg) => {
+        console.log(channel);
         if (subInfo.isPrime) {
-            if (subInfo.months > 1) {
-                chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
-            } else {
-                chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade! PogChamp`);
-            }
+            console.log(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a ${subInfo.planName} subscription! PogChamp`);
         } else {
             if (subInfo.plan === '1000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
-                } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade! PogChamp`);
-                }
+                console.log(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a ${subInfo.planName} subscription! PogChamp`);
             } else if (subInfo.plan === '2000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now with a Tier 2 subscription! PogChamp`);
-                } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a Tier 2 subscription! PogChamp`);
-                }
+                console.log(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a ${subInfo.planName} subscription! PogChamp`);
             } else if (subInfo.plan === '3000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now with a Tier 3 subscription! PogChamp`);
-                } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a Tier 3 subscription! PogChamp`);
-                }
+                console.log(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a ${subInfo.planName} subscription! PogChamp`);
             }
         }
     });
-
+    // ✅
     chatClient.onResub((channel, user, subInfo, msg) => {
         if (subInfo.isPrime) {
-            if (subInfo.months > 1) {
-                chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
+            if (subInfo?.streak) {
+                // prettier-ignore
+                console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`);
             } else {
-                chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade! PogChamp`);
+                console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months! PogChamp`);
             }
         } else {
             if (subInfo.plan === '1000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now! PogChamp`);
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`);
                 } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade! PogChamp`);
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months! PogChamp`);
                 }
             } else if (subInfo.plan === '2000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now with a Tier 2 subscription! PogChamp`);
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`);
                 } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a Tier 2 subscription! PogChamp`);
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months! PogChamp`);
                 }
             } else if (subInfo.plan === '3000') {
-                if (subInfo.months > 1) {
-                    chatClient.say(channel, `${subInfo.displayName} has stayed in the Boyo Brigade for ${subInfo.months} months now with a Tier 3 subscription! PogChamp`);
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`);
                 } else {
-                    chatClient.say(channel, `${subInfo.displayName} has joined the Boyo Bridgade with a Tier 3 subscription! PogChamp`);
+                    console.log(channel, `${subInfo.displayName} is staying in the Boyo Brigade with a ${subInfo.planName} subscription for ${subInfo.months} months! PogChamp`);
                 }
             }
         }
     });
 
-    // MAKE EVENTS FOR:
-    //          chatCLient.onGiftPaidUpgrade;
-    //          chatClient.onPrimePaidUpgrade
-
-    // HOW THE SUB JSON SHOULD BE:
-    /*
-        giftPaidUpgrade: {
-            displayName: "auror6s",
-            gifterDisplayName: "sharkpog3145",
-            plan: "Tier 3"
-        },
-        onPrimePaidUpgrade: {
-            displayName: "auror6s",
-            plan: "Tier 2"
-        },
-        onResub: {
-            displayName: "auror6s",
-            isPrime: true,
-            months: 12,
-            plan: "Prime",
-            planName: "Prime",
-            streak?: 4
-        },
-        onStandardPayForward: {
-            displayName: "auror6s",
-            originalGifterDisplayName?: "sharkpog3145",
-            
-        },
-        onSub: {
-            displayName: "auror6s",
-            isPrime: true,
-            months: 12,
-            plan: "Prime",
-            planName: "Prime",
-            streak?: 4
-        },
-        onSubExtend: {
-            displayName: "auror6s",
-            months: 3,
-            plan: "2000"
-        },
-        onSubGift: {
-            displayName: "auror6s",
-            giftDuration: 1,
-            gifterDisplayName?: "sharkpog3145",
-            gifterGiftCount?: 2,
-            months: 4,
-            plan: "1000",
-            planName: "Tier 1",
-            streak?: 2
-        }
-
-        -
-
-        giftPaidUpgrade: {
-            gifted: "",
-            anon: ""
-        },
-        onPrimePaidUpgrade: "",
-        onSubExtend: "",
-        onSubGift: {
-            gifted: "",
-            anon: ""
-        },
-        onStandardPayForward: {
-            gifted: "${displayName} just paid forward their gifted sub from ${originalGifterDisplay}",
-            anon: "${displayName} just paid forward their gifted sub"
-        },
-        onResub: {
-            prime: "",
-            primeStreak: "",
-            one: "",
-            oneStreak: "",
-            two: "",
-            twoStreak: "",
-            three: "",
-            threeStreak: ""
-        },
-        onSub: {
-            primeNew: "",$tuc
-            tierOneNew: "",
-            tierTwoNew: "",
-            tierThreeNew: ""
-        },
-
-
-    */
-
+    // ✅
     chatClient.onSubExtend((channel, user, subInfo, msg) => {
-        chatClient.say(channel, `${subInfo.displayName} is extending their subscription for ${subInfo.months} PogChamp`);
+        if (subInfo.plan === '1000') {
+            console.log(channel, `${subInfo.displayName} is extending their Tier 1 subscription for ${subInfo.months} PogChamp`);
+        } else if (subInfo.plan === '2000') {
+            console.log(channel, `${subInfo.displayName} is extending their Tier 2 subscription for ${subInfo.months} PogChamp`);
+        } else if (subInfo.plan === '3000') {
+            console.log(channel, `${subInfo.displayName} is extending their Tier 3 subscription for ${subInfo.months} PogChamp`);
+        }
     });
 
+    // ✅
     chatClient.onSubGift((channel, user, subInfo, msg) => {
-        if (subInfo?.gifter) {
-            chatClient.say(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by @${subInfo.gifterDisplayName}! Be sure to thank your gifter! PogChamp`);
+        if (subInfo?.gifterDisplayName) {
+            if (subInfo.plan === '1000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months with a ${subInfo.streak} month streak! Be sure to thank your gifter! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months! Be sure to thank your gifter! PogChamp`)
+                }
+            } else if (subInfo.plan === '2000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months with a ${subInfo.streak} month streak! Be sure to thank your gifter! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months! Be sure to thank your gifter! PogChamp`)
+                }
+            } else if (subInfo.plan === '3000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months with a ${subInfo.streak} month streak! Be sure to thank your gifter! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by ${subInfo.gifterDisplayName} for ${subInfo.months} months! Be sure to thank your gifter! PogChamp`)
+                }
+            }
         } else {
-            chatClient.say(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous gifter! PogChamp`);
+            if (subInfo.plan === '1000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months! PogChamp`)
+                }
+            } else if (subInfo.plan === '2000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months! PogChamp`)
+                }
+            } else if (subInfo.plan === '3000') {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months with a ${subInfo.streak} month streak! PogChamp`)
+                } else {
+                    // prettier-ignore
+                    console.log(channel, `${subInfo.displayName} has just been gifted a ${subInfo.planName} subscription by an anonymous user for ${subInfo.months} months! PogChamp`)
+                }
+            }
         }
     });
 
