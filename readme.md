@@ -30,3 +30,22 @@
 | replacement | description |
 |---------|-----------------|
 | %user% | fetches url      |
+
+## Subscription:
+
+### onStandardPayForward
+
+[Information about a "forward payment" to a specific user.](https://d-fischer.github.io/twitch-chat-client/reference/interfaces/ChatStandardPayForwardInfo.html)
+
+#### onStandardPayForward_gifted
+
+| replacement    | description       |
+|----------------|-------------------|
+| ${displayName} | gifted user       |
+| ${gifterName}  | person who gifted |
+
+#### onStandardPayForward_anon
+
+| replacement    | description       |
+|----------------|-------------------|
+| ${displayName} | gifted user       |
