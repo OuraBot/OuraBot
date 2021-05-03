@@ -160,3 +160,13 @@
 | ${streak}      | current streak |
 
 
+### onSubExtend
+
+[Information about a subsription extension.](https://d-fischer.github.io/versions/4.5/twitch-chat-client/reference/interfaces/ChatSubExtendInfo.html)
+
+#### onSubExtend
+
+| replacement    | description   |
+|----------------|---------------|
+| ${displayName} | gifted user   |
+| ${months}      | months subbed |
