@@ -208,3 +208,13 @@
 | replacement    | description |
 |----------------|-------------|
 | ${displayName} | gifted user |
+
+### onPrimePaidUpgrade
+
+[Information about a subscription that was upgraded from a Prime subscription.](https://d-fischer.github.io/versions/4.5/twitch-chat-client/reference/interfaces/ChatSubUpgradeInfo.html)
+
+#### onPrimePaidUpgrade
+
+| replacement    | description |
+|----------------|-------------|
+| ${displayName} | gifted user |
