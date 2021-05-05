@@ -174,6 +174,8 @@
 ### onSubGift
 
 [Information about a subscription that was gifted.](https://d-fischer.github.io/versions/4.5/twitch-chat-client/reference/interfaces/ChatSubGiftInfo.html)
+**__`${displayName}` and `${gifterName}` values are incorrect, swap them for the correct usage__:**
+  - gifterName returns the username for who was gifted
 
 #### onSubGift_gifted
 
