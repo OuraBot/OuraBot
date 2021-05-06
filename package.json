@@ -14,7 +14,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "discord.js": "^12.5.3",
-    "dotenv": "^8.2.0",
+    "dotenv": "^9.0.0",
     "form-data": "^4.0.0",
     "moment": "^2.29.1",
     "ms": "^2.1.3",
