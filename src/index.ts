@@ -11,6 +11,7 @@ import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
 import Discord from 'discord.js';
+import * as auroMs from 'auro-ms-conversion';
 
 import clientCommands from '../commands.json';
 import clientConfig from '../config.json';
@@ -25,11 +26,6 @@ let commandCacheTimer = 0;
 const onCooldown = new Set();
 const customOnCooldown = new Set();
 const _onCooldown = new Set();
-
-moment.relativeTimeThreshold('s', 60);
-moment.relativeTimeThreshold('m', 120);
-moment.relativeTimeThreshold('h', 36);
-moment.relativeTimeThreshold('d', 31);
 
 // followunke days limit
 const MAX_DAYS_TO_CALLBACK = 3;
@@ -262,6 +258,7 @@ async function main() {
         switch (args[0]) {
             case 'ping':
                 chatClient.say(channel, 'Pong!');
+                console.log();
                 break;
 
             case 'commands':
@@ -427,8 +424,8 @@ async function main() {
                             if (resp.data.subscribed) {
                                 let tier = resp.data.meta.tier;
                                 let dnr = resp.data.meta.dnr;
-                                let endsAt = resp.data.meta?.endsAt;
-                                let renewsAt = resp.data.meta?.renewsAt;
+                                let endsAt = auroMs.relativeTime(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now());
+                                let renewsAt = auroMs.relativeTime(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now());
                                 let gift = resp.data.meta?.gift;
 
                                 let saReturn: string;
@@ -439,41 +436,43 @@ async function main() {
                                     if (resp.data.meta.type === 'paid') {
                                         if (dnr) {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                         } else {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier with a Tier ${tier} sub ${streak} and renews ${moment(renewsAt).fromNow()}`;
+                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                                         }
                                     } else if (resp.data.meta.type === 'gift') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a gifted subscription by ${gift.name} and ends ${moment(endsAt).fromNow()}`;
+                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
                                     } else if (resp.data.meta.type === 'prime') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Prime subscription and ends ${moment(endsAt).fromNow()}`;
+                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Prime subscription and ends in ${endsAt}`;
                                     }
                                 } else {
                                     if (resp.data.meta.type === 'paid') {
                                         if (dnr) {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                         } else {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews ${moment(renewsAt).fromNow()}`;
+                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                                         }
                                     } else if (resp.data.meta.type === 'gift') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                     } else if (resp.data.meta.type === 'prime') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends ${moment(endsAt).fromNow()}`;
+                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
                                     }
                                 }
 
                                 chatClient.say(channel, `@${msg.userInfo.userName}, ${saReturn}`);
                             } else {
+                                let endedAt = auroMs.relativeTime(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000);
+
                                 if (resp.data.cumulative.months > 0) {
                                     // prettier-ignore
-                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has previously been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} months, however it ended ${moment(resp.data.cumulative?.end).fromNow()}`);
+                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has previously been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} months, however it ended ${endedAt} ago`);
                                 } else {
                                     chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has never been subscribed to ${resp.data.channel}`);
                                 }
@@ -486,7 +485,7 @@ async function main() {
                             }, 5000);
                         })
                         .catch((err) => {
-                            if (err.response.status == 404) {
+                            if (err.response?.status == 404) {
                                 chatClient.say(channel, `Error: ${err.response.data.error}`);
                             } else {
                                 chatClient.say(channel, err);
