@@ -27,8 +27,8 @@ const customOnCooldown = new Set();
 const _onCooldown = new Set();
 
 moment.relativeTimeThreshold('s', 60);
-moment.relativeTimeThreshold('m', 60);
-moment.relativeTimeThreshold('h', 24);
+moment.relativeTimeThreshold('m', 120);
+moment.relativeTimeThreshold('h', 36);
 moment.relativeTimeThreshold('d', 31);
 
 // followunke days limit
