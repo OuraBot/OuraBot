@@ -637,6 +637,12 @@ async function main() {
                             return chatClient.say(channel, 'This channel does not have the clips command enabled!');
                         }
 
+                        _onCooldown.add(`clip${channel}`);
+                        console.log(_onCooldown);
+                        setTimeout(function () {
+                            _onCooldown.delete(`clip${channel}`);
+                        }, 30000);
+
                         // Channel ID & If stream is online
                         let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
 
@@ -662,6 +668,7 @@ async function main() {
                         }
                         if (getClipResp == null) {
                             chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
+                            _onCooldown.delete(`clips${channel}`);
                         }
 
                         // initialize the discord webhook
@@ -673,12 +680,6 @@ async function main() {
                         await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
 
                         chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
-
-                        _onCooldown.add(`clip${channel}`);
-                        console.log(_onCooldown);
-                        setTimeout(function () {
-                            _onCooldown.delete(`clip${channel}`);
-                        }, 30000);
                     } catch (err) {
                         console.error(err);
                         chatClient.say(channel, `Error: ${err}`);
