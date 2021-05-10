@@ -679,9 +679,27 @@ async function main() {
 
                         chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
                     } catch (err) {
-                        console.error(err);
                         chatClient.say(channel, `Error: ${err}`);
-                        chatClient.say('auror6s', `🚨 ERROR: ${err}`);
+                        chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
+
+                        let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
+                        finalStr = `
+                        Clip Error Info | ${finalStr}
+                        
+                        Error Stack Trace:
+                        ${err.stack}
+                    
+                        Bot by AuroR6S | ${moment().format(`ZZ | x`)}
+                        `;
+
+                        let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
+
+                        console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+                        let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+                        await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+                        // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
                     }
                 } else {
                     chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
