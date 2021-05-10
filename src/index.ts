@@ -644,8 +644,6 @@ async function main() {
                         // Channel ID & If stream is online
                         let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
 
-                        console.log(streamResp.id, streamResp.userId);
-
                         // Check if the stream response is null, meaning it isnt live
                         if (streamResp == null) return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
 
