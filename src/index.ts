@@ -253,7 +253,6 @@ async function main() {
 
         if (!message.startsWith(process.env.PREFIX)) return;
         var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
-        console.table(args);
 
         switch (args[0]) {
             case 'ping':
@@ -283,7 +282,7 @@ async function main() {
                         axios
                             .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
                             .then((data) => {
-                                chatClient.say(channel, `${process.env.HASTEBIN_SERVER}/${data.data.key}`);
+                                chatClient.say(channel, `/me You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
                             })
                             .catch((err) => {
                                 console.log(err);
@@ -900,3 +899,35 @@ async function main() {
 }
 
 main();
+
+process.on('unhandledRejection', async (reason: Error, promise) => {
+    let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
+    console.log(finalStr);
+
+    finalStr = `
+    Error Info | ${finalStr}
+    
+    Message:
+    ${reason.message}
+
+    Name:
+    ${reason.name}
+
+    Stack Trace:
+    ${reason?.stack}
+
+    toString:
+    ${reason.toString()}
+
+    Bot by AuroR6S | ${moment().format(`ZZ | x`)}
+    `;
+
+    let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
+
+    console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+    await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+    // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
+});
