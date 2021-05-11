@@ -856,62 +856,6 @@ async function main() {
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
-
-    /*
-
-    chatClient.onSub((channel, user) => {
-        chatClient.say(channel, `Thanks to @${user} for subscribing to the channel!`);
-    });
-    chatClient.onResub((channel, user, subInfo) => {
-        chatClient.say(channel, `Thanks to @${user} for subscribing to the channel for a total of ${subInfo.months} months!`);
-    });
-    chatClient.onSubGift((channel, user, subInfo) => {
-        chatClient.say(channel, `Thanks to ${subInfo.gifter} for gifting a subscription to ${user}!`);
-    });
-
-    */
-
-    // EVENT SUB
-    /*
-    const userId = '94568374';
-    const followSubscription = await listener.subscribeToChannelFollowEvents(userId, (e) => {
-        chatClient.say(e.broadcasterName, `${e.userDisplayName}, thank you for following! KomodoHype`);
-    });
-    */
-
-    /*
-    axios
-        .get(`${internalAPI}/eventsub/follow/`)
-        .then(async (response) => {
-            if (response.data.length > 0) {
-                for (var i = 0; i < response.data.length; i++) {
-                    const channelData = response.data[i];
-                    const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
-                        chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                    });
-                }
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-
-    axios
-        .get(`${internalAPI}/eventsub/subscribe/`)
-        .then(async (response) => {
-            if (response.data.length > 0) {
-                for (var i = 0; i < response.data.length; i++) {
-                    const channelData = response.data[i];
-                    const subscriptionEvent = await listener.subscribeToChannelSubscriptionEvents(channelData.channelID, (e) => {
-                        chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
-                    });
-                }
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-        */
 }
 
 main();
