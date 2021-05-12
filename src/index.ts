@@ -682,7 +682,7 @@ async function main() {
 
                         let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
                         finalStr = `
-                        Clip Error Info | ${finalStr}
+                        Clip Error Info | ${channel} | ${finalStr}
                         
                         Error Stack Trace:
                         ${err.stack}
@@ -696,6 +696,22 @@ async function main() {
 
                         let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
                         await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+                        axios
+                            .post(`https://supinic.com/api/bot/reminder/`, null, {
+                                params: {
+                                    username: 'auror6s',
+                                    text: `OuraBot Clips Error Info: ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`,
+                                    private: true,
+                                },
+                                headers: {
+                                    // prettier-ignore
+                                    'Authorization': `Basic ${process.env.SUPIAUTH}`,
+                                },
+                            })
+                            .catch((data) => {
+                                console.log(data);
+                            });
 
                         // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
                     }
@@ -886,8 +902,21 @@ process.on('unhandledRejection', async (reason: Error, promise) => {
 
     console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
 
-    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-    await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+    axios
+        .post(`https://supinic.com/api/bot/reminder/`, null, {
+            params: {
+                username: 'auror6s',
+                text: `OuraBot Uncaught Rejection Info: ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`,
+                private: true,
+            },
+            headers: {
+                // prettier-ignore
+                'Authorization': `Basic ${process.env.SUPIAUTH}`,
+            },
+        })
+        .catch((data) => {
+            console.log(data);
+        });
 
     // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
 });
