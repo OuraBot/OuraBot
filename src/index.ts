@@ -106,7 +106,7 @@ async function main() {
                         var text_to_get = updatedResponse.substring(start_pos, end_pos);
                         let customURL = text_to_get;
                         let customResp = await axios
-                            .get(customURL, { timeout: 5000 })
+                            .get(customURL, { timeout: 10000 })
                             .then(function (response) {
                                 let re = /(\).).+?(?=\s|$)/;
                                 if (finalStr.match(re)) {
@@ -135,7 +135,7 @@ async function main() {
                     var text_to_get = updatedResponse.substring(start_pos, end_pos);
                     let customURL = text_to_get;
                     let customResp = await axios
-                        .get(customURL, { timeout: 5000 })
+                        .get(customURL, { timeout: 10000 })
                         .then(function (response) {
                             let re = /(\).).+?(?=\s|$)/;
                             if (finalStr.match(re)) {
@@ -219,7 +219,7 @@ async function main() {
                         var text_to_get = updatedResponse.substring(start_pos, end_pos);
                         let customURL = text_to_get;
                         let customResp = await axios
-                            .get(customURL, { timeout: 5000 })
+                            .get(customURL, { timeout: 10000 })
                             .then(function (response) {
                                 let re = /(\).).+?(?=\s|$)/;
                                 if (finalStr.match(re)) {
