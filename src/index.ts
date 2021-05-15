@@ -724,7 +724,7 @@ async function main() {
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         if (forwardInfo?.originalGifterDisplayName) {
             chatClient.say(channel, subResp['onStandardPayForward_gifted'].replace('${displayName}', forwardInfo.displayName).replace('${gifterName}', forwardInfo.originalGifterDisplayName));
@@ -735,7 +735,7 @@ async function main() {
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
         // chatClient.say(subResp);
 
         if (subInfo.isPrime) {
@@ -753,7 +753,7 @@ async function main() {
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         if (subInfo.isPrime) {
             if (subInfo?.streak) {
@@ -794,14 +794,14 @@ async function main() {
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months));
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         if (subInfo?.gifterDisplayName) {
             if (subInfo?.streak) {
@@ -848,7 +848,7 @@ async function main() {
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         if (subInfo?.gifterDisplayName) {
             // prettier-ignore
@@ -868,7 +868,7 @@ async function main() {
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
         let subResp = (await axios.get(`${internalAPI}/eventsub/subscribe/${channel.replace('#', '')}`)).data[0];
-        if (subResp.length == 0) return;
+        if (subResp?.length == 0) return;
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
