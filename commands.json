@@ -16,7 +16,7 @@
     {
         "command": "follownuke",
         "description": "Bans the last X members",
-        "usage": "!folownuke <time, 5m, 10m>",
+        "usage": "!folownuke <time, 5m, 10m> <--dont-ban?>",
         "permission": "Mod",
         "cooldown": 0
     },

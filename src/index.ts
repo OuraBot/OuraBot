@@ -296,6 +296,8 @@ async function main() {
             case 'follownuke':
                 if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
+                    let dontBan = false;
+                    if (args[2] === '--dont-ban') dontBan = true;
                     let timeToCallback = Math.abs(ms(args[1]));
                     try {
                         // get the channel id
@@ -331,15 +333,14 @@ async function main() {
                             let unbanList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/unban ${u}`).join('\n'));
                             let banList = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, users.map((u) => `/ban ${u}`).join('\n'));
 
-                            chatClient.say(
-                                channel,
-                                `Banning ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`
-                            );
+                            // prettier-ignore
+                            chatClient.say(channel, `${dontBan ? "Not banning" : "Banning"} ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`);
                         } catch (err) {
                             chatClient.say(channel, `There was an error with the Hastebin server: ${err}`);
                         }
 
                         // finally, loop through users array and ban each user
+                        if (dontBan) return;
                         for (const user of users) {
                             chatClient.say(channel, `/ban ${user}`);
                         }
