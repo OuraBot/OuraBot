@@ -85,6 +85,7 @@ async function main() {
     });
 
     await chatClient.connect();
+    chatClient.say('auror6s', 'PagMan ONLINE');
 
     const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
 
@@ -405,7 +406,8 @@ async function main() {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
                     if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr}`);
 
-                    chatClient.say(channel, `VisLaud 👉 ${stdout || stderr}`);
+                    chatClient.say(channel, `VisLaud 👉 ${stdout.replace('https://github.com/OuraBot/Twitch-Bot', '') || stderr.replace('https://github.com/OuraBot/Twitch-Bot', '')}`);
+                    chatClient.say(channel, `Okayge 👋 process.exit();`);
                     process.exit();
                 });
 
