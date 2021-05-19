@@ -21,6 +21,13 @@
         "cooldown": 0
     },
     {
+        "command": "getclip",
+        "description": "Gets the download link for a clip. Gets highest quality if not provided",
+        "usage": "!getclip <Clip Link or Slug> <quality?>",
+        "permission": "None",
+        "cooldown": 5
+    },
+    {
         "command": "filesayfast",
         "description": "Reads off a file",
         "usage": "!filesayfast <pastebin raw url>",

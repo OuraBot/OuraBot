@@ -10,8 +10,9 @@ import { exec } from 'child_process';
 import moment from 'moment';
 import ms from 'ms';
 import axios from 'axios';
-import Discord from 'discord.js';
+import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
+import sourceURL from './Util/leppunen.js';
 
 import clientCommands from '../commands.json';
 import clientConfig from '../config.json';
@@ -21,6 +22,7 @@ dotenv.config();
 
 const internalAPI = process.env.INTERNALAPI || 'http://10.0.0.97:5000';
 
+let highestQualityClip;
 let commandCacheData = [];
 let commandCacheTimer = 0;
 const onCooldown = new Set();
@@ -85,7 +87,6 @@ async function main() {
     });
 
     await chatClient.connect();
-    chatClient.say('auror6s', 'PagMan ONLINE');
 
     const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
 
@@ -162,6 +163,8 @@ async function main() {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
     });
+
+    chatClient.say('auror6s', 'PagMan ONLINE');
 
     chatClient.onMessage(async (channel, user, message, msg) => {
         if (user === process.env.CLIENT_USERNAME) return;
@@ -266,38 +269,77 @@ async function main() {
                 );
                 break;
 
+            case 'downloadclip':
+            case 'getclip':
+                if (!_onCooldown.has(`getclip${user}`)) {
+                    if (!args[1]) return chatClient.say(channel, 'Please provide a clip link or slug');
+
+                    let clipRes = await sourceURL(args[1]);
+
+                    if (user.replace('#', '') === clientConfig.owner) {
+                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
+                    } else {
+                        _onCooldown.add(`getclip${user}`);
+                        setTimeout(function () {
+                            _onCooldown.delete(`getclip${user}$`);
+                        }, 5 * 1000);
+                    }
+
+                    if (args[2]) {
+                        let bestClip = clipRes.qualities.filter((quality) => quality.quality === args[2].replace('p', ''))?.[0];
+
+                        let allQualities = clipRes.qualities.map((quality) => `${quality.quality}p`);
+                        allQualities.pop();
+                        if (!bestClip)
+                            // prettier-ignore
+                            return chatClient.say(channel, `Resolution not found. Available resolutions: ${[allQualities.slice(0, -1).join(', '), allQualities.slice(-1)[0]].join(allQualities.length < 2 ? '' : ', and ')}`
+                        );
+                        chatClient.say(channel, `${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}`);
+                    } else {
+                        let bestClip = clipRes.qualities[clipRes.qualities.length - 1];
+                        chatClient.say(channel, `Highest Resolution: ${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}`);
+                    }
+                }
+                break;
+
             case 'commands':
-                axios
-                    .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
-                    .then((data) => {
-                        let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
+                if (!_onCooldown.has(`commands${channel}`)) {
+                    _onCooldown.add(`commands${channel}`);
+                    console.log(_onCooldown);
+                    setTimeout(function () {
+                        _onCooldown.delete(`commands${channel}`);
+                    }, 30000);
+                    axios
+                        .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
+                        .then((data) => {
+                            let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
 
-                        for (var i = 0; i < data.data.length; i++) {
-                            apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
-                        }
+                            for (var i = 0; i < data.data.length; i++) {
+                                apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
+                            }
 
-                        apiPostCode = apiPostCode + `Global Commands:\n\n`;
+                            apiPostCode = apiPostCode + `Global Commands:\n\n`;
 
-                        for (var i = 0; i < clientCommands.length; i++) {
-                            apiPostCode =
-                                apiPostCode +
-                                `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`;
-                        }
+                            for (var i = 0; i < clientCommands.length; i++) {
+                                apiPostCode =
+                                    apiPostCode +
+                                    `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`;
+                            }
 
-                        apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
-                        axios
-                            .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
-                            .then((data) => {
-                                chatClient.say(channel, `/me You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
-                    })
-                    .catch((err) => {
-                        chatClient.say(channel, `Error: ${err}`);
-                    });
-
+                            apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
+                            axios
+                                .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
+                                .then((data) => {
+                                    chatClient.say(channel, `/me You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                });
+                        })
+                        .catch((err) => {
+                            chatClient.say(channel, `Error: ${err}`);
+                        });
+                }
                 break;
 
             case 'follownuke':
@@ -625,6 +667,10 @@ async function main() {
 
                 break;
 
+            case 'clipurl':
+                chatClient.say(channel, `${highestQualityClip}`);
+                break;
+
             case 'clip':
                 if (!_onCooldown.has(`clip${channel}`)) {
                     try {
@@ -683,7 +729,12 @@ async function main() {
                         // prettier-ignore
                         await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
 
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, sent the clip to the Discord! PogChamp`);
+                        let clipRes = await sourceURL(args[1]);
+                        let bestClip = clipRes.qualities[clipRes.qualities.length - 1];
+
+                        highestQualityClip = bestClip.sourceURL;
+
+                        chatClient.say(channel, `/me PogChamp @${msg.userInfo.userName}, sent the clip to the Discord! Use the "!clipurl" command to download/view it!`);
                     } catch (err) {
                         chatClient.say(channel, `Error: ${err}`);
                         chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
