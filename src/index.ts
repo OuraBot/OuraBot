@@ -257,7 +257,13 @@ async function main() {
 
         switch (args[0]) {
             case 'ping':
-                chatClient.say(channel, 'Pong!');
+                chatClient.say(
+                    channel,
+                    `Pong! Serving ${channelsToListenIn.length} channels for ${auroMs.relativeTime(
+                        Math.round(process.uptime() * 1000),
+                        false
+                    )}. View Custom API Status at https://stats.uptimerobot.com/2JRDMCkY43`
+                );
                 break;
 
             case 'commands':
