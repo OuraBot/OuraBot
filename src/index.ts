@@ -163,7 +163,7 @@ async function main() {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
 
-        if (channel === '#auror6s') chatClient.say('auror6s', 'PagMan ONLINE');
+        if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
@@ -274,7 +274,13 @@ async function main() {
                 if (!_onCooldown.has(`getclip${user}`)) {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a clip link or slug');
 
-                    let clipRes = await sourceURL(args[1]);
+                    let clipRes: { realClip: boolean; qualities: any[]; error: string } | { realClip: boolean; qualities: any; error: any };
+
+                    try {
+                        clipRes = await sourceURL(args[1]);
+                    } catch (err) {
+                        chatClient.say(channel, err);
+                    }
 
                     if (user.replace('#', '') === clientConfig.owner) {
                         // this is nasty, but using !'s before ismod or broadcaster doesnt work
