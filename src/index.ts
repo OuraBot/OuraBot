@@ -162,9 +162,9 @@ async function main() {
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
-    });
 
-    chatClient.say('auror6s', 'PagMan ONLINE');
+        chatClient.say('auror6s', 'PagMan ONLINE');
+    });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
         if (user === process.env.CLIENT_USERNAME) return;
