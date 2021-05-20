@@ -456,12 +456,12 @@ async function main() {
             case 'pull':
                 if (user != clientConfig.owner) return;
 
-                exec('git pull origin main', (error, stdout, stderr) => {
+                exec('git pull origin', async (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
                     if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr}`);
 
-                    chatClient.say(channel, `VisLaud 👉 ${stdout.replace('https://github.com/OuraBot/Twitch-Bot', '') || stderr.replace('https://github.com/OuraBot/Twitch-Bot', '')}`);
-                    chatClient.say(channel, `Okayge 👋 process.exit();`);
+                    await chatClient.say(channel, `VisLaud 👉 ${stdout.replace('https://github.com/OuraBot/Twitch-Bot', '') || stderr.replace('https://github.com/OuraBot/Twitch-Bot', '')}`);
+                    await chatClient.say(channel, `Okayge 👋 process.exit();`);
                     process.exit();
                 });
 
