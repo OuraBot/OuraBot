@@ -163,7 +163,7 @@ async function main() {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
 
-        chatClient.say('auror6s', 'PagMan ONLINE');
+        if (channel === '#auror6s') chatClient.say('auror6s', 'PagMan ONLINE');
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
