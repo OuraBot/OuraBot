@@ -415,6 +415,7 @@ async function main() {
                 }
                 break;
 
+            /*
             // !remindme in 5m microwave
             // !remindme in <time> <title>
             case 'remindme':
@@ -436,6 +437,7 @@ async function main() {
                 }
 
                 break;
+            */
 
             case 'eval':
                 if (user != clientConfig.owner) return;

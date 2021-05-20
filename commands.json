@@ -35,13 +35,6 @@
         "cooldown": 0
     },
     {
-        "command": "remindme",
-        "description": "Sets a reminder <6hr max>",
-        "usage": "!remindme <time, 5m, 10m> <description?>",
-        "permission": "None",
-        "cooldown": 0
-    },
-    {
         "command": "listen",
         "description": "Joins a channel",
         "usage": "!listen <channel>",
