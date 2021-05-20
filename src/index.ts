@@ -729,7 +729,7 @@ async function main() {
                         // prettier-ignore
                         await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
 
-                        let clipRes = await sourceURL(args[1]);
+                        let clipRes = await sourceURL(clippedResp);
                         let bestClip = clipRes.qualities[clipRes.qualities.length - 1];
 
                         highestQualityClip = bestClip.sourceURL;
@@ -756,6 +756,7 @@ async function main() {
                         let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
                         await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
 
+                        /*
                         axios
                             .post(`https://supinic.com/api/bot/reminder/`, null, {
                                 params: {
@@ -771,6 +772,8 @@ async function main() {
                             .catch((data) => {
                                 console.log(data);
                             });
+
+                        */
 
                         // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
                     }
@@ -963,6 +966,10 @@ process.on('unhandledRejection', async (reason: Error, promise) => {
 
     console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
 
+    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+    await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+
+    /*
     axios
         .post(`https://supinic.com/api/bot/reminder/`, null, {
             params: {
@@ -978,6 +985,7 @@ process.on('unhandledRejection', async (reason: Error, promise) => {
         .catch((data) => {
             console.log(data);
         });
+    */
 
     // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
 });
