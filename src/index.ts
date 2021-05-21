@@ -942,6 +942,22 @@ async function main() {
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
+
+    axios
+        .get(`${internalAPI}/eventsub/follow/`)
+        .then(async (response) => {
+            if (response?.data?.length > 0) {
+                for (var i = 0; i < response.data.length; i++) {
+                    const channelData = response.data[i];
+                    const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
+                        chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
+                    });
+                }
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 main();
