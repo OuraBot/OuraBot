@@ -462,9 +462,27 @@ async function main() {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
                     if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr}`);
 
-                    await chatClient.say(channel, `VisLaud 👉 ${stdout.replace('https://github.com/OuraBot/Twitch-Bot', '') || stderr.replace('https://github.com/OuraBot/Twitch-Bot', '')}`);
-                    await chatClient.say(channel, `Okayge 👋 process.exit();`);
-                    process.exit();
+                    if (stderr) {
+                        if (stderr.includes('Already up to date')) {
+                            chatClient.say(channel, stderr);
+                        } else {
+                            let finalStr = stderr.replace('https://github.com/', '');
+                            await chatClient.say(channel, finalStr);
+                            await chatClient.say(channel, 'Okayge 👋 process.exit();');
+                            process.exit();
+                        }
+                    } else if (stdout) {
+                        if (stdout.includes('Already up to date')) {
+                            chatClient.say(channel, stdout);
+                        } else {
+                            let finalStr = stdout.replace('https://github.com/', '');
+                            await chatClient.say(channel, finalStr);
+                            await chatClient.say(channel, 'Okayge 👋 process.exit();');
+                            process.exit();
+                        }
+                    } else {
+                        chatClient.say(channel, 'Unknown Error');
+                    }
                 });
 
                 break;
