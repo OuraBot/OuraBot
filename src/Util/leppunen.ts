@@ -2,8 +2,8 @@ import axios from 'axios';
 
 async function sourceURL(slug: String) {
     try {
-        let newSlug = slug.replace(/[ \t󠀀]+$/, '').match(/^[a-zA-z]+(-[\-a-zA-Z0-9]{16})?$/)?.[0];
-        if (!newSlug) return { realClip: false, qualities: [], error: 'Not real clip' };
+        let newSlug = slug.replace(/[ \t󠀀]+$/, '').match(/[a-zA-z]+(-[\-a-zA-Z0-9]{16})$/)?.[0];
+        if (!newSlug) return { realClip: false, qualities: [], error: `Not real clip` };
 
         let data = await axios.get(`https://api.ivr.fi/twitch/clip/${newSlug}`);
 

@@ -291,6 +291,8 @@ async function main() {
                         }, 5 * 1000);
                     }
 
+                    if (!clipRes.realClip) return chatClient.say(channel, 'The provided argument is not a valid clip');
+
                     if (args[2]) {
                         let bestClip = clipRes.qualities.filter((quality) => quality.quality === args[2].replace('p', ''))?.[0];
 
@@ -980,54 +982,54 @@ async function main() {
 
 main();
 
-process.on('unhandledRejection', async (reason: Error, promise) => {
-    if (process.env.DEBUG === 'TRUE') return;
+if (process.env.DEBUG !== 'TRUE') {
+    process.on('unhandledRejection', async (reason: Error, promise) => {
+        let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
+        console.log(finalStr);
 
-    let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
-    console.log(finalStr);
-
-    finalStr = `
-    Error Info | ${process.env.CLIENT_USERNAME} | ${finalStr}
+        finalStr = `
+        Error Info | ${process.env.CLIENT_USERNAME} | ${finalStr}
+        
+        Message:
+        ${reason.message}
     
-    Message:
-    ${reason.message}
+        Name:
+        ${reason.name}
+    
+        Stack Trace:
+        ${reason?.stack}
+    
+        toString:
+        ${reason.toString()}
+    
+        Bot by AuroR6S | ${moment().format(`ZZ | x`)}
+        `;
 
-    Name:
-    ${reason.name}
+        let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
 
-    Stack Trace:
-    ${reason?.stack}
+        console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
 
-    toString:
-    ${reason.toString()}
+        let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+        await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
 
-    Bot by AuroR6S | ${moment().format(`ZZ | x`)}
-    `;
+        /*
+        axios
+            .post(`https://supinic.com/api/bot/reminder/`, null, {
+                params: {
+                    username: 'auror6s',
+                    text: `OuraBot Uncaught Rejection Info: ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`,
+                    private: true,
+                },
+                headers: {
+                    // prettier-ignore
+                    'Authorization': `Basic ${process.env.SUPIAUTH}`,
+                },
+            })
+            .catch((data) => {
+                console.log(data);
+            });
+        */
 
-    let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
-
-    console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
-
-    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-    await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
-
-    /*
-    axios
-        .post(`https://supinic.com/api/bot/reminder/`, null, {
-            params: {
-                username: 'auror6s',
-                text: `OuraBot Uncaught Rejection Info: ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`,
-                private: true,
-            },
-            headers: {
-                // prettier-ignore
-                'Authorization': `Basic ${process.env.SUPIAUTH}`,
-            },
-        })
-        .catch((data) => {
-            console.log(data);
-        });
-    */
-
-    // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
-});
+        // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
+    });
+}
