@@ -984,6 +984,8 @@ main();
 
 if (process.env.DEBUG !== 'TRUE') {
     process.on('unhandledRejection', async (reason: Error, promise) => {
+        if (reason.message.includes('ETIMEDOUT')) return;
+
         let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
         console.log(finalStr);
 
