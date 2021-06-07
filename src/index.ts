@@ -184,9 +184,13 @@ async function main() {
                         let re = new RegExp(_obj[i].regex, 'gi');
                         if (message.match(re)) {
                             let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
-                            let splitStr = finalStr.split('$(newline)');
-                            for (var i = 0; i < splitStr.length; i++) {
-                                chatClient.say(channel, splitStr[i].replace('${user}', user));
+                            if (finalStr.includes('$(newline)')) {
+                                let splitStr = finalStr.split('$(newline)');
+                                for (var i = 0; i < splitStr.length; i++) {
+                                    chatClient.say(channel, splitStr[i].replace('${user}', user));
+                                }
+                            } else {
+                                chatClient.say(channel, finalStr);
                             }
                         }
                     }
@@ -194,9 +198,13 @@ async function main() {
                     let re = new RegExp(_obj[i].regex, 'gi');
                     if (message.match(re)) {
                         let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
-                        let splitStr = finalStr.split('$(newline)');
-                        for (var i = 0; i < splitStr.length; i++) {
-                            chatClient.say(channel, splitStr[i].replace('${user}', user));
+                        if (finalStr.includes('$(newline)')) {
+                            let splitStr = finalStr.split('$(newline)');
+                            for (var i = 0; i < splitStr.length; i++) {
+                                chatClient.say(channel, splitStr[i].replace('${user}', user));
+                            }
+                        } else {
+                            chatClient.say(channel, finalStr);
                         }
                     }
                 }
@@ -229,15 +237,23 @@ async function main() {
                                 if (finalStr.match(re)) {
                                     let objTarget = finalStr.match(re)[0].substring(2);
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    let splitStr = finalStr.split('$(newline)');
-                                    for (var e = 0; e > splitStr.length; e++) {
-                                        chatClient.say(channel, splitStr[e]);
+                                    if (finalStr.includes('$(newline)')) {
+                                        let splitStr = finalStr.split('$(newline)');
+                                        for (var e = 0; e < splitStr.length; e++) {
+                                            chatClient.say(channel, splitStr[e]);
+                                        }
+                                    } else {
+                                        chatClient.say(channel, finalStr);
                                     }
                                 } else {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    let splitStr = finalStr.split('$(newline)');
-                                    for (var e = 0; e > splitStr.length; e++) {
-                                        chatClient.say(channel, splitStr[e]);
+                                    if (finalStr.includes('$(newline)')) {
+                                        let splitStr = finalStr.split('$(newline)');
+                                        for (var e = 0; e < splitStr.length; e++) {
+                                            chatClient.say(channel, splitStr[e]);
+                                        }
+                                    } else {
+                                        chatClient.say(channel, finalStr);
                                     }
                                 }
                             })
@@ -245,9 +261,14 @@ async function main() {
                                 chatClient.say(channel, `Error: ${err}`);
                             });
                     } else {
-                        let splitStr = finalStr.split('$(newline)');
-                        for (var e = 0; e > splitStr.length; e++) {
-                            chatClient.say(channel, splitStr[e]);
+                        if (finalStr.includes('$(newline)')) {
+                            let splitStr = finalStr.split('$(newline)');
+                            console.log(splitStr);
+                            for (var e = 0; e < splitStr.length; e++) {
+                                chatClient.say(channel, splitStr[e]);
+                            }
+                        } else {
+                            chatClient.say(channel, finalStr);
                         }
                     }
 
