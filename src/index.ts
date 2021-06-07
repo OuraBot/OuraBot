@@ -206,7 +206,7 @@ async function main() {
         let obj = channelAllData.commands;
         for (var i = 0; i < obj.length; i++) {
             if (Rargs[0] === obj[i].command) {
-                if (!customOnCooldown.has(`${obj[i].command}${user}${channel}`)) {
+                if (!customOnCooldown.has(`${obj[i].command}${channel}`)) {
                     // make this better \/
                     let updatedResponse = obj[i].response
                         .replace('$<sender>', user.replace('#', ''))
@@ -229,30 +229,39 @@ async function main() {
                                 if (finalStr.match(re)) {
                                     let objTarget = finalStr.match(re)[0].substring(2);
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    chatClient.say(channel, finalStr);
+                                    let splitStr = finalStr.split('$(newline)');
+                                    for (var e = 0; e > splitStr.length; e++) {
+                                        chatClient.say(channel, splitStr[e]);
+                                    }
                                 } else {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    chatClient.say(channel, finalStr);
+                                    let splitStr = finalStr.split('$(newline)');
+                                    for (var e = 0; e > splitStr.length; e++) {
+                                        chatClient.say(channel, splitStr[e]);
+                                    }
                                 }
                             })
                             .catch(function (err) {
                                 chatClient.say(channel, `Error: ${err}`);
                             });
                     } else {
-                        chatClient.say(channel, finalStr);
+                        let splitStr = finalStr.split('$(newline)');
+                        for (var e = 0; e > splitStr.length; e++) {
+                            chatClient.say(channel, splitStr[e]);
+                        }
                     }
 
                     if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
                         // this is nasty, but using !'s before ismod or broadcaster doesnt work
                     } else {
-                        customOnCooldown.add(`${obj[i].command}${user}${channel}`);
+                        customOnCooldown.add(`${obj[i].command}${channel}`);
                         setTimeout(clearCooldown.bind(null, obj[i].command), obj[i].cooldown * 1000);
                     }
                 }
             }
         }
         function clearCooldown(foo) {
-            customOnCooldown.delete(`${foo}${user}${channel}`);
+            customOnCooldown.delete(`${foo}${channel}`);
         }
 
         if (!message.startsWith(process.env.PREFIX)) return;
