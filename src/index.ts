@@ -35,17 +35,6 @@ const MAX_DAYS_TO_CALLBACK = 3;
 // clip wait time
 const TIME_TO_WAIT_CLIP = 5000;
 
-/*
-[
-    "auror6s": {
-        [{command: "gsdkljfg"}, {command:"hirtitky"}]
-    },
-    "demonjoefrance": {
-        [{command: "sdfgh"}, {command: "sdfhdj"}]
-    },
-]
-*/
-
 async function main() {
     console.log(`${process.env.CLIENT_USERNAME} is starting...`);
     const clientId = process.env.APP_CLIENTID;
