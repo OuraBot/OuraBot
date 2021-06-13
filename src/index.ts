@@ -802,27 +802,6 @@ async function main() {
 
                         let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
                         await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
-
-                        /*
-                        axios
-                            .post(`https://supinic.com/api/bot/reminder/`, null, {
-                                params: {
-                                    username: 'auror6s',
-                                    text: `OuraBot Clips Error Info: ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`,
-                                    private: true,
-                                },
-                                headers: {
-                                    // prettier-ignore
-                                    'Authorization': `Basic ${process.env.SUPIAUTH}`,
-                                },
-                            })
-                            .catch((data) => {
-                                console.log(data);
-                            });
-
-                        */
-
-                        // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
                     }
                 } else {
                     chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
