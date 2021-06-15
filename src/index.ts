@@ -532,6 +532,46 @@ async function main() {
 
                 break;
 
+            case 'followage':
+            case 'fa':
+                if (!_onCooldown.has(`fa${channel}${user}`)) {
+                    try {
+                        let targetUser = args[1] || user;
+                        let targetChannel = args[2] || user;
+
+                        let targetId = (await apiClient.helix.users.getUserByName(targetUser)).id;
+
+                        let followsResp = apiClient.helix.users.getFollowsPaginated({ user: targetId });
+
+                        let followData: { userDisplayName: string; followedUserName: string; time: any };
+                        for await (const user of followsResp) {
+                            if (user.followedUserName === targetChannel) {
+                                followData = {
+                                    userDisplayName: user.userDisplayName,
+                                    followedUserName: user.followedUserName,
+                                    time: auroMs.relativeTime(Date.now() - new Date(user.followDate).getTime(), true),
+                                };
+                            }
+                        }
+
+                        _onCooldown.add(`fa${channel}${user}`);
+                        console.log(_onCooldown);
+                        setTimeout(function () {
+                            _onCooldown.delete(`fa${channel}${user}`);
+                        }, 5000);
+
+                        if (!followData) {
+                            chatClient.say(channel, `${targetUser} is not following ${targetChannel}`);
+                        } else {
+                            chatClient.say(channel, `${followData.userDisplayName} has been following ${followData.followedUserName} for ${followData.time}`);
+                        }
+                    } catch (err) {
+                        chatClient.say(channel, `Error: ${err}`);
+                    }
+                }
+
+                break;
+
             case 'subbage':
             case 'sa':
                 if (!_onCooldown.has(`sa${channel}`)) {

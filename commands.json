@@ -75,5 +75,12 @@
         "usage": "!subbage <user?> <channel?>",
         "permission": "None",
         "cooldown": 5000
+    },
+    {
+        "command": "followage",
+        "description": "Checks a user's followage to a channel",
+        "usage": "!followage <user?> <channel?>",
+        "permission": "None",
+        "cooldown": 5000
     }
 ]
