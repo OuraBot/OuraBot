@@ -13,6 +13,7 @@ import axios from 'axios';
 import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
 import sourceURL from './Util/leppunen.js';
+import getBestEmote from './Util/bae.js';
 
 import clientCommands from '../commands.json';
 import clientConfig from '../config.json';
@@ -64,7 +65,7 @@ async function main() {
     const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
     if (process.env.DEBUG === 'TRUE') {
-        channelsToListenIn = [clientConfig.owner, 'boyosheriff'];
+        channelsToListenIn = [clientConfig.owner];
         console.log(`STARTING IN DEBUG MODE`);
     }
     console.log(channelsToListenIn);
