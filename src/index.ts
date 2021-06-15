@@ -64,7 +64,7 @@ async function main() {
     const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
     if (process.env.DEBUG === 'TRUE') {
-        channelsToListenIn = [clientConfig.owner];
+        channelsToListenIn = [clientConfig.owner, 'boyosheriff'];
         console.log(`STARTING IN DEBUG MODE`);
     }
     console.log(channelsToListenIn);
@@ -293,10 +293,33 @@ async function main() {
                 if (!_onCooldown.has(`getclip${user}`)) {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a clip link or slug');
 
-                    let clipRes: { realClip: boolean; qualities: any[]; error: string } | { realClip: boolean; qualities: any; error: any };
+                    let clipRes:
+                        | {
+                              realClip: boolean;
+                              qualities: any[];
+                              clipKey: any;
+                              duration: any;
+                              broadcaster: { id: any; displayName: any };
+                              curator: { id: any; displayName: any };
+                              title: any;
+                              viewCount: any;
+                              error: string;
+                          }
+                        | {
+                              realClip: boolean;
+                              qualities: any;
+                              clipKey: any;
+                              duration: any;
+                              broadcaster: { id: any; displayName: any };
+                              curator: { id: any; displayName: any };
+                              title: any;
+                              viewCount: any;
+                              error: any;
+                          };
 
                     try {
-                        clipRes = await sourceURL(args[1]);
+                        clipRes = await sourceURL('AffluentPlacidHamGivePLZ-KDWSnvSRPYcm87bx');
+                        console.log(clipRes);
                     } catch (err) {
                         chatClient.say(channel, err);
                     }
@@ -321,10 +344,10 @@ async function main() {
                             // prettier-ignore
                             return chatClient.say(channel, `Resolution not found. Available resolutions: ${[allQualities.slice(0, -1).join(', '), allQualities.slice(-1)[0]].join(allQualities.length < 2 ? '' : ', and ')}`
                         );
-                        chatClient.say(channel, `${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}`);
+                        chatClient.say(channel, `${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}${clipRes.clipKey}`);
                     } else {
                         let bestClip = clipRes.qualities[clipRes.qualities.length - 1];
-                        chatClient.say(channel, `Highest Resolution: ${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}`);
+                        chatClient.say(channel, `Highest Resolution: ${bestClip.quality}p${bestClip.frameRate} ${bestClip.sourceURL}${clipRes.clipKey}`);
                     }
                 }
                 break;
@@ -357,7 +380,7 @@ async function main() {
                             axios
                                 .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
                                 .then((data) => {
-                                    chatClient.say(channel, `/me You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
+                                    chatClient.say(channel, `You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
                                 })
                                 .catch((err) => {
                                     console.log(err);
@@ -588,7 +611,7 @@ async function main() {
                             }
                         });
                 } else {
-                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
+                    chatClient.say(channel, `@${msg.userInfo.userName}, please wait before using this command again!`);
                 }
                 break;
 
@@ -746,10 +769,10 @@ async function main() {
                         let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
 
                         // Check if the stream response is null, meaning it isnt live
-                        if (streamResp == null) return chatClient.say(channel, `/me @${msg.userInfo.userName}, this channel is currently offline! FailFish`);
+                        if (streamResp == null) return chatClient.say(channel, `@${msg.userInfo.userName}, this channel is currently offline! FailFish`);
 
                         // Create the clip
-                        chatClient.say(channel, `/me @${msg.userInfo.userName}, GivePLZ Creating your clip...`);
+                        chatClient.say(channel, `@${msg.userInfo.userName}, GivePLZ Creating your clip...`);
                         let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
 
                         // Give the twitch api 5 seconds to create a clip
@@ -758,15 +781,53 @@ async function main() {
 
                         // Check if the clip was actually created
                         if (getClipResp == null) {
-                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
+                            chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
                             clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
                             await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
                             getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
                         }
                         if (getClipResp == null) {
-                            chatClient.say(channel, `/me @${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
+                            chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
                             _onCooldown.delete(`clips${channel}`);
                         }
+
+                        let clipRes:
+                            | {
+                                  realClip: boolean;
+                                  qualities: any;
+                                  clipKey: any;
+                                  duration: any;
+                                  broadcaster: { id: any; displayName: any };
+                                  curator: { id: any; displayName: any };
+                                  title: any;
+                                  viewCount: any;
+                                  error: any;
+                              }
+                            | {
+                                  realClip: boolean;
+                                  qualities: any[];
+                                  clipKey: any;
+                                  duration: any;
+                                  broadcaster: { id: any; displayName: any };
+                                  curator: { id: any; displayName: any };
+                                  title: any;
+                                  viewCount: any;
+                                  error: any;
+                              };
+                        let bestClip: { sourceURL: any };
+
+                        try {
+                            clipRes = await sourceURL(clippedResp);
+                            if (clipRes.error) {
+                                chatClient.say(channel, `Error: ${clipRes.error}`);
+                            } else {
+                                bestClip = clipRes.qualities[clipRes.qualities.length - 1];
+                            }
+                        } catch (err) {
+                            chatClient.say(channel, `Error: ${err}`);
+                        }
+
+                        highestQualityClip = bestClip.sourceURL;
 
                         // initialize the discord webhook
                         let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
@@ -774,14 +835,9 @@ async function main() {
                         args.shift(); // args.join(" ").replace("@", "");
                         let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
                         // prettier-ignore
-                        await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://production.assets.clips.twitchcdn.net/${getClipResp.thumbnailUrl.split('/')[3].split('-')[0]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[1]}-${getClipResp.thumbnailUrl.split('/')[3].split('-')[2]}.mp4`);
+                        await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}${bestClip.sourceURL}${clipRes.clipKey}`);
 
-                        let clipRes = await sourceURL(clippedResp);
-                        let bestClip = clipRes.qualities[clipRes.qualities.length - 1];
-
-                        highestQualityClip = bestClip.sourceURL;
-
-                        chatClient.say(channel, `/me PogChamp @${msg.userInfo.userName}, sent the clip to the Discord! Use the "!clipurl" command to download/view it!`);
+                        chatClient.say(channel, `PogChamp @${msg.userInfo.userName}, sent the clip to the Discord!`);
                     } catch (err) {
                         chatClient.say(channel, `Error: ${err}`);
                         chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
@@ -804,7 +860,7 @@ async function main() {
                         await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
                     }
                 } else {
-                    chatClient.say(channel, `/me @${msg.userInfo.userName}, please wait before using this command again!`);
+                    chatClient.say(channel, `@${msg.userInfo.userName}, please wait before using this command again!`);
                 }
                 break;
         }
