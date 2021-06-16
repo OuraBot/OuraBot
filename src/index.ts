@@ -797,10 +797,6 @@ async function main() {
 
                 break;
 
-            case 'clipurl':
-                chatClient.say(channel, `${highestQualityClip}`);
-                break;
-
             case 'clip':
                 if (!_onCooldown.has(`clip${channel}`)) {
                     try {
