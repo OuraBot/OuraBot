@@ -580,9 +580,9 @@ async function main() {
                         }, 5000);
 
                         if (!followData) {
-                            chatClient.say(channel, `${targetUser} is not following ${targetChannel}`);
+                            chatClient.say(channel, `@${user}, ${obfuscateName(targetUser)} is not following ${obfuscateName(targetChannel)}`);
                         } else {
-                            chatClient.say(channel, `${followData.userDisplayName} has been following ${followData.followedUserName} for ${followData.time}`);
+                            chatClient.say(channel, `@${user}, ${obfuscateName(followData.userDisplayName)} has been following ${obfuscateName(followData.followedUserName)} for ${followData.time}`);
                         }
                     } catch (err) {
                         chatClient.say(channel, `Error: ${err}`);
@@ -615,33 +615,33 @@ async function main() {
                                     if (resp.data.meta.type === 'paid') {
                                         if (dnr) {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                            saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                         } else {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
+                                            saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                                         }
                                     } else if (resp.data.meta.type === 'gift') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
+                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
                                     } else if (resp.data.meta.type === 'prime') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has their subscription to ${resp.data.channel} hidden with a Prime subscription and ends in ${endsAt}`;
+                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Prime subscription and ends in ${endsAt}`;
                                     }
                                 } else {
                                     if (resp.data.meta.type === 'paid') {
                                         if (dnr) {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                            saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                         } else {
                                             // prettier-ignore
-                                            saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
+                                            saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                                         }
                                     } else if (resp.data.meta.type === 'gift') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                                     } else if (resp.data.meta.type === 'prime') {
                                         // prettier-ignore
-                                        saReturn = `${resp.data.username} has been subscribed to ${resp.data.channel} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
+                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
                                     }
                                 }
 
@@ -651,9 +651,9 @@ async function main() {
 
                                 if (resp.data.cumulative.months > 0) {
                                     // prettier-ignore
-                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has previously been subscribed to ${resp.data.channel} for ${resp.data.cumulative.months} months, however it ended ${endedAt} ago`);
+                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has previously been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} months, however it ended ${endedAt} ago`);
                                 } else {
-                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${resp.data.username} has never been subscribed to ${resp.data.channel}`);
+                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has never been subscribed to ${obfuscateName(resp.data.channel)}`);
                                 }
                             }
 
@@ -822,7 +822,7 @@ async function main() {
                     axios
                         .get(`https://api.ivr.fi/logs/rq/${targetChannel}/${targetUser}`)
                         .then((resp) => {
-                            chatClient.say(channel, `"${resp.data.message.replace(/(auro)/gi, 'A_uro')}", by ${resp.data.user} from ${resp.data.time}`);
+                            chatClient.say(channel, `"${obfuscateName(resp.data.message)}", by ${obfuscateName(resp.data.user)} from ${resp.data.time}`);
                         })
                         .catch((err) => {
                             chatClient.say(channel, err);
@@ -1177,4 +1177,10 @@ if (process.env.DEBUG !== 'TRUE') {
 
         // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
     });
+}
+
+const invisibleAntiPingCharacter = '\u{E0000}';
+
+function obfuscateName(str) {
+    return [...str].join(invisibleAntiPingCharacter);
 }
