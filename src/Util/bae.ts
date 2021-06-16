@@ -51,7 +51,6 @@ async function getBestEmote(displayName: String, emoteOptions: String[], fallbac
         for (let preferredEmote of emoteOptions) {
             if (availableEmote != null) break;
             for (let emote of allEmotes) {
-                console.log(`Checking if ${emote} matches ${preferredEmote}...`);
                 if (emote == preferredEmote) {
                     availableEmote = emote;
                     console.log('Match found!');
