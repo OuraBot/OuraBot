@@ -736,10 +736,29 @@ async function main() {
 
                 break;
 
+            case 'bae-test':
+                if (user !== 'auror6s') return;
+
+                let preferredEmotes = args[1].split(',');
+                let fallbackEmote = args[2];
+
+                let _channel = args[3] || channel.replace('#', '');
+
+                let preferredEmote = await getBestEmote(_channel, preferredEmotes, fallbackEmote);
+
+                if (preferredEmote.error != null) {
+                    chatClient.say(channel, preferredEmote.error);
+                } else {
+                    chatClient.say(channel, preferredEmote.bestAvailableEmote);
+                }
+
+                break;
+
             case 'bing':
                 if (!_onCooldown.has(`bing${user}${channel}`)) {
                     let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
-                    chatClient.say(channel, `:tf: 🔔 @${chatters[Math.floor(Math.random() * chatters.length)]}`);
+                    let preferredEmote = await getBestEmote(channel.replace('#', ''), ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink', ':tf:'], '🤭👉🔔');
+                    chatClient.say(channel, `${preferredEmote.bestAvailableEmote} @${chatters[Math.floor(Math.random() * chatters.length)]}`);
 
                     if (msg.userInfo.isBroadcaster) {
                         // this is nasty, but using !'s before ismod or broadcaster doesnt work
