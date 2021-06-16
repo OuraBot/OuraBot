@@ -82,5 +82,12 @@
         "usage": "!followage <user?> <channel?>",
         "permission": "None",
         "cooldown": 5000
+    },
+    {
+        "command": "reloademotes",
+        "description": "Deletes the existing Redis Cache for the channel",
+        "usage": "!reloademotes",
+        "permission": "Broadcaster",
+        "cooldown": 10000
     }
 ]

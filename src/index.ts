@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { ApiClient, Subscription, UserChatInfo } from 'twitch';
 import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
+import Redis from 'ioredis';
 
 import { inspect } from 'util';
 import { exec } from 'child_process';
@@ -29,6 +30,8 @@ let commandCacheTimer = 0;
 const onCooldown = new Set();
 const customOnCooldown = new Set();
 const _onCooldown = new Set();
+
+const redis = new Redis();
 
 // followunke days limit
 const MAX_DAYS_TO_CALLBACK = 3;
@@ -769,6 +772,30 @@ async function main() {
                         }, 30 * 1000);
                     }
                 }
+                break;
+
+            case 'reloademotes':
+                if (msg.userInfo.isBroadcaster || user === 'auror6s') {
+                    if (_onCooldown.has(`reloademotes${user}${channel}`)) return;
+
+                    redis.del(`bae:${channel.replace('#', '')}`).then((data) => {
+                        if (data == 0) {
+                            chatClient.say(channel, 'There was not an existing Redis Cache');
+                        } else {
+                            chatClient.say(channel, 'Refreshed Emotes!');
+                        }
+                    });
+
+                    if (user === 'auror6s') {
+                        //
+                    } else {
+                        _onCooldown.add(`reloademotes${user}${channel}`);
+                        setTimeout(function () {
+                            _onCooldown.delete(`reloademotes${user}${channel}`);
+                        }, 10 * 1000);
+                    }
+                }
+
                 break;
 
             case 'rl':
