@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import Redis from 'ioredis';
-import { restart } from 'pm2';
 
 const redis = new Redis();
 
