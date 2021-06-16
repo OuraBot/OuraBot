@@ -153,7 +153,7 @@ async function main() {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
 
-        if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        // if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
@@ -749,7 +749,7 @@ async function main() {
                 if (preferredEmote.error != null) {
                     chatClient.say(channel, preferredEmote.error);
                 } else {
-                    chatClient.say(channel, preferredEmote.bestAvailableEmote);
+                    chatClient.say(channel, `${preferredEmote.bestAvailableEmote} | Cached: ${preferredEmote.cached} | Response Time: ${preferredEmote.responseTime}ms`);
                 }
 
                 break;
