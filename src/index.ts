@@ -319,7 +319,7 @@ async function main() {
                           };
 
                     try {
-                        clipRes = await sourceURL('AffluentPlacidHamGivePLZ-KDWSnvSRPYcm87bx');
+                        clipRes = await sourceURL(args[1]);
                         console.log(clipRes);
                     } catch (err) {
                         chatClient.say(channel, err);
