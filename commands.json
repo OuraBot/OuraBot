@@ -4,90 +4,103 @@
         "description": "Pings the bot",
         "usage": "!ping",
         "permission": "None",
-        "cooldown": 0
+        "userCooldown": 5,
+        "channelCooldown": 5
     },
     {
         "command": "commands",
         "description": "Returns a pastebin link of all the commands",
         "usage": "!commands",
         "permission": "None",
-        "cooldown": 10
+        "userCooldown": 60,
+        "channelCooldown": 30
     },
     {
         "command": "follownuke",
         "description": "Bans the last X members",
         "usage": "!folownuke <time, 5m, 10m> <--dont-ban?>",
         "permission": "Mod",
-        "cooldown": 0
+        "userCooldown": 5,
+        "channelCooldown": 5
     },
     {
         "command": "getclip",
         "description": "Gets the download link for a clip. Gets highest quality if not provided",
         "usage": "!getclip <Clip Link or Slug> <quality?>",
         "permission": "None",
-        "cooldown": 5
+        "userCooldown": 10,
+        "channelCooldown": 10
     },
     {
         "command": "filesayfast",
         "description": "Reads off a file",
         "usage": "!filesayfast <pastebin raw url>",
         "permission": "Owner",
-        "cooldown": 0
+        "userCooldown": 0,
+        "channelCooldown": 0
     },
     {
         "command": "listen",
         "description": "Joins a channel",
         "usage": "!listen <channel>",
         "permission": "Owner",
-        "cooldown": 0
+        "userCooldown": 0,
+        "channelCooldown": 0
     },
     {
         "command": "clip",
         "description": "Clips the last 30 seconds and sends it to the Discord",
         "usage": "!clip <title?>",
         "permission": "None",
-        "cooldown": 30
+        "userCooldown": 60,
+        "channelCooldown": 30
     },
     {
         "command": "bing",
         "description": "Pings a random user",
         "usage": "!bing",
         "permission": "None",
-        "cooldown": 30
+        "userCooldown": 10,
+        "channelCooldown": 5
     },
     {
         "command": "query",
         "description": "Queries the Wolfram Alpha API",
         "usage": "!query <query>",
         "permission": "None",
-        "cooldown": 30
+        "userCooldown": 30,
+        "channelCooldown": 5
     },
     {
         "command": "rl",
         "description": "Fetches a random quote with the justlog API",
         "usage": "!rl <user?> <channel?>",
         "permission": "None",
-        "cooldown": 5
+        "userCooldown": 10,
+        "channelCooldown": 5
     },
     {
         "command": "subbage",
         "description": "Checks a user's subscription to a channel",
         "usage": "!subbage <user?> <channel?>",
         "permission": "None",
-        "cooldown": 5000
+        "userCooldown": 10,
+        "channelCooldown": 5
     },
     {
         "command": "followage",
         "description": "Checks a user's followage to a channel",
         "usage": "!followage <user?> <channel?>",
         "permission": "None",
-        "cooldown": 5000
+        "userCooldown": 10,
+        "channelCooldown": 5
     },
     {
         "command": "reloademotes",
         "description": "Deletes the existing Redis Cache for the channel",
         "usage": "!reloademotes",
         "permission": "Broadcaster",
-        "cooldown": 10000
+        "userCooldown": 30,
+        "channelCooldown": 30
     }
 ]
