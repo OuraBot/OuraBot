@@ -52,8 +52,8 @@
         "description": "Clips the last 30 seconds and sends it to the Discord",
         "usage": "!clip <title?>",
         "permission": "None",
-        "userCooldown": 60,
-        "channelCooldown": 30
+        "userCooldown": 30,
+        "channelCooldown": 15
     },
     {
         "command": "bing",

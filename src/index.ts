@@ -821,7 +821,7 @@ async function main() {
                     // Check if the stream response is null, meaning it isnt live
                     if (streamResp == null) return chatClient.say(channel, `@${msg.userInfo.userName}, this channel is currently offline! FailFish`);
 
-                    if (!(await handleCooldown(user, channel, 'clip', 60, 30))) return;
+                    if (!(await handleCooldown(user, channel, 'clip', 30, 15))) return;
 
                     // Create the clip
                     chatClient.say(channel, `@${msg.userInfo.userName}, GivePLZ Creating your clip...`);
