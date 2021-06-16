@@ -951,12 +951,8 @@ async function main() {
                         Bot by AuroR6S | ${moment().format(`ZZ | x`)}
                         `;
 
-                        let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
-
-                        console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
-
                         let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-                        await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+                        await dcWebhook.send(`@everyone\n\n${finalStr}`);
                     }
                 } else {
                     chatClient.say(channel, `@${msg.userInfo.userName}, please wait before using this command again!`);
@@ -1137,8 +1133,6 @@ main();
 
 if (process.env.DEBUG !== 'TRUE') {
     process.on('unhandledRejection', async (reason: Error, promise) => {
-        if (reason.message.includes('ETIMEDOUT')) return;
-
         let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
         console.log(finalStr);
 
@@ -1160,12 +1154,8 @@ if (process.env.DEBUG !== 'TRUE') {
         Bot by AuroR6S | ${moment().format(`ZZ | x`)}
         `;
 
-        let rejectionResp = await axios.post(`${process.env.HASTEBIN_SERVER}/documents`, finalStr);
-
-        console.log(`${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
-
         let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-        await dcWebhook.send(`@everyone ${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key}`);
+        await dcWebhook.send(`@everyone\n\n${finalStr}`);
 
         /*
         axios
