@@ -163,7 +163,23 @@ async function main() {
         if (user === process.env.CLIENT_USERNAME) return;
         var Rargs: string[] = message.split(' ');
 
-        let channelAllData = (await axios.get(`${internalAPI}/message/all/${channel.replace('#', '')}`)).data;
+        const t0 = process.hrtime();
+        let channelDataCached = false;
+
+        let channelAllData: { terms: any; commands: any };
+        let _channelAllData = await redis.get(`channelAllData:${channel}`);
+
+        if (_channelAllData) {
+            channelAllData = JSON.parse(_channelAllData);
+            channelDataCached = true;
+        } else {
+            let newData = (await axios.get(`${internalAPI}/message/all/${channel.replace('#', '')}`)).data;
+            channelAllData = newData;
+            redis.set(`channelAllData:${channel}`, JSON.stringify(newData), 'EX', 10);
+        }
+
+        const t1 = process.hrtime();
+        let respTime = Math.round(t1[0] * 1000000 + t1[1] / 1000 - (t0[0] * 1000000 + t0[1] / 1000)) / 1000;
 
         let _obj = channelAllData.terms;
         if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
@@ -288,7 +304,7 @@ async function main() {
                     `Pong! Serving ${channelsToListenIn.length} channels for ${auroMs.relativeTime(
                         Math.round(process.uptime() * 1000),
                         false
-                    )}. View Custom API Status at https://stats.uptimerobot.com/2JRDMCkY43`
+                    )}. View Custom API Status at https://stats.uptimerobot.com/2JRDMCkY43 | ${respTime}ms ${channelDataCached ? 'Cached' : 'Not Cached'}`
                 );
                 break;
 
