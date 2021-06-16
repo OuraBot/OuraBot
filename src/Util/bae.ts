@@ -1,14 +1,15 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import Redis from 'ioredis';
+import { restart } from 'pm2';
 
 const redis = new Redis();
 
 async function getBestEmote(displayName: String, emoteOptions: String[], fallbackEmote: String) {
     try {
-        const t0 = new Date().getTime();
+        const t0 = process.hrtime();
         let emoteData = await getAllEmotes(displayName);
-        const t1 = new Date().getTime();
+        const t1 = process.hrtime();
 
         let availableEmote: String = null;
 
@@ -30,11 +31,13 @@ async function getBestEmote(displayName: String, emoteOptions: String[], fallbac
         });
         */
 
+        let respTime = Math.round(t1[0] * 1000000 + t1[1] / 1000 - (t0[0] * 1000000 + t0[1] / 1000)) / 1000;
+
         return {
             allEmotes: emoteData.data,
             bestAvailableEmote: availableEmote,
             cached: emoteData.cached,
-            responseTime: t1 - t0,
+            responseTime: respTime,
             error: null,
         };
     } catch (err) {
@@ -102,7 +105,7 @@ async function getAllEmotes(displayName: String) {
                 allEmotes.push(emote.name);
             }
 
-            redis.set(`bae:${displayName}`, JSON.stringify(allEmotes));
+            redis.set(`bae:${displayName}`, JSON.stringify(allEmotes), 'EX', 3600);
 
             return {
                 data: allEmotes,
