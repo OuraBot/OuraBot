@@ -512,9 +512,10 @@ async function main() {
 
                 if (typeof evaled !== 'string') evaled = inspect(evaled);
 
-                chatClient.say(channel, clean(evaled));
+                let cleanedStr = await clean(evaled);
+                chatClient.say(channel, cleanedStr);
 
-                function clean(text) {
+                async function clean(text) {
                     if (typeof text === 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
                     else return text;
                 }
@@ -748,6 +749,14 @@ async function main() {
                     chatClient.say(channel, `${preferredEmote.bestAvailableEmote} | Cached: ${preferredEmote.cached} | Response Time: ${preferredEmote.responseTime}ms`);
                 }
 
+                break;
+
+            case 'allchatters':
+                if (user !== 'auror6s') return;
+                let specChannel = args[1] || channel.replace('#', '');
+                let chattersInChannel = (await apiClient.unsupported.getChatters(specChannel)).allChatters;
+                let _dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+                await _dcWebhook.send(`\`${chattersInChannel.join(' ')}\``);
                 break;
 
             case 'bing':
