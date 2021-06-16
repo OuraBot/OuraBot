@@ -1,68 +1,29 @@
 import axios from 'axios';
 import * as fs from 'fs';
+import Redis from 'ioredis';
+
+const redis = new Redis();
 
 async function getBestEmote(displayName: String, emoteOptions: String[], fallbackEmote: String) {
     try {
-        // Request all the APIs at the same time
-        let [ffzChannelResp, bttvChannelResp, stvChannelResp, ffzGlobalResp, bttvGlobalResp, stvGlobalResp] = await Promise.all([
-            getFfzChannelEmotes(displayName),
-            getBttvChannelEmotes(displayName),
-            getStvChannelEmotes(displayName),
-            getFfzGlobalEmotes(),
-            getBttvGlobalEmotes(),
-            getStvGlobalEmotes(),
-        ]);
-
-        // Init an empty array
-        let allEmotes = [];
-
-        // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
-        for (let emote of ffzChannelResp.split(' ')) {
-            allEmotes.push(emote);
-        }
-
-        // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
-        for (let emote of bttvChannelResp.split(' ')) {
-            allEmotes.push(emote);
-        }
-
-        // Loop through each emote
-        for (let emote of stvChannelResp) {
-            allEmotes.push(emote.name);
-        }
-
-        // Navigate to the 3rd emote set and the emoticons and loop through
-        for (let emote of ffzGlobalResp.sets['3'].emoticons) {
-            allEmotes.push(emote.name);
-        }
-
-        // Loop through each emote
-        for (let emote of bttvGlobalResp) {
-            allEmotes.push(emote.code);
-        }
-
-        // Loop through each emote
-        for (let emote of stvGlobalResp) {
-            allEmotes.push(emote.name);
-        }
+        const t0 = new Date().getTime();
+        let emoteData = await getAllEmotes(displayName);
+        const t1 = new Date().getTime();
 
         let availableEmote: String = null;
 
         for (let preferredEmote of emoteOptions) {
             if (availableEmote != null) break;
-            for (let emote of allEmotes) {
+            for (let emote of emoteData.data) {
                 if (emote == preferredEmote) {
                     availableEmote = emote;
-                    console.log('Match found!');
                     break;
                 }
             }
         }
 
-        // If the available emote is null, that means we don't have a pick and we fallbback to the fallback emote
         if (availableEmote == null) availableEmote = fallbackEmote;
 
-        // -- Used for testing --
         /*
         fs.writeFile('emotes.txt', allEmotes.join(' '), function (err) {
             console.error(err);
@@ -70,14 +31,89 @@ async function getBestEmote(displayName: String, emoteOptions: String[], fallbac
         */
 
         return {
-            allEmotes: allEmotes,
+            allEmotes: emoteData.data,
             bestAvailableEmote: availableEmote,
+            cached: emoteData.cached,
+            responseTime: t1 - t0,
             error: null,
         };
     } catch (err) {
         return {
             allEmotes: null,
             bestAvailableEmote: null,
+            cached: null,
+            responseTime: null,
+            error: err,
+        };
+    }
+}
+
+async function getAllEmotes(displayName: String) {
+    try {
+        let cacheEntry = await redis.get(`bae:${displayName}`);
+
+        if (cacheEntry) {
+            return {
+                data: JSON.parse(cacheEntry),
+                cached: true,
+                error: null,
+            };
+        } else {
+            // Request all the APIs at the same time
+            let [ffzChannelResp, bttvChannelResp, stvChannelResp, ffzGlobalResp, bttvGlobalResp, stvGlobalResp] = await Promise.all([
+                getFfzChannelEmotes(displayName),
+                getBttvChannelEmotes(displayName),
+                getStvChannelEmotes(displayName),
+                getFfzGlobalEmotes(),
+                getBttvGlobalEmotes(),
+                getStvGlobalEmotes(),
+            ]);
+
+            // Init an empty array
+            let allEmotes = [];
+
+            // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
+            for (let emote of ffzChannelResp.split(' ')) {
+                allEmotes.push(emote);
+            }
+
+            // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
+            for (let emote of bttvChannelResp.split(' ')) {
+                allEmotes.push(emote);
+            }
+
+            // Loop through each emote
+            for (let emote of stvChannelResp) {
+                allEmotes.push(emote.name);
+            }
+
+            // Navigate to the 3rd emote set and the emoticons and loop through
+            for (let emote of ffzGlobalResp.sets['3'].emoticons) {
+                allEmotes.push(emote.name);
+            }
+
+            // Loop through each emote
+            for (let emote of bttvGlobalResp) {
+                allEmotes.push(emote.code);
+            }
+
+            // Loop through each emote
+            for (let emote of stvGlobalResp) {
+                allEmotes.push(emote.name);
+            }
+
+            redis.set(`bae:${displayName}`, JSON.stringify(allEmotes));
+
+            return {
+                data: allEmotes,
+                cached: false,
+                error: null,
+            };
+        }
+    } catch (err) {
+        return {
+            data: null,
+            cached: null,
             error: err,
         };
     }
