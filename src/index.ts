@@ -299,6 +299,8 @@ async function main() {
 
         switch (args[0]) {
             case 'ping':
+                if (!(await handleCooldown(user, channel, 'ping', 5, 5))) return;
+
                 chatClient.say(
                     channel,
                     `Pong! Serving ${channelsToListenIn.length} channels for ${auroMs.relativeTime(
@@ -310,6 +312,8 @@ async function main() {
 
             case 'downloadclip':
             case 'getclip':
+                if (!(await handleCooldown(user, channel, 'downloadclip', 10, 10))) return;
+
                 if (!_onCooldown.has(`getclip${user}`)) {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a clip link or slug');
 
@@ -373,43 +377,37 @@ async function main() {
                 break;
 
             case 'commands':
-                if (!_onCooldown.has(`commands${channel}`)) {
-                    _onCooldown.add(`commands${channel}`);
-                    console.log(_onCooldown);
-                    setTimeout(function () {
-                        _onCooldown.delete(`commands${channel}`);
-                    }, 30000);
-                    axios
-                        .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
-                        .then((data) => {
-                            let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
+                if (!(await handleCooldown(user, channel, 'commands', 60, 30))) return;
+                axios
+                    .get(`${internalAPI}/message/command/${channel.replace('#', '')}`)
+                    .then((data) => {
+                        let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
 
-                            for (var i = 0; i < data.data.length; i++) {
-                                apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
-                            }
+                        for (var i = 0; i < data.data.length; i++) {
+                            apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
+                        }
 
-                            apiPostCode = apiPostCode + `Global Commands:\n\n`;
+                        apiPostCode = apiPostCode + `Global Commands:\n\n`;
 
-                            for (var i = 0; i < clientCommands.length; i++) {
-                                apiPostCode =
-                                    apiPostCode +
-                                    `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nCooldown: ${clientCommands[i].cooldown} seconds\n\n`;
-                            }
+                        for (var i = 0; i < clientCommands.length; i++) {
+                            apiPostCode =
+                                apiPostCode +
+                                `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nChannel Cooldown: ${clientCommands[i].channelCooldown} seconds\nUser Cooldown: ${clientCommands[i].userCooldown} seconds\n\n`;
+                        }
 
-                            apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
-                            axios
-                                .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
-                                .then((data) => {
-                                    chatClient.say(channel, `You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                });
-                        })
-                        .catch((err) => {
-                            chatClient.say(channel, `Error: ${err}`);
-                        });
-                }
+                        apiPostCode = apiPostCode + `Bot made by @AuroR6S`;
+                        axios
+                            .post(`${process.env.HASTEBIN_SERVER}/documents`, apiPostCode)
+                            .then((data) => {
+                                chatClient.say(channel, `You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
+                    })
+                    .catch((err) => {
+                        chatClient.say(channel, `Error: ${err}`);
+                    });
                 break;
 
             case 'follownuke':
@@ -418,6 +416,9 @@ async function main() {
                     let dontBan = false;
                     if (args[2] === '--dont-ban') dontBan = true;
                     let timeToCallback = Math.abs(ms(args[1]));
+
+                    if (!(await handleCooldown(user, channel, 'follownuke', 5, 5))) return;
+
                     try {
                         // get the channel id
                         let channelID = (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id;
@@ -553,126 +554,111 @@ async function main() {
 
             case 'followage':
             case 'fa':
-                if (!_onCooldown.has(`fa${channel}${user}`)) {
-                    try {
-                        let targetUser = args[1] || user;
-                        let targetChannel = args[2] || user;
+                if (!(await handleCooldown(user, channel, 'followage', 10, 5))) return;
+                try {
+                    let targetUser = args[1] || user;
+                    let targetChannel = args[2] || user;
 
-                        let targetId = (await apiClient.helix.users.getUserByName(targetUser)).id;
+                    let targetId = (await apiClient.helix.users.getUserByName(targetUser)).id;
 
-                        let followsResp = apiClient.helix.users.getFollowsPaginated({ user: targetId });
+                    let followsResp = apiClient.helix.users.getFollowsPaginated({ user: targetId });
 
-                        let followData: { userDisplayName: string; followedUserName: string; time: any };
-                        for await (const user of followsResp) {
-                            if (user.followedUserName === targetChannel) {
-                                followData = {
-                                    userDisplayName: user.userDisplayName,
-                                    followedUserName: user.followedUserName,
-                                    time: auroMs.relativeTime(Date.now() - new Date(user.followDate).getTime(), true),
-                                };
-                            }
+                    let followData: { userDisplayName: string; followedUserName: string; time: any };
+                    for await (const user of followsResp) {
+                        if (user.followedUserName === targetChannel) {
+                            followData = {
+                                userDisplayName: user.userDisplayName,
+                                followedUserName: user.followedUserName,
+                                time: auroMs.relativeTime(Date.now() - new Date(user.followDate).getTime(), true),
+                            };
                         }
-
-                        _onCooldown.add(`fa${channel}${user}`);
-                        console.log(_onCooldown);
-                        setTimeout(function () {
-                            _onCooldown.delete(`fa${channel}${user}`);
-                        }, 5000);
-
-                        if (!followData) {
-                            chatClient.say(channel, `@${user}, ${obfuscateName(targetUser)} is not following ${obfuscateName(targetChannel)}`);
-                        } else {
-                            chatClient.say(channel, `@${user}, ${obfuscateName(followData.userDisplayName)} has been following ${obfuscateName(followData.followedUserName)} for ${followData.time}`);
-                        }
-                    } catch (err) {
-                        chatClient.say(channel, `Error: ${err}`);
                     }
+
+                    if (!followData) {
+                        chatClient.say(channel, `@${user}, ${obfuscateName(targetUser)} is not following ${obfuscateName(targetChannel)}`);
+                    } else {
+                        chatClient.say(channel, `@${user}, ${obfuscateName(followData.userDisplayName)} has been following ${obfuscateName(followData.followedUserName)} for ${followData.time}`);
+                    }
+                } catch (err) {
+                    chatClient.say(channel, `Error: ${err}`);
                 }
 
                 break;
 
             case 'subbage':
             case 'sa':
-                if (!_onCooldown.has(`sa${channel}`)) {
-                    let targetUser = args[1] || user;
-                    let targetChannel = args[2] || channel.replace('#', '');
+                if (!(await handleCooldown(user, channel, 'subbage', 10, 5))) return;
 
-                    axios
-                        .get(`https://api.ivr.fi/twitch/subage/${targetUser}/${targetChannel}`)
-                        .then((resp) => {
-                            if (resp.data.subscribed) {
-                                let tier = resp.data.meta.tier;
-                                let dnr = resp.data.meta.dnr;
-                                let endsAt = auroMs.relativeTime(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now());
-                                let renewsAt = auroMs.relativeTime(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now());
-                                let gift = resp.data.meta?.gift;
+                let targetUser = args[1] || user;
+                let targetChannel = args[2] || channel.replace('#', '');
 
-                                let saReturn: string;
+                axios
+                    .get(`https://api.ivr.fi/twitch/subage/${targetUser}/${targetChannel}`)
+                    .then((resp) => {
+                        if (resp.data.subscribed) {
+                            let tier = resp.data.meta.tier;
+                            let dnr = resp.data.meta.dnr;
+                            let endsAt = auroMs.relativeTime(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now());
+                            let renewsAt = auroMs.relativeTime(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now());
+                            let gift = resp.data.meta?.gift;
 
-                                let streak = resp.data.streak?.months ? ` with a streak of ${resp.data.streak.months} months` : '';
+                            let saReturn: string;
 
-                                if (resp.data.hidden) {
-                                    if (resp.data.meta.type === 'paid') {
-                                        if (dnr) {
-                                            // prettier-ignore
-                                            saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
-                                        } else {
-                                            // prettier-ignore
-                                            saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
-                                        }
-                                    } else if (resp.data.meta.type === 'gift') {
+                            let streak = resp.data.streak?.months ? ` with a streak of ${resp.data.streak.months} months` : '';
+
+                            if (resp.data.hidden) {
+                                if (resp.data.meta.type === 'paid') {
+                                    if (dnr) {
                                         // prettier-ignore
-                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
-                                    } else if (resp.data.meta.type === 'prime') {
+                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                    } else {
                                         // prettier-ignore
-                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Prime subscription and ends in ${endsAt}`;
+                                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                                     }
-                                } else {
-                                    if (resp.data.meta.type === 'paid') {
-                                        if (dnr) {
-                                            // prettier-ignore
-                                            saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
-                                        } else {
-                                            // prettier-ignore
-                                            saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
-                                        }
-                                    } else if (resp.data.meta.type === 'gift') {
-                                        // prettier-ignore
-                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
-                                    } else if (resp.data.meta.type === 'prime') {
-                                        // prettier-ignore
-                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
-                                    }
-                                }
-
-                                chatClient.say(channel, `@${msg.userInfo.userName}, ${saReturn}`);
-                            } else {
-                                let endedAt = auroMs.relativeTime(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000);
-
-                                if (resp.data.cumulative.months > 0) {
+                                } else if (resp.data.meta.type === 'gift') {
                                     // prettier-ignore
-                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has previously been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} months, however it ended ${endedAt} ago`);
-                                } else {
-                                    chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has never been subscribed to ${obfuscateName(resp.data.channel)}`);
+                                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
+                                } else if (resp.data.meta.type === 'prime') {
+                                    // prettier-ignore
+                                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Prime subscription and ends in ${endsAt}`;
+                                }
+                            } else {
+                                if (resp.data.meta.type === 'paid') {
+                                    if (dnr) {
+                                        // prettier-ignore
+                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                    } else {
+                                        // prettier-ignore
+                                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
+                                    }
+                                } else if (resp.data.meta.type === 'gift') {
+                                    // prettier-ignore
+                                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                                } else if (resp.data.meta.type === 'prime') {
+                                    // prettier-ignore
+                                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
                                 }
                             }
 
-                            _onCooldown.add(`sa${channel}`);
-                            console.log(_onCooldown);
-                            setTimeout(function () {
-                                _onCooldown.delete(`sa${channel}`);
-                            }, 5000);
-                        })
-                        .catch((err) => {
-                            if (err.response?.status == 404) {
-                                chatClient.say(channel, `Error: ${err.response.data.error}`);
+                            chatClient.say(channel, `@${msg.userInfo.userName}, ${saReturn}`);
+                        } else {
+                            let endedAt = auroMs.relativeTime(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000);
+
+                            if (resp.data.cumulative.months > 0) {
+                                // prettier-ignore
+                                chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has previously been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} months, however it ended ${endedAt} ago`);
                             } else {
-                                chatClient.say(channel, err);
+                                chatClient.say(channel, `@${msg.userInfo.userName}, ${obfuscateName(resp.data.username)} has never been subscribed to ${obfuscateName(resp.data.channel)}`);
                             }
-                        });
-                } else {
-                    chatClient.say(channel, `@${msg.userInfo.userName}, please wait before using this command again!`);
-                }
+                        }
+                    })
+                    .catch((err) => {
+                        if (err.response?.status == 404) {
+                            chatClient.say(channel, `Error: ${err.response.data.error}`);
+                        } else {
+                            chatClient.say(channel, err);
+                        }
+                    });
                 break;
 
             case 'commit':
@@ -711,21 +697,12 @@ async function main() {
                 break;
 
             case 'query':
-                if (!_onCooldown.has(`query${user}`)) {
-                    args.shift();
-                    if (args.length === 0) return chatClient.say(channel, 'Please provide a query');
-                    let url = `http://api.wolframalpha.com/v1/result?appid=${process.env.WOLFRAM_ALPHA_KEY}&i=${args.join('+')}`;
-                    chatClient.say(channel, (await axios.get(url)).data);
+                if (!(await handleCooldown(user, channel, 'query', 30, 10))) return;
 
-                    if (user.replace('#', '') === clientConfig.owner) {
-                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
-                    } else {
-                        _onCooldown.add(`query${user}`);
-                        setTimeout(function () {
-                            _onCooldown.delete(`query${user}$`);
-                        }, 30 * 1000);
-                    }
-                }
+                args.shift();
+                if (args.length === 0) return chatClient.say(channel, 'Please provide a query');
+                let url = `http://api.wolframalpha.com/v1/result?appid=${process.env.WOLFRAM_ALPHA_KEY}&i=${args.join('+')}`;
+                chatClient.say(channel, (await axios.get(url)).data);
                 break;
 
             case 'c-add':
@@ -774,25 +751,15 @@ async function main() {
                 break;
 
             case 'bing':
-                if (!_onCooldown.has(`bing${user}${channel}`)) {
-                    let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
-                    let preferredEmote = await getBestEmote(channel.replace('#', ''), ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink', ':tf:'], '🤭👉🔔');
-                    chatClient.say(channel, `${preferredEmote.bestAvailableEmote} @${chatters[Math.floor(Math.random() * chatters.length)]}`);
-
-                    if (msg.userInfo.isBroadcaster) {
-                        // this is nasty, but using !'s before ismod or broadcaster doesnt work
-                    } else {
-                        _onCooldown.add(`bing${user}${channel}`);
-                        setTimeout(function () {
-                            _onCooldown.delete(`bing${user}${channel}`);
-                        }, 30 * 1000);
-                    }
-                }
+                if (!(await handleCooldown(user, channel, 'bing', 10, 5))) return;
+                let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
+                let _preferredEmote = await getBestEmote(channel.replace('#', ''), ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink', ':tf:'], '🤭👉🔔');
+                chatClient.say(channel, `${_preferredEmote.bestAvailableEmote} @${chatters[Math.floor(Math.random() * chatters.length)]}`);
                 break;
 
             case 'reloademotes':
                 if (msg.userInfo.isBroadcaster || user === 'auror6s') {
-                    if (_onCooldown.has(`reloademotes${user}${channel}`)) return;
+                    if (!(await handleCooldown(user, channel, 'reloademotes', 30, 30))) return;
 
                     redis.del(`bae:${channel.replace('#', '')}`).then((data) => {
                         if (data == 0) {
@@ -801,148 +768,125 @@ async function main() {
                             chatClient.say(channel, 'Refreshed Emotes!');
                         }
                     });
-
-                    if (user === 'auror6s') {
-                        //
-                    } else {
-                        _onCooldown.add(`reloademotes${user}${channel}`);
-                        setTimeout(function () {
-                            _onCooldown.delete(`reloademotes${user}${channel}`);
-                        }, 10 * 1000);
-                    }
                 }
 
                 break;
 
             case 'rl':
-                if (!_onCooldown.has(`rl${user}${channel}`)) {
-                    let targetUser = args[1] || user;
-                    let targetChannel = args[2] || channel.replace('#', '');
+                if (!(await handleCooldown(user, channel, 'rl', 10, 5))) return;
 
-                    axios
-                        .get(`https://api.ivr.fi/logs/rq/${targetChannel}/${targetUser}`)
-                        .then((resp) => {
-                            chatClient.say(channel, `"${obfuscateName(resp.data.message)}", by ${obfuscateName(resp.data.user)} from ${resp.data.time}`);
-                        })
-                        .catch((err) => {
-                            chatClient.say(channel, err);
-                        });
+                let _targetUser = args[1] || user;
+                let _targetChannel = args[2] || channel.replace('#', '');
 
-                    if (msg.userInfo.isBroadcaster) {
-                        //
-                    } else {
-                        _onCooldown.add(`rl${user}${channel}`);
-                        setTimeout(function () {
-                            _onCooldown.delete(`rl${user}${channel}`);
-                        }, 5 * 1000);
-                    }
-                }
+                axios
+                    .get(`https://api.ivr.fi/logs/rq/${_targetChannel}/${_targetUser}`)
+                    .then((resp) => {
+                        chatClient.say(channel, `"${obfuscateName(resp.data.message)}", by ${obfuscateName(resp.data.user)} from ${resp.data.time}`);
+                    })
+                    .catch((err) => {
+                        chatClient.say(channel, err);
+                    });
 
                 break;
 
             case 'clip':
-                if (!_onCooldown.has(`clip${channel}`)) {
+                try {
+                    let clipsResp = await axios.get(`${internalAPI}/clip/`);
+                    if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
+
+                    let discordData;
+
+                    for (var i = 0; i < clipsResp.data.length; i++) {
+                        if (clipsResp.data[i].channel === channel.replace('#', '')) {
+                            discordData = clipsResp.data[i];
+                        }
+                    }
+
+                    if (!discordData) {
+                        return chatClient.say(channel, 'This channel does not have the clips command enabled!');
+                    }
+
+                    // Channel ID & If stream is online
+                    let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+
+                    // Check if the stream response is null, meaning it isnt live
+                    if (streamResp == null) return chatClient.say(channel, `@${msg.userInfo.userName}, this channel is currently offline! FailFish`);
+
+                    if (!(await handleCooldown(user, channel, 'clip', 60, 30))) return;
+
+                    // Create the clip
+                    chatClient.say(channel, `@${msg.userInfo.userName}, GivePLZ Creating your clip...`);
+                    let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
+
+                    // Give the twitch api 5 seconds to create a clip
+                    await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP));
+                    let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+
+                    // Check if the clip was actually created
+                    if (getClipResp == null) {
+                        chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
+                        clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
+                        await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
+                        getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+                    }
+                    if (getClipResp == null) {
+                        chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
+                        _onCooldown.delete(`clips${channel}`);
+                    }
+
+                    let clipRes:
+                        | {
+                              realClip: boolean;
+                              qualities: any;
+                              clipKey: any;
+                              duration: any;
+                              broadcaster: { id: any; displayName: any };
+                              curator: { id: any; displayName: any };
+                              title: any;
+                              viewCount: any;
+                              error: any;
+                          }
+                        | {
+                              realClip: boolean;
+                              qualities: any[];
+                              clipKey: any;
+                              duration: any;
+                              broadcaster: { id: any; displayName: any };
+                              curator: { id: any; displayName: any };
+                              title: any;
+                              viewCount: any;
+                              error: any;
+                          };
+                    let bestClip: { sourceURL: any };
+
                     try {
-                        let clipsResp = await axios.get(`${internalAPI}/clip/`);
-                        if (clipsResp.status != 200) return chatClient.say(channel, 'There was an error reaching the internal API');
-
-                        let discordData;
-
-                        for (var i = 0; i < clipsResp.data.length; i++) {
-                            if (clipsResp.data[i].channel === channel.replace('#', '')) {
-                                discordData = clipsResp.data[i];
-                            }
+                        clipRes = await sourceURL(clippedResp);
+                        if (clipRes.error) {
+                            chatClient.say(channel, `Error: ${clipRes.error}`);
+                        } else {
+                            bestClip = clipRes.qualities[clipRes.qualities.length - 1];
                         }
-
-                        if (!discordData) {
-                            return chatClient.say(channel, 'This channel does not have the clips command enabled!');
-                        }
-
-                        _onCooldown.add(`clip${channel}`);
-                        console.log(_onCooldown);
-                        setTimeout(function () {
-                            _onCooldown.delete(`clip${channel}`);
-                        }, 30000);
-
-                        // Channel ID & If stream is online
-                        let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
-
-                        // Check if the stream response is null, meaning it isnt live
-                        if (streamResp == null) return chatClient.say(channel, `@${msg.userInfo.userName}, this channel is currently offline! FailFish`);
-
-                        // Create the clip
-                        chatClient.say(channel, `@${msg.userInfo.userName}, GivePLZ Creating your clip...`);
-                        let clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
-
-                        // Give the twitch api 5 seconds to create a clip
-                        await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP));
-                        let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
-
-                        // Check if the clip was actually created
-                        if (getClipResp == null) {
-                            chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, give me a few more seconds Jebaited`);
-                            clippedResp = await apiClient2.helix.clips.createClip({ channelId: streamResp.userId, createAfterDelay: true });
-                            await new Promise((r) => setTimeout(r, TIME_TO_WAIT_CLIP * 2));
-                            getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
-                        }
-                        if (getClipResp == null) {
-                            chatClient.say(channel, `@${msg.userInfo.userName}, there was an error creating your clip, try running the command again FailFish`);
-                            _onCooldown.delete(`clips${channel}`);
-                        }
-
-                        let clipRes:
-                            | {
-                                  realClip: boolean;
-                                  qualities: any;
-                                  clipKey: any;
-                                  duration: any;
-                                  broadcaster: { id: any; displayName: any };
-                                  curator: { id: any; displayName: any };
-                                  title: any;
-                                  viewCount: any;
-                                  error: any;
-                              }
-                            | {
-                                  realClip: boolean;
-                                  qualities: any[];
-                                  clipKey: any;
-                                  duration: any;
-                                  broadcaster: { id: any; displayName: any };
-                                  curator: { id: any; displayName: any };
-                                  title: any;
-                                  viewCount: any;
-                                  error: any;
-                              };
-                        let bestClip: { sourceURL: any };
-
-                        try {
-                            clipRes = await sourceURL(clippedResp);
-                            if (clipRes.error) {
-                                chatClient.say(channel, `Error: ${clipRes.error}`);
-                            } else {
-                                bestClip = clipRes.qualities[clipRes.qualities.length - 1];
-                            }
-                        } catch (err) {
-                            chatClient.say(channel, `Error: ${err}`);
-                        }
-
-                        highestQualityClip = bestClip.sourceURL;
-
-                        // initialize the discord webhook
-                        let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
-
-                        args.shift(); // args.join(" ").replace("@", "");
-                        let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
-                        // prettier-ignore
-                        await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}${bestClip.sourceURL}${clipRes.clipKey}`);
-
-                        chatClient.say(channel, `PogChamp @${msg.userInfo.userName}, sent the clip to the Discord!`);
                     } catch (err) {
                         chatClient.say(channel, `Error: ${err}`);
-                        chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
+                    }
 
-                        let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
-                        finalStr = `
+                    highestQualityClip = bestClip.sourceURL;
+
+                    // initialize the discord webhook
+                    let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
+
+                    args.shift(); // args.join(" ").replace("@", "");
+                    let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
+                    // prettier-ignore
+                    await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}${bestClip.sourceURL}${clipRes.clipKey}`);
+
+                    chatClient.say(channel, `PogChamp @${msg.userInfo.userName}, sent the clip to the Discord!`);
+                } catch (err) {
+                    chatClient.say(channel, `Error: ${err}`);
+                    chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
+
+                    let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
+                    finalStr = `
                         Clip Error Info | ${channel} | ${finalStr}
                         
                         Error Stack Trace:
@@ -951,11 +895,8 @@ async function main() {
                         Bot by AuroR6S | ${moment().format(`ZZ | x`)}
                         `;
 
-                        let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-                        await dcWebhook.send(`@everyone\n\n${finalStr}`);
-                    }
-                } else {
-                    chatClient.say(channel, `@${msg.userInfo.userName}, please wait before using this command again!`);
+                    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+                    await dcWebhook.send(`@everyone\n\n${finalStr}`);
                 }
                 break;
         }
@@ -1181,6 +1122,21 @@ if (process.env.DEBUG !== 'TRUE') {
 
 const invisibleAntiPingCharacter = '\u{E0000}';
 
-function obfuscateName(str) {
+function obfuscateName(str: string) {
     return [...str].join(invisibleAntiPingCharacter);
+}
+
+async function handleCooldown(user: string, channel: string, command: string, userCooldown: number, channelCooldown: number): Promise<Boolean> {
+    if (user === 'auror6s') return true;
+
+    let userCooldownData = await redis.get(`cooldown:${command}:${channel}:${user}`);
+    if (userCooldownData) return false;
+
+    let channelCooldownData = await redis.get(`cooldown:${command}:${channel}`);
+    if (channelCooldownData) return false;
+
+    await redis.set(`cooldown:${command}:${channel}:${user}`, `true`, 'EX', userCooldown);
+    await redis.set(`cooldown:${command}:${channel}`, `true`, 'EX', channelCooldown);
+
+    return true;
 }
