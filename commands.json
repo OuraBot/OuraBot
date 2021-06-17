@@ -19,7 +19,7 @@
         "command": "follownuke",
         "description": "Bans the last X members",
         "usage": "!folownuke <time, 5m, 10m> <--dont-ban?>",
-        "permission": "Mod",
+        "permission": "Owner (until bot verified)",
         "userCooldown": 5,
         "channelCooldown": 5
     },

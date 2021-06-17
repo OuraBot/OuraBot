@@ -411,7 +411,7 @@ async function main() {
                 break;
 
             case 'follownuke':
-                if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                if (/* msg.userInfo.isMod || */ msg.userInfo.isBroadcaster) {
                     if (!args[1]) return chatClient.say(channel, 'Please provide a time! (30s, 5m, 1h)');
                     let dontBan = false;
                     if (args[2] === '--dont-ban') dontBan = true;
