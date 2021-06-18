@@ -744,7 +744,7 @@ async function main() {
                 let preferredEmote = await getBestEmote(_channel, preferredEmotes, fallbackEmote);
 
                 if (preferredEmote.error != null) {
-                    chatClient.say(channel, preferredEmote.error);
+                    chatClient.say(channel, `${preferredEmote.error} | Cached: ${preferredEmote.cached} | Response Time: ${preferredEmote.responseTime}ms`);
                 } else {
                     chatClient.say(channel, `${preferredEmote.bestAvailableEmote} | Cached: ${preferredEmote.cached} | Response Time: ${preferredEmote.responseTime}ms`);
                 }
