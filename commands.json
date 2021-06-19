@@ -102,5 +102,13 @@
         "permission": "Broadcaster",
         "userCooldown": 30,
         "channelCooldown": 30
+    },
+    {
+        "command": "checkem",
+        "description": "Check if a user follows any Hottub streamers",
+        "usage": "!checkem <user?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]

@@ -7,7 +7,7 @@ const redis = new Redis();
 async function getBestEmote(displayName: String, emoteOptions: String[], fallbackEmote: String) {
     try {
         const t0 = process.hrtime();
-        let emoteData = await getAllEmotes(displayName);
+        let emoteData = await getAllEmotes(displayName.replace('#', ''));
         const t1 = process.hrtime();
 
         let availableEmote: String = null;

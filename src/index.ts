@@ -521,6 +521,95 @@ async function main() {
                 }
                 break;
 
+            case 'checkem':
+                {
+                    try {
+                        if (!(await handleCooldown(user, channel, 'checkem', 10, 5))) return;
+
+                        let targetChannels = [
+                            'amouranth',
+                            'indiefoxx',
+                            'melina',
+                            'spoopykitt',
+                            'krypto_nat',
+                            'seoahtv',
+                            'chickenwingcandy',
+                            'livilu',
+                            'sarinha_xo',
+                            'niva',
+                            'intraventus',
+                            'carabeanz',
+                            'allecakes',
+                            'mady_gio',
+                            'tinycowgirl',
+                            'befitpilatesgal',
+                            'shulamonroe',
+                            'madihunni',
+                            'emmalayne',
+                            'tatumlealax',
+                            'paintedxlady',
+                        ];
+
+                        let userToCheck = args[1] || user;
+
+                        let targetId = (await apiClient.helix.users.getUserByName(userToCheck)).id;
+
+                        let followsResp = apiClient.helix.users.getFollowsPaginated({ user: targetId });
+
+                        let followedChannels = [];
+                        for await (const user of followsResp) {
+                            for (let channel of targetChannels) {
+                                if (user.followedUserName.toLowerCase() === channel) {
+                                    followedChannels.push({
+                                        channel: channel,
+                                        time: auroMs.relativeTime(Date.now() - new Date(user.followDate).getTime(), true),
+                                    });
+                                }
+                            }
+                        }
+                        followedChannels = followedChannels.map((item) => `${item.channel}`);
+                        let preferredEmote:
+                            | {
+                                  allEmotes: any;
+                                  bestAvailableEmote: String;
+                                  cached: any;
+                                  responseTime: number;
+                                  // clip wait time
+                                  error: any;
+                              }
+                            | { allEmotes: any; bestAvailableEmote: String; cached: any; responseTime: any; error: any };
+                        if (followedChannels.length != 0) {
+                            preferredEmote = await getBestEmote(channel.replace('#', ''), ['Weirdga', 'Weirdge', 'WeirdChamp', 'peepoWeird'], 'DendiFace');
+                        }
+                        let finalStr =
+                            user == userToCheck
+                                ? followedChannels.length == 0
+                                    ? `SeemsGood you passed the test`
+                                    : `${preferredEmote.bestAvailableEmote} You follow: ${obfuscateName(followedChannels.join(' | '))}`
+                                : followedChannels.length == 0
+                                ? `SeemsGood ${obfuscateName(userToCheck)} passed the test`
+                                : `${preferredEmote.bestAvailableEmote} ${obfuscateName(userToCheck)} follows: ${obfuscateName(followedChannels.join(' | '))}`;
+
+                        if (finalStr.length > 499) {
+                            return chatClient.say(
+                                channel,
+                                `@${user}, ${user == userToCheck ? `You follow` : `${obfuscateName(userToCheck)} follows`} too many channels for me to list them all WutFace`
+                            );
+                        } else {
+                            chatClient.say(channel, `@${user}, ${finalStr}`);
+                        }
+                    } catch (err) {
+                        console.table(err);
+                        if (err.message.includes('Cannot read property')) {
+                            chatClient.say(channel, `@${user}, The specified user is not a valid user!`);
+                        } else {
+                            chatClient.say(channel, `@${user}, There was an unknown error`);
+                            throw err;
+                        }
+                    }
+                }
+                break;
+
             case 'pull':
                 if (user != clientConfig.owner) return;
 
