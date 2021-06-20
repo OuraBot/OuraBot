@@ -1,6 +1,9 @@
 import axios from 'axios';
+import Redis from 'ioredis';
 
-async function sourceURL(slug: String) {
+const redis = new Redis();
+
+export async function sourceURL(slug: String) {
     try {
         const legacyClipRegex: RegExp = /[a-z0-9]+/i;
         const modernClipRegex: RegExp = /[a-z0-9]+-[-\w]{16}/gi;
@@ -71,4 +74,63 @@ async function sourceURL(slug: String) {
     }
 }
 
-export default sourceURL;
+export async function getUserInfo(displayName: string) {
+    try {
+        let cacheEntry = await redis.get(`getUserInfo:${displayName}`);
+
+        if (cacheEntry) {
+            return {
+                data: JSON.parse(cacheEntry),
+                cached: true,
+                error: null,
+            };
+        } else {
+            let data = await axios.get(`https://api.ivr.fi/twitch/resolve/${displayName.replace('@', '')}`);
+            let prettyData = {
+                banned: data.data.banned,
+                displayName: data.data.displayName,
+                login: data.data.login,
+                id: data.data.id,
+                bio: data.data.bio,
+                chatColor: data.data.chatColor,
+                logo: data.data.logo,
+                partner: data.data.partner,
+                affiliate: data.data.affiliate,
+                bot: data.data.bot,
+                createdAt: data.data.createdAt,
+                updatedAt: data.data.updatedAt,
+                chatSettings: {
+                    chatDelayMs: data.data.chatSettings.chatDelayMs,
+                    followersOnly: data.data.chatSettings.followersOnlyDurationMinutes,
+                    blockLinks: data.data.chatSettings.blockLinks,
+                    subOnly: data.data.chatSettings.isSubscriberOnlyModeEnabled,
+                    emoteOnly: data.data.chatSettings.isEmoteOnlyModeEnabled,
+                    slowMode: data.data.chatSettings.slowModeDurationSeconds,
+                    fastSubsMode: data.data.chatSettings.isFastSubsModeEnabled,
+                    r9k: data.data.chatSettings.isUniqueChatModeEnabled,
+                    requireVerifiedAccount: data.data.chatSettings.requireVerifiedAccount,
+                    rules: data.data.chatSettings.rules,
+                },
+                roles: {
+                    isAffiliate: data.data.roles.isAffiliate,
+                    isPartner: data.data.roles.isPartner,
+                    isSiteAdmin: data.data.roles.isSiteAdmin,
+                    isStaff: data.data.roles.isStaff,
+                },
+            };
+
+            redis.set(`getUserInfo:${displayName}`, JSON.stringify(prettyData), 'EX', 1800);
+            return {
+                data: prettyData,
+                cached: false,
+                error: null,
+            };
+        }
+    } catch (err) {
+        return {
+            data: null,
+            cached: null,
+            error: err,
+        };
+    }
+}

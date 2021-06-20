@@ -110,5 +110,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "id",
+        "description": "Get the ID of a user and if they are banned",
+        "usage": "!id <user?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]

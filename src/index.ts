@@ -13,7 +13,7 @@ import ms from 'ms';
 import axios from 'axios';
 import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
-import sourceURL from './Util/leppunen.js';
+import { sourceURL, getUserInfo } from './Util/leppunen.js';
 import getBestEmote from './Util/bae.js';
 
 import clientCommands from '../commands.json';
@@ -610,6 +610,21 @@ async function main() {
                 }
                 break;
 
+            case 'id':
+                if (!(await handleCooldown(user, channel, 'id', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found') {
+                            chatClient.say(channel, 'User was not found');
+                        } else {
+                            chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(channel, `@${user}, ${userInfo.data.id} ${userInfo.data.banned ? '⛔' : ''}`);
+                }
+                break;
             case 'pull':
                 if (user != clientConfig.owner) return;
 
