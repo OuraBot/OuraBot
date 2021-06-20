@@ -676,6 +676,53 @@ async function main() {
                 }
                 break;
 
+            case 'chatinfo':
+                if (!(await handleCooldown(user, channel, 'chatinfo', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found') {
+                            chatClient.say(channel, 'User was not found');
+                        } else {
+                            chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(
+                        channel,
+                        `@${user}, (not 100% accurate) #${obfuscateName(userInfo.data.displayName)}: 
+                        Chat Delay: ${userInfo.data.chatSettings?.chatDelayMs / 1000}s | 
+                        ${userInfo.data.chatSettings?.followersOnlyDurationMinutes ? `Followers Only: ${userInfo.data.fchatSettings?.followersOnlyDurationMinutes}m |` : ''} 
+                        ${userInfo.data.chatSettings?.slowMode ? `Slowmode: ${userInfo.data.chatSettings?.slowMode} |` : ''} 
+                        Block Links: ${userInfo.data.chatSettings?.blockLinks} | 
+                        ${userInfo.data.chatSettings?.subOnly ? `Sub Only: true | ` : ''} Emote Only: ${userInfo.data.chatSettings?.emoteOnly} | 
+                        ${userInfo.data.chatSettings?.isFastSubsModeEnabled ? 'Fast Subs: true | ' : ''} 
+                        R9K: ${userInfo.data.chatSettings?.r9k} | Require Verified Account: ${userInfo.data.chatSettings?.requireVerifiedAccount}`
+                    );
+                }
+                break;
+
+            case 'userinfo':
+                if (!(await handleCooldown(user, channel, 'userinfo', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found') {
+                            chatClient.say(channel, 'User was not found');
+                        } else {
+                            chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(
+                        channel,
+                        `@${user}, ID: ${userInfo.data.id} | Banned: ${userInfo.data.banned} | Chat Color: ${userInfo.data.chatColor} | Created ${auroMs.relativeTime(
+                            Date.now() - new Date(userInfo.data.createdAt).getTime()
+                        )} ago`
+                    );
+                }
+                break;
+
             case 'pull':
                 if (user != clientConfig.owner) return;
 

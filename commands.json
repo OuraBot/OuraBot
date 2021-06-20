@@ -126,5 +126,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "chatinfo",
+        "description": "Get the chat info of a channel (not 100% accurate)",
+        "usage": "!chatinfo <channel?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]
