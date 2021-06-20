@@ -134,5 +134,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "acountage",
+        "description": "Get the account age of an account",
+        "usage": "!acountage <user?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]

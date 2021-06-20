@@ -723,6 +723,26 @@ async function main() {
                 }
                 break;
 
+            case 'aa':
+            case 'accountage':
+                if (!(await handleCooldown(user, channel, 'acountage', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found') {
+                            chatClient.say(channel, 'User was not found');
+                        } else {
+                            chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(
+                        channel,
+                        `@${user}, ${targetUser == user ? 'Your account' : 'That account'} was created ${auroMs.relativeTime(Date.now() - new Date(userInfo.data.createdAt).getTime())} ago`
+                    );
+                }
+                break;
+
             case 'pull':
                 if (user != clientConfig.owner) return;
 
