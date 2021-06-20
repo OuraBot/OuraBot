@@ -625,6 +625,57 @@ async function main() {
                     chatClient.say(channel, `@${user}, ${userInfo.data.id} ${userInfo.data.banned ? '⛔' : ''}`);
                 }
                 break;
+
+            case 'roles':
+                if (!(await handleCooldown(user, channel, 'roles', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found') {
+                            chatClient.say(channel, 'User was not found');
+                        } else {
+                            chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    let rolesArr = [];
+                    if (userInfo.data.roles.isAffiliate) {
+                        rolesArr.push('Affiliate');
+                    }
+                    if (userInfo.data.roles.isPartner) {
+                        rolesArr.push('Partner');
+                    }
+                    if (userInfo.data.roles.isSiteAdmin) {
+                        rolesArr.push('Admin');
+                    }
+                    if (userInfo.data.roles.isStaff) {
+                        rolesArr.push('Staff');
+                    }
+                    if (userInfo.data.bot) {
+                        rolesArr.push('Bot');
+                    }
+
+                    chatClient.say(
+                        channel,
+                        `@${user}, ${
+                            rolesArr.length == 0
+                                ? targetUser == user
+                                    ? 'You have no roles'
+                                    : obfuscateName(targetUser) + ' has no roles.'
+                                : targetUser == user
+                                ? 'You have'
+                                : `${obfuscateName(userInfo.data.displayName)} has`
+                        } ${
+                            rolesArr.length == 2
+                                ? `${rolesArr[0]} and ${rolesArr[1]}`
+                                : rolesArr.length == 1
+                                ? rolesArr.join('')
+                                : ((rolesArr[rolesArr.length - 1] = `and ${rolesArr[rolesArr.length - 1]}`), rolesArr.join(', '))
+                        }`
+                    );
+                }
+                break;
+
             case 'pull':
                 if (user != clientConfig.owner) return;
 

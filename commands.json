@@ -118,5 +118,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "roles",
+        "description": "Get the roles of a user",
+        "usage": "!roles <user?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]
