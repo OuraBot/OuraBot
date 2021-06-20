@@ -549,6 +549,20 @@ async function main() {
                             'emmalayne',
                             'tatumlealax',
                             'paintedxlady',
+                            'evaanna',
+                            'imviolet_',
+                            'gonsabella',
+                            'miliemiless',
+                            'shyphoebe',
+                            'connie4u',
+                            'jadethejaguar',
+                            'elisbetetv',
+                            'karna',
+                            'its_tiffy_baby',
+                            'sheblackout',
+                            'evathediiva',
+                            'rainnie_bunny',
+                            'tomatchka',
                         ];
 
                         let userToCheck = args[1] || user;
