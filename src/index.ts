@@ -748,14 +748,12 @@ async function main() {
 
                 exec('git pull origin', async (error, stdout, stderr) => {
                     if (error) chatClient.say(channel, `Error: "${error.message}`);
-                    if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr}`);
+                    if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr.replace('https://github.com/OuraBot/Twitch-Bot', 'OuraBot/Twitch-Bot')}`);
 
                     if (stderr) {
                         if (stderr.includes('Already up to date')) {
                             chatClient.say(channel, stderr);
                         } else {
-                            let finalStr = stderr.replace('https://github.com/', '');
-                            await chatClient.say(channel, finalStr);
                             await chatClient.say(channel, 'Okayge 👋 process.exit();');
                             process.exit();
                         }
@@ -763,8 +761,6 @@ async function main() {
                         if (stdout.includes('Already up to date')) {
                             chatClient.say(channel, stdout);
                         } else {
-                            let finalStr = stdout.replace('https://github.com/', '');
-                            await chatClient.say(channel, finalStr);
                             await chatClient.say(channel, 'Okayge 👋 process.exit();');
                             process.exit();
                         }
