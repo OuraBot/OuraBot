@@ -150,5 +150,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "emote",
+        "description": "Get information about an emote",
+        "usage": "!emote <emote>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]

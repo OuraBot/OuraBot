@@ -13,7 +13,7 @@ import ms from 'ms';
 import axios from 'axios';
 import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
-import { sourceURL, getUserInfo, isUserBot } from './Util/leppunen.js';
+import { sourceURL, getUserInfo, isUserBot, getEmote } from './Util/leppunen.js';
 import getBestEmote from './Util/bae.js';
 
 import clientCommands from '../commands.json';
@@ -757,6 +757,23 @@ async function main() {
                         }
                     }
                     chatClient.say(channel, `@${user}, ${obfuscateName(userInfo.data.display_name)}: Known Bot: ${userInfo.data.known} | Verified Bot: ${userInfo.data.verified}`);
+                }
+                break;
+
+            case 'emote':
+                if (!(await handleCooldown(user, channel, 'emote', 10, 5))) return;
+                {
+                    if (!args[1]) return chatClient.say(channel, 'Please provide an emote to check');
+                    let emoteInfo = await getEmote(args[1]);
+                    if (emoteInfo.error) {
+                        return chatClient.say(channel, `There was an error fetching the emote`);
+                    }
+                    chatClient.say(
+                        channel,
+                        `@${user}, ${emoteInfo.data.channel ? `${obfuscateName(emoteInfo.data.channel)}:` : ''} Emote ID: ${emoteInfo.data.emoteId} | Emote Code: ${
+                            emoteInfo.data.emoteCode
+                        } | Set ID: ${emoteInfo.data.setId} | ${emoteInfo.data.tier ? `Tier ${emoteInfo.data.tier}` : ''}`
+                    );
                 }
                 break;
 

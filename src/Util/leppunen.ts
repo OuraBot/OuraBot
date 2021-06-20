@@ -168,3 +168,44 @@ export async function isUserBot(displayName: string) {
         };
     }
 }
+
+export async function getEmote(emote: string) {
+    try {
+        let cacheEntry = await redis.get(`getEmote:${emote}`);
+
+        if (cacheEntry) {
+            return {
+                data: JSON.parse(cacheEntry),
+                cached: true,
+                error: null,
+            };
+        } else {
+            let data = await axios.get(`https://api.ivr.fi/twitch/emotes/${emote}`);
+            let prettyData = {
+                channel: data.data.channel,
+                channelLogin: data.data.channellogin,
+                id: data.data.channelid,
+                emoteId: data.data.emoteid,
+                emoteCode: data.data.emotecode,
+                emoteUrls: {
+                    emoteUrl_1x: data.data.emoteurl_1x,
+                    emoteUrl_2x: data.data.emoteurl_2x,
+                    emoteUrl_3x: data.data.emoteurl_3x,
+                },
+                setId: data.data.setid,
+                tier: data.data.tier,
+            };
+            redis.set(`getEmote:${emote}`, JSON.stringify(prettyData), 'EX', 3600);
+            return {
+                data: prettyData,
+                cached: false,
+                error: null,
+            };
+        }
+    } catch (err) {
+        return {
+            data: null,
+            cached: null,
+        };
+    }
+}
