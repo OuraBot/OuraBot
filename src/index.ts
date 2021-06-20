@@ -157,6 +157,7 @@ async function main() {
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
 
         if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        if (channel === '#boyosheriff') chatClient.say('boyosheriff', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
