@@ -13,7 +13,7 @@ import ms from 'ms';
 import axios from 'axios';
 import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
-import { sourceURL, getUserInfo } from './Util/leppunen.js';
+import { sourceURL, getUserInfo, isUserBot } from './Util/leppunen.js';
 import getBestEmote from './Util/bae.js';
 
 import clientCommands from '../commands.json';
@@ -616,10 +616,10 @@ async function main() {
                     let targetUser = args[1] || user;
                     let userInfo = await getUserInfo(targetUser);
                     if (userInfo.error) {
-                        if (userInfo.error.error === 'User was not found') {
-                            chatClient.say(channel, 'User was not found');
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
                         } else {
-                            chatClient.say(channel, 'There was an unexpected error...');
+                            return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
                     chatClient.say(channel, `@${user}, ${userInfo.data.id} ${userInfo.data.banned ? '⛔' : ''}`);
@@ -632,10 +632,10 @@ async function main() {
                     let targetUser = args[1] || user;
                     let userInfo = await getUserInfo(targetUser);
                     if (userInfo.error) {
-                        if (userInfo.error.error === 'User was not found') {
-                            chatClient.say(channel, 'User was not found');
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
                         } else {
-                            chatClient.say(channel, 'There was an unexpected error...');
+                            return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
                     let rolesArr = [];
@@ -682,10 +682,10 @@ async function main() {
                     let targetUser = args[1] || user;
                     let userInfo = await getUserInfo(targetUser);
                     if (userInfo.error) {
-                        if (userInfo.error.error === 'User was not found') {
-                            chatClient.say(channel, 'User was not found');
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
                         } else {
-                            chatClient.say(channel, 'There was an unexpected error...');
+                            return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
                     chatClient.say(
@@ -708,10 +708,10 @@ async function main() {
                     let targetUser = args[1] || user;
                     let userInfo = await getUserInfo(targetUser);
                     if (userInfo.error) {
-                        if (userInfo.error.error === 'User was not found') {
-                            chatClient.say(channel, 'User was not found');
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
                         } else {
-                            chatClient.say(channel, 'There was an unexpected error...');
+                            return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
                     chatClient.say(
@@ -730,16 +730,32 @@ async function main() {
                     let targetUser = args[1] || user;
                     let userInfo = await getUserInfo(targetUser);
                     if (userInfo.error) {
-                        if (userInfo.error.error === 'User was not found') {
-                            chatClient.say(channel, 'User was not found');
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
                         } else {
-                            chatClient.say(channel, 'There was an unexpected error...');
+                            return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
                     chatClient.say(
                         channel,
                         `@${user}, ${targetUser == user ? 'Your account' : 'That account'} was created ${auroMs.relativeTime(Date.now() - new Date(userInfo.data.createdAt).getTime())} ago`
                     );
+                }
+                break;
+
+            case 'bot':
+                if (!(await handleCooldown(user, channel, 'bot', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await isUserBot(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
+                        } else {
+                            return chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(channel, `@${user}, ${obfuscateName(userInfo.data.display_name)}: Known Bot: ${userInfo.data.known} | Verified Bot: ${userInfo.data.verified}`);
                 }
                 break;
 

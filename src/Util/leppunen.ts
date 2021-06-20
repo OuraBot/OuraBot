@@ -134,3 +134,37 @@ export async function getUserInfo(displayName: string) {
         };
     }
 }
+
+export async function isUserBot(displayName: string) {
+    try {
+        let cacheEntry = await redis.get(`isUserBot:${displayName}`);
+
+        if (cacheEntry) {
+            return {
+                data: JSON.parse(cacheEntry),
+                cached: true,
+                error: null,
+            };
+        } else {
+            let data = await axios.get(`https://api.ivr.fi/twitch/bot/${displayName.replace('@', '')}`);
+            let prettyData = {
+                display_name: data.data.display_name,
+                id: data.data.id,
+                known: data.data.known,
+                verified: data.data.verified,
+            };
+            redis.set(`isUserBot:${displayName}`, JSON.stringify(prettyData), 'EX', 3600);
+            return {
+                data: prettyData,
+                cached: false,
+                error: null,
+            };
+        }
+    } catch (err) {
+        return {
+            data: null,
+            cached: null,
+            error: err,
+        };
+    }
+}

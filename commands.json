@@ -142,5 +142,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "bot",
+        "description": "Check if a user is a bot",
+        "usage": "!acountage <user?>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]
