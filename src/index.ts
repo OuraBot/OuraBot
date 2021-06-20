@@ -947,6 +947,7 @@ async function main() {
 
                 axios.post(`${internalAPI}/message/command/`, cmdData).then((data) => {
                     chatClient.say(channel, `Added command: "${data.data.command}" with the response of: ${data.data.response}`);
+                    redis.del(`channelAllData:${channel}`);
                 });
 
                 break;
