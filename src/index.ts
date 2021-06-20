@@ -691,6 +691,23 @@ async function main() {
                 }
                 break;
 
+            case 'banned':
+                if (!(await handleCooldown(user, channel, 'banned', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
+                        } else {
+                            return chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    chatClient.say(channel, `@${user}, ${obfuscateName(userInfo.data.displayName)}: ${userInfo.data.banned ? 'BANNED ⛔' : 'not banned'}`);
+                }
+                break;
+                break;
+
             case 'chatinfo':
                 if (!(await handleCooldown(user, channel, 'chatinfo', 10, 5))) return;
                 {

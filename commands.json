@@ -158,5 +158,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "banned",
+        "description": "Check if a user is banned",
+        "usage": "!banned <user>",
+        "permission": "None",
+        "userCooldown": 10,
+        "channelCooldown": 5
     }
 ]
