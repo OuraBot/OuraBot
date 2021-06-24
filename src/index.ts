@@ -83,7 +83,7 @@ async function main() {
 
     const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
 
-    for (var i = 0; i < autoMsgResp.data.length; i++) {
+    for (let i = 0; i < autoMsgResp.data.length; i++) {
         sendAutomatedMessage(autoMsgResp.data[i]);
     }
 
@@ -96,9 +96,9 @@ async function main() {
                     let finalStr = updatedResponse;
 
                     if (updatedResponse.indexOf('$fetchURL(') != -1) {
-                        var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                        var end_pos = updatedResponse.indexOf(')', start_pos);
-                        var text_to_get = updatedResponse.substring(start_pos, end_pos);
+                        let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                        let end_pos = updatedResponse.indexOf(')', start_pos);
+                        let text_to_get = updatedResponse.substring(start_pos, end_pos);
                         let customURL = text_to_get;
                         let customResp = await axios
                             .get(customURL, { timeout: 10000 })
@@ -125,9 +125,9 @@ async function main() {
                 let finalStr = updatedResponse;
 
                 if (updatedResponse.indexOf('$fetchURL(') != -1) {
-                    var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                    var end_pos = updatedResponse.indexOf(')', start_pos);
-                    var text_to_get = updatedResponse.substring(start_pos, end_pos);
+                    let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                    let end_pos = updatedResponse.indexOf(')', start_pos);
+                    let text_to_get = updatedResponse.substring(start_pos, end_pos);
                     let customURL = text_to_get;
                     let customResp = await axios
                         .get(customURL, { timeout: 10000 })
@@ -162,7 +162,7 @@ async function main() {
 
     chatClient.onMessage(async (channel, user, message, msg) => {
         if (user === process.env.CLIENT_USERNAME) return;
-        var Rargs: string[] = message.split(' ');
+        let Rargs: string[] = message.split(' ');
 
         const t0 = process.hrtime();
         let channelDataCached = false;
@@ -186,7 +186,7 @@ async function main() {
         if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
             //
         } else {
-            for (var i = 0; i < _obj.length; i++) {
+            for (let i = 0; i < _obj.length; i++) {
                 if (_obj[i].sub == true) {
                     if (msg.userInfo.isSubscriber) {
                         //
@@ -196,7 +196,7 @@ async function main() {
                             let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
                             if (finalStr.includes('$(newline)')) {
                                 let splitStr = finalStr.split('$(newline)');
-                                for (var i = 0; i < splitStr.length; i++) {
+                                for (let i = 0; i < splitStr.length; i++) {
                                     chatClient.say(channel, splitStr[i].replace('${user}', user));
                                 }
                             } else {
@@ -210,7 +210,7 @@ async function main() {
                         let finalStr = _obj[i].response.replace('${user}', user).replace('${ag}', `Matched group: ${_obj[i].title}`);
                         if (finalStr.includes('$(newline)')) {
                             let splitStr = finalStr.split('$(newline)');
-                            for (var i = 0; i < splitStr.length; i++) {
+                            for (let i = 0; i < splitStr.length; i++) {
                                 chatClient.say(channel, splitStr[i].replace('${user}', user));
                             }
                         } else {
@@ -222,7 +222,7 @@ async function main() {
         }
 
         let obj = channelAllData.commands;
-        for (var i = 0; i < obj.length; i++) {
+        for (let i = 0; i < obj.length; i++) {
             if (Rargs[0] === obj[i].command) {
                 if (!customOnCooldown.has(`${obj[i].command}${channel}`)) {
                     // make this better \/
@@ -236,9 +236,9 @@ async function main() {
                     let finalStr = updatedResponse;
 
                     if (updatedResponse.indexOf('$fetchURL(') != -1) {
-                        var start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                        var end_pos = updatedResponse.indexOf(')', start_pos);
-                        var text_to_get = updatedResponse.substring(start_pos, end_pos);
+                        let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                        let end_pos = updatedResponse.indexOf(')', start_pos);
+                        let text_to_get = updatedResponse.substring(start_pos, end_pos);
                         let customURL = text_to_get;
                         let customResp = await axios
                             .get(customURL, { timeout: 10000 })
@@ -249,7 +249,7 @@ async function main() {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
                                     if (finalStr.includes('$(newline)')) {
                                         let splitStr = finalStr.split('$(newline)');
-                                        for (var e = 0; e < splitStr.length; e++) {
+                                        for (let e = 0; e < splitStr.length; e++) {
                                             chatClient.say(channel, splitStr[e]);
                                         }
                                     } else {
@@ -259,7 +259,7 @@ async function main() {
                                     finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
                                     if (finalStr.includes('$(newline)')) {
                                         let splitStr = finalStr.split('$(newline)');
-                                        for (var e = 0; e < splitStr.length; e++) {
+                                        for (let e = 0; e < splitStr.length; e++) {
                                             chatClient.say(channel, splitStr[e]);
                                         }
                                     } else {
@@ -274,7 +274,7 @@ async function main() {
                         if (finalStr.includes('$(newline)')) {
                             let splitStr = finalStr.split('$(newline)');
                             console.log(splitStr);
-                            for (var e = 0; e < splitStr.length; e++) {
+                            for (let e = 0; e < splitStr.length; e++) {
                                 chatClient.say(channel, splitStr[e]);
                             }
                         } else {
@@ -296,7 +296,7 @@ async function main() {
         }
 
         if (!message.startsWith(process.env.PREFIX)) return;
-        var args: string[] = message.substr(process.env.PREFIX.length).split(' ');
+        let args: string[] = message.substr(process.env.PREFIX.length).split(' ');
 
         switch (args[0]) {
             case 'ping':
@@ -384,13 +384,13 @@ async function main() {
                     .then((data) => {
                         let apiPostCode = `${channel.replace('#', '')} | ${process.env.CLIENT_USERNAME} | ${moment().format('HH:MM MM/DD/YY')}\n\n\nCustom Commands:\n\n`;
 
-                        for (var i = 0; i < data.data.length; i++) {
+                        for (let i = 0; i < data.data.length; i++) {
                             apiPostCode = apiPostCode + `Command: ${data.data[i].command}\nResponse: ${data.data[i].response}\nCooldown: ${data.data[i].cooldown} seconds\n\n`;
                         }
 
                         apiPostCode = apiPostCode + `Global Commands:\n\n`;
 
-                        for (var i = 0; i < clientCommands.length; i++) {
+                        for (let i = 0; i < clientCommands.length; i++) {
                             apiPostCode =
                                 apiPostCode +
                                 `Command: ${clientCommands[i].command}\nDescription: ${clientCommands[i].description}\nUsage: ${clientCommands[i].usage}\nPermission: ${clientCommands[i].permission}\nChannel Cooldown: ${clientCommands[i].channelCooldown} seconds\nUser Cooldown: ${clientCommands[i].userCooldown} seconds\n\n`;
@@ -475,8 +475,8 @@ async function main() {
             case 'filesayfast':
                 if (user != clientConfig.owner) return;
                 const pastebinResp = await axios.get(args[1]);
-                var splitResp = pastebinResp.data.split('\n');
-                for (var i = 0; i < splitResp.length; i++) {
+                let splitResp = pastebinResp.data.split('\n');
+                for (let i = 0; i < splitResp.length; i++) {
                     chatClient.say(channel, splitResp[i]);
                 }
                 break;
@@ -1089,7 +1089,7 @@ async function main() {
 
                     let discordData;
 
-                    for (var i = 0; i < clipsResp.data.length; i++) {
+                    for (let i = 0; i < clipsResp.data.length; i++) {
                         if (clipsResp.data[i].channel === channel.replace('#', '')) {
                             discordData = clipsResp.data[i];
                         }
@@ -1350,7 +1350,7 @@ async function main() {
         .get(`${internalAPI}/eventsub/follow/`)
         .then(async (response) => {
             if (response?.data?.length > 0) {
-                for (var i = 0; i < response.data.length; i++) {
+                for (let i = 0; i < response.data.length; i++) {
                     const channelData = response.data[i];
                     const followSubscription = await listener.subscribeToChannelFollowEvents(channelData.channelID, (e) => {
                         chatClient.say(channelData.channel, channelData.response.replace('%user%', e.userDisplayName));
