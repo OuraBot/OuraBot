@@ -98,93 +98,46 @@ async function main() {
 
     await chatClient.connect();
 
-    let autoMsgResp = (await axios.get(`${internalAPI}/message/automsg/`)).data;
+    if (process.env?.DEBUG !== 'TRUE') {
+        let autoMsgResp = (await axios.get(`${internalAPI}/message/automsg/`)).data;
 
-    let queueArr = [];
-    for (let i = 0; i < autoMsgResp.length; i++) {
-        queueArr.push(new Queue(`queue:${autoMsgResp[i]._id}`));
-        queueArr[i].add(autoMsgResp[i], { repeat: { cron: autoMsgResp[i].cron } });
-    }
+        let queueArr = [];
+        for (let i = 0; i < autoMsgResp.length; i++) {
+            queueArr.push(new Queue(`queue:${autoMsgResp[i]._id}`));
+            queueArr[i].add(autoMsgResp[i], { repeat: { cron: autoMsgResp[i].cron } });
+        }
 
-    for (let queue of queueArr) {
-        queue.process(async function (job) {
-            if (job.data.bot !== process.env.CLIENT_USERNAME) return;
-            if (job.data.online) {
-                let onlineResp = await apiClient.helix.streams.getStreamByUserName(job.data.channel.replace('#', ''));
-                if (onlineResp == null ? false : true) {
-                    chatClient.say(job.data.channel, job.data.message);
+        for (let queue of queueArr) {
+            queue.process(async function (job) {
+                if (job.data.bot !== process.env.CLIENT_USERNAME) return;
+                if (job.data.online) {
+                    let onlineResp = await apiClient.helix.streams.getStreamByUserName(job.data.channel.replace('#', ''));
+                    if (onlineResp == null ? false : true) {
+                        sayMessage(job.data.channel, job.data.message);
+                    } else {
+                        // Stream offline
+                    }
                 } else {
-                    // Stream offline
+                    sayMessage(job.data.channel, job.data.message);
                 }
-            } else {
-                chatClient.say(job.data.channel, job.data.message);
-            }
 
-            /*
-            console.log(`Executing #${job.data.channel}: ${job.data.message}`);
-
-            if (job.data.bot !== process.env.CLIENT_USERNAME) return;
-            if (job.data.online == true) {
-                if ((await apiClient.helix.streams.getStreamByUserId(job.data.channel.replace('#', ''))) == null ? false : true) {
-                    let updatedResponse = job.data.message;
-                    let finalStr = updatedResponse;
-
-                    if (updatedResponse.indexOf('$fetchURL(') != -1) {
-                        let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                        let end_pos = updatedResponse.indexOf(')', start_pos);
-                        let text_to_get = updatedResponse.substring(start_pos, end_pos);
-                        let customURL = text_to_get;
-                        let customResp = await axios
-                            .get(customURL, { timeout: 10000 })
-                            .then(function (response) {
-                                let re = /(\).).+?(?=\s|$)/;
-                                if (finalStr.match(re)) {
-                                    let objTarget = finalStr.match(re)[0].substring(2);
-                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                    chatClient.say(job.data.channel, finalStr);
-                                } else {
-                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                    chatClient.say(job.data.channel, finalStr);
-                                }
+                async function sayMessage(channel: string, message: string) {
+                    if (message.includes('$fetchURL(')) {
+                        let targetURL = message.replace(/^.*\$fetchURL\(|\).*$/g, '');
+                        await axios
+                            .get(targetURL, { timeout: 10000 })
+                            .then((resp) => {
+                                chatClient.say(channel, message.replace(`$fetchURL(${targetURL})`, resp.data));
                             })
-                            .catch(function (err) {
-                                chatClient.say(job.data.channel, `Error while fetching "${customURL}"`);
+                            .catch((err) => {
+                                chatClient.say(channel, `There was an error fetching "${targetURL}"`);
                             });
                     } else {
-                        chatClient.say(job.data.channel, job.data.message);
+                        chatClient.say(channel, message);
                     }
                 }
-            } else {
-                let updatedResponse = job.data.message;
-                let finalStr = updatedResponse;
-
-                if (updatedResponse.indexOf('$fetchURL(') != -1) {
-                    let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
-                    let end_pos = updatedResponse.indexOf(')', start_pos);
-                    let text_to_get = updatedResponse.substring(start_pos, end_pos);
-                    let customURL = text_to_get;
-                    let customResp = await axios
-                        .get(customURL, { timeout: 10000 })
-                        .then(function (response) {
-                            let re = /(\).).+?(?=\s|$)/;
-                            if (finalStr.match(re)) {
-                                let objTarget = finalStr.match(re)[0].substring(2);
-                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
-                                chatClient.say(job.data.channel, finalStr);
-                            } else {
-                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
-                                chatClient.say(job.data.channel, finalStr);
-                            }
-                        })
-                        .catch(function (err) {
-                            chatClient.say(job.data.channel, `Error while fetching "${customURL}"`);
-                        });
-                } else {
-                    chatClient.say(job.data.channel, job.data.message);
-                }
-            }
-            */
-        });
+            });
+        }
     }
 
     /*
