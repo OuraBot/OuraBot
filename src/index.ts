@@ -1230,7 +1230,7 @@ async function main() {
                     args.shift(); // args.join(" ").replace("@", "");
                     let clipTitle: string = args[1] ? `\n${args.join(' ').replace('@', '')}\n\n` : `\n\n`;
                     // prettier-ignore
-                    await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://clips.twitch.tv/${clippedResp}${bestClip.sourceURL}${clipRes.clipKey}`);
+                    await dcWebhook.send(`**${streamResp.userName}** playing ${streamResp.gameName} clipped by **${msg.userInfo.userName}**!${clipTitle}https://clips.twitch.tv/${clippedResp}\n${bestClip.sourceURL}${clipRes.clipKey}`);
 
                     chatClient.say(channel, `PogChamp @${msg.userInfo.userName}, sent the clip to the Discord!`);
                 } catch (err) {
