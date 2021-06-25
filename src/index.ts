@@ -985,8 +985,14 @@ async function main() {
 
                 args.shift();
                 if (args.length === 0) return chatClient.say(channel, 'Please provide a query');
-                let url = `http://api.wolframalpha.com/v1/result?appid=${process.env.WOLFRAM_ALPHA_KEY}&i=${args.join('+')}`;
-                chatClient.say(channel, (await axios.get(url)).data);
+                axios
+                    .get(`http://api.wolframalpha.com/v1/result?appid=${process.env.WOLFRAM_ALPHA_KEY}&i=${args.join('+')}`)
+                    .then((data) => {
+                        chatClient.say(channel, data.data);
+                    })
+                    .catch((err) => {
+                        chatClient.say(channel, `Wolfram Alpha did not understand your question`);
+                    });
                 break;
 
             case 'c-add':
