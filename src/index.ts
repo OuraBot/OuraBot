@@ -11,7 +11,7 @@ import { inspect } from 'util';
 import { exec } from 'child_process';
 import moment from 'moment';
 import ms from 'ms';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Discord, { Channel } from 'discord.js';
 import * as auroMs from 'auro-ms-conversion';
 import { sourceURL, getUserInfo, isUserBot, getEmote } from './Util/leppunen.js';
@@ -65,7 +65,24 @@ async function main() {
     const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
     await listener.listen();
 
-    const listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
+    let listenResp: AxiosResponse<any>;
+    try {
+        listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
+    } catch (err) {
+        let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
+        console.log(finalStr);
+
+        finalStr = `
+        Error Info | ${process.env.CLIENT_USERNAME} | ${finalStr}
+        ERROR WHILE GETTING LISTEN LIST
+        ${err}
+        `;
+
+        let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+        await dcWebhook.send(`@everyone\n\n${finalStr}`);
+
+        listenResp = await axios.get(`${internalAPI}/listen/${process.env.CLIENT_USERNAME}`);
+    }
     let channelsToListenIn = listenResp.data.map((item) => item.channel);
     if (process.env.DEBUG === 'TRUE') {
         channelsToListenIn = [clientConfig.owner];
