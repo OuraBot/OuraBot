@@ -81,8 +81,7 @@ async function main() {
 
     await chatClient.connect();
 
-    const autoMsgResp = (await axios.get(`${internalAPI}/message/automsg/`)).data;
-    console.log(autoMsgResp);
+    let autoMsgResp = (await axios.get(`${internalAPI}/message/automsg/`)).data;
 
     let queueArr = [];
     for (let i = 0; i < autoMsgResp.length; i++) {
@@ -91,8 +90,21 @@ async function main() {
     }
 
     for (let queue of queueArr) {
-        queue.process(async function (job: { data: { channel: string; message: string; bot: string; online: boolean } }) {
-            if (process.env.DEBUG === 'TRUE') return;
+        queue.process(async function (job) {
+            if (job.data.online) {
+                let onlineResp = await apiClient.helix.streams.getStreamByUserName(job.data.channel.replace('#', ''));
+                if (onlineResp == null ? false : true) {
+                    chatClient.say(job.data.channel, job.data.message);
+                } else {
+                    // Stream offline
+                }
+            } else {
+                chatClient.say(job.data.channel, job.data.message);
+            }
+
+            /*
+            console.log(`Executing #${job.data.channel}: ${job.data.message}`);
+
             if (job.data.bot !== process.env.CLIENT_USERNAME) return;
             if (job.data.online == true) {
                 if ((await apiClient.helix.streams.getStreamByUserId(job.data.channel.replace('#', ''))) == null ? false : true) {
@@ -118,7 +130,7 @@ async function main() {
                                 }
                             })
                             .catch(function (err) {
-                                chatClient.say(job.data.channel, `Error while fetching "${customURL}": ${err}`);
+                                chatClient.say(job.data.channel, `Error while fetching "${customURL}"`);
                             });
                     } else {
                         chatClient.say(job.data.channel, job.data.message);
@@ -147,14 +159,16 @@ async function main() {
                             }
                         })
                         .catch(function (err) {
-                            chatClient.say(job.data.channel, `Error while fetching "${customURL}": ${err}`);
+                            chatClient.say(job.data.channel, `Error while fetching "${customURL}"`);
                         });
                 } else {
                     chatClient.say(job.data.channel, job.data.message);
                 }
             }
+            */
         });
     }
+
     /*
     async function sendAutomatedMessage(foo) {
         setInterval(async function () {
@@ -226,8 +240,8 @@ async function main() {
         console.log(`${user} joined ${channel}`);
         // chatClient.say(channel, `MrDestructoid Joined channel!`);
 
-        if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
-        if (channel === '#boyosheriff') chatClient.say('boyosheriff', `PagMan BOT STARTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        if (channel === '#auror6s') chatClient.say('auror6s', `PagMan BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        if (channel === '#boyosheriff') chatClient.say('boyosheriff', `PagMan BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
     });
 
     chatClient.onMessage(async (channel, user, message, msg) => {
