@@ -12,9 +12,11 @@
     "author": "Auro <35087590+MrAuro@users.noreply.github.com>",
     "license": "MIT",
     "dependencies": {
+        "@types/bull": "^3.15.1",
         "@types/ioredis": "^4.26.4",
         "auro-ms-conversion": "^1.3.0",
         "axios": "^0.21.1",
+        "bull": "^3.22.9",
         "discord.js": "^12.5.3",
         "dotenv": "^9.0.2",
         "form-data": "^4.0.0",

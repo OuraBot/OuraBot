@@ -6,6 +6,7 @@ import { EventSubListener } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 import Redis from 'ioredis';
 
+import Queue from 'bull';
 import { inspect } from 'util';
 import { exec } from 'child_process';
 import moment from 'moment';
@@ -24,7 +25,6 @@ dotenv.config();
 
 const internalAPI = process.env.INTERNALAPI || 'http://10.0.0.97:5000';
 
-let highestQualityClip;
 let commandCacheData = [];
 let commandCacheTimer = 0;
 const onCooldown = new Set();
@@ -81,12 +81,81 @@ async function main() {
 
     await chatClient.connect();
 
-    const autoMsgResp = await axios.get(`${internalAPI}/message/automsg/`);
+    const autoMsgResp = (await axios.get(`${internalAPI}/message/automsg/`)).data;
+    console.log(autoMsgResp);
 
-    for (let i = 0; i < autoMsgResp.data.length; i++) {
-        sendAutomatedMessage(autoMsgResp.data[i]);
+    let queueArr = [];
+    for (let i = 0; i < autoMsgResp.length; i++) {
+        queueArr.push(new Queue(`queue:${autoMsgResp[i].id}`));
+        queueArr[i].add(autoMsgResp[i], { repeat: { cron: autoMsgResp[i].cron } });
     }
 
+    for (let queue of queueArr) {
+        queue.process(async function (job: { data: { channel: string; message: string; bot: string; online: boolean } }) {
+            if (process.env.DEBUG === 'TRUE') return;
+            if (job.data.bot !== process.env.CLIENT_USERNAME) return;
+            if (job.data.online == true) {
+                if ((await apiClient.helix.streams.getStreamByUserId(job.data.channel.replace('#', ''))) == null ? false : true) {
+                    let updatedResponse = job.data.message;
+                    let finalStr = updatedResponse;
+
+                    if (updatedResponse.indexOf('$fetchURL(') != -1) {
+                        let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                        let end_pos = updatedResponse.indexOf(')', start_pos);
+                        let text_to_get = updatedResponse.substring(start_pos, end_pos);
+                        let customURL = text_to_get;
+                        let customResp = await axios
+                            .get(customURL, { timeout: 10000 })
+                            .then(function (response) {
+                                let re = /(\).).+?(?=\s|$)/;
+                                if (finalStr.match(re)) {
+                                    let objTarget = finalStr.match(re)[0].substring(2);
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                    chatClient.say(job.data.channel, finalStr);
+                                } else {
+                                    finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                    chatClient.say(job.data.channel, finalStr);
+                                }
+                            })
+                            .catch(function (err) {
+                                chatClient.say(job.data.channel, `Error while fetching "${customURL}": ${err}`);
+                            });
+                    } else {
+                        chatClient.say(job.data.channel, job.data.message);
+                    }
+                }
+            } else {
+                let updatedResponse = job.data.message;
+                let finalStr = updatedResponse;
+
+                if (updatedResponse.indexOf('$fetchURL(') != -1) {
+                    let start_pos = updatedResponse.indexOf('$fetchURL(') + 10;
+                    let end_pos = updatedResponse.indexOf(')', start_pos);
+                    let text_to_get = updatedResponse.substring(start_pos, end_pos);
+                    let customURL = text_to_get;
+                    let customResp = await axios
+                        .get(customURL, { timeout: 10000 })
+                        .then(function (response) {
+                            let re = /(\).).+?(?=\s|$)/;
+                            if (finalStr.match(re)) {
+                                let objTarget = finalStr.match(re)[0].substring(2);
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data[objTarget]).replace(`.${objTarget}`, '');
+                                chatClient.say(job.data.channel, finalStr);
+                            } else {
+                                finalStr = updatedResponse.replace(`$fetchURL(${text_to_get})`, response.data);
+                                chatClient.say(job.data.channel, finalStr);
+                            }
+                        })
+                        .catch(function (err) {
+                            chatClient.say(job.data.channel, `Error while fetching "${customURL}": ${err}`);
+                        });
+                } else {
+                    chatClient.say(job.data.channel, job.data.message);
+                }
+            }
+        });
+    }
+    /*
     async function sendAutomatedMessage(foo) {
         setInterval(async function () {
             if (foo.bot !== process.env.CLIENT_USERNAME) return;
@@ -151,6 +220,7 @@ async function main() {
             }
         }, foo.timer * 60000);
     }
+    */
 
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
@@ -1162,8 +1232,6 @@ async function main() {
                     } catch (err) {
                         chatClient.say(channel, `Error: ${err}`);
                     }
-
-                    highestQualityClip = bestClip.sourceURL;
 
                     // initialize the discord webhook
                     let dcWebhook = new Discord.WebhookClient(discordData.whID, discordData.whToken);
