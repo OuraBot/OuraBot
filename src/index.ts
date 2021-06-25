@@ -86,7 +86,7 @@ async function main() {
 
     let queueArr = [];
     for (let i = 0; i < autoMsgResp.length; i++) {
-        queueArr.push(new Queue(`queue:${autoMsgResp[i].id}`));
+        queueArr.push(new Queue(`queue:${autoMsgResp[i]._id}`));
         queueArr[i].add(autoMsgResp[i], { repeat: { cron: autoMsgResp[i].cron } });
     }
 
