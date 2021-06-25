@@ -108,6 +108,7 @@ async function main() {
 
     for (let queue of queueArr) {
         queue.process(async function (job) {
+            if (job.data.bot !== process.env.CLIENT_USERNAME) return;
             if (job.data.online) {
                 let onlineResp = await apiClient.helix.streams.getStreamByUserName(job.data.channel.replace('#', ''));
                 if (onlineResp == null ? false : true) {
