@@ -919,7 +919,7 @@ async function main() {
                         chatClient.say(channel, `@${user}, ${obfuscateName(followData.userDisplayName)} has been following ${obfuscateName(followData.followedUserName)} for ${followData.time}`);
                     }
                 } catch (err) {
-                    chatClient.say(channel, `Error: ${err}`);
+                    chatClient.say(channel, `Error: ${err?.message}`);
                 }
 
                 break;
