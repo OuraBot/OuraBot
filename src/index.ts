@@ -622,7 +622,7 @@ async function main() {
 
                         let userToCheck = args[1] || user;
 
-                        let targetId = (await apiClient.helix.users.getUserByName(userToCheck)).id;
+                        let targetId = (await apiClient.helix.users.getUserByName(userToCheck.replace('@', ''))).id;
 
                         let followsResp = apiClient.helix.users.getFollowsPaginated({ user: targetId });
 
@@ -671,6 +671,8 @@ async function main() {
                     } catch (err) {
                         console.table(err);
                         if (err.message.includes('Cannot read property')) {
+                            chatClient.say(channel, `@${user}, The specified user is not a valid user!`);
+                        } else if (err.message === 'Invalid login names, emails or IDs in request') {
                             chatClient.say(channel, `@${user}, The specified user is not a valid user!`);
                         } else {
                             chatClient.say(channel, `@${user}, There was an unknown error`);
@@ -974,7 +976,7 @@ async function main() {
                 let targetChannel = args[2] || channel.replace('#', '');
 
                 axios
-                    .get(`https://api.ivr.fi/twitch/subage/${targetUser}/${targetChannel}`)
+                    .get(`https://api.ivr.fi/twitch/subage/${targetUser.replace(/󠀀+/gi, '')}/${targetChannel.replace(/󠀀+/gi, '')}`)
                     .then((resp) => {
                         if (resp.data.subscribed) {
                             let tier = resp.data.meta.tier;
@@ -1513,8 +1515,6 @@ if (process.env.DEBUG !== 'TRUE') {
         // fs.writeFile('logs.txt', `${process.env.HASTEBIN_SERVER}/${rejectionResp.data.key} ${moment().format('HH:mm:ss.SS M/DD/YY')}`);
     });
 }
-
-const invisibleAntiPingCharacter = '\u{E0000}';
 
 function obfuscateName(str: string) {
     return [...str].join(invisibleAntiPingCharacter);
