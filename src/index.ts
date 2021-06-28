@@ -842,7 +842,7 @@ async function main() {
                         Date.now() - new Date(userInfo.data.createdAt).getTime()
                     )} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${userInfo.data.id}`;
 
-                    let tempStr = finalStr + ` | ${userInfo.data.bio}`;
+                    let tempStr = finalStr + ` | bio: ${userInfo.data.bio}`;
                     if (tempStr.length >= 499) {
                         chatClient.say(channel, `${finalStr}`);
                     } else {
