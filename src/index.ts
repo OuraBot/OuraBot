@@ -810,6 +810,48 @@ async function main() {
                 }
                 break;
 
+            case 'whois':
+                if (!(await handleCooldown(user, channel, 'acountage', 10, 5))) return;
+                {
+                    let targetUser = args[1] || user;
+                    let userInfo = await getUserInfo(targetUser);
+                    if (userInfo.error) {
+                        if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
+                            return chatClient.say(channel, 'User was not found');
+                        } else {
+                            return chatClient.say(channel, 'There was an unexpected error...');
+                        }
+                    }
+                    let rolesArr = [];
+                    if (userInfo.data.roles.isAffiliate) {
+                        rolesArr.push('affiliate');
+                    }
+                    if (userInfo.data.roles.isPartner) {
+                        rolesArr.push('partner');
+                    }
+                    if (userInfo.data.roles.isSiteAdmin) {
+                        rolesArr.push('admin');
+                    }
+                    if (userInfo.data.roles.isStaff) {
+                        rolesArr.push('staff');
+                    }
+                    if (userInfo.data.bot) {
+                        rolesArr.push('bot');
+                    }
+                    let finalStr = `@${user}, user ${obfuscateName(targetUser)}, chat color: ${userInfo.data.chatColor} | account created ${auroMs.relativeTime(
+                        Date.now() - new Date(userInfo.data.createdAt).getTime()
+                    )} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${userInfo.data.id}`;
+
+                    let tempStr = finalStr + ` | ${userInfo.data.bio}`;
+                    if (tempStr.length >= 499) {
+                        chatClient.say(channel, `${finalStr}`);
+                    } else {
+                        chatClient.say(channel, `${tempStr}`);
+                    }
+                }
+
+                break;
+
             case 'aa':
             case 'accountage':
                 if (!(await handleCooldown(user, channel, 'acountage', 10, 5))) return;
