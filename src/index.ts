@@ -364,7 +364,7 @@ async function main() {
                     `Pong! Serving ${channelsToListenIn.length} channels for ${auroMs.relativeTime(
                         Math.round(process.uptime() * 1000),
                         false
-                    )}. View Custom API Status at https://stats.uptimerobot.com/2JRDMCkY43 | ${respTime}ms ${channelDataCached ? 'Cached' : 'Not Cached'}`
+                    )}. View Custom API Status at https://stats.uptimerobot.com/2JRDMCkY43 | ${respTime}ms ${channelDataCached ? 'Cached' : 'Not Cached'} | ${await redis.dbsize()} keys`
                 );
                 break;
 
