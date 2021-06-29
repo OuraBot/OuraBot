@@ -842,9 +842,11 @@ async function main() {
                     if (userInfo.data.bot) {
                         rolesArr.push('bot');
                     }
-                    let finalStr = `@${user}, user ${obfuscateName(targetUser)}, chat color: ${userInfo.data.chatColor} | account created ${auroMs.relativeTime(
-                        Date.now() - new Date(userInfo.data.createdAt).getTime()
-                    )} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${userInfo.data.id}`;
+                    let finalStr = `@${user}, user ${obfuscateName(targetUser)}, ${userInfo.data.banned ? 'BANNED | ' : ''} chat color: ${
+                        userInfo.data.chatColor
+                    } | account created ${auroMs.relativeTime(Date.now() - new Date(userInfo.data.createdAt).getTime())} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${
+                        userInfo.data.id
+                    }`;
 
                     let tempStr = finalStr + ` | bio: ${userInfo.data.bio}`;
                     if (tempStr.length >= 499) {
