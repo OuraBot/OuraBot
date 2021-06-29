@@ -25,6 +25,8 @@ dotenv.config();
 
 const internalAPI = process.env.INTERNALAPI || 'http://10.0.0.97:5000';
 
+const invisibleAntiPingCharacter = '\u{E0000}';
+
 let commandCacheData = [];
 let commandCacheTimer = 0;
 const onCooldown = new Set();
