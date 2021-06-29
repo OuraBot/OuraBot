@@ -325,7 +325,7 @@ async function main() {
                                 }
                             })
                             .catch(function (err) {
-                                chatClient.say(channel, `Error: ${err}`);
+                                chatClient.say(channel, `There was an error while fetching ${customURL}`);
                             });
                     } else {
                         if (finalStr.includes('$(newline)')) {
@@ -403,7 +403,8 @@ async function main() {
                         clipRes = await sourceURL(args[1]);
                         console.log(clipRes);
                     } catch (err) {
-                        chatClient.say(channel, err);
+                        chatClient.say(channel, 'There was an error while fetching the clip...');
+                        throw err;
                     }
 
                     if (user.replace('#', '') === clientConfig.owner) {
@@ -460,11 +461,13 @@ async function main() {
                                 chatClient.say(channel, `You can find a list of all commands here: ${process.env.HASTEBIN_SERVER}/${data.data.key}`);
                             })
                             .catch((err) => {
-                                console.log(err);
+                                chatClient.say(channel, 'There was an unknown error...');
+                                throw err;
                             });
                     })
                     .catch((err) => {
-                        chatClient.say(channel, `Error: ${err}`);
+                        chatClient.say(channel, `There was an error while reaching the internal API...`);
+                        throw err;
                     });
                 break;
 
@@ -514,7 +517,8 @@ async function main() {
                             // prettier-ignore
                             chatClient.say(channel, `${dontBan ? "Not banning" : "Banning"} ${users.length} users | Unban: ${process.env.HASTEBIN_SERVER}/${unbanList.data.key} | Ban: ${process.env.HASTEBIN_SERVER}/${banList.data.key}`);
                         } catch (err) {
-                            chatClient.say(channel, `There was an error with the Hastebin server: ${err}`);
+                            chatClient.say(channel, `There was an error with the Hastebin server...`);
+                            throw err;
                         }
 
                         // finally, loop through users array and ban each user
@@ -523,8 +527,8 @@ async function main() {
                             chatClient.say(channel, `/ban ${user}`);
                         }
                     } catch (err) {
-                        chatClient.say(channel, `There was an error: ${err}`);
-                        console.error(err);
+                        chatClient.say(channel, `There was an unknown error...`);
+                        throw err;
                     }
                 }
                 break;
@@ -693,6 +697,7 @@ async function main() {
                         if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
                             return chatClient.say(channel, 'User was not found');
                         } else {
+                            throw userInfo.error;
                             return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }
@@ -967,7 +972,12 @@ async function main() {
                         chatClient.say(channel, `@${user}, ${obfuscateName(followData.userDisplayName)} has been following ${obfuscateName(followData.followedUserName)} for ${followData.time}`);
                     }
                 } catch (err) {
-                    chatClient.say(channel, `Error: ${err?.message}`);
+                    if (err?._body.status == 400) {
+                        chatClient.say(channel, 'Please provide a valid user');
+                    } else {
+                        chatClient.say(channel, `There was an unknown error...`);
+                        throw err;
+                    }
                 }
 
                 break;
@@ -1040,10 +1050,11 @@ async function main() {
                         }
                     })
                     .catch((err) => {
-                        if (err.response?.status == 404) {
-                            chatClient.say(channel, `Error: ${err.response.data.error}`);
+                        if (err.response?.status == 400) {
+                            chatClient.say(channel, `Please provide a valid user`);
                         } else {
-                            chatClient.say(channel, err);
+                            chatClient.say(channel, 'There was an unknown error....');
+                            throw err;
                         }
                     });
                 break;
@@ -1186,7 +1197,12 @@ async function main() {
                         chatClient.say(channel, `"${obfuscateName(resp.data.message)}", by ${obfuscateName(resp.data.user)} from ${resp.data.time}`);
                     })
                     .catch((err) => {
-                        chatClient.say(channel, err);
+                        if (err?.response?.status == 404) {
+                            chatClient.say(channel, 'Please provide a valid user');
+                        } else {
+                            chatClient.say(channel, 'There was an unknown error...');
+                            throw err;
+                        }
                     });
 
                 break;
@@ -1269,7 +1285,8 @@ async function main() {
                             bestClip = clipRes.qualities[clipRes.qualities.length - 1];
                         }
                     } catch (err) {
-                        chatClient.say(channel, `Error: ${err}`);
+                        chatClient.say(channel, `There was an unknown error...`);
+                        throw err;
                     }
 
                     // initialize the discord webhook
@@ -1282,8 +1299,8 @@ async function main() {
 
                     chatClient.say(channel, `PogChamp @${msg.userInfo.userName}, sent the clip to the Discord!`);
                 } catch (err) {
-                    chatClient.say(channel, `Error: ${err}`);
-                    chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel}: ${err}`);
+                    chatClient.say(channel, `There was an unknown error...`);
+                    chatClient.say('auror6s', `🚨 @auror6s ERROR IN ${channel} LOOK IN DISCORD monkaS !!!!!`);
 
                     let finalStr = moment().format('HH:mm:ss.SS M/DD/YY');
                     finalStr = `
