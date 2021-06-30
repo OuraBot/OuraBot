@@ -697,7 +697,6 @@ async function main() {
                         if (userInfo.error.error === 'User was not found' || userInfo.error.error === 'Response code 400 (Bad Request)') {
                             return chatClient.say(channel, 'User was not found');
                         } else {
-                            throw userInfo.error;
                             return chatClient.say(channel, 'There was an unexpected error...');
                         }
                     }

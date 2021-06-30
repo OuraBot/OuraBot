@@ -127,11 +127,21 @@ export async function getUserInfo(displayName: string) {
             };
         }
     } catch (err) {
-        return {
-            data: null,
-            cached: null,
-            error: err,
-        };
+        if (err.response.status == 404) {
+            return {
+                data: null,
+                cached: null,
+                error: {
+                    error: 'User was not found',
+                },
+            };
+        } else {
+            return {
+                data: null,
+                cached: null,
+                error: err,
+            };
+        }
     }
 }
 
