@@ -1014,6 +1014,8 @@ async function main() {
             case 'followage':
             case 'fa':
                 if (!(await handleCooldown(user, channel, 'followage', 10, 5))) return;
+                if (channel === '#demonjoefrance') return;
+
                 try {
                     let targetUser = args[1] || user;
                     let targetChannel = args[2] || user;
