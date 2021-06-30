@@ -769,7 +769,6 @@ async function main() {
                     chatClient.say(channel, `@${user}, ${obfuscateName(userInfo.data.displayName)}: ${userInfo.data.banned ? 'BANNED ⛔' : 'not banned'}`);
                 }
                 break;
-                break;
 
             case 'chatinfo':
                 if (!(await handleCooldown(user, channel, 'chatinfo', 10, 5))) return;
