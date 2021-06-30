@@ -174,5 +174,13 @@
         "permission": "None",
         "userCooldown": 10,
         "channelCooldown": 5
+    },
+    {
+        "command": "downtime",
+        "description": "Get the downtime of a channel",
+        "usage": "!downtime <channel?>",
+        "permission": "None",
+        "userCooldown": 30,
+        "channelCooldown": 10
     }
 ]

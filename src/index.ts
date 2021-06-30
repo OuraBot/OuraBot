@@ -916,6 +916,45 @@ async function main() {
                 }
                 break;
 
+            case 'downtime':
+                if (!(await handleCooldown(user, channel, 'downtime', 30, 10))) return;
+
+                try {
+                    let targetChannel = args[1] || channel.replace('#', '');
+                    let targetId = await apiClient.helix.users.getUserByName(targetChannel);
+                    if (!targetId) return chatClient.say(channel, `@${user}, please provide a valid channel!`);
+
+                    let streamData = await apiClient.helix.streams.getStreamByUserName(targetChannel);
+                    if (streamData != null) return chatClient.say(channel, `@${user}, that channel is currently live!`);
+
+                    let vidData = await apiClient.helix.videos.getVideosByUser(targetId);
+                    if (!vidData.data[0]) return chatClient.say(channel, `@${user}, that channel is offline`);
+
+                    let mult = 1000;
+                    const { creationDate, duration } = vidData.data[0];
+                    const vodDuration = duration
+                        .split(/\D/)
+                        .filter(Boolean)
+                        .map(Number)
+                        .reverse()
+                        .reduce((acc, cur) => {
+                            acc += cur * mult;
+                            mult *= 60;
+                            return acc;
+                        }, 0);
+
+                    chatClient.say(
+                        channel,
+                        `@${user}, ${obfuscateName(targetChannel)} has been offline for ${auroMs.relativeTime(new Date().getTime() - new Date(creationDate).valueOf() + vodDuration, true)}`
+                    );
+                } catch (err) {
+                    if (err?._body.status == 400) {
+                        chatClient.say(channel, `@${user}, please provide a valid channel!`);
+                    }
+                }
+
+                break;
+
             case 'pull':
                 if (user != clientConfig.owner) return;
 
