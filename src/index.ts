@@ -224,7 +224,7 @@ async function main() {
         const t0 = process.hrtime();
         let channelDataCached = false;
 
-        let channelAllData: { terms: any; commands: any };
+        let channelAllData: { terms: any; commands: any; modules: any };
         let _channelAllData = await redis.get(`channelAllData:${channel}`);
 
         if (_channelAllData) {
@@ -238,6 +238,32 @@ async function main() {
 
         const t1 = process.hrtime();
         let respTime = Math.round(t1[0] * 1000000 + t1[1] / 1000 - (t0[0] * 1000000 + t0[1] / 1000)) / 1000;
+
+        let moduleData = channelAllData.modules[0];
+        if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+            //
+        } else {
+            if (moduleData.ascii) {
+                let asciiRe = /([─│┌┐└┘├┤┬┴┼═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╤╥▀▄█▌▐░▒▓■□▪▫▬▲►▼◄⠁⠂⠄⠈⠐⠠⡀⢀⠃⠅⠉⠑⠡⡁⢁⠆⠊⠒⠢⡂⢂⠌⠔⠤⡄⢄⠘⠨⡈⢈⠰⡐⢐⡠⢠⣀⠇⠋⠓⠣⡃⢃⠍⠕⠥⡅⢅⠙⠩⡉⢉⠱⡑⢑⡡⢡⣁⠎⠖⠦⡆⢆⠚⠪⡊⢊⠲⡒⢒⡢⢢⣂⠜⠬⡌⢌⠴⡔⢔⡤⢤⣄⠸⡘⢘⡨⢨⣈⡰⢰⣐⣠⠏⠗⠧⡇⢇⠛⠫⡋⢋⠳⡓⢓⡣⢣⣃⠝⠭⡍⢍⠵⡕⢕⡥⢥⣅⠹⡙⢙⡩⢩⣉⡱⢱⣑⣡⠞⠮⡎⢎⠶⡖⢖⡦⢦⣆⠺⡚⢚⡪⢪⣊⡲⢲⣒⣢⠼⡜⢜⡬⢬⣌⡴⢴⣔⣤⡸⢸⣘⣨⣰⠟⠯⡏⢏⠷⡗⢗⡧⢧⣇⠻⡛⢛⡫⢫⣋⡳⢳⣓⣣⠽⡝⢝⡭⢭⣍⡵⢵⣕⣥⡹⢹⣙⣩⣱⠾⡞⢞⡮⢮⣎⡶⢶⣖⣦⡺⢺⣚⣪⣲⡼⢼⣜⣬⣴⣸⠿⡟⢟⡯⢯⣏⡷⢷⣗⣧⡻⢻⣛⣫⣳⡽⢽⣝⣭⣵⣹⡾⢾⣞⣮⣶⣺⣼⡿⢿⣟⣯⣷⣻⣽⣾⣿]{10,}\s){4,}|([─│┌┐└┘├┤┬┴┼═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╤╥▀▄█▌▐░▒▓■□▪▫▬▲►▼◄⠁⠂⠄⠈⠐⠠⡀⢀⠃⠅⠉⠑⠡⡁⢁⠆⠊⠒⠢⡂⢂⠌⠔⠤⡄⢄⠘⠨⡈⢈⠰⡐⢐⡠⢠⣀⠇⠋⠓⠣⡃⢃⠍⠕⠥⡅⢅⠙⠩⡉⢉⠱⡑⢑⡡⢡⣁⠎⠖⠦⡆⢆⠚⠪⡊⢊⠲⡒⢒⡢⢢⣂⠜⠬⡌⢌⠴⡔⢔⡤⢤⣄⠸⡘⢘⡨⢨⣈⡰⢰⣐⣠⠏⠗⠧⡇⢇⠛⠫⡋⢋⠳⡓⢓⡣⢣⣃⠝⠭⡍⢍⠵⡕⢕⡥⢥⣅⠹⡙⢙⡩⢩⣉⡱⢱⣑⣡⠞⠮⡎⢎⠶⡖⢖⡦⢦⣆⠺⡚⢚⡪⢪⣊⡲⢲⣒⣢⠼⡜⢜⡬⢬⣌⡴⢴⣔⣤⡸⢸⣘⣨⣰⠟⠯⡏⢏⠷⡗⢗⡧⢧⣇⠻⡛⢛⡫⢫⣋⡳⢳⣓⣣⠽⡝⢝⡭⢭⣍⡵⢵⣕⣥⡹⢹⣙⣩⣱⠾⡞⢞⡮⢮⣎⡶⢶⣖⣦⡺⢺⣚⣪⣲⡼⢼⣜⣬⣴⣸⠿⡟⢟⡯⢯⣏⡷⢷⣗⣧⡻⢻⣛⣫⣳⡽⢽⣝⣭⣵⣹⡾⢾⣞⣮⣶⣺⣼⡿⢿⣟⣯⣷⣻⣽⣾⣿]){90,}/g;
+                if (message.match(asciiRe)) {
+                    console.log('MATCHDETECTED');
+                    let timeoutMultiplier = async () => {
+                        let redisData = await redis.get(`ascii:${user}:${channel}`);
+                        if (redisData) {
+                            let multipliedData = Number(redisData) * 2;
+                            await redis.set(`ascii:${user}:${channel}`, multipliedData, 'EX', 1800);
+                            return Number(redisData);
+                        } else {
+                            await redis.set(`ascii:${user}:${channel}`, 2, 'EX', 1800);
+                            return 1;
+                        }
+                    };
+
+                    let length = (await timeoutMultiplier()) * 20;
+                    chatClient.say(channel, `/timeout ${user} ${length >= 300 ? 300 : length}s ascii art | your next timeout will be ${length * 2 >= 300 ? 300 : length * 2}s`);
+                }
+            }
+        }
 
         let _obj = channelAllData.terms;
         if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
@@ -581,6 +607,10 @@ async function main() {
                     if (typeof text === 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
                     else return text;
                 }
+                break;
+
+            case 'clear':
+                redis.del(`ascii:${args[1]}:${channel}`);
                 break;
 
             case 'checkem':
