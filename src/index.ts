@@ -1017,8 +1017,8 @@ async function main() {
                 if (channel === '#demonjoefrance') return;
 
                 try {
-                    let targetUser = args[1] || user;
-                    let targetChannel = args[2] || user;
+                    let targetUser = args[1] || user.replace('@', '');
+                    let targetChannel = args[2] || channel.replace('#', '');
 
                     let targetId = (await apiClient.helix.users.getUserByName(targetUser)).id;
 
@@ -1055,7 +1055,7 @@ async function main() {
             case 'sa':
                 if (!(await handleCooldown(user, channel, 'subbage', 10, 5))) return;
 
-                let targetUser = args[1] || user;
+                let targetUser = args[1] || user.replace('@', '');
                 let targetChannel = args[2] || channel.replace('#', '');
 
                 axios
