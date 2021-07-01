@@ -259,7 +259,7 @@ async function main() {
                         }
                     };
 
-                    let length = (await timeoutMultiplier()) * 20;
+                    let length = (await timeoutMultiplier()) * moduleData.ascii;
                     chatClient.say(channel, `/timeout ${user} ${length >= 300 ? 300 : length}s ascii art | your next timeout will be ${length * 2 >= 300 ? 300 : length * 2}s`);
                 }
             }
