@@ -263,6 +263,12 @@ async function main() {
                     chatClient.say(channel, `/timeout ${user} ${length >= 300 ? 300 : length}s ascii art | your next timeout will be ${length * 2 >= 300 ? 300 : length * 2}s`);
                 }
             }
+            if (moduleData.link) {
+                let linkRe = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+                if (message.match(linkRe)) {
+                    chatClient.say(channel, `/timeout ${user} ${moduleData.link} no links`);
+                }
+            }
         }
 
         let _obj = channelAllData.terms;
