@@ -1212,6 +1212,128 @@ async function main() {
 
                 break;
 
+            /*
+            case 'notifies':
+                let keyData = await redis.keys('notify:*');
+                let allNotifies = [];
+                for (let notifyKey of keyData) {
+                    let specKey = await redis.get(notifyKey);
+                    allNotifies.push(JSON.parse(specKey));
+                }
+                console.log(allNotifies.map((noti) => noti.id));
+                break;
+
+            
+            case 'chunktest':
+                let notiList = ['auror6s', 'randomperson', 'joemama', 'testxd'];
+
+                let prefEmote = await getBestEmote(channel.replace('#', ''), ['Sadge', 'Sadeg', 'SadgeCry'], 'FeelsBadMan');
+
+                let messages: Array<string> = [];
+                if (notiList.length == 0) {
+                    console.log('FAIL');
+                } else {
+                    let msgs = chunkArr(notiList, 450);
+                    console.log(msgs);
+                    console.log(msgs.map((a) => `test ${prefEmote.bestAvailableEmote} : ${a}`));
+                }
+                break;
+                
+                */
+
+            /*
+               case 'notify-fake-data':
+                   let fakeUsers = () => {
+                       let adjectives = ['Happy', 'Sad', 'Excited', 'Concernced', 'Curios', 'Aggressive', 'Angry', 'Tired', 'Smart', 'Fast', 'Slow'];
+                       let nouns = ['Computer', 'Tiger', 'Duck', 'Llama', 'House', 'Seahorse', 'Lion', 'Gorilla', 'Horse'];
+                       
+                       let fakeUserList = [];
+                       for(let i = 0; i < 100; i++) {
+                           fakeUserList.push(adjectives[Math.floor(Math.random()*adjectives.length)]+nouns[Math.floor(Math.random()*nouns.length)]+Math.round(Math.random()*1000))
+                    }
+                    return fakeUserList;
+                }
+                
+                let dataDump = [];
+
+                for(let fakeUser of fakeUsers()) {
+                    let fakeChannel = [
+                        {
+                            "channel": "#StreamingStreamer512",
+                            "id": "6173691"
+                        },
+                        {
+                            "channel": "#TwitchByTheWay",
+                            "id": "9347671"
+                        },
+                        {
+                            "channel": "#GamingGamer121",
+                            "id": "2212512"
+                        },
+                        {
+                            "channel": "#ExQueueSe",
+                            "id": "7157351"
+                        }
+                    ]
+                    let targetChannel = fakeChannel[Math.floor(Math.random() * fakeChannel.length)];
+                    let notiList = [
+                        'live',
+                        'offline',
+                        'title',
+                        'game'
+                    ]
+                    let targetNoti = notiList[Math.floor(Math.random() * notiList.length)];
+                    dataDump.push((await addUserToNotify(fakeUser, targetChannel.channel, targetChannel.id, notifyTypes[targetNoti])));
+                }
+                console.log(dataDump);
+                break;
+                
+                */
+
+            /*
+               case 'getnotifies':
+                   if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to subscribe to! (live, offline)`);
+                   chatClient.say(channel, (await getNotifies(channel, '94568374', notifyTypes[args[1]])).join(' '));
+                   break;
+                   */
+
+            case 'notifyme':
+                if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to subscribe to! (live, offline, game, title)`);
+                if (!(await handleCooldown(user, channel, 'notifyme', 5, 1))) return;
+
+                await addUserToNotify(user, channel, (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id, notifyTypes[args[1]]).then((data) => {
+                    if (data.error) {
+                        if (data.code == 400) {
+                            chatClient.say(channel, `@${user}, you are already on the list for "${notifyTypes[args[1]]}" FailFish`);
+                        } else {
+                            chatClient.say(channel, `@${user}, there was an unknown error. Please try again later. NotLikeThis`);
+                        }
+                    } else {
+                        chatClient.say(channel, `@${user}, you have been added to the list for "${notifyTypes[args[1]]}" SeemsGood`);
+                    }
+                });
+                break;
+
+            case 'removeme':
+            case 'unotifyme':
+                if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to unsubscribe to! (live, offline)`);
+                if (!(await handleCooldown(user, channel, 'unnotifyme', 5, 1))) return;
+
+                await removeUserFromNotify(user, channel, notifyTypes[args[1]]).then((data) => {
+                    if (data.error) {
+                        if (data.code == 400) {
+                            chatClient.say(channel, `@${user}, you are not on the list for this notify type! FailFish`);
+                        } else if (data.code == 401) {
+                            chatClient.say(channel, `@${user}, you are not on the list for this notify type! FailFish`);
+                        } else {
+                            chatClient.say(channel, `@${user}, there was an unknown error. Please try again later. NotLikeThis`);
+                        }
+                    } else {
+                        chatClient.say(channel, `@${user}, you have been removed from the list for "${notifyTypes[args[1]]}" SeemsGood`);
+                    }
+                });
+                break;
+
             case 'bae-test':
                 if (user !== 'auror6s') return;
 
@@ -1561,6 +1683,85 @@ async function main() {
         .catch((error) => {
             console.log(error);
         });
+
+    {
+        let keyData = await redis.keys('notify:*');
+        let allNotifies = [];
+        for (let notifyKey of keyData) {
+            let specKey = await redis.get(notifyKey);
+            allNotifies.push(JSON.parse(specKey));
+        }
+        console.log(allNotifies.map((noti) => noti.id));
+        for (let noti of allNotifies) {
+            await listener.subscribeToStreamOnlineEvents(noti.id, sendLiveEvent.bind(null, noti.channel));
+            await listener.subscribeToStreamOfflineEvents(noti.id, sendOfflineEvent.bind(null, noti.channel));
+        }
+
+        interface IHandleEvent {
+            sucess: boolean;
+            messages: Array<string>;
+        }
+
+        async function sendLiveEvent(channel: string) {
+            let data = await handleLiveEvent(channel);
+            if (data.sucess) {
+                console.log(data.messages);
+                for (let msg of data.messages) {
+                    chatClient.say(channel, msg);
+                }
+            }
+        }
+
+        async function sendOfflineEvent(channel: string) {
+            let data = await handleOfflineEvent(channel);
+            if (data.sucess) {
+                console.log(data.messages);
+                for (let msg of data.messages) {
+                    chatClient.say(channel, msg);
+                }
+            }
+        }
+
+        async function handleLiveEvent(channel: string): Promise<IHandleEvent> {
+            let notiList = await getNotifies(channel, null, notifyTypes['live']);
+
+            let prefEmote = await getBestEmote(channel.replace('#', ''), ['PagMan', 'PagChomp', 'PogU', 'peepoPog', 'PAGGING'], 'PogChamp');
+
+            if (notiList.length == 0) {
+                return {
+                    sucess: false,
+                    messages: null,
+                };
+            } else {
+                let msgs = chunkArr(notiList, 450);
+
+                return {
+                    sucess: true,
+                    messages: msgs.map((a) => `${channel.replace('#', '')} is now live! ${prefEmote.bestAvailableEmote} 👉 ${a}`),
+                };
+            }
+        }
+
+        async function handleOfflineEvent(channel: string): Promise<IHandleEvent> {
+            let notiList = await getNotifies(channel, null, notifyTypes['offline']);
+
+            let prefEmote = await getBestEmote(channel.replace('#', ''), ['Sadge', 'Sadeg', 'SadgeCry'], 'FeelsBadMan');
+
+            if (notiList.length == 0) {
+                return {
+                    sucess: false,
+                    messages: null,
+                };
+            } else {
+                let msgs = chunkArr(notiList, 450);
+
+                return {
+                    sucess: true,
+                    messages: msgs.map((a) => `${channel.replace('#', '')} is now offline ${prefEmote.bestAvailableEmote} 👉 ${a}`),
+                };
+            }
+        }
+    }
 }
 
 main();
@@ -1630,4 +1831,123 @@ async function handleCooldown(user: string, channel: string, command: string, us
     await redis.set(`cooldown:${command}:${channel}`, `true`, 'EX', channelCooldown);
 
     return true;
+}
+
+enum notifyTypes {
+    live = 'live',
+    offline = 'offline',
+    // title = 'title',
+    // game = 'game',
+}
+
+interface IUserNotify {
+    sucess: boolean;
+    error: string;
+    code: number;
+}
+/*
+    code:
+        200 -> OK
+        400 -> USER ERROR (LEAK SAFE)
+        500 -> INTERNAL ERROR (NOT LEAK SAFE)
+ */
+
+async function addUserToNotify(user: string, channel: string, channelId: string, target: notifyTypes): Promise<IUserNotify> {
+    let notifyData: any = await redis.get(`notify:${channel}`);
+    if (notifyData) {
+        notifyData = JSON.parse(notifyData);
+    } else {
+        notifyData = {
+            id: channelId,
+            channel: channel,
+            live: [],
+            offline: [],
+            title: [],
+            game: [],
+        };
+    }
+
+    if (notifyData[target].includes(user)) {
+        return {
+            sucess: false,
+            error: 'user already on list',
+            code: 400,
+        };
+    } else {
+        try {
+            notifyData[target].push(user);
+            await redis.set(`notify:${channel}`, JSON.stringify(notifyData));
+            return {
+                sucess: true,
+                error: null,
+                code: 200,
+            };
+        } catch (err) {
+            return {
+                sucess: false,
+                error: err,
+                code: 500,
+            };
+        }
+    }
+}
+
+interface IRemoveNotify {
+    sucess: boolean;
+    error: string;
+    code: number;
+}
+
+async function removeUserFromNotify(user: string, channel: string, target: notifyTypes): Promise<IRemoveNotify> {
+    let notifyData: any = await redis.get(`notify:${channel}`);
+    if (notifyData) {
+        notifyData = JSON.parse(notifyData);
+    } else {
+        return {
+            sucess: false,
+            error: 'no existing notify data',
+            code: 400,
+        };
+    }
+
+    console.log(notifyData[target]);
+
+    if (notifyData[target].includes(user)) {
+        let notifyIndex = notifyData[target].indexOf(user, 0);
+        notifyData[target].splice(notifyIndex, 1);
+        redis.set(`notify:${channel}`, JSON.stringify(notifyData));
+        return {
+            sucess: true,
+            error: null,
+            code: 200,
+        };
+    } else {
+        return {
+            sucess: false,
+            error: 'user not on list',
+            code: 400,
+        };
+    }
+}
+
+async function getNotifies(channel: string, channelid: string, target: notifyTypes) {
+    let notifyData = await redis.get(`notify:${channel}`);
+    if (notifyData) {
+        notifyData = JSON.parse(notifyData);
+    } else {
+        return [];
+    }
+
+    return notifyData[target];
+}
+
+function chunkArr(arr: Array<string>, len: number): Array<string> {
+    return arr.reduce((acc, word, i) => {
+        if (!i || acc[acc.length - 1].length + word.length >= len) {
+            acc.push(word);
+        } else {
+            acc[acc.length - 1] += ' ' + word;
+        }
+        return acc;
+    }, []);
 }

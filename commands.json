@@ -24,6 +24,22 @@
         "channelCooldown": 5
     },
     {
+        "command": "notifyme",
+        "description": "Add yourself to be pinged when the streamer goes live or offline",
+        "usage": "!notifyme <live, offline>",
+        "permission": "None",
+        "userCooldown": 5,
+        "channelCooldown": 1
+    },
+    {
+        "command": "unnotifyme",
+        "description": "Remove yourself to be pinged when the streamer goes live or offline",
+        "usage": "!unnotifyme <live, offline>",
+        "permission": "None",
+        "userCooldown": 5,
+        "channelCooldown": 1
+    },
+    {
         "command": "getclip",
         "description": "Gets the download link for a clip. Gets highest quality if not provided",
         "usage": "!getclip <Clip Link or Slug> <quality?>",
