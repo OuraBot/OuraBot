@@ -1239,6 +1239,7 @@ async function main() {
                 break;
 
             case 'bing':
+                if (channel === "#averageharry_") return;
                 if (!(await handleCooldown(user, channel, 'bing', 10, 5))) return;
                 let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
                 let _preferredEmote = await getBestEmote(channel.replace('#', ''), ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink', ':tf:'], '🤭👉🔔');
