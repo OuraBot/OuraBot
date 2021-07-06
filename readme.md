@@ -1,6 +1,5 @@
 # Documentation
 
-test Okayge
 
 ## Terms:
 
