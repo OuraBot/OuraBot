@@ -1315,6 +1315,13 @@ async function main() {
                 });
                 break;
 
+            case 'eventsub-list':
+                if (user !== 'auror6s') return;
+                let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+                await dcWebhook.send(`${(await apiClient.helix.eventSub.getSubscriptions()).data.map((e) => `${e.status} | ${e.type} | ${e.creationDate} | ${e.condition} | ${e.id}`).join('\n')}`);
+                console.log();
+                break;
+
             case 'removeme':
             case 'unotifyme':
                 if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to unsubscribe to! (live, offline)`);
