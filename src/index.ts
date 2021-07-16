@@ -41,6 +41,8 @@ const MAX_DAYS_TO_CALLBACK = 3;
 // clip wait time
 const TIME_TO_WAIT_CLIP = 5000;
 
+let logWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+
 async function main() {
     console.log(`${process.env.CLIENT_USERNAME} is starting...`);
     const clientId = process.env.APP_CLIENTID;
@@ -598,6 +600,62 @@ async function main() {
 
                 break;
             */
+
+            case 'eventsub-help':
+                if (user !== clientConfig.owner) return;
+                chatClient.say(
+                    channel,
+                    'eventsub-listen: listener.listen() | eventsub-resume: listener.resume...() | eventsub-list: listener.getSubscriptions() | eventsub-unlisten: listener.unlisten()'
+                );
+
+            case 'eventsub-listen':
+                if (user !== clientConfig.owner) return;
+                try {
+                    listener.listen();
+                    chatClient.say(channel, 'Listener is now listening!');
+                } catch (err) {
+                    chatClient.say(channel, 'There was an error. The log has been sent to the Discord.');
+                    // send the error to discord with a webhook
+                    logWebhook.send(err);
+                }
+                break;
+
+            case 'eventsub-resume':
+                if (user !== clientConfig.owner) return;
+                try {
+                    listener.resumeExistingSubscriptions();
+                    chatClient.say(channel, 'Resumed existing subscriptions!');
+                } catch (err) {
+                    chatClient.say(channel, 'There was an error. The log has been sent to the Discord.');
+                    // send the error to discord with a webhook
+                    logWebhook.send(err);
+                }
+                break;
+
+            case 'eventsub-list':
+                if (user !== 'auror6s') return;
+                try {
+                    let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
+                    await dcWebhook.send(`${(await apiClient.helix.eventSub.getSubscriptions()).data.map((e) => `${e.status} | ${e.type} | ${e.creationDate} | ${e.condition} | ${e.id}`).join('\n')}`);
+                    chatClient.say(channel, 'Sent subscriptions to Discord!');
+                } catch (err) {
+                    chatClient.say(channel, 'There was an error. The log has been sent to the Discord.');
+                    // send the error to discord with a webhook
+                    logWebhook.send(err);
+                }
+                break;
+
+            case 'eventsub-unlisten':
+                if (user !== clientConfig.owner) return;
+                try {
+                    listener.unlisten();
+                    chatClient.say(channel, 'Listener is no longer listening');
+                } catch (err) {
+                    chatClient.say(channel, 'There was an error. The log has been sent to the Discord.');
+                    // send the error to discord with a webhook
+                    logWebhook.send(err);
+                }
+                break;
 
             case 'eval':
                 if (user != clientConfig.owner) return;
@@ -1313,13 +1371,6 @@ async function main() {
                         chatClient.say(channel, `@${user}, you have been added to the list for "${notifyTypes[args[1]]}" SeemsGood`);
                     }
                 });
-                break;
-
-            case 'eventsub-list':
-                if (user !== 'auror6s') return;
-                let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-                await dcWebhook.send(`${(await apiClient.helix.eventSub.getSubscriptions()).data.map((e) => `${e.status} | ${e.type} | ${e.creationDate} | ${e.condition} | ${e.id}`).join('\n')}`);
-                console.log();
                 break;
 
             case 'removeme':
