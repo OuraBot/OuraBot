@@ -607,6 +607,7 @@ async function main() {
                     channel,
                     'eventsub-listen: listener.listen() | eventsub-resume: listener.resume...() | eventsub-list: listener.getSubscriptions() | eventsub-unlisten: listener.unlisten()'
                 );
+                break;
 
             case 'eventsub-listen':
                 if (user !== clientConfig.owner) return;
