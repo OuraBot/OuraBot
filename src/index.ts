@@ -650,13 +650,17 @@ async function main() {
 
             case 'eventsub-list':
                 if (user !== 'auror6s') return;
+
                 try {
                     let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-                    await dcWebhook.send(
-                        `${(await apiClient.helix.eventSub.getSubscriptions()).data
-                            .map((e) => `${e.status} | ${e.type} | ${e.condition?.broadcaster_user_id} | ${e.creationDate} | ${e.id}`)
-                            .join('\n')}`
-                    );
+                    let finalStr = '';
+                    let subList = (await apiClient.helix.eventSub.getSubscriptions()).data;
+
+                    for (let sub of subList) {
+                        finalStr += `${sub.status} | ${sub.type} | ${(await apiClient.helix.users.getUserById(`${sub.condition?.broadcaster_user_id}`)).name} | ${sub.creationDate} | ${sub.id}\n`;
+                    }
+
+                    dcWebhook.send(finalStr);
 
                     chatClient.say(channel, 'Sent subscriptions to Discord!');
                 } catch (err) {
