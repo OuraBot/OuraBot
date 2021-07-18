@@ -601,6 +601,20 @@ async function main() {
                 break;
             */
 
+            case 'fromid':
+                if (!(await handleCooldown(user, channel, 'fromid', 2, 1))) return;
+
+                if (!args[1]) return chatClient.say(channel, 'Please provide a user id!');
+                let userID = args[1];
+                try {
+                    let userResp = await apiClient.helix.users.getUserById(userID);
+                    if (!userResp) return chatClient.say(channel, `User with id ${userID} not found!`);
+                    chatClient.say(channel, `@${user}, The ID of ${userResp.id} belongs to ${obfuscateName(userResp.displayName)}`);
+                } catch (err) {
+                    chatClient.say(channel, `There was an unknown error...`);
+                }
+                break;
+
             case 'eventsub-help':
                 if (user !== clientConfig.owner) return;
                 chatClient.say(

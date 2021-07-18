@@ -198,5 +198,13 @@
         "permission": "None",
         "userCooldown": 30,
         "channelCooldown": 10
+    },
+    {
+        "command": "fromid",
+        "description": "Get the ID of a user",
+        "usage": "!fromid <user>",
+        "permission": "None",
+        "userCooldown": 2,
+        "channelCooldown": 1
     }
 ]
