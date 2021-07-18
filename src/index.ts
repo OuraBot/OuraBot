@@ -637,7 +637,12 @@ async function main() {
                 if (user !== 'auror6s') return;
                 try {
                     let dcWebhook = new Discord.WebhookClient(process.env.WHID, process.env.WHTOKEN);
-                    await dcWebhook.send(`${(await apiClient.helix.eventSub.getSubscriptions()).data.map((e) => `${e.status} | ${e.type} | ${e.creationDate} | ${e.condition} | ${e.id}`).join('\n')}`);
+                    await dcWebhook.send(
+                        `${(await apiClient.helix.eventSub.getSubscriptions()).data
+                            .map((e) => `${e.status} | ${e.type} | ${e.condition?.broadcaster_user_id} | ${e.creationDate} | ${e.id}`)
+                            .join('\n')}`
+                    );
+
                     chatClient.say(channel, 'Sent subscriptions to Discord!');
                 } catch (err) {
                     chatClient.say(channel, 'There was an error. The log has been sent to the Discord.');
