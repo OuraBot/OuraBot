@@ -604,7 +604,8 @@ async function main() {
             case 'fromid':
                 if (!(await handleCooldown(user, channel, 'fromid', 2, 1))) return;
 
-                if (!args[1]) return chatClient.say(channel, 'Please provide a user id!');
+                if (!args[1]) return chatClient.say(channel, `@${user}, Please provide a user id!`);
+                if (!args[1].match(/^\d+$/)) return chatClient.say(channel, `@${user}, Please provide a valid user id!`);
                 let userID = args[1];
                 try {
                     let userResp = await apiClient.helix.users.getUserById(userID);
