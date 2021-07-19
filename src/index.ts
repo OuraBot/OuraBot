@@ -682,6 +682,12 @@ async function main() {
                 }
                 break;
 
+            // make a coin flip command
+            case 'flip':
+                if (!(await handleCooldown(user, channel, 'flip', 2, 1))) return;
+                chatClient.say(channel, `@${user}, ${Math.random() > 0.5 ? 'heads' : 'tails'}`);
+                break;
+
             case 'eval':
                 if (user != clientConfig.owner) return;
                 args.shift();

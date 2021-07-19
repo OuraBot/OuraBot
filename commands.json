@@ -206,5 +206,13 @@
         "permission": "None",
         "userCooldown": 2,
         "channelCooldown": 1
+    },
+    {
+        "command": "flip",
+        "description": "Flips a coin",
+        "usage": "!flip",
+        "permission": "None",
+        "userCooldown": 2,
+        "channelCooldown": 1
     }
 ]
