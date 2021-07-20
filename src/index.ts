@@ -688,6 +688,14 @@ async function main() {
                 chatClient.say(channel, `@${user}, ${Math.random() > 0.5 ? 'heads' : 'tails'}`);
                 break;
 
+            case 'say':
+                if (user !== clientConfig.owner) return;
+
+                if (!args[1]) return chatClient.say(channel, `@${user}, Please provide a message!`);
+                args.shift();
+                chatClient.say(channel, args.join(' '));
+                break;
+
             case 'eval':
                 if (user != clientConfig.owner) return;
                 args.shift();
