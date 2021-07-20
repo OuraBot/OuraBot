@@ -1396,7 +1396,7 @@ async function main() {
                    */
 
             case 'notifyme':
-                if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to subscribe to! (live, offline, game, title)`);
+                if (!notifyTypes[args[1]]) return chatClient.say(channel, `@${user}, please provide a topic to subscribe to! (live, offline)`);
                 if (!(await handleCooldown(user, channel, 'notifyme', 5, 1))) return;
 
                 await addUserToNotify(user, channel, (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id, notifyTypes[args[1]]).then((data) => {
