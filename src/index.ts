@@ -246,24 +246,28 @@ async function main() {
             //
         } else {
             if (moduleData?.ascii) {
-                let asciiRe =
+                const asciiRe =
                     /([─│┌┐└┘├┤┬┴┼═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╤╥▀▄█▌▐░▒▓■□▪▫▬▲►▼◄⠁⠂⠄⠈⠐⠠⡀⢀⠃⠅⠉⠑⠡⡁⢁⠆⠊⠒⠢⡂⢂⠌⠔⠤⡄⢄⠘⠨⡈⢈⠰⡐⢐⡠⢠⣀⠇⠋⠓⠣⡃⢃⠍⠕⠥⡅⢅⠙⠩⡉⢉⠱⡑⢑⡡⢡⣁⠎⠖⠦⡆⢆⠚⠪⡊⢊⠲⡒⢒⡢⢢⣂⠜⠬⡌⢌⠴⡔⢔⡤⢤⣄⠸⡘⢘⡨⢨⣈⡰⢰⣐⣠⠏⠗⠧⡇⢇⠛⠫⡋⢋⠳⡓⢓⡣⢣⣃⠝⠭⡍⢍⠵⡕⢕⡥⢥⣅⠹⡙⢙⡩⢩⣉⡱⢱⣑⣡⠞⠮⡎⢎⠶⡖⢖⡦⢦⣆⠺⡚⢚⡪⢪⣊⡲⢲⣒⣢⠼⡜⢜⡬⢬⣌⡴⢴⣔⣤⡸⢸⣘⣨⣰⠟⠯⡏⢏⠷⡗⢗⡧⢧⣇⠻⡛⢛⡫⢫⣋⡳⢳⣓⣣⠽⡝⢝⡭⢭⣍⡵⢵⣕⣥⡹⢹⣙⣩⣱⠾⡞⢞⡮⢮⣎⡶⢶⣖⣦⡺⢺⣚⣪⣲⡼⢼⣜⣬⣴⣸⠿⡟⢟⡯⢯⣏⡷⢷⣗⣧⡻⢻⣛⣫⣳⡽⢽⣝⣭⣵⣹⡾⢾⣞⣮⣶⣺⣼⡿⢿⣟⣯⣷⣻⣽⣾⣿⠀]{10,}\s){4}|([─│┌┐└┘├┤┬┴┼═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╤╥▀▄█▌▐░▒▓■□▪▫▬▲►▼◄⠁⠂⠄⠈⠐⠠⡀⢀⠃⠅⠉⠑⠡⡁⢁⠆⠊⠒⠢⡂⢂⠌⠔⠤⡄⢄⠘⠨⡈⢈⠰⡐⢐⡠⢠⣀⠇⠋⠓⠣⡃⢃⠍⠕⠥⡅⢅⠙⠩⡉⢉⠱⡑⢑⡡⢡⣁⠎⠖⠦⡆⢆⠚⠪⡊⢊⠲⡒⢒⡢⢢⣂⠜⠬⡌⢌⠴⡔⢔⡤⢤⣄⠸⡘⢘⡨⢨⣈⡰⢰⣐⣠⠏⠗⠧⡇⢇⠛⠫⡋⢋⠳⡓⢓⡣⢣⣃⠝⠭⡍⢍⠵⡕⢕⡥⢥⣅⠹⡙⢙⡩⢩⣉⡱⢱⣑⣡⠞⠮⡎⢎⠶⡖⢖⡦⢦⣆⠺⡚⢚⡪⢪⣊⡲⢲⣒⣢⠼⡜⢜⡬⢬⣌⡴⢴⣔⣤⡸⢸⣘⣨⣰⠟⠯⡏⢏⠷⡗⢗⡧⢧⣇⠻⡛⢛⡫⢫⣋⡳⢳⣓⣣⠽⡝⢝⡭⢭⣍⡵⢵⣕⣥⡹⢹⣙⣩⣱⠾⡞⢞⡮⢮⣎⡶⢶⣖⣦⡺⢺⣚⣪⣲⡼⢼⣜⣬⣴⣸⠿⡟⢟⡯⢯⣏⡷⢷⣗⣧⡻⢻⣛⣫⣳⡽⢽⣝⣭⣵⣹⡾⢾⣞⣮⣶⣺⣼⡿⢿⣟⣯⣷⣻⣽⣾⣿⠀]\s*){90,}/g;
-                if (message.match(asciiRe)) {
-                    console.log('MATCHDETECTED');
-                    let timeoutMultiplier = async () => {
-                        let redisData = await redis.get(`ascii:${user}:${channel}`);
-                        if (redisData) {
-                            let multipliedData = Number(redisData) * 2;
-                            await redis.set(`ascii:${user}:${channel}`, multipliedData, 'EX', 1800);
-                            return Number(redisData);
-                        } else {
-                            await redis.set(`ascii:${user}:${channel}`, 2, 'EX', 1800);
-                            return 1;
-                        }
-                    };
 
-                    let length = (await timeoutMultiplier()) * moduleData.ascii;
-                    chatClient.say(channel, `/timeout ${user} ${length >= 300 ? 300 : length}s ascii art | your next timeout will be ${length * 2 >= 300 ? 300 : length * 2}s`);
+                let count = ((message || '').match(asciiRe) || []).length;
+                if (count >= 2) {
+                    if (message.match(asciiRe)) {
+                        console.log('MATCHDETECTED');
+                        let timeoutMultiplier = async () => {
+                            let redisData = await redis.get(`ascii:${user}:${channel}`);
+                            if (redisData) {
+                                let multipliedData = Number(redisData) * 2;
+                                await redis.set(`ascii:${user}:${channel}`, multipliedData, 'EX', 1800);
+                                return Number(redisData);
+                            } else {
+                                await redis.set(`ascii:${user}:${channel}`, 2, 'EX', 1800);
+                                return 1;
+                            }
+                        };
+
+                        let length = (await timeoutMultiplier()) * moduleData.ascii;
+                        chatClient.say(channel, `/timeout ${user} ${length >= 300 ? 300 : length}s ascii art | your next timeout will be ${length * 2 >= 300 ? 300 : length * 2}s`);
+                    }
                 }
             }
             if (moduleData?.link) {

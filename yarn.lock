@@ -403,10 +403,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-auro-ms-conversion@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/auro-ms-conversion/-/auro-ms-conversion-1.3.0.tgz#c286c76a5d39ff88378c402a184ce62aae955dd5"
-  integrity sha512-oElrBmLz/Y9Voflc1ViHDZ+AgpZ494WFxZJqaNp3SJy7XpnQ7uKLNyxkNr7WznjuPD9seRpBmBLFrdhLl2F4ow==
+auro-ms-conversion@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/auro-ms-conversion/-/auro-ms-conversion-1.2.0.tgz#43896bc48e474971bf6841306876fbbfacec4ca6"
+  integrity sha512-ZMV5IA1mQ5LdqnJqwSmJAp40QsjK3Bt+QbxqzTxp8QgcHWsdJ3TfO2ZItgQHXfrvEa2NzzsJVIaMV99+IdtTcw==
 
 aws-sign2@~0.7.0:
   version "0.7.0"
