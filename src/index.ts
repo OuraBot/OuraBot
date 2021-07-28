@@ -1,3 +1,5 @@
+// spotify command ? set channels spotify username and get the current track 
+
 import { RefreshableAuthProvider, StaticAuthProvider, ClientCredentialsAuthProvider } from 'twitch-auth';
 import { ChatClient, ChatUser, ClearChat } from 'twitch-chat-client';
 import { promises as fs } from 'fs';
