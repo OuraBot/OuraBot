@@ -37,6 +37,8 @@ const _onCooldown = new Set();
 
 const redis = new Redis();
 
+let tempUsers = [];
+
 // followunke days limit
 const MAX_DAYS_TO_CALLBACK = 3;
 
@@ -68,14 +70,7 @@ async function main() {
     const apiClient = new ApiClient({ authProvider });
     const apiClient2 = new ApiClient({ authProvider: auth });
     await apiClient.helix.eventSub.deleteAllSubscriptions();
-    const listener = new EventSubListener(
-        apiClient,
-        new ReverseProxyAdapter({
-            hostName: process.env.NGROK_HOST,
-            port: Number(process.env.NGROK_PORT),
-        }),
-        'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e'
-    );
+    const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
     await listener.listen();
 
     let listenResp: AxiosResponse<any>;
@@ -517,6 +512,28 @@ async function main() {
                         throw err;
                     });
                 break;
+
+            /*
+                case 'write':
+                    fs.writeFile('./users.json', JSON.stringify(tempUsers));
+                    break;
+                    
+                    case 'aaa':
+                        {
+                            let users = [];
+                            let followsResp = apiClient.helix.users.getFollowsPaginated({ followedUser: 71092938 });
+                            for await (const _user of followsResp) {
+                                let followage = auroMs.relativeTime(Date.now() - new Date(_user.followDate).getTime());
+                                console.log(_user.userName, followage);
+                                tempUsers.push({
+                                    username: _user.userName,
+                                    id: _user.userId,
+                                    followedAt: followage,
+                                });
+                            }
+                        }
+                        break;
+                        */
 
             case 'follownuke':
                 if (/* msg.userInfo.isMod || */ msg.userInfo.isBroadcaster) {
