@@ -98,7 +98,6 @@ async function main() {
 
     const chatClient = new ChatClient(auth, {
         channels: channelsToListenIn,
-        botLevel: 'none',
         logger: { minLevel: 'info' },
     });
 
