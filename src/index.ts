@@ -1,10 +1,10 @@
-// spotify command ? set channels spotify username and get the current track 
+// spotify command ? set channels spotify username and get the current track
 
 import { RefreshableAuthProvider, StaticAuthProvider, ClientCredentialsAuthProvider } from 'twitch-auth';
 import { ChatClient, ChatUser, ClearChat } from 'twitch-chat-client';
 import { promises as fs } from 'fs';
 import { ApiClient, Subscription, UserChatInfo } from 'twitch';
-import { EventSubListener } from 'twitch-eventsub';
+import { EventSubListener, ReverseProxyAdapter } from 'twitch-eventsub';
 import { NgrokAdapter } from 'twitch-eventsub-ngrok';
 import Redis from 'ioredis';
 
@@ -68,7 +68,14 @@ async function main() {
     const apiClient = new ApiClient({ authProvider });
     const apiClient2 = new ApiClient({ authProvider: auth });
     await apiClient.helix.eventSub.deleteAllSubscriptions();
-    const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e');
+    const listener = new EventSubListener(
+        apiClient,
+        new ReverseProxyAdapter({
+            hostName: process.env.NGROK_HOST,
+            port: Number(process.env.NGROK_PORT),
+        }),
+        'AURO-OURABOT-cde93bd0-2683-4aec-b743-06dd461d9b8e'
+    );
     await listener.listen();
 
     let listenResp: AxiosResponse<any>;
