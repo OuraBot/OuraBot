@@ -272,7 +272,7 @@ async function main(): Promise<void> {
                     for (let reminder of reminders) {
                         if (reminder.username === user) {
                             let time = new Date(reminder.timestamp);
-                            if (banphraseCheck(`${reminder.message}`, channel)) {
+                            if (await banphraseCheck(`${reminder.message}`, channel)) {
                                 userReminders.push(`${reminder.author}: [Banphrased - this reminder hasn't been deleted in the database] (${prettyTime(Date.now() - time.getTime())} ago)`);
                             } else {
                                 userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
@@ -294,7 +294,7 @@ async function main(): Promise<void> {
                 for (let reminder of reminders) {
                     if (reminder.username === user) {
                         let time = new Date(reminder.timestamp);
-                        if (banphraseCheck(`${reminder.message}`, channel)) {
+                        if (await banphraseCheck(`${reminder.message}`, channel)) {
                             userReminders.push(`${reminder.author}: [Banphrased - this reminder hasn't been deleted in the database] (${prettyTime(Date.now() - time.getTime())} ago)`);
                         } else {
                             userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
@@ -637,6 +637,7 @@ async function main(): Promise<void> {
 main();
 
 export async function banphraseCheck(msgToCheck: string, channel: string): Promise<boolean> {
+    console.log(msgToCheck, channel, 213213123);
     let modules = await Module.find();
     for (let module of modules) {
         if (module.channel === channel.replace('#', '')) {
