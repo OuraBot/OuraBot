@@ -8,7 +8,7 @@ dotenv.config();
 
 class testComand extends Command {
     name = 'follownuke';
-    description = 'Ban users who have banned in the last X minutes';
+    description = 'Ban users who have followed in the last X minutes (good against followbots)';
     usage = 'folownuke <time (30s, 5m, 1h)> <--dont-ban?>';
     extendedDescription = 'Use the "--dont-ban" to send a file of all the users';
     permission = 4;
