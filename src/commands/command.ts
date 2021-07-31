@@ -9,7 +9,7 @@ class testComand extends Command {
     name = 'command';
     description = 'Add or remove custom commands';
     usage = 'command <add|remove> <command> <description?> <channel cooldown?> <user cooldown?>';
-    extendedDescription = `Use "$fetchURL(url)" to make a GET request to the specified URL and send the data.`;
+    extendedDescription = `Use "$fetchURL(url)" to make a GET request to the specified URL and send the data. Use {user} and {channel} for their respective values.`;
     permission = 4;
     userCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

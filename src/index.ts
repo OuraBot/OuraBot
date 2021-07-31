@@ -266,12 +266,18 @@ async function main(): Promise<void> {
                                     timeout: 10000,
                                 });
                                 let commandResponse = customCommand.response;
-                                chatClient.say(channel, commandResponse.replace(`$fetchURL(${urlToFetch})`, resp.data));
+                                chatClient.say(
+                                    channel,
+                                    commandResponse
+                                        .replace(`$fetchURL(${urlToFetch})`, resp.data)
+                                        .replace(/{user}/g, user)
+                                        .replace(/{channel}/g, channel)
+                                );
                             } catch (err) {
                                 chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
                             }
                         } else {
-                            chatClient.say(channel, customCommand.response);
+                            chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
                         }
                     }
                 }
