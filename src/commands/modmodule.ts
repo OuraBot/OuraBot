@@ -7,12 +7,13 @@ dotenv.config();
 export enum moduleEnum {
     ASCII = 'ascii',
     LINKS = 'links',
+    WEEB = 'weeb',
 }
 
 class testComand extends Command {
     name = 'modmodule';
-    description = 'Manage moderation modules (ascii,links)';
-    usage = 'modmodule <module (ascii,links)> <timeout in seconds (set 0 for off)>';
+    description = 'Manage moderation modules (ascii,links,weeb)';
+    usage = 'modmodule <module (ascii,links,weeb)> <timeout in seconds (set 0 for off)>';
     permission = 4;
     channelCooldown = 5;
     userCooldown = 5;
@@ -20,14 +21,15 @@ class testComand extends Command {
         if (!args[0])
             return {
                 success: false,
-                message: 'Missing module (ascii,links)',
+                message: 'Missing module (ascii,links,weeb)',
                 error: null,
             };
 
-        if (args[0] !== moduleEnum.ASCII && args[0] !== moduleEnum.LINKS)
+        // check if args[0] matches moduleEnum
+        if (!Object.values(moduleEnum).includes(args[0] as moduleEnum))
             return {
                 success: false,
-                message: 'Invalid module (ascii,links)',
+                message: 'Invalid module',
                 error: null,
             };
 
