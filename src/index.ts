@@ -183,10 +183,10 @@ async function main(): Promise<void> {
                             if (term.response.includes('{newline}')) {
                                 let msgs = term.response.split('{newline}');
                                 for (let msg of msgs) {
-                                    chatClient.say(channel, msg.replace('{user}', user));
+                                    chatClient.say(channel, msg.replace(/{user}/g, user));
                                 }
                             } else {
-                                chatClient.say(channel, term.response.replace('{user}', user));
+                                chatClient.say(channel, term.response.replace(/{user}/g, user));
                             }
                         }
                     }

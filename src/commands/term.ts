@@ -65,6 +65,7 @@ class testComand extends Command {
                 success: true,
                 message: `Term with a regex of "${termRegex}" has been added.`,
                 error: null,
+                ignorebanphrase: true,
             };
         } else if (args[0] === 'remove') {
             if (!args[1]) {
@@ -81,6 +82,7 @@ class testComand extends Command {
                 success: true,
                 message: `Term with a regex of "${termRegex}" removed`,
                 error: null,
+                ignorebanphrase: true,
             };
         } else {
             return {
