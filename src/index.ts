@@ -511,9 +511,6 @@ async function main(): Promise<void> {
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         if (forwardInfo?.originalGifterDisplayName) {
@@ -524,9 +521,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
         // chatClient.say(subResp);
 
@@ -544,9 +538,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         if (subInfo.isPrime) {
@@ -587,18 +578,12 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months));
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         if (subInfo?.gifterDisplayName) {
@@ -645,9 +630,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         if (subInfo?.gifterDisplayName) {
@@ -667,9 +649,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
-        if (channel.includes('elpwswastaken')) {
-            await redis.incr(`elpwssubcount`);
-        }
         let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
