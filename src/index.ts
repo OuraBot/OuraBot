@@ -277,7 +277,28 @@ async function main(): Promise<void> {
                                 chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
                             }
                         } else {
-                            chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
+                            if (customCommand.response.match(/(GET|INCR){[A-z]{4,10}}/g)) {
+                                let countKey = /(GET|INCR)({[A-z]{4,10}})/g.exec(customCommand.response)[2].replace(/({|})/g, '');
+                                let redisData = await redis.get(`COUNT:${channel}:${countKey}`);
+                                if (redisData) {
+                                    if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
+                                        let countValue = Number(redisData);
+                                        chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`));
+                                    } else {
+                                        await redis.incr(`COUNT:${channel}:${countKey}`);
+                                        let countValue = Number(redisData);
+                                        chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`));
+                                    }
+                                } else {
+                                    if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
+                                        await redis.set(`COUNT:${channel}:${countKey}`, 0);
+                                        chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0'));
+                                    } else {
+                                        await redis.set(`COUNT:${channel}:${countKey}`, 1);
+                                        chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -660,7 +681,6 @@ async function main(): Promise<void> {
 main();
 
 export async function banphraseCheck(msgToCheck: string, channel: string): Promise<boolean> {
-    console.log(msgToCheck, channel, 213213123);
     let modules = await Module.find();
     for (let module of modules) {
         if (module.channel === channel.replace('#', '')) {
