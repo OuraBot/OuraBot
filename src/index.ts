@@ -155,17 +155,7 @@ async function main(): Promise<void> {
                             }
                         } else if (module.module === moduleEnum.LINKS) {
                             if (getUrls(message).size > 0) {
-                                let redisData: string | number = await redis.get(`LINKS:${channel}:${user}`);
-                                if (redisData) {
-                                    redisData = Number(redisData);
-                                    let nextLen = redisData * 2;
-                                    await chatClient.say(channel, `/timeout ${user} ${redisData} URL Mod Module (next timeout will be ${nextLen}s)`);
-                                    await redis.set(`LINKS:${channel}:${user}`, nextLen, 'EX', 3600);
-                                    return;
-                                } else {
-                                    await redis.set(`LINKS:${channel}:${user}`, module.timeout * 2, 'EX', 3600);
-                                    await chatClient.say(channel, `/timeout ${user} ${module.timeout} URL Mod Module (next timeout will be ${module.timeout * 2}s)`);
-                                    return;
+                                    chatClient.say(channel, `/timeout ${user} ${module.timeout} URL Mod Module`);
                                 }
                             }
                         } else if (module.module === moduleEnum.WEEB) {
