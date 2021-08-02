@@ -701,3 +701,7 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
 
     return false;
 }
+
+process.on('unhandledRejection', (reason, p) => {
+    error(`Unhandled Rejection: ${reason} | ${p}`);
+});
