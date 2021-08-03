@@ -20,7 +20,7 @@ import { Term } from './models/term.model.js';
 import { Module } from './models/module.model.js';
 import { moduleEnum } from './commands/modmodule.js';
 import getUrls from 'get-urls';
-import { Sub } from './models/sub.model.js';
+import { ISub, Sub } from './models/sub.model.js';
 
 const WEEB_REGEX =
     /\b(CuteAnimeFeet|muniDANK|muniClap|muniJam|muniPat|muniSit|muniSweat|muniSip|muniHug|muniPrime|muniWave|muniShy|muniHYPERS|muniBless|muniAww|muniREE|muniLurk|muniPout|muniSmug|muniWeird|muniWow|muniStare|muniYawn|muniCry|muniFlower|muniLUL|muniComfy|muniNotes|muniBonk|muniW|forsenPuke[0-5]*|naroSpeedL|naroDerping|naroAAAAA|naroDance|naroSpeedR|naroOh|naroFumo|naroSmug|naroSlain|naroBless|naroReally|naroHodo|naroBlush|naro2hu|naroLove|naroWo|naroStaryn|naroWOW|naroSalute|naroEh|naroSad|naroDesu|naroScared|naroWhat|naroEhehe|naroGasm|naroThug|naroDerp|naroRage|naroYay|naroXD|naroDX|xqcAYAYA|xqcLewd|xqcNom|happythoDinkDonk|happythoNod|happythoLove|happythoLurk|happythoNoted|happythoCrumpet|happythoShroom|happythoExcited|happytho7|happythoRee|happythoCross|happythoBonk|happythoBoop|happythoFacepalm|happythoGiggle|happythoGimmie|happythoNoBully|happythoWoah|happythoThumbsUp|happythoThumbsDown|happythoBlessed|happythoEvil|happythoCute|happythoNom|happythoShock|happythoSweat|happythoRIP|happythoPat|happythoSleepy|happythoNotLikeThis|happythoLUL|happythoWeird|happythoCry|happythoSilly|happythoKiss|happythoHug|happythoThink|happythoShy|happythoShrug|happythoPout|happythoHyper|happythoStare|happythoWave|happythoSip|happythoComfy|happythoSus|happythoRich|happythoSmile|happythoTuck|TPFufun|TehePelo|OiMinna|AYAYA|CuteAnimeFeetasleepyRainy|asleepyJAMMER|asleepyLoves|asleepyWaves|asleepyBrows|asleepyZOOM|asleepyRiot|asleepyWoah|asleepyUWU|asleepyThink|asleepyStab|asleepySad|asleepyREE|asleepyPat|asleepyLost|asleepyL|asleepyKiss|asleepyKEK|asleepyGib|asleepyDetective|asleepyComfy|asleepyClown|asleepyAYAYA|asleepyAww|asleepyHehe|asleepyLove|asleepyPlead|asleepyYes|asleepyWave|asleepyOMEGALUL|asleepyShy|asleepyLurk|asleepyHYPERS|asleepySip|asleepyFine|asleepyDevil|asleepyAngel|asleepyAngy|asleepySquish|asleepyBlob|asleepyISee|asleepyWow|asleepyHNGmendo7|mendoRage|mendoE|mendoLewd|mendoRIP|mendo4|mendo3|mendoWow|mendo2|mendo1|mendoClown|mendoThumb|mendoS|mendoWave|mendoUWU|mendoT|mendoBlind|mendoSmug|mendoSleepy|mendoHuh|mendoHands|mendoShrug|mendoFail|mendoB|mendoPeek|mendoGun|mendoU|mendoPantsu|mendoEZ|mendoDab|mendoLUL|mendoCry|mendoREE|mendoL|mendoKoda|mendoBark|mendoSip|mendoHug|mendoWink|mendoPat|mendoComfy|mendoDerp|mendoBanger|mendoM|mendoBlush|mendoAYAYA|mendoGasm|mendoH|mendoHypers|mendoFine)/g;
@@ -93,6 +93,7 @@ async function main(): Promise<void> {
         useUnifiedTopology: true,
     });
 
+    /*
     chatClient = new ChatClient(
         auth,
         process.env.DEBUG === 'TRUE'
@@ -103,6 +104,7 @@ async function main(): Promise<void> {
                   channels: await getChannels(process.env.CLIENT_USERNAME),
               }
     );
+    */
 
     /*
     Channel.find().then((ch: IChannel[]) => {
@@ -521,7 +523,7 @@ async function main(): Promise<void> {
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
         if (forwardInfo?.originalGifterDisplayName) {
             chatClient.say(channel, subResp['onStandardPayForward_gifted'].replace('${displayName}', forwardInfo.displayName).replace('${gifterName}', forwardInfo.originalGifterDisplayName));
@@ -531,7 +533,7 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
         // chatClient.say(subResp);
 
         if (subInfo.isPrime) {
@@ -548,53 +550,53 @@ async function main(): Promise<void> {
     });
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
         if (subInfo.isPrime) {
             if (subInfo?.streak) {
                 // prettier-ignore
-                chatClient.say(channel, subResp['onResub_primeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${streak}', subInfo.streak).replace('${planName}', subInfo.planName))
+                chatClient.say(channel, subResp['onResub_primeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
             } else {
                 // prettier-ignore
-                chatClient.say(channel, subResp['onResub_prime'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${planName}', subInfo.planName))
+                chatClient.say(channel, subResp['onResub_prime'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
             }
         } else {
             if (subInfo.plan === '1000') {
                 if (subInfo?.streak) {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_oneStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${streak}', subInfo.streak).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_oneStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
                 } else {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_one'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_one'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
                 }
             } else if (subInfo.plan === '2000') {
                 if (subInfo?.streak) {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_twoStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${streak}', subInfo.streak).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_twoStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
                 } else {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_two'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_two'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
                 }
             } else if (subInfo.plan === '3000') {
                 if (subInfo?.streak) {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_threeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${streak}', subInfo.streak).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_threeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
                 } else {
                     // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_three'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months).replace('${planName}', subInfo.planName))
+                    chatClient.say(channel, subResp['onResub_three'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
                 }
             }
         }
     });
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
-        chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', subInfo.months));
+        chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`));
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
         if (subInfo?.gifterDisplayName) {
             if (subInfo?.streak) {
@@ -604,7 +606,7 @@ async function main(): Promise<void> {
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
                         .replace('${gifterName}', subInfo.gifterDisplayName)
-                        .replace('${months}', subInfo.months)
+                        .replace('${months}', `${subInfo.months}`)
                 );
             } else {
                 chatClient.say(
@@ -613,7 +615,7 @@ async function main(): Promise<void> {
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
                         .replace('${gifterName}', subInfo.gifterDisplayName)
-                        .replace('${months}', subInfo.months)
+                        .replace('${months}', `${subInfo.months}`)
                 );
             }
         } else {
@@ -624,7 +626,7 @@ async function main(): Promise<void> {
                     subResp['onSubGift_anon']
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
-                        .replace('${months}', subInfo.months)
+                        .replace('${months}', `${subInfo.months}`)
                 );
             } else {
                 // prettier-ignore
@@ -633,14 +635,14 @@ async function main(): Promise<void> {
                     subResp['onSubGift_anon']
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
-                        .replace('${months}', subInfo.months)
+                        .replace('${months}', `${subInfo.months}`)
                 );
             }
         }
     });
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
         if (subInfo?.gifterDisplayName) {
             // prettier-ignore
@@ -659,7 +661,7 @@ async function main(): Promise<void> {
     });
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
-        let subResp: any = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''));
+        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
