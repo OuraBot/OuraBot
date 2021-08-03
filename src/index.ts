@@ -93,7 +93,6 @@ async function main(): Promise<void> {
         useUnifiedTopology: true,
     });
 
-    /*
     chatClient = new ChatClient(
         auth,
         process.env.DEBUG === 'TRUE'
@@ -104,7 +103,6 @@ async function main(): Promise<void> {
                   channels: await getChannels(process.env.CLIENT_USERNAME),
               }
     );
-    */
 
     /*
     Channel.find().then((ch: IChannel[]) => {
