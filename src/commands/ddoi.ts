@@ -79,7 +79,7 @@ class suggestCommand extends Command {
 
 export const cmd = new suggestCommand();
 
-const unescapeHTML = (str: string) =>
+export const unescapeHTML = (str: string) =>
     str.replace(
         /&amp;|&lt;|&gt;|&#39;|&quot;/g,
         (tag) =>
