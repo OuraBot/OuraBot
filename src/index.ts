@@ -305,9 +305,7 @@ async function main(): Promise<void> {
                     for (let reminder of reminders) {
                         if (reminder.username === user) {
                             let time = new Date(reminder.timestamp);
-                            if (await banphraseCheck(`${reminder.message}`, channel)) {
-                                userReminders.push(`${reminder.author}: [Banphrased - this reminder hasn't been deleted in the database] (${prettyTime(Date.now() - time.getTime())} ago)`);
-                            } else {
+                            if (!(await banphraseCheck(`${reminder.message}`, channel))) {
                                 userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
 
                                 Reminder.findByIdAndDelete(reminder._id).then(() => {
@@ -327,9 +325,7 @@ async function main(): Promise<void> {
                 for (let reminder of reminders) {
                     if (reminder.username === user) {
                         let time = new Date(reminder.timestamp);
-                        if (await banphraseCheck(`${reminder.message}`, channel)) {
-                            userReminders.push(`${reminder.author}: [Banphrased - this reminder hasn't been deleted in the database] (${prettyTime(Date.now() - time.getTime())} ago)`);
-                        } else {
+                        if (!(await banphraseCheck(`${reminder.message}`, channel))) {
                             userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
                             Reminder.findByIdAndDelete(reminder._id).then(() => {
                                 console.log(`Deleted reminder for ${user}`);
