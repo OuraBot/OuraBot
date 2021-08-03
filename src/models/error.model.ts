@@ -22,7 +22,7 @@ const schema = new Schema<IError>({
     command: { type: String, required: true },
     error: { type: String, required: true },
     completed: { type: Boolean, default: false },
-    id: { type: Number, unique: true, min: 1, required: true },
+    id: { type: Number, min: 1, required: true },
 });
 
 export const ErrorModel = model<IError>('Error', schema);
