@@ -16,6 +16,11 @@ class suggestCommand extends Command {
     userCooldown = 30;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
+        return {
+            success: false,
+            message: 'Command is globally disabled',
+            error: null,
+        };
         if (!args[0])
             return {
                 success: false,
