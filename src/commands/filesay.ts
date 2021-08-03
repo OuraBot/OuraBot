@@ -12,7 +12,6 @@ class testComand extends Command {
     usage = 'filesayfast <url> <optional msg prefix?>';
     hidden = true;
     permission = 1;
-    aliases = ['filesayfast'];
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/|hastebin\.com\/|pastebin\.com\/)raw\/.+$/))
             return {
