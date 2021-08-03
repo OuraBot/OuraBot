@@ -461,7 +461,7 @@ async function main(): Promise<void> {
                                     return console.error(err);
                                 }
                                 error(err, ['Error while executing command:', user, channel, command.name]);
-                                let errorID = await createNewError(channel, user, message, command.name, err.toString());
+                                let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
                                 chatClient.say(
                                     channel,
                                     `@${user}, there was an unknown error while executing the command. You should report this with the !suggest command. Include the error ID and how you used the command. Error ID: ${errorID}`
