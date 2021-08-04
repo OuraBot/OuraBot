@@ -127,8 +127,7 @@ async function main(): Promise<void> {
             video = await video.data.items[0];
             let redisData: any = await redis.get('DDOI-LATEST');
             if (redisData) {
-                redisData = JSON.parse(redisData);
-                if (video.id.videoId !== redisData.id) {
+                if (video.id.videoId !== redisData) {
                     await new Reminder({
                         username: 'elpws',
                         message: `New video from DDOI: ${unescapeHTML(video.snippet.title)} - https://www.youtube.com/watch?v=${video.id.videoId}`,
@@ -141,9 +140,11 @@ async function main(): Promise<void> {
                 redis.set('DDOI-LATEST', video.id.videoId);
             }
         } catch (err) {
-            error('DDOI Hourly Video Error', err);
+            console.log(err);
+            error('DDOI Hourly Video Error', [err]);
+            createNewError('null', 'DDOI HOURLY VIDEO', 'null', 'null', err.toString() + '\n' + err.stack);
         }
-    }, 60 * 60 * 1000);
+    }, 5000);
 
     chatClient.onNotice((target, user, message, msg) => {
         if (msg.tagsToString() === 'msg-id=msg_rejected_mandatory') {
