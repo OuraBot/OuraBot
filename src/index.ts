@@ -134,7 +134,7 @@ async function main(): Promise<void> {
                         timestamp: new Date(),
                         author: 'SYSTEM',
                     }).save();
-                    await redis.set('DDOI-LATEST', JSON.stringify(video));
+                    await redis.set('DDOI-LATEST', video.id.videoId);
                 }
             } else {
                 redis.set('DDOI-LATEST', video.id.videoId);
@@ -144,7 +144,7 @@ async function main(): Promise<void> {
             error('DDOI Hourly Video Error', [err]);
             createNewError('null', 'DDOI HOURLY VIDEO', 'null', 'null', err.toString() + '\n' + err.stack);
         }
-    }, 5000);
+    }, 1000 * 60 * 60);
 
     chatClient.onNotice((target, user, message, msg) => {
         if (msg.tagsToString() === 'msg-id=msg_rejected_mandatory') {
