@@ -546,6 +546,7 @@ async function main(): Promise<void> {
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         if (forwardInfo?.originalGifterDisplayName) {
             chatClient.say(channel, subResp['onStandardPayForward_gifted'].replace('${displayName}', forwardInfo.displayName).replace('${gifterName}', forwardInfo.originalGifterDisplayName));
@@ -556,6 +557,7 @@ async function main(): Promise<void> {
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
         // chatClient.say(subResp);
 
         if (subInfo.isPrime) {
@@ -573,6 +575,7 @@ async function main(): Promise<void> {
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         if (subInfo.isPrime) {
             if (subInfo?.streak) {
@@ -613,12 +616,14 @@ async function main(): Promise<void> {
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`));
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         if (subInfo?.gifterDisplayName) {
             if (subInfo?.streak) {
@@ -665,6 +670,7 @@ async function main(): Promise<void> {
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         if (subInfo?.gifterDisplayName) {
             // prettier-ignore
@@ -684,6 +690,7 @@ async function main(): Promise<void> {
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
+        if (!subResp) return;
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
