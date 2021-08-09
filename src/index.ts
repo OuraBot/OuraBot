@@ -335,12 +335,18 @@ async function main(): Promise<void> {
                     for (let reminder of reminders) {
                         if (reminder.username === user) {
                             let time = new Date(reminder.timestamp);
-                            if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                            if (reminder.author === 'SYSTEM') {
                                 userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-
                                 Reminder.findByIdAndDelete(reminder._id).then(() => {
                                     console.log(`Deleted reminder for ${user}`);
                                 });
+                            } else {
+                                if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                    Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                        console.log(`Deleted reminder for ${user}`);
+                                    });
+                                }
                             }
                         }
                     }
@@ -355,11 +361,18 @@ async function main(): Promise<void> {
                 for (let reminder of reminders) {
                     if (reminder.username === user) {
                         let time = new Date(reminder.timestamp);
-                        if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                        if (reminder.author === 'SYSTEM') {
                             userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
                             Reminder.findByIdAndDelete(reminder._id).then(() => {
                                 console.log(`Deleted reminder for ${user}`);
                             });
+                        } else {
+                            if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                                userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                    console.log(`Deleted reminder for ${user}`);
+                                });
+                            }
                         }
                     }
                 }
