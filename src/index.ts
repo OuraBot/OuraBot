@@ -315,6 +315,8 @@ async function main(): Promise<void> {
                                         chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
                                     }
                                 }
+                            } else {
+                                chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
                             }
                         }
                     }
