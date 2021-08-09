@@ -183,7 +183,7 @@ async function main(): Promise<void> {
                             }
                         } else if (module.module === moduleEnum.LINKS) {
                             if (getUrls(message).size > 0) {
-                                chatClient.say(channel, `/timeout ${user} ${module.timeout} URL Mod Module`);
+                                chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
                             }
                         } else if (module.module === moduleEnum.WEEB) {
                             if (message.match(WEEB_REGEX)) {
