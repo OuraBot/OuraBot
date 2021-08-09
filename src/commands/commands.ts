@@ -44,6 +44,7 @@ class suggestCommand extends Command {
             success: true,
             message: `View all the commands here: https://haste.zneix.eu/raw/${resp.data.key}`,
             error: null,
+            ignorebanphrase: true,
         };
     };
 }
