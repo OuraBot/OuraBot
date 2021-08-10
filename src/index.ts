@@ -22,6 +22,7 @@ import { moduleEnum } from './commands/modmodule.js';
 import getUrls from 'get-urls';
 import { ISub, Sub } from './models/sub.model.js';
 import { unescapeHTML } from './commands/ddoi.js';
+import EventSource = require('eventsource');
 
 const WEEB_REGEX =
     /\b(CuteAnimeFeet|muniDANK|muniClap|muniJam|muniPat|muniSit|muniSweat|muniSip|muniHug|muniPrime|muniWave|muniShy|muniHYPERS|muniBless|muniAww|muniREE|muniLurk|muniPout|muniSmug|muniWeird|muniWow|muniStare|muniYawn|muniCry|muniFlower|muniLUL|muniComfy|muniNotes|muniBonk|muniW|forsenPuke[0-5]*|naroSpeedL|naroDerping|naroAAAAA|naroDance|naroSpeedR|naroOh|naroFumo|naroSmug|naroSlain|naroBless|naroReally|naroHodo|naroBlush|naro2hu|naroLove|naroWo|naroStaryn|naroWOW|naroSalute|naroEh|naroSad|naroDesu|naroScared|naroWhat|naroEhehe|naroGasm|naroThug|naroDerp|naroRage|naroYay|naroXD|naroDX|xqcAYAYA|xqcLewd|xqcNom|happythoDinkDonk|happythoNod|happythoLove|happythoLurk|happythoNoted|happythoCrumpet|happythoShroom|happythoExcited|happytho7|happythoRee|happythoCross|happythoBonk|happythoBoop|happythoFacepalm|happythoGiggle|happythoGimmie|happythoNoBully|happythoWoah|happythoThumbsUp|happythoThumbsDown|happythoBlessed|happythoEvil|happythoCute|happythoNom|happythoShock|happythoSweat|happythoRIP|happythoPat|happythoSleepy|happythoNotLikeThis|happythoLUL|happythoWeird|happythoCry|happythoSilly|happythoKiss|happythoHug|happythoThink|happythoShy|happythoShrug|happythoPout|happythoHyper|happythoStare|happythoWave|happythoSip|happythoComfy|happythoSus|happythoRich|happythoSmile|happythoTuck|TPFufun|TehePelo|OiMinna|AYAYA|CuteAnimeFeetasleepyRainy|asleepyJAMMER|asleepyLoves|asleepyWaves|asleepyBrows|asleepyZOOM|asleepyRiot|asleepyWoah|asleepyUWU|asleepyThink|asleepyStab|asleepySad|asleepyREE|asleepyPat|asleepyLost|asleepyL|asleepyKiss|asleepyKEK|asleepyGib|asleepyDetective|asleepyComfy|asleepyClown|asleepyAYAYA|asleepyAww|asleepyHehe|asleepyLove|asleepyPlead|asleepyYes|asleepyWave|asleepyOMEGALUL|asleepyShy|asleepyLurk|asleepyHYPERS|asleepySip|asleepyFine|asleepyDevil|asleepyAngel|asleepyAngy|asleepySquish|asleepyBlob|asleepyISee|asleepyWow|asleepyHNGmendo7|mendoRage|mendoE|mendoLewd|mendoRIP|mendo4|mendo3|mendoWow|mendo2|mendo1|mendoClown|mendoThumb|mendoS|mendoWave|mendoUWU|mendoT|mendoBlind|mendoSmug|mendoSleepy|mendoHuh|mendoHands|mendoShrug|mendoFail|mendoB|mendoPeek|mendoGun|mendoU|mendoPantsu|mendoEZ|mendoDab|mendoLUL|mendoCry|mendoREE|mendoL|mendoKoda|mendoBark|mendoSip|mendoHug|mendoWink|mendoPat|mendoComfy|mendoDerp|mendoBanger|mendoM|mendoBlush|mendoAYAYA|mendoGasm|mendoH|mendoHypers|mendoFine)/g;
@@ -145,6 +146,88 @@ async function main(): Promise<void> {
             createNewError('null', 'DDOI HOURLY VIDEO', 'null', 'null', err.toString() + '\n' + err.stack);
         }
     }, 1000 * 60 * 60);
+
+    interface EmoteEventUpdate {
+        // The channel this update affects.
+        channel: string;
+        // The ID of the emote.
+        emote_id: string;
+        // The name or channel alias of the emote.
+        name: string;
+        // The action done.
+        action: 'ADD' | 'REMOVE' | 'UPDATE';
+        // The user who caused this event to trigger.
+        actor: string;
+        // An emote object. Null if the action is "REMOVE".
+        emote?: ExtraEmoteData;
+    }
+
+    interface ExtraEmoteData {
+        // Original name of the emote.
+        name: string;
+        // The visibility bitfield of this emote.
+        visibility: number;
+        // The MIME type of the images.
+        mime: string;
+        // The TAGs on this emote.
+        tags: string[];
+        // The widths of the images.
+        width: [number, number, number, number];
+        // The heights of the images.
+        height: [number, number, number, number];
+        // The animation status of the emote.
+        animated: boolean;
+        // Infomation about the uploader.
+        owner: {
+            // 7TV ID of the owner.
+            id: string;
+            // Twitch ID of the owner.
+            twitch_id: string;
+            // Twitch DisplayName of the owner.
+            display_name: string;
+            // Twitch Login of the owner.
+            login: string;
+        };
+    }
+
+    const source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+
+    // prettier-ignore
+    source.addEventListener('ready', (e: any) => {
+            // Should be "7tv-event-sub.v1" since this is the `v1` endpoint
+            console.log(e.data);
+        });
+
+    // prettier-ignore
+    source.addEventListener('update', (e: any) => {
+            let emoteData: EmoteEventUpdate = JSON.parse(e.data);
+            console.log(emoteData);
+            switch(emoteData.action) {
+                case 'ADD':
+                    chatClient.say(emoteData.channel, `New 7\u{E0000}TV emote has been added: ${emoteData.name}`)
+                break;
+
+                case 'REMOVE':
+                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.name} has been removed`)
+                break;
+
+                case 'UPDATE':
+                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.name} has been updated`);
+                break;
+            }        
+        });
+
+    // prettier-ignore
+    source.addEventListener('open', (e: any) => {
+            // Connection was opened.
+        });
+
+    // prettier-ignore
+    source.addEventListener('error', (e: any) => {
+            if (e.readyState === EventSource.CLOSED) {
+                // Connection was closed.
+            }
+        });
 
     chatClient.onNotice((target, user, message, msg) => {
         if (msg.tagsToString() === 'msg-id=msg_rejected_mandatory') {
