@@ -212,7 +212,7 @@ async function main(): Promise<void> {
                 break;
 
                 case 'UPDATE':
-                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.name} has been updated`);
+                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.emote.name} has been aliased to ${emoteData.name}`);
                 break;
             }        
         });
