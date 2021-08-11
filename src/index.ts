@@ -346,63 +346,64 @@ async function main(): Promise<void> {
         });
 
         CustomCommand.find().then(async (c: ICustomCommand[]) => {
-            c = c.filter(async (c: ICustomCommand) => c.channel === channel.replace('#', ''));
             for (let customCommand of c) {
-                let customArgs = message.toLowerCase().split(' ');
-                if (customCommand.command.toLowerCase() === customArgs[0]) {
-                    let onCooldown = false;
+                if (customCommand.channel === channel.replace('#', '')) {
+                    let customArgs = message.toLowerCase().split(' ');
+                    if (customCommand.command.toLowerCase() === customArgs[0]) {
+                        let onCooldown = false;
 
-                    let userCooldownData = await redis.get(`customcooldown:${customCommand.command}:${channel}:${user}`);
-                    if (userCooldownData) onCooldown = true;
+                        let userCooldownData = await redis.get(`customcooldown:${customCommand.command}:${channel}:${user}`);
+                        if (userCooldownData) onCooldown = true;
 
-                    let channelCooldownData = await redis.get(`customcooldown:${customCommand.command}:${channel}`);
-                    if (channelCooldownData) onCooldown = true;
-                    if (!onCooldown) {
-                        await redis.set(`customcooldown:${customCommand.command}:${channel}:${user}`, Date.now(), 'EX', customCommand.userCooldown);
-                        await redis.set(`customcooldown:${customCommand.command}:${channel}`, Date.now(), 'EX', customCommand.channelCooldown);
+                        let channelCooldownData = await redis.get(`customcooldown:${customCommand.command}:${channel}`);
+                        if (channelCooldownData) onCooldown = true;
+                        if (!onCooldown) {
+                            await redis.set(`customcooldown:${customCommand.command}:${channel}:${user}`, Date.now(), 'EX', customCommand.userCooldown);
+                            await redis.set(`customcooldown:${customCommand.command}:${channel}`, Date.now(), 'EX', customCommand.channelCooldown);
 
-                        let urlToFetch = customCommand.response.replace(/^.+\$fetchURL\(|\).+$/g, '');
-                        if (urlToFetch !== customCommand.response) {
-                            try {
-                                console.log(urlToFetch);
-                                let resp = await axios.get(urlToFetch, {
-                                    timeout: 10000,
-                                });
-                                let commandResponse = customCommand.response;
-                                chatClient.say(
-                                    channel,
-                                    commandResponse
-                                        .replace(`$fetchURL(${urlToFetch})`, resp.data)
-                                        .replace(/{user}/g, user)
-                                        .replace(/{channel}/g, channel)
-                                );
-                            } catch (err) {
-                                chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
-                            }
-                        } else {
-                            if (customCommand.response.match(/(GET|INCR){[A-z]{4,10}}/g)) {
-                                let countKey = /(GET|INCR)({[A-z]{4,10}})/g.exec(customCommand.response)[2].replace(/({|})/g, '');
-                                let redisData = await redis.get(`COUNT:${channel}:${countKey}`);
-                                if (redisData) {
-                                    if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
-                                        let countValue = Number(redisData);
-                                        chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`));
-                                    } else {
-                                        await redis.incr(`COUNT:${channel}:${countKey}`);
-                                        let countValue = Number(redisData);
-                                        chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`));
-                                    }
-                                } else {
-                                    if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
-                                        await redis.set(`COUNT:${channel}:${countKey}`, 0);
-                                        chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0'));
-                                    } else {
-                                        await redis.set(`COUNT:${channel}:${countKey}`, 1);
-                                        chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
-                                    }
+                            let urlToFetch = customCommand.response.replace(/^.+\$fetchURL\(|\).+$/g, '');
+                            if (urlToFetch !== customCommand.response) {
+                                try {
+                                    console.log(urlToFetch);
+                                    let resp = await axios.get(urlToFetch, {
+                                        timeout: 10000,
+                                    });
+                                    let commandResponse = customCommand.response;
+                                    chatClient.say(
+                                        channel,
+                                        commandResponse
+                                            .replace(`$fetchURL(${urlToFetch})`, resp.data)
+                                            .replace(/{user}/g, user)
+                                            .replace(/{channel}/g, channel)
+                                    );
+                                } catch (err) {
+                                    chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
                                 }
                             } else {
-                                chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
+                                if (customCommand.response.match(/(GET|INCR){[A-z]{4,10}}/g)) {
+                                    let countKey = /(GET|INCR)({[A-z]{4,10}})/g.exec(customCommand.response)[2].replace(/({|})/g, '');
+                                    let redisData = await redis.get(`COUNT:${channel}:${countKey}`);
+                                    if (redisData) {
+                                        if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
+                                            let countValue = Number(redisData);
+                                            chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`));
+                                        } else {
+                                            await redis.incr(`COUNT:${channel}:${countKey}`);
+                                            let countValue = Number(redisData);
+                                            chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`));
+                                        }
+                                    } else {
+                                        if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
+                                            await redis.set(`COUNT:${channel}:${countKey}`, 0);
+                                            chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0'));
+                                        } else {
+                                            await redis.set(`COUNT:${channel}:${countKey}`, 1);
+                                            chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
+                                        }
+                                    }
+                                } else {
+                                    chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
+                                }
                             }
                         }
                     }
