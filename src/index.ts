@@ -190,16 +190,16 @@ async function main(): Promise<void> {
         };
     }
 
-    const source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+    let sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
 
     // prettier-ignore
-    source.addEventListener('ready', (e: any) => {
+    sevenTVSource.addEventListener('ready', (e: any) => {
             // Should be "7tv-event-sub.v1" since this is the `v1` endpoint
             console.log(e.data);
         });
 
     // prettier-ignore
-    source.addEventListener('update', (e: any) => {
+    sevenTVSource.addEventListener('update', (e: any) => {
             let emoteData: EmoteEventUpdate = JSON.parse(e.data);
             console.log(emoteData);
             switch(emoteData.action) {
@@ -214,18 +214,21 @@ async function main(): Promise<void> {
                 case 'UPDATE':
                     chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.emote.name} has been aliased to ${emoteData.name}`);
                 break;
-            }        
+                
+            }
         });
 
     // prettier-ignore
-    source.addEventListener('open', (e: any) => {
+    sevenTVSource.addEventListener('open', (e: any) => {
             // Connection was opened.
         });
 
     // prettier-ignore
-    source.addEventListener('error', (e: any) => {
+    sevenTVSource.addEventListener('error', async (e: any) => {
             if (e.readyState === EventSource.CLOSED) {
-                // Connection was closed.
+                chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
+                await sevenTVSource.close();
+                sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
             }
         });
 
