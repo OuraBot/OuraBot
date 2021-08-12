@@ -239,7 +239,7 @@ async function main(): Promise<void> {
         source.addEventListener('error', async (e: any) => {
                 if (e.readyState === EventSource.CLOSED) {
                     chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
-                    await source.close();
+                    source.close();
                     source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
                 } else {
                     chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
