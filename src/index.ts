@@ -195,45 +195,58 @@ async function main(): Promise<void> {
 
     let sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
 
-    // prettier-ignore
-    sevenTVSource.addEventListener('ready', (e: any) => {
-            // Should be "7tv-event-sub.v1" since this is the `v1` endpoint
-            console.log(e.data);
-        });
+    add7TVListeners(sevenTVSource);
 
-    // prettier-ignore
-    sevenTVSource.addEventListener('update', (e: any) => {
-            let emoteData: EmoteEventUpdate = JSON.parse(e.data);
-            console.log(emoteData);
-            switch(emoteData.action) {
-                case 'ADD':
-                    chatClient.say(emoteData.channel, `New 7\u{E0000}TV emote has been added: ${emoteData.name}`)
-                break;
+    setInterval(() => {
+        sevenTVSource.close();
+        sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+        add7TVListeners(sevenTVSource);
+    }, 1000 * 60 * 60);
 
-                case 'REMOVE':
-                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.name} has been removed`)
-                break;
+    function add7TVListeners(source: EventSource) {
+        // prettier-ignore
+        source.addEventListener('ready', (e: any) => {
+                // Should be "7tv-event-sub.v1" since this is the `v1` endpoint
+                console.log(e.data);
+            });
 
-                case 'UPDATE':
-                    chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.emote.name} has been aliased to ${emoteData.name}`);
-                break;
-                
-            }
-        });
+        // prettier-ignore
+        source.addEventListener('update', (e: any) => {
+                let emoteData: EmoteEventUpdate = JSON.parse(e.data);
+                console.log(emoteData);
+                switch(emoteData.action) {
+                    case 'ADD':
+                        chatClient.say(emoteData.channel, `New 7\u{E0000}TV emote has been added: ${emoteData.name}`)
+                    break;
+    
+                    case 'REMOVE':
+                        chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.name} has been removed`)
+                    break;
+    
+                    case 'UPDATE':
+                        chatClient.say(emoteData.channel, `7TV Emote: ${emoteData.emote.name} has been aliased to ${emoteData.name}`);
+                    break;
+                    
+                }
+            });
 
-    // prettier-ignore
-    sevenTVSource.addEventListener('open', (e: any) => {
-            // Connection was opened.
-        });
+        // prettier-ignore
+        source.addEventListener('open', (e: any) => {
+                // Connection was opened.
+            });
 
-    // prettier-ignore
-    sevenTVSource.addEventListener('error', async (e: any) => {
-            if (e.readyState === EventSource.CLOSED) {
-                chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
-                await sevenTVSource.close();
-                sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
-            }
-        });
+        // prettier-ignore
+        source.addEventListener('error', async (e: any) => {
+                if (e.readyState === EventSource.CLOSED) {
+                    chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
+                    await source.close();
+                    source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+                } else {
+                    chatClient.say('#auror6s', '@auror6s pepeMeltdown  AURO 7TV EVENTAPI DISCONNECTED! FIX IT Pepege 🔧');
+                    source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+                }
+            });
+    }
 
     createServer(function (req, res) {
         handler(req, res, function (err) {
