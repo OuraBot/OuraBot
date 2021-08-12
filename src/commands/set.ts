@@ -9,7 +9,7 @@ dotenv.config();
 class suggestCommand extends Command {
     name = 'set';
     description = 'Set certain values within the bot: counter';
-    usage = 'set <key> <value> <subvalue?>';
+    usage = 'set <target> <value> <subvalue?>';
     userCooldown = 5;
     channelCooldown = 5;
     permission = 4;
@@ -18,7 +18,7 @@ class suggestCommand extends Command {
             if (!args[1])
                 return {
                     success: false,
-                    message: 'Missing counter key',
+                    message: 'Missing counter target',
                     error: null,
                 };
 
@@ -71,7 +71,7 @@ class suggestCommand extends Command {
         } else {
             return {
                 success: false,
-                message: 'Invalid subargument',
+                message: 'Invalid target',
                 error: null,
             };
         }
