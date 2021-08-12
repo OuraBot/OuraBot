@@ -261,7 +261,14 @@ async function main(): Promise<void> {
 
     handler.on('push', function (event) {
         if (event.payload.repository.name === 'Twitch-Bot') {
-            chatClient.say('#auror6s', `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}"`);
+            if (event.payload.head_commit.message.includes('PRIVATE')) {
+                chatClient.say('#auror6s', `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
+            } else {
+                chatClient.say(
+                    '#auror6s',
+                    `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}" on branch: ${event.payload.ref.replace('refs/heads/', '')}`
+                );
+            }
         }
     });
 
