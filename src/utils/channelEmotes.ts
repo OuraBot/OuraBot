@@ -55,7 +55,7 @@ export async function getBestEmote(displayName: string, emoteOptions: string[], 
     }
 }
 
-async function getAllEmotes(displayName: string): Promise<GetAllEmotesClass> {
+export async function getAllEmotes(displayName: string): Promise<GetAllEmotesClass> {
     try {
         let cacheEntry = await redis.get(`bae:${displayName}`);
 
