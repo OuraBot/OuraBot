@@ -1,12 +1,6 @@
 import dotenv from 'dotenv';
-import { apiClient, apiClient2, chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import { Clip } from '../models/clip.model';
-import { clipInfo } from '../utils/apis/ivr';
-import axios from 'axios';
 import { chunkArr, obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
