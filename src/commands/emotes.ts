@@ -40,7 +40,7 @@ class testComand extends Command {
 
         return {
             success: true,
-            message: chunkedEmotes.length >= 1 ? chunkedEmotes : 'No emotes found',
+            message: chunkedEmotes.length >= 1 ? chunkedEmotes : 'This channel has no sub emotes.',
             error: null,
             ignorebanphrase: true,
         };
