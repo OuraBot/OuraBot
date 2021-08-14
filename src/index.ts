@@ -585,12 +585,21 @@ async function main(): Promise<void> {
                                 console.table(data);
                                 if (data.success) {
                                     if (data.message) {
-                                        chatClient.say(
-                                            channel,
-                                            `${data.noping ? '' : `@${user}, `}${
-                                                data?.ignorebanphrase ? data.message : (await banphraseCheck(data.message, channel)) ? 'Command result is banphrased' : data.message
-                                            }`
-                                        );
+                                        if (Array.isArray(data.message)) {
+                                            for (let m of data.message) {
+                                                chatClient.say(
+                                                    channel,
+                                                    `${data.noping ? '' : `@${user}, `}${data?.ignorebanphrase ? m : (await banphraseCheck(m, channel)) ? 'Command result is banphrased' : m}`
+                                                );
+                                            }
+                                        } else {
+                                            chatClient.say(
+                                                channel,
+                                                `${data.noping ? '' : `@${user}, `}${
+                                                    data?.ignorebanphrase ? data.message : (await banphraseCheck(data.message, channel)) ? 'Command result is banphrased' : data.message
+                                                }`
+                                            );
+                                        }
                                     }
                                 } else {
                                     chatClient.say(channel, `@${user}, command unsucessful: ${data?.message ? data.message : data.error}`);

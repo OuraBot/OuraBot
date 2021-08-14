@@ -15,7 +15,7 @@ export enum ErrorEnum {
 
 export class CommandReturnClass {
     success: boolean;
-    message: string | null;
+    message: string | string[] | null;
     error: ErrorEnum | null;
     noping?: boolean | null;
     ignorebanphrase?: boolean | null;
