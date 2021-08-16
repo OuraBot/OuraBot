@@ -412,7 +412,7 @@ async function main(): Promise<void> {
                                         commandResponse
                                             .replace(`$fetchURL(${urlToFetch})`, resp.data)
                                             .replace(/{user}/g, user)
-                                            .replace(/{channel}/g, channel)
+                                            .replace(/{channel}/g, channel.replace('#', ''))
                                     );
                                 } catch (err) {
                                     chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
@@ -440,7 +440,7 @@ async function main(): Promise<void> {
                                         }
                                     }
                                 } else {
-                                    chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel));
+                                    chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', '')));
                                 }
                             }
                         }
