@@ -399,7 +399,7 @@ async function main(): Promise<void> {
                             await redis.set(`customcooldown:${customCommand.command}:${channel}:${user}`, Date.now(), 'EX', customCommand.userCooldown);
                             await redis.set(`customcooldown:${customCommand.command}:${channel}`, Date.now(), 'EX', customCommand.channelCooldown);
 
-                            let urlToFetch = customCommand.response.replace(/^.+\$fetchURL\(|\).+$/g, '');
+                            let urlToFetch = customCommand.response.replace(/^.*\$fetchURL\(|\).*$/g, '');
                             if (urlToFetch !== customCommand.response) {
                                 try {
                                     console.log(urlToFetch);
