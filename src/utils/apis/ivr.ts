@@ -186,3 +186,54 @@ export async function clipInfo(slug: string): Promise<ClipInfoReturnClass> {
         };
     }
 }
+
+export class IsLoggedChannelReturnClass {
+    logged: boolean;
+    error: string;
+    cached: boolean;
+}
+
+export async function isLoggedChannel(channel: string): Promise<IsLoggedChannelReturnClass> {
+    try {
+        let redisData = await redis.get(`cache:ivr/logs/channels`);
+        if (redisData) {
+            redisData = JSON.parse(redisData);
+            if (redisData.includes(channel.replace('#', ''))) {
+                return {
+                    logged: true,
+                    error: null,
+                    cached: true,
+                };
+            } else {
+                return {
+                    logged: false,
+                    error: null,
+                    cached: true,
+                };
+            }
+        } else {
+            let resp = await axios.get(`https://logs.ivr.fi/channels`);
+            let channels = resp.data.channels.map((c: { userID: number; name: string }) => c.name);
+            await redis.set(`cache:ivr/logs/channels`, JSON.stringify(channels), 'EX', 60 * 60 * 24);
+            if (channels.includes(channel.replace('#', ''))) {
+                return {
+                    logged: true,
+                    error: null,
+                    cached: false,
+                };
+            } else {
+                return {
+                    logged: false,
+                    error: null,
+                    cached: false,
+                };
+            }
+        }
+    } catch (err) {
+        return {
+            logged: false,
+            error: err,
+            cached: null,
+        };
+    }
+}
