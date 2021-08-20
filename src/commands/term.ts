@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
+import { chatClient, WEEB_REGEX } from '..';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 import { error } from '../utils/logger';
 import { Term } from '../models/term.model';
@@ -54,6 +54,8 @@ class testComand extends Command {
                     error: null,
                 };
 
+            if (termRegex === '!{WEEB}') termRegex = WEEB_REGEX.toString();
+
             let newTerm = new Term({
                 channel: channel.replace('#', ''),
                 regex: termRegex,
@@ -63,7 +65,7 @@ class testComand extends Command {
             await newTerm.save();
             return {
                 success: true,
-                message: `Term with a regex of "${termRegex}" has been added.`,
+                message: `Term with a regex of "${termRegex.length > 400 ? '(REGEX TOO LONG)' : termRegex}" has been added.`,
                 error: null,
                 ignorebanphrase: true,
             };
