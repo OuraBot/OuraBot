@@ -1,17 +1,13 @@
 import dotenv from 'dotenv';
-import { chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import { obfuscateName } from '../utils/stringManipulation';
 import { isLoggedChannel } from '../utils/apis/ivr';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 import { error } from '../utils/logger';
+import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
 class suggestCommand extends Command {
     name = 'logs';
-    description = 'View the logs of a user. (channel specified must have justlog bot joined)';
+    description = 'View the logs of a user. (specified channel must have justlog logs enabled)';
     usage = 'logs <user?> <channel?> <normal,mod?>';
     userCooldown = 5;
     channelCooldown = 3;
