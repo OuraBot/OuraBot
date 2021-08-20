@@ -54,7 +54,7 @@ class testComand extends Command {
                     error: null,
                 };
 
-            if (termRegex === '!{WEEB}') termRegex = WEEB_REGEX.toString();
+            if (termRegex === '!{WEEB}') termRegex = WEEB_REGEX.toString().replace(/^\/|\/g$/g, '');
 
             let newTerm = new Term({
                 channel: channel.replace('#', ''),
