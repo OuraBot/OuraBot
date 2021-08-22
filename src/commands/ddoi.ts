@@ -22,7 +22,10 @@ class suggestCommand extends Command {
                 let randomNumber = Math.floor(Math.random() * redisData.length);
                 return {
                     success: true,
-                    message: `Random video from DDOI: "${redisData[randomNumber].title}" - ${redisData[randomNumber].url}`,
+                    message: `Random video from DDOI: "${redisData[randomNumber].title}" - ${redisData[randomNumber].url} [${prettyTime(
+                        Date.now() - new Date(redisData[randomNumber].publishedAt).getTime(),
+                        false
+                    )} ago]`,
                     error: null,
                     ignorebanphrase: true,
                 };
@@ -41,10 +44,11 @@ class suggestCommand extends Command {
                 }
 
                 await getVideos();
-                data = data.map((video: { snippet: { title: any }; id: { videoId: any } }) => {
+                data = data.map((video: { snippet: { title: any; publishedAt: string }; id: { videoId: any } }) => {
                     return {
                         title: unescapeHTML(video.snippet.title),
                         url: `https://www.youtube.com/watch?v=${video.id.videoId}`,
+                        publishedAt: video.snippet.publishedAt,
                     };
                 });
 
@@ -53,7 +57,10 @@ class suggestCommand extends Command {
                 let randomNumber = Math.floor(Math.random() * data.length);
                 return {
                     success: true,
-                    message: `Random video from DDOI: "${data[randomNumber].title}" - ${data[randomNumber].url}`,
+                    message: `Random video from DDOI: "${data[randomNumber].title}" - ${data[randomNumber].url} [${prettyTime(
+                        Date.now() - new Date(data[randomNumber].publishedAt).getTime(),
+                        false
+                    )} ago]`,
                     error: null,
                     ignorebanphrase: true,
                 };
@@ -63,7 +70,10 @@ class suggestCommand extends Command {
             video = video.data.items[0];
             return {
                 success: true,
-                message: `Latest video from DDOI: "${unescapeHTML(video.snippet.title)}" - https://www.youtube.com/watch?v=${video.id.videoId}`,
+                message: `Latest video from DDOI: "${unescapeHTML(video.snippet.title)}" - https://www.youtube.com/watch?v=${video.id.videoId} [${prettyTime(
+                    Date.now() - new Date(video.snippet.publishedAt).getTime(),
+                    false
+                )} ago]`,
                 error: null,
                 ignorebanphrase: true,
             };
