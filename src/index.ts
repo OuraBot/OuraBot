@@ -193,13 +193,13 @@ async function main(): Promise<void> {
         };
     }
 
-    let sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+    let sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot&channel=enzo_supercraftz');
 
     add7TVListeners(sevenTVSource);
 
     setInterval(() => {
         sevenTVSource.close();
-        sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+        sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot&channel=enzo_supercraftz');
         add7TVListeners(sevenTVSource);
     }, 1000 * 60 * 60);
 
