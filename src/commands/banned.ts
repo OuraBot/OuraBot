@@ -10,7 +10,7 @@ dotenv.config();
 
 class suggestCommand extends Command {
     name = 'banned';
-    description = 'Check if a specified user is banned';
+    description = 'Check if a specified user is banned on Twitch';
     usage = 'banned <username>';
     userCooldown = 3;
     channelCooldown = 1;
