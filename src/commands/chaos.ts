@@ -43,7 +43,6 @@ class suggestCommand extends Command {
     channelCooldown = 30;
     permission = 2;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        await chatClient.say(channel, 'ItsBoshyTime ITS TIME FOR CHAOS ItsBoshyTime');
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
         let preferredEmote = await getBestEmote(channel, ['DinkDonk', 'dinkDonk', 'pajaDink'], ':tf: 🔔');
         chatters = chatters.filter((c) => !knownBots.includes(c));
