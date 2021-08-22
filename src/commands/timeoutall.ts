@@ -32,16 +32,29 @@ let knownBots = [
 
 class suggestCommand extends Command {
     name = 'timeoutall';
-    description = 'Timeout';
+    description = 'Timeout everyone for a specified amount of time - MAKE SURE ANY OTHER BOTS YOU DONT WANT TO BE TIMED OUT ARE MODS! THEY MIGHT LEAVE THE CHANNEL IF THEY GET TIMED OUT';
     usage = 'timeoutall <length>';
-    userCooldown = 1;
-    channelCooldown = 1;
-    permission = 1;
+    userCooldown = 10;
+    channelCooldown = 10;
+    permission = 2;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let length = args[0] || 1;
-        chatClient.say(channel, 'ItsBoshyTime TIMING OUT *EVERYONE* ItsBoshyTime ');
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
         chatters = chatters.filter((c) => !knownBots.includes(c));
+
+        if (chatters.length === 0)
+            return {
+                success: false,
+                message: 'No users are in this chat right now that I can timeout',
+                error: null,
+            };
+
+        if (chatters.length > 100)
+            return {
+                success: false,
+                message: 'Too many users to timeout',
+                error: null,
+            };
 
         for (let chatter of chatters) {
             chatClient.say(channel, `/timeout ${chatter} ${length}`);
