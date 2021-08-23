@@ -16,7 +16,7 @@ import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
 import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import axios from 'axios';
 import { Afk, IAfk, Status } from './models/afk.model.js';
-import { Term } from './models/term.model.js';
+import { ITerm, Term } from './models/term.model.js';
 import { IModule, Module } from './models/module.model.js';
 import { moduleEnum } from './commands/modmodule.js';
 import getUrls from 'get-urls';
@@ -102,7 +102,7 @@ async function main(): Promise<void> {
         auth,
         process.env.DEBUG === 'TRUE'
             ? {
-                  channels: ['auror6s'],
+                  channels: ['auror6s', 'aurotest'],
               }
             : {
                   channels: await getChannels(process.env.CLIENT_USERNAME),
@@ -381,26 +381,83 @@ async function main(): Promise<void> {
             }
         });
 
-        // ignorepermissions: { type: Boolean, required: false },
-        Term.find().then((terms) => {
-            if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
-                // Using '!' before the msg.userInfo doesn't work for some odd reason
-            } else {
+        redis.get(`tl:${channel}:term`).then((redisData) => {
+            if (redisData) {
+                const terms: ITerm[] = JSON.parse(redisData);
                 for (let term of terms) {
-                    if (term.channel === channel.replace('#', '')) {
-                        let regex = new RegExp(term.regex, 'gi');
-                        if (regex.test(message)) {
-                            if (term.response.includes('{newline}')) {
-                                let msgs = term.response.split('{newline}');
-                                for (let msg of msgs) {
-                                    chatClient.say(channel, msg.replace(/{user}/g, user));
+                    if (term.ignorepermissions) {
+                        if (term.channel === channel.replace('#', '')) {
+                            let regex = new RegExp(term.regex, 'gi');
+                            if (regex.test(message)) {
+                                if (term.response.includes('{newline}')) {
+                                    let msgs = term.response.split('{newline}');
+                                    for (let msg of msgs) {
+                                        chatClient.say(channel, msg.replace(/{user}/g, user));
+                                    }
+                                } else {
+                                    chatClient.say(channel, term.response.replace(/{user}/g, user));
                                 }
-                            } else {
-                                chatClient.say(channel, term.response.replace(/{user}/g, user));
+                            }
+                        }
+                    } else {
+                        if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                            // Using '!' before the msg.userInfo doesn't work for some odd reason... 😕
+                        } else {
+                            if (term.channel === channel.replace('#', '')) {
+                                let regex = new RegExp(term.regex, 'gi');
+                                if (regex.test(message)) {
+                                    if (term.response.includes('{newline}')) {
+                                        let msgs = term.response.split('{newline}');
+                                        for (let msg of msgs) {
+                                            chatClient.say(channel, msg.replace(/{user}/g, user));
+                                        }
+                                    } else {
+                                        chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                Term.find().then((terms: ITerm[]) => {
+                    redis.set(`tl:${channel}:term`, JSON.stringify(terms), 'EX', 5);
+                    for (let term of terms) {
+                        if (term.ignorepermissions) {
+                            if (term.channel === channel.replace('#', '')) {
+                                let regex = new RegExp(term.regex, 'gi');
+                                if (regex.test(message)) {
+                                    if (term.response.includes('{newline}')) {
+                                        let msgs = term.response.split('{newline}');
+                                        for (let msg of msgs) {
+                                            chatClient.say(channel, msg.replace(/{user}/g, user));
+                                        }
+                                    } else {
+                                        chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                    }
+                                }
+                            }
+                        } else {
+                            if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                                // Using '!' before the msg.userInfo doesn't work for some odd reason... 😕
+                            } else {
+                                if (term.channel === channel.replace('#', '')) {
+                                    let regex = new RegExp(term.regex, 'gi');
+                                    if (regex.test(message)) {
+                                        if (term.response.includes('{newline}')) {
+                                            let msgs = term.response.split('{newline}');
+                                            for (let msg of msgs) {
+                                                chatClient.say(channel, msg.replace(/{user}/g, user));
+                                            }
+                                        } else {
+                                            chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
         });
 
