@@ -6,7 +6,7 @@ import { ApiClient } from 'twitch';
 import { ClientCredentialsAuthProvider, RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
 import { ChatClient } from 'twitch-chat-client';
 import { createNewError } from './models/error.model.js';
-import { Reminder } from './models/reminder.model.js';
+import { IReminder, Reminder } from './models/reminder.model.js';
 import { Command, CommandReturnClass, getCommands, PermissionEnum } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { getChannels } from './utils/fetchChannels';
@@ -672,7 +672,64 @@ async function main(): Promise<void> {
             if (disabledCommands.disabled.indexOf('remind') > -1) {
                 //
             } else {
-                Reminder.find().then(async (reminders) => {
+                redis.get(`tl:${channel}:reminders`).then(async (redisData) => {
+                    if (redisData) {
+                        let reminders: IReminder[] = JSON.parse(redisData);
+                        for (let reminder of reminders) {
+                            if (reminder.username === user) {
+                                let time = new Date(reminder.timestamp);
+                                if (reminder.author === 'SYSTEM') {
+                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                    Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                        console.log(`Deleted reminder for ${user}`);
+                                    });
+                                } else {
+                                    if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                        Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                            console.log(`Deleted reminder for ${user}`);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        let reminderArr = chunkArr(userReminders, 450);
+                        for (let reminder of reminderArr) {
+                            chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                        }
+                    } else {
+                        Reminder.find().then(async (reminders) => {
+                            redis.set(`tl:${channel}:reminders`, JSON.stringify(reminders), 'EX', 5);
+                            for (let reminder of reminders) {
+                                if (reminder.username === user) {
+                                    let time = new Date(reminder.timestamp);
+                                    if (reminder.author === 'SYSTEM') {
+                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                        Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                            console.log(`Deleted reminder for ${user}`);
+                                        });
+                                    } else {
+                                        if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                                            userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                            Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                                console.log(`Deleted reminder for ${user}`);
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                            let reminderArr = chunkArr(userReminders, 450);
+                            for (let reminder of reminderArr) {
+                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            redis.get(`tl:${channel}:reminders`).then(async (redisData) => {
+                if (redisData) {
+                    let reminders: IReminder[] = JSON.parse(redisData);
                     for (let reminder of reminders) {
                         if (reminder.username === user) {
                             let time = new Date(reminder.timestamp);
@@ -680,12 +737,14 @@ async function main(): Promise<void> {
                                 userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
                                 Reminder.findByIdAndDelete(reminder._id).then(() => {
                                     console.log(`Deleted reminder for ${user}`);
+                                    redis.del(`tl:${channel}:reminders`);
                                 });
                             } else {
                                 if (!(await banphraseCheck(`${reminder.message}`, channel))) {
                                     userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
                                     Reminder.findByIdAndDelete(reminder._id).then(() => {
                                         console.log(`Deleted reminder for ${user}`);
+                                        redis.del(`tl:${channel}:reminders`);
                                     });
                                 }
                             }
@@ -695,59 +754,37 @@ async function main(): Promise<void> {
                     for (let reminder of reminderArr) {
                         chatClient.say(channel, `@${user}, reminders - ${reminder}`);
                     }
-                });
-            }
-        } else {
-            Reminder.find().then(async (reminders) => {
-                for (let reminder of reminders) {
-                    if (reminder.username === user) {
-                        let time = new Date(reminder.timestamp);
-                        if (reminder.author === 'SYSTEM') {
-                            userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                            Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                console.log(`Deleted reminder for ${user}`);
-                            });
-                        } else {
-                            if (!(await banphraseCheck(`${reminder.message}`, channel))) {
-                                userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                                Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                    console.log(`Deleted reminder for ${user}`);
-                                });
+                } else {
+                    Reminder.find().then(async (reminders) => {
+                        redis.set(`tl:${channel}:reminders`, JSON.stringify(reminders), 'EX', 5);
+                        for (let reminder of reminders) {
+                            if (reminder.username === user) {
+                                let time = new Date(reminder.timestamp);
+                                if (reminder.author === 'SYSTEM') {
+                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                    Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                        console.log(`Deleted reminder for ${user}`);
+                                    });
+                                    redis.del(`tl:${channel}:reminders`);
+                                } else {
+                                    if (!(await banphraseCheck(`${reminder.message}`, channel))) {
+                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                        Reminder.findByIdAndDelete(reminder._id).then(() => {
+                                            console.log(`Deleted reminder for ${user}`);
+                                        });
+                                        redis.del(`tl:${channel}:reminders`);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                let reminderArr = chunkArr(userReminders, 450);
-                for (let reminder of reminderArr) {
-                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                }
-            });
-        }
-
-        // WHO NEEDS CACHING ANYWAYS LUL
-        /* 
-        let reminderCache: any = await redis.get(`cache:MONGODBREMINDERS`);
-        if (reminderCache) {
-            reminderCache = JSON.parse(reminderCache);
-        } else {
-            let allReminders: { _id: any; username: String; message: String; timestamp: Date; author: String }[] = [];
-            Reminder.find().then((reminders) => {
-                for (let reminder of reminders) {
-                    allReminders.push({
-                        _id: reminder._id,
-                        username: reminder.username,
-                        message: reminder.message,
-                        timestamp: reminder.timestamp,
-                        author: reminder.author,
+                        let reminderArr = chunkArr(userReminders, 450);
+                        for (let reminder of reminderArr) {
+                            chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                        }
                     });
                 }
             });
-            reminderCache = allReminders;
-            await redis.set(`cache:MONGODBREMINDERS`, JSON.stringify(allReminders), 'EX', 5);
         }
-        
-        console.log(reminderCache, 'dank');
-        */
 
         if (message.startsWith(config.prefix)) {
             let cmdmsg = message.substring(config.prefix.length).split(' ');

@@ -7,6 +7,7 @@ export interface IReminder extends Schema {
     message: String;
     timestamp: Date;
     author: String;
+    _id: string;
 }
 
 const schema = new Schema<IReminder>({
