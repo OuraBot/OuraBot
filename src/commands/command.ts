@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
+import { chatClient, redis } from '..';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 import { error } from '../utils/logger';
 import { CustomCommand } from '../models/command.model';
@@ -84,6 +84,7 @@ class testComand extends Command {
             });
 
             await newCommand.save();
+            redis.del(`tl:${channel}:customcommands`);
             return {
                 success: true,
                 message: `Custom command "${commandName}" with a user cooldown of ${userCooldown}s and channel cooldown of ${channelCooldown}s`,
@@ -100,6 +101,7 @@ class testComand extends Command {
 
             let commandName = args[1];
             await CustomCommand.findOneAndRemove({ command: commandName });
+            redis.del(`tl:${channel}:customcommands`);
             return {
                 success: true,
                 message: `Custom command "${commandName}" removed`,

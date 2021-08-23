@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { Afk, Status } from '../models/afk.model';
 import { SuggestionModel } from '../models/suggestion.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
-import { banphraseCheck } from '../index';
+import { banphraseCheck, redis } from '../index';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -51,6 +51,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
+                    redis.del(`tl:${channel}:afk`);
 
                     return {
                         success: true,
@@ -71,6 +72,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
+                    redis.del(`tl:${channel}:afk`);
 
                     return {
                         success: true,
@@ -91,6 +93,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
+                    redis.del(`tl:${channel}:afk`);
 
                     return {
                         success: true,

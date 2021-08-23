@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
+import { chatClient, redis } from '..';
 import { Channel } from '../models/channel.model';
 import { Reminder } from '../models/reminder.model';
 import { resolveUser } from '../utils/apis/ivr';
@@ -55,6 +55,7 @@ class remindCommand extends Command {
         });
 
         newReminder.save();
+        redis.del(`tl:${channel}:reminders`);
 
         return {
             success: true,

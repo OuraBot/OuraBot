@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient, WEEB_REGEX } from '..';
+import { chatClient, redis, WEEB_REGEX } from '..';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 import { error } from '../utils/logger';
 import { Term } from '../models/term.model';
@@ -63,6 +63,7 @@ class testComand extends Command {
             });
 
             await newTerm.save();
+            redis.del(`tl:${channel}:term`);
             return {
                 success: true,
                 message: `Term with a regex of "${termRegex.length > 400 ? '(REGEX TOO LONG)' : termRegex}" has been added.`,

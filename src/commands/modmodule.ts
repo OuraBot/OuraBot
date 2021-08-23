@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { redis } from '..';
 import { Module } from '../models/module.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 
@@ -81,6 +82,8 @@ class testComand extends Command {
             });
 
             newModule.save();
+
+            redis.del(`tl:${channel}:module`);
 
             return {
                 success: true,
