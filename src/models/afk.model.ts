@@ -13,6 +13,7 @@ export interface IAfk extends Schema {
     message: string;
     status: Status;
     timestamp: Date;
+    _id: string;
 }
 
 const schema = new Schema<IAfk>({
