@@ -17,7 +17,7 @@ import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import axios from 'axios';
 import { Afk, IAfk, Status } from './models/afk.model.js';
 import { Term } from './models/term.model.js';
-import { Module } from './models/module.model.js';
+import { IModule, Module } from './models/module.model.js';
 import { moduleEnum } from './commands/modmodule.js';
 import getUrls from 'get-urls';
 import { ISub, Sub } from './models/sub.model.js';
@@ -284,52 +284,104 @@ async function main(): Promise<void> {
 
     let commands = await getCommands();
     chatClient.onMessage(async (channel, user, message, msg) => {
-        Module.find().then(async (modules) => {
-            if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
-                // Using '!' before the msg.userInfo doesn't work for some odd reason
-            } else {
+        redis.get(`tl:${channel}:module`).then(async (redisData) => {
+            if (redisData) {
+                const modules: IModule[] = JSON.parse(redisData);
                 for (let module of modules) {
-                    if (module.channel === channel.replace('#', '')) {
-                        if (module.module === moduleEnum.ASCII) {
-                            if (message.match(ASCII_REGEX)?.length > 5) {
-                                let redisData: string | number = await redis.get(`ASCII:${channel}:${user}`);
-                                if (redisData) {
-                                    redisData = Number(redisData);
-                                    let nextLen = redisData * 2;
-                                    await chatClient.say(channel, `/timeout ${user} ${redisData} ASCII Mod Module (next timeout will be ${nextLen}s)`);
-                                    await redis.set(`ASCII:${channel}:${user}`, nextLen, 'EX', 3600);
-                                    return;
-                                } else {
-                                    await redis.set(`ASCII:${channel}:${user}`, module.timeout, 'EX', 3600);
-                                    await chatClient.say(channel, `/timeout ${user} ${module.timeout} ASCII Mod Module (next timeout will be ${module.timeout * 2}s)`);
-                                    return;
+                    // module.ignorepermissions
+                    if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                        // Using '!' before the msg.userInfo doesn't work for some odd reason... 😕
+                    } else {
+                        if (module.channel === channel.replace('#', '')) {
+                            if (module.module === moduleEnum.ASCII) {
+                                if (message.match(ASCII_REGEX)?.length > 5) {
+                                    let redisData: string | number = await redis.get(`ASCII:${channel}:${user}`);
+                                    if (redisData) {
+                                        redisData = Number(redisData);
+                                        let nextLen = redisData * 2;
+                                        await chatClient.say(channel, `/timeout ${user} ${redisData} ASCII Mod Module (next timeout will be ${nextLen}s)`);
+                                        await redis.set(`ASCII:${channel}:${user}`, nextLen, 'EX', 3600);
+                                        return;
+                                    } else {
+                                        await redis.set(`ASCII:${channel}:${user}`, module.timeout, 'EX', 3600);
+                                        await chatClient.say(channel, `/timeout ${user} ${module.timeout} ASCII Mod Module (next timeout will be ${module.timeout * 2}s)`);
+                                        return;
+                                    }
                                 }
-                            }
-                        } else if (module.module === moduleEnum.LINKS) {
-                            if (getUrls(message).size > 0) {
-                                chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
-                            }
-                        } else if (module.module === moduleEnum.WEEB) {
-                            if (message.match(WEEB_REGEX)) {
-                                let redisData: string | number = await redis.get(`WEEB:${channel}:${user}`);
-                                if (redisData) {
-                                    redisData = Number(redisData);
-                                    let nextLen = redisData * 2;
-                                    await chatClient.say(channel, `/timeout ${user} ${redisData} WEEB Mod Module (next timeout will be ${nextLen}s)`);
-                                    await redis.set(`WEEB:${channel}:${user}`, nextLen, 'EX', 3600);
-                                    return;
-                                } else {
-                                    await redis.set(`WEEB:${channel}:${user}`, module.timeout * 2, 'EX', 3600);
-                                    await chatClient.say(channel, `/timeout ${user} ${module.timeout} WEEB Mod Module (next timeout will be ${module.timeout * 2}s)`);
-                                    return;
+                            } else if (module.module === moduleEnum.LINKS) {
+                                if (getUrls(message).size > 0) {
+                                    chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
+                                }
+                            } else if (module.module === moduleEnum.WEEB) {
+                                if (message.match(WEEB_REGEX)) {
+                                    let redisData: string | number = await redis.get(`WEEB:${channel}:${user}`);
+                                    if (redisData) {
+                                        redisData = Number(redisData);
+                                        let nextLen = redisData * 2;
+                                        await chatClient.say(channel, `/timeout ${user} ${redisData} WEEB Mod Module (next timeout will be ${nextLen}s)`);
+                                        await redis.set(`WEEB:${channel}:${user}`, nextLen, 'EX', 3600);
+                                        return;
+                                    } else {
+                                        await redis.set(`WEEB:${channel}:${user}`, module.timeout * 2, 'EX', 3600);
+                                        await chatClient.say(channel, `/timeout ${user} ${module.timeout} WEEB Mod Module (next timeout will be ${module.timeout * 2}s)`);
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                Module.find().then(async (modules) => {
+                    redis.set(`tl:${channel}:module`, JSON.stringify(modules), 'EX', 5);
+                    for (let module of modules) {
+                        if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
+                            // Using '!' before the msg.userInfo doesn't work for some odd reason... 😕
+                        } else {
+                            if (module.channel === channel.replace('#', '')) {
+                                if (module.module === moduleEnum.ASCII) {
+                                    if (message.match(ASCII_REGEX)?.length > 5) {
+                                        let redisData: string | number = await redis.get(`ASCII:${channel}:${user}`);
+                                        if (redisData) {
+                                            redisData = Number(redisData);
+                                            let nextLen = redisData * 2;
+                                            await chatClient.say(channel, `/timeout ${user} ${redisData} ASCII Mod Module (next timeout will be ${nextLen}s)`);
+                                            await redis.set(`ASCII:${channel}:${user}`, nextLen, 'EX', 3600);
+                                            return;
+                                        } else {
+                                            await redis.set(`ASCII:${channel}:${user}`, module.timeout, 'EX', 3600);
+                                            await chatClient.say(channel, `/timeout ${user} ${module.timeout} ASCII Mod Module (next timeout will be ${module.timeout * 2}s)`);
+                                            return;
+                                        }
+                                    }
+                                } else if (module.module === moduleEnum.LINKS) {
+                                    if (getUrls(message).size > 0) {
+                                        chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
+                                    }
+                                } else if (module.module === moduleEnum.WEEB) {
+                                    if (message.match(WEEB_REGEX)) {
+                                        let redisData: string | number = await redis.get(`WEEB:${channel}:${user}`);
+                                        if (redisData) {
+                                            redisData = Number(redisData);
+                                            let nextLen = redisData * 2;
+                                            await chatClient.say(channel, `/timeout ${user} ${redisData} WEEB Mod Module (next timeout will be ${nextLen}s)`);
+                                            await redis.set(`WEEB:${channel}:${user}`, nextLen, 'EX', 3600);
+                                            return;
+                                        } else {
+                                            await redis.set(`WEEB:${channel}:${user}`, module.timeout * 2, 'EX', 3600);
+                                            await chatClient.say(channel, `/timeout ${user} ${module.timeout} WEEB Mod Module (next timeout will be ${module.timeout * 2}s)`);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
         });
 
+        // ignorepermissions: { type: Boolean, required: false },
         Term.find().then((terms) => {
             if (msg.userInfo.isMod || msg.userInfo.isBroadcaster) {
                 // Using '!' before the msg.userInfo doesn't work for some odd reason
