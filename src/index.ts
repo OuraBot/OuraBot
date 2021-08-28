@@ -4,7 +4,7 @@ import Redis from 'ioredis';
 import { connect } from 'mongoose';
 import { ApiClient } from 'twitch';
 import { ClientCredentialsAuthProvider, RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
-import { ChatClient } from 'twitch-chat-client';
+import { ChatClient, Whisper } from 'twitch-chat-client';
 import { createNewError } from './models/error.model.js';
 import { IReminder, Reminder } from './models/reminder.model.js';
 import { Command, CommandReturnClass, getCommands, PermissionEnum } from './utils/commandClass.js';
@@ -297,6 +297,41 @@ async function main(): Promise<void> {
         console.log(`${user} joined ${channel}`);
 
         if (channel === '#auror6s') chatClient.say('auror6s', `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+    });
+
+    chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
+        if (user === config.owner) {
+            try {
+                let args = message.split(' ');
+                const channel = args[1].replace('#', '');
+                switch (args[0]) {
+                    case '!filesayfast':
+                        if (args[2].match(/^https:\/\/(haste\.zneix\.eu\/|hastebin\.com\/|pastebin\.com\/)raw\/.+$/)) {
+                            axios.get(args[2]).then(async (response: any) => {
+                                let msgs = response.data.split('\n');
+                                for (let msg of msgs) {
+                                    await chatClient.say(channel, msg);
+                                }
+                            });
+                        }
+                        break;
+
+                    case '!filesayslow':
+                        if (args[2].match(/^https:\/\/(haste\.zneix\.eu\/|hastebin\.com\/|pastebin\.com\/)raw\/.+$/)) {
+                            axios.get(args[2]).then(async (response: any) => {
+                                let msgs = response.data.split('\n');
+                                for (let msg of msgs) {
+                                    await new Promise((resolve) => setTimeout(resolve, 1200));
+                                    await chatClient.say(channel, msg);
+                                }
+                            });
+                        }
+                        break;
+                }
+            } catch (err) {
+                console.log(err, 'whispered');
+            }
+        }
     });
 
     let commands = await getCommands();
