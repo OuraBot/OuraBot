@@ -1,3 +1,42 @@
+# How to run locally:
+Needs:
+- Twitch OAuth Token (get one from https://twitchtokengenerator.com/ - idk which scopes so just get all 4HEad)
+- Node & Yarn Installed
+- Twitch App Secret & App ID
+- MongoDB Atlas URL (free tier works fine)
+- Discord Webhook for error logging
+- Wolfram Alpha API Key (but this command is disabled rn because im too lazy to fix it)
+- Redis
+- Youtube API Key
+
+Clone the repo and install all the node modules
+`yarn install`
+
+Create a .env with the following:
+```
+APP_CLIENTID=twitch client id
+APP_SECRET=twitch client secret
+MONGO_URL=mongodb atlas url with pw
+DEBUG=true, doesnt join all channels in DB
+CLIENT_USERNAME=bot username
+YOUTUBE_KEY=youtube api key
+PORT=port the github commit log runs on
+DISCORD_WEBHOOK=yk
+```
+
+Fill out owner and prefix of config.json. The other fields were there because i used them previously but was too lazy to remove them
+
+Create a tokens.json with:
+```
+{
+    "accessToken": "ACCESS TOKEN",
+    "refreshToken": "REFRESH TOKEN",
+    "expiryTimestamp": 0
+}
+``` 
+
+If you need help setting this up lmk, i didnt intend for this to be ran anywhere else besides my machine KKona
+
 ## Subscription:
 
 ### onStandardPayForward
