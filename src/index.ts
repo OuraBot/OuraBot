@@ -70,6 +70,7 @@ const handler = createHandler({ path: '/wh', secret: 'nNJ9M}x|?#8$2(5aAaT?xSQ:rV
 export let chatClient: ChatClient;
 export let apiClient: ApiClient;
 export let apiClient2: ApiClient;
+export let sevenTVSource: EventSource;
 
 async function main(): Promise<void> {
     const clientId = process.env.APP_CLIENTID;
@@ -193,15 +194,32 @@ async function main(): Promise<void> {
         };
     }
 
-    let sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot&channel=enzo_supercraftz');
+    let eventApiChannels = JSON.parse(await redis.get(`ob:7tveventapichannels`));
+
+    sevenTVSource = new EventSource(`https://events.7tv.app/v1/channel-emotes?${eventApiChannels.map((c: string) => `channel=${c}`).join('&')}`);
 
     add7TVListeners(sevenTVSource);
 
     setInterval(() => {
-        sevenTVSource.close();
-        sevenTVSource = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot&channel=enzo_supercraftz');
-        add7TVListeners(sevenTVSource);
+        restart7TVEventApi();
     }, 1000 * 60 * 60);
+
+    setInterval(async () => {
+        console.log('checking to refresh');
+        let newChannels = JSON.parse(await redis.get(`ob:7tveventapichannels`));
+        if (newChannels !== eventApiChannels) {
+            console.log('refreshing eventapi');
+            eventApiChannels = newChannels;
+            restart7TVEventApi();
+        }
+    }, 1000 * 60 * 1);
+
+    async function restart7TVEventApi() {
+        sevenTVSource.close();
+        eventApiChannels = JSON.parse(await redis.get(`ob:7tveventapichannels`));
+        sevenTVSource = new EventSource(`https://events.7tv.app/v1/channel-emotes?${eventApiChannels.map((c: string) => `channel=${c}`).join('&')}`);
+        add7TVListeners(sevenTVSource);
+    }
 
     function add7TVListeners(source: EventSource) {
         // prettier-ignore
@@ -238,10 +256,9 @@ async function main(): Promise<void> {
         // prettier-ignore
         source.addEventListener('error', async (e: any) => {
                 if (e.readyState === EventSource.CLOSED) {
-                    source.close();
-                    source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
-                } else {
-                    source = new EventSource('https://events.7tv.app/v1/channel-emotes?channel=auror6s&channel=elpws&channel=elpwsbot');
+                    restart7TVEventApi()
+                } else { 
+                restart7TVEventApi()
                 }
             });
     }
