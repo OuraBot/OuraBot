@@ -31,6 +31,7 @@ class testComand extends Command {
                     await chatClient.say(channel, msg);
                 }
             }
+        await chatClient.say(channel, 'File Say completed!');
         });
 
         return {
