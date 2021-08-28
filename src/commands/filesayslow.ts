@@ -33,7 +33,7 @@ class testComand extends Command {
                     await chatClient.say(channel, msg);
                 }
             }
-        await chatClient.say(channel, 'File Say (slow) completed!');
+        await chatClient.say(channel, `@${user}, Filesayslow completed!`);
         });
 
         return {
