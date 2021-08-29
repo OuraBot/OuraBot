@@ -19,8 +19,7 @@ export async function checkPajbotBanphrase(message: string, channel: string): Pr
 
         if (resp.data.banned === true) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
         
