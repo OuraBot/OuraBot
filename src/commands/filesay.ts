@@ -3,13 +3,14 @@ import { Command, CommandReturnClass } from '../utils/commandClass';
 import { ChatClient } from 'twitch-chat-client';
 import { chatClient } from '../index';
 import axios from 'axios';
+import { prettyTime } from '../utils/auroMs';
 
 dotenv.config();
 
 class testComand extends Command {
     name = 'filesay';
     description = 'Say a hastebin file';
-    usage = 'filesayfast <url> <optional msg prefix?>';
+    usage = 'filesayfast <url> <optional msg prefix?> <--silent?>';
     hidden = true;
     permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
@@ -22,7 +23,9 @@ class testComand extends Command {
 
         axios.get(args[0]).then(async (response: any) => {
             let msgs = response.data.split('\n');
-            if (args[1]) {
+            let silent = args[args.length - 1] === '--silent' ? true : false;
+            if (!silent) await chatClient.say(channel, `@${user}, Filesay ETA: ${msgs.length / 10} seconds`);
+            if (args[1] && args[1] !== '--silent') {
                 for (let msg of msgs) {
                     await chatClient.say(channel, `${args[1]} ${msg}`);
                 }
@@ -31,7 +34,7 @@ class testComand extends Command {
                     await chatClient.say(channel, msg);
                 }
             }
-        await chatClient.say(channel, `@${user}, Filesay completed!`);
+            if (!silent) await chatClient.say(channel, `@${user}, Filesay completed!`);
         });
 
         return {

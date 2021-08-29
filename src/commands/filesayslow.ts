@@ -9,7 +9,7 @@ dotenv.config();
 class testComand extends Command {
     name = 'filesayslow';
     description = 'Say a hastebin file with a 1.1 second delay';
-    usage = 'filesayslow <url> <optional msg prefix?>';
+    usage = 'filesayslow <url> <optional msg prefix?> <--silent?>';
     hidden = true;
     permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
@@ -22,7 +22,9 @@ class testComand extends Command {
 
         axios.get(args[0]).then(async (response: any) => {
             let msgs = response.data.split('\n');
-            if (args[1]) {
+            let silent = args[args.length - 1] === '--silent' ? true : false;
+            if (!silent) await chatClient.say(channel, `@${user}, Filesay ETA: ${Math.round(msgs.length * 1.2)} seconds`);
+            if (args[1] && args[1] !== '--silent') {
                 for (let msg of msgs) {
                     await new Promise((resolve) => setTimeout(resolve, 1200));
                     await chatClient.say(channel, `${args[1]} ${msg}`);
@@ -33,7 +35,7 @@ class testComand extends Command {
                     await chatClient.say(channel, msg);
                 }
             }
-        await chatClient.say(channel, `@${user}, Filesayslow completed!`);
+            if (!silent) await chatClient.say(channel, `@${user}, Filesayslow completed!`);
         });
 
         return {
