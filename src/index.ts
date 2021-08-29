@@ -13,7 +13,7 @@ import { getChannels } from './utils/fetchChannels';
 import { error } from './utils/logger.js';
 import { prettyTime } from './utils/auroMs';
 import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
-import { checkPajbot } from './utils/apis/banphrases';
+import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import axios from 'axios';
 import { Afk, IAfk, Status } from './models/afk.model.js';

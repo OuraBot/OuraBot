@@ -14,8 +14,6 @@ export async function checkPajbotBanphrase(message: string, channel: string): Pr
             resp = await axios.post(banphraseURL[channel.replace('#', '')], {
                 message: message
             });
-            
-            
         } catch (err) {
             false;   
         }
