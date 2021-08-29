@@ -4,10 +4,7 @@ import * as fs from 'fs';
 const banphraseURL =  JSON.parse(fs.readFileSync('./src/banphrases.json').toString());
 
 export async function checkPajbotBanphrase(message: string, channel: string): Promise<Boolean> {
-    console.log(banphraseURL)
-    console.log(banphraseURL[channel.replace('#', '')])
-
-        if(!banphraseURL[channel.replace('#', '')]) return false;
+        if (!banphraseURL[channel.replace('#', '')]) return false;
 
         let resp;
         try {
