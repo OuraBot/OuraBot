@@ -4,12 +4,16 @@ import { createNewSuggestion } from '../models/suggestion.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
 import { prettyTime } from '../utils/auroMs';
+import * as fs from 'fs';
+import getUrls from 'get-urls';
+import { PajbotApi } from '../utils/apis/banphrases';
+
 dotenv.config();
 
 class suggestCommand extends Command {
     name = 'set';
     description = 'Set certain values within the bot: counter, 7tv';
-    extendedDescription = `counter (number): Counter variables for custom commands | 7tv: Whether you want newly added 7TV emotes to be posted to chat`;
+    extendedDescription = `counter (number): Counter variables for custom commands | 7tv: Whether you want newly added 7TV emotes to be posted to chat | pajbotapi: URL for the Pajbot Banphrase API`;
     usage = 'set <target> <value> <subvalue?>';
     userCooldown = 5;
     channelCooldown = 5;
@@ -115,6 +119,73 @@ class suggestCommand extends Command {
                 return {
                     success: false,
                     message: 'Invalid 7tv value (true/false)',
+                    error: null,
+                };
+            }
+        } else if (args[0] === 'pajbotapi') {
+            if (!args[1]) {
+                return {
+                    success: false,
+                    message: 'Missing Pajbot Banphrase API URL',
+                    error: null,
+                };
+            } else if (getUrls(args[1]).size > 0) {
+                let redisData: any = await redis.get(`ob:pajbotbanphrase`);
+
+                if (redisData) {
+                    redisData = JSON.parse(redisData).filter((e: PajbotApi) => e.channel !== channel);
+                    redisData.push({
+                        channel: channel.replace('#', ''),
+                        url: args[1],
+                    });
+                    await redis.set(`ob:pajbotbanphrase`, JSON.stringify(redisData));
+                    return {
+                        success: true,
+                        message: `Pajbot Banphrase API set to ${args[1]}`,
+                        error: null,
+                    };
+                } else {
+                    let channels: PajbotApi[] = [];
+                    channels.push({
+                        channel: channel.replace('#', ''),
+                        url: args[1],
+                    });
+                    redis.set(`ob:pajbotbanphrase`, JSON.stringify(channels));
+                    return {
+                        success: true,
+                        message: `Pajbot Banphrase API set to "${args[1]}"`,
+                        error: null,
+                    };
+                }
+            } else if (args[1].match(/^(remove|null|delete|nothing)$/i)) {
+                let redisData: any = await redis.get(`ob:pajbotbanphrase`);
+
+                if (redisData) {
+                    redisData = JSON.parse(redisData);
+                    if (!redisData.map((e: PajbotApi) => e.channel).includes(channel))
+                        return {
+                            success: false,
+                            message: 'Pajbot Banphrase API is not set',
+                            error: null,
+                        };
+                    redisData = redisData.filter((e: PajbotApi) => e.channel !== channel);
+                    await redis.set(`ob:pajbotbanphrase`, JSON.stringify(redisData));
+                    return {
+                        success: true,
+                        message: 'Pajbot Banphrase API removed',
+                        error: null,
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: 'Pajbot Banphrase API is not set',
+                        error: null,
+                    };
+                }
+            } else {
+                return {
+                    success: false,
+                    message: 'Invalid URL',
                     error: null,
                 };
             }
