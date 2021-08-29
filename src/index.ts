@@ -1179,7 +1179,7 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
         }
     }
 
-    if(await checkPajbot(msgToCheck, channel)) return true;
+    if(await checkPajbotBanphrase(msgToCheck, channel)) return true;
 
     let terms = await Term.find();
     for (let term of terms) {
