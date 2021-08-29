@@ -277,10 +277,10 @@ async function main(): Promise<void> {
     handler.on('push', function (event) {
         if (event.payload.repository.name === 'Twitch-Bot') {
             if (event.payload.head_commit.message.includes('PRIVATE')) {
-                chatClient.say('#auror6s', `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
+                chatClient.say(config.owner, `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
             } else {
                 chatClient.say(
-                    '#auror6s',
+                    config.owner,
                     `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}" on branch: ${event.payload.ref.replace('refs/heads/', '')}`
                 );
             }
@@ -296,7 +296,7 @@ async function main(): Promise<void> {
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
 
-        if (channel === '#auror6s') chatClient.say('auror6s', `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        if (channel === `#${config.owner}`) chatClient.say(`#${config.owner}`, `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
     });
 
     chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
