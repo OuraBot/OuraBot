@@ -13,6 +13,7 @@ import { getChannels } from './utils/fetchChannels';
 import { error } from './utils/logger.js';
 import { prettyTime } from './utils/auroMs';
 import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
+import { checkPajbot } from './utils/apis/banphrases';
 import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import axios from 'axios';
 import { Afk, IAfk, Status } from './models/afk.model.js';
@@ -1155,9 +1156,13 @@ async function main(): Promise<void> {
 main();
 
 export async function banphraseCheck(msgToCheck: string, channel: string): Promise<boolean> {
+    
+
     let modules = await Module.find();
     for (let module of modules) {
         if (module.channel === channel.replace('#', '')) {
+
+
             if (module.module === moduleEnum.ASCII) {
                 if (msgToCheck.match(ASCII_REGEX)?.length > 5) {
                     return true;
@@ -1173,6 +1178,8 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
             }
         }
     }
+
+    if(await checkPajbot(msgToCheck, channel)) return true;
 
     let terms = await Term.find();
     for (let term of terms) {
