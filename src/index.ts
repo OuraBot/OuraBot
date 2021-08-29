@@ -103,7 +103,7 @@ async function main(): Promise<void> {
         auth,
         process.env.DEBUG === 'TRUE'
             ? {
-                  channels: ['auror6s', 'aurotest'],
+                  channels: JSON.parse(await fs.readFile('./src/config.json', 'utf-8')).tmi.channels,
               }
             : {
                   channels: await getChannels(process.env.CLIENT_USERNAME),
