@@ -1,22 +1,14 @@
 import * as fs from 'fs';
 
 interface botConfig {
-    app: {
-        clientId: string;
-        clientSecret: string;
-    };
     tmi: {
         channels: Array<string>;
     };
     owner: string;
     prefix: string;
+    debugprefix: string;
 }
-interface TokenConfig {
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
-    obtainmentTimestamp: number;
-}
+
 export interface StreamData {
     title: string;
     date: string;

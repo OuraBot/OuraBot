@@ -1,11 +1,8 @@
 {
-    "app": {
-        "clientId": "string",
-        "clientSecret": "string"
-    },
     "tmi": {
-        "channels": "Array<string>"
+        "channels": ["auror6s"]
     },
     "owner": "auror6s",
-    "prefix": "!"
+    "prefix": "!",
+    "debugprefix": "?"
 }
