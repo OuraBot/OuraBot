@@ -1,26 +1,31 @@
 import axios from 'axios';
 import * as fs from 'fs';
+import { redis } from '../..';
 
-const banphraseURL =  JSON.parse(fs.readFileSync('./src/banphrases.json').toString());
+export class PajbotApi {
+    channel: string;
+    url: string;
+}
 
 export async function checkPajbotBanphrase(message: string, channel: string): Promise<Boolean> {
-        if (!banphraseURL[channel.replace('#', '')]) return false;
+    const banphraseURL =  JSON.parse(await redis.get(`ob:pajbotbanphrase`));
+    if (!banphraseURL.map((e: PajbotApi) => e.channel).includes(channel.replace('#', ''))) return false;
+    let obj = banphraseURL.filter((e: PajbotApi) => e.channel === channel.replace('#', ''));
 
-        let resp;
-        try {
-            resp = await axios.post(banphraseURL[channel.replace('#', '')], {
-                message: message
-            });
-        } catch (err) {
-            false;   
-        }
-        
-        console.log(resp.data.banned)
+    let resp;
+    try {
+        resp = await axios.post(obj[0].url, {
+            message: message
+        });
+    } catch (err) {
+        return false;   
+    }
+    
 
-        if (resp.data.banned === true) {
-            return true;
-        } else {
-            return false;
-        }
+    if (resp.data.banned === true) {
+        return true;
+    } else {
+        return false;
+    }
         
 }
