@@ -48,6 +48,13 @@ class testComand extends Command {
             }
         }
 
+        if (users.length == 0)
+            return {
+                success: false,
+                message: 'No followed users found in that amount of time',
+                error: null,
+            };
+
         const userList = await upload(users.join('\n'));
         if (dontBan) {
             chatClient.say(channel, `@${user}, ItsBoshyTime DRYRUN Follownuke: Caught ${users.length} users | ${userList} ItsBoshyTime `);
