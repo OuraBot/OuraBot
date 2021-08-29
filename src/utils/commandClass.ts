@@ -19,6 +19,7 @@ export class CommandReturnClass {
     error: ErrorEnum | null;
     noping?: boolean | null;
     ignorebanphrase?: boolean | null;
+    reducedcooldown?: number | null;
 }
 
 export enum PermissionEnum {

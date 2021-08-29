@@ -908,6 +908,15 @@ async function main(): Promise<void> {
                                         }
                                     }
                                 } else {
+                                    if (data.reducedcooldown) {
+                                        if (data.reducedcooldown == 0) {
+                                            redis.del(`cooldown:${command.name}:${channel}`);
+                                            redis.del(`cooldown:${command.name}:${channel}:${user}`);
+                                        } else {
+                                            redis.set(`cooldown:${command.name}:${channel}`, Date.now(), 'EX', data.reducedcooldown);
+                                            redis.set(`cooldown:${command.name}:${channel}:${user}`, Date.now(), 'EX', data.reducedcooldown);
+                                        }
+                                    }
                                     chatClient.say(channel, `@${user}, command unsucessful: ${data?.message ? data.message : data.error}`);
                                 }
                             })

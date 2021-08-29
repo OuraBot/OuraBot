@@ -20,6 +20,7 @@ class pyramidCommand extends Command {
                 success: false,
                 message: 'Missing width or emote/text',
                 error: null,
+                reducedcooldown: 1,
             };
 
         width = parseInt(width);
@@ -28,6 +29,7 @@ class pyramidCommand extends Command {
                 success: false,
                 message: 'Provided width is not a number',
                 error: null,
+                reducedcooldown: 1,
             };
         }
 
@@ -36,6 +38,7 @@ class pyramidCommand extends Command {
                 success: false,
                 message: 'Width must be between 2 and 10',
                 error: null,
+                reducedcooldown: 1,
             };
 
         if (emote.length * width > 490)
@@ -43,6 +46,7 @@ class pyramidCommand extends Command {
                 success: false,
                 message: 'Emote/text is too long for the given width',
                 error: null,
+                reducedcooldown: 1,
             };
 
         // first half
