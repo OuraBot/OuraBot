@@ -103,7 +103,7 @@ async function main(): Promise<void> {
         auth,
         process.env.DEBUG === 'TRUE'
             ? {
-                  channels: JSON.parse(await fs.readFile('./src/config.json', 'utf-8')).tmi.channels,
+                  channels: config.tmi.channels,
               }
             : {
                   channels: await getChannels(process.env.CLIENT_USERNAME),
@@ -838,8 +838,8 @@ async function main(): Promise<void> {
             });
         }
 
-        if (message.startsWith(config.prefix)) {
-            let cmdmsg = message.substring(config.prefix.length).split(' ');
+        if (message.startsWith(process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix)) {
+            let cmdmsg = message.substring(process.env.DEBUG === 'TRUE' ? config.debugprefix.length : config.prefix.length).split(' ');
             const cmd = cmdmsg[0];
             const args = cmdmsg.slice(1);
             let _cmds = commands;
