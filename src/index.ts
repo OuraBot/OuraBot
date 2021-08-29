@@ -276,15 +276,19 @@ async function main(): Promise<void> {
     });
 
     handler.on('push', function (event) {
-        if (event.payload.repository.name === 'Twitch-Bot') {
-            if (event.payload.head_commit.message.includes('PRIVATE')) {
-                chatClient.say(config.owner, `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
-            } else {
-                chatClient.say(
-                    config.owner,
-                    `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}" on branch: ${event.payload.ref.replace('refs/heads/', '')}`
-                );
+        try {
+            if (event.payload.repository.name === 'Twitch-Bot') {
+                if (event.payload.head_commit.message.includes('PRIVATE')) {
+                    chatClient.say(config.owner, `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
+                } else {
+                    chatClient.say(
+                        config.owner,
+                        `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}" on branch: ${event.payload.ref.replace('refs/heads/', '')}`
+                    );
+                }
             }
+        } catch (err) {
+            console.log(err, event);
         }
     });
 
@@ -1165,13 +1169,9 @@ async function main(): Promise<void> {
 main();
 
 export async function banphraseCheck(msgToCheck: string, channel: string): Promise<boolean> {
-    
-
     let modules = await Module.find();
     for (let module of modules) {
         if (module.channel === channel.replace('#', '')) {
-
-
             if (module.module === moduleEnum.ASCII) {
                 if (msgToCheck.match(ASCII_REGEX)?.length > 5) {
                     return true;
@@ -1188,7 +1188,7 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
         }
     }
 
-    if(await checkPajbotBanphrase(msgToCheck, channel)) return true;
+    if (await checkPajbotBanphrase(msgToCheck, channel)) return true;
 
     let terms = await Term.find();
     for (let term of terms) {
