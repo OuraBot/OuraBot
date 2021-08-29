@@ -208,7 +208,7 @@ async function main(): Promise<void> {
     setInterval(async () => {
         console.log('checking to refresh');
         let newChannels = JSON.parse(await redis.get(`ob:7tveventapichannels`));
-        if (newChannels !== eventApiChannels) {
+        if (JSON.stringify(newChannels) !== JSON.stringify(eventApiChannels)) {
             console.log('refreshing eventapi');
             eventApiChannels = newChannels;
             restart7TVEventApi();
