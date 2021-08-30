@@ -14,7 +14,7 @@ class testComand extends Command {
     hidden = true;
     permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/|hastebin\.com\/|pastebin\.com\/)raw\/.+$/))
+        if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|hastebin\.com\/raw|pastebin\.com\/raw|raw.githubusercontent.com)\/.+$/))
             return {
                 success: false,
                 message: 'Missing RAW haste/pastebin link',
