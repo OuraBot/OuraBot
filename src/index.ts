@@ -929,12 +929,18 @@ async function main(): Promise<void> {
                                     chatClient.say(channel, `@${user}, error while executing command. Check the debug console...`);
                                     return console.error(err);
                                 }
-                                error(err, ['Error while executing command:', user, channel, command.name]);
-                                let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
-                                chatClient.say(
-                                    channel,
-                                    `@${user}, there was an unknown error while executing the command. You should report this with the !suggest command. Include the error ID and how you used the command. Error ID: ${errorID}`
-                                );
+                                if (err?.status == 503) {
+                                    error(err, ['Error while executing command:', user, channel, command.name]);
+                                    let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
+                                    chatClient.say(channel, `@${user}, the requsted service is unavailable (503). Twitch server's might be having problems. Error ID: ${errorID}`);
+                                } else {
+                                    error(err, ['Error while executing command:', user, channel, command.name]);
+                                    let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
+                                    chatClient.say(
+                                        channel,
+                                        `@${user}, there was an unknown error while executing the command. You should report this with the !suggest command. Include the error ID and how you used the command. Error ID: ${errorID}`
+                                    );
+                                }
                             });
                     }
                 }
