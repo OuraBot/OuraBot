@@ -7,6 +7,7 @@ interface botConfig {
     owner: string;
     prefix: string;
     debugprefix: string;
+    crossbanchannels: Array<string>;
 }
 
 export interface StreamData {
