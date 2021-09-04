@@ -1019,154 +1019,176 @@ async function main(): Promise<void> {
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        if (forwardInfo?.originalGifterDisplayName) {
-            chatClient.say(channel, subResp['onStandardPayForward_gifted'].replace('${displayName}', forwardInfo.displayName).replace('${gifterName}', forwardInfo.originalGifterDisplayName));
-        } else {
-            chatClient.say(channel, subResp['onStandardPayForward_anon'].replace('${displayName}', forwardInfo.displayName));
-        }
+            subResp = sub;
+
+            if (forwardInfo?.originalGifterDisplayName) {
+                chatClient.say(channel, subResp['onStandardPayForward_gifted'].replace('${displayName}', forwardInfo.displayName).replace('${gifterName}', forwardInfo.originalGifterDisplayName));
+            } else {
+                chatClient.say(channel, subResp['onStandardPayForward_anon'].replace('${displayName}', forwardInfo.displayName));
+            }
+        });
     });
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
-        // chatClient.say(subResp);
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        if (subInfo.isPrime) {
-            chatClient.say(channel, subResp['onSub_primeNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
-        } else {
-            if (subInfo.plan === '1000') {
-                chatClient.say(channel, subResp['onSub_tierOneNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
-            } else if (subInfo.plan === '2000') {
-                chatClient.say(channel, subResp['onSub_tierTwoNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
-            } else if (subInfo.plan === '3000') {
-                chatClient.say(channel, subResp['onSub_tierThreeNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
+            if (subInfo.isPrime) {
+                chatClient.say(channel, subResp['onSub_primeNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
+            } else {
+                if (subInfo.plan === '1000') {
+                    chatClient.say(channel, subResp['onSub_tierOneNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
+                } else if (subInfo.plan === '2000') {
+                    chatClient.say(channel, subResp['onSub_tierTwoNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
+                } else if (subInfo.plan === '3000') {
+                    chatClient.say(channel, subResp['onSub_tierThreeNew'].replace('${displayName}', subInfo.displayName).replace('${planName}', subInfo.planName));
+                }
             }
-        }
+        });
     });
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        if (subInfo.isPrime) {
-            if (subInfo?.streak) {
-                // prettier-ignore
-                chatClient.say(channel, subResp['onResub_primeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
+            if (subInfo.isPrime) {
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    chatClient.say(channel, subResp['onResub_primeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
+                } else {
+                    // prettier-ignore
+                    chatClient.say(channel, subResp['onResub_prime'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
+                }
             } else {
-                // prettier-ignore
-                chatClient.say(channel, subResp['onResub_prime'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
-            }
-        } else {
-            if (subInfo.plan === '1000') {
-                if (subInfo?.streak) {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_oneStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
-                } else {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_one'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
-                }
-            } else if (subInfo.plan === '2000') {
-                if (subInfo?.streak) {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_twoStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
-                } else {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_two'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
-                }
-            } else if (subInfo.plan === '3000') {
-                if (subInfo?.streak) {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_threeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
-                } else {
-                    // prettier-ignore
-                    chatClient.say(channel, subResp['onResub_three'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
+                if (subInfo.plan === '1000') {
+                    if (subInfo?.streak) {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_oneStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
+                    } else {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_one'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
+                    }
+                } else if (subInfo.plan === '2000') {
+                    if (subInfo?.streak) {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_twoStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
+                    } else {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_two'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
+                    }
+                } else if (subInfo.plan === '3000') {
+                    if (subInfo?.streak) {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_threeStreak'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${streak}', `${subInfo.streak}`).replace('${planName}', subInfo.planName))
+                    } else {
+                        // prettier-ignore
+                        chatClient.say(channel, subResp['onResub_three'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`).replace('${planName}', subInfo.planName))
+                    }
                 }
             }
-        }
+        });
     });
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`));
+            chatClient.say(channel, subResp['onSubExtend'].replace('${displayName}', subInfo.displayName).replace('${months}', `${subInfo.months}`));
+        });
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        if (subInfo?.gifterDisplayName) {
-            if (subInfo?.streak) {
-                chatClient.say(
-                    channel,
-                    subResp['onSubGift_gifted']
-                        .replace('${displayName}', subInfo.displayName)
-                        .replace('${planName}', subInfo.planName)
-                        .replace('${gifterName}', subInfo.gifterDisplayName)
-                        .replace('${months}', `${subInfo.months}`)
-                );
+            if (subInfo?.gifterDisplayName) {
+                if (subInfo?.streak) {
+                    chatClient.say(
+                        channel,
+                        subResp['onSubGift_gifted']
+                            .replace('${displayName}', subInfo.displayName)
+                            .replace('${planName}', subInfo.planName)
+                            .replace('${gifterName}', subInfo.gifterDisplayName)
+                            .replace('${months}', `${subInfo.months}`)
+                    );
+                } else {
+                    chatClient.say(
+                        channel,
+                        subResp['onSubGift_gifted']
+                            .replace('${displayName}', subInfo.displayName)
+                            .replace('${planName}', subInfo.planName)
+                            .replace('${gifterName}', subInfo.gifterDisplayName)
+                            .replace('${months}', `${subInfo.months}`)
+                    );
+                }
             } else {
-                chatClient.say(
-                    channel,
-                    subResp['onSubGift_gifted']
-                        .replace('${displayName}', subInfo.displayName)
-                        .replace('${planName}', subInfo.planName)
-                        .replace('${gifterName}', subInfo.gifterDisplayName)
-                        .replace('${months}', `${subInfo.months}`)
-                );
-            }
-        } else {
-            if (subInfo?.streak) {
-                // prettier-ignore
-                chatClient.say(
+                if (subInfo?.streak) {
+                    // prettier-ignore
+                    chatClient.say(
                     channel,
                     subResp['onSubGift_anon']
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
                         .replace('${months}', `${subInfo.months}`)
                 );
-            } else {
-                // prettier-ignore
-                chatClient.say(
+                } else {
+                    // prettier-ignore
+                    chatClient.say(
                     channel,
                     subResp['onSubGift_anon']
                         .replace('${displayName}', subInfo.displayName)
                         .replace('${planName}', subInfo.planName)
                         .replace('${months}', `${subInfo.months}`)
                 );
+                }
             }
-        }
+        });
     });
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        if (subInfo?.gifterDisplayName) {
-            // prettier-ignore
-            chatClient.say(channel,
+            if (subInfo?.gifterDisplayName) {
+                // prettier-ignore
+                chatClient.say(channel,
                 subResp['giftPaidUpgrade_gifted']
                 .replace('${displayName}', subInfo.displayName)
                 .replace('${gifterName}', subInfo.gifterDisplayName)
                 );
-        } else {
-            // prettier-ignore
-            chatClient.say(channel,
+            } else {
+                // prettier-ignore
+                chatClient.say(channel,
                 subResp['giftPaidUpgrade_gifted']
                 .replace('${displayName}', subInfo.displayName)
                 );
-        }
+            }
+        });
     });
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
-        let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
-        if (!subResp) return;
+        let subResp: ISub;
+        Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
+            if (!subResp) return;
+            console.log(subResp);
 
-        chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
+            chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
+        });
     });
 
     await chatClient.connect();
