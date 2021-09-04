@@ -1019,7 +1019,6 @@ async function main(): Promise<void> {
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
-        console.log(channel, user, `onStandardPayForward`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1036,7 +1035,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSub(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onSub`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1057,7 +1055,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onResub(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onResub`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1102,7 +1099,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSubExtend(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onSubExtend`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1113,7 +1109,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onSubGift(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onSubGift`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1164,7 +1159,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onGiftPaidUpgrade(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onGiftPaidUpgrade`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
@@ -1188,7 +1182,6 @@ async function main(): Promise<void> {
     });
 
     chatClient.onPrimePaidUpgrade(async (channel, user, subInfo, msg) => {
-        console.log(channel, user, `onPrimePaidUpgrade`);
         let subResp: ISub;
         Sub.findOne({ channel: channel.replace('#', '') }, (err: any, sub: ISub) => {
             if (!subResp) return;
