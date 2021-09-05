@@ -9,12 +9,14 @@ export enum moduleEnum {
     ASCII = 'ascii',
     LINKS = 'links',
     WEEB = 'weeb',
+    BIGFOLLOWS = 'bigfollows',
 }
 
 class testComand extends Command {
     name = 'modmodule';
-    description = 'Manage moderation modules (ascii,links,weeb)';
-    usage = 'modmodule <module (ascii,links,weeb)> <timeout in seconds (set 0 for off)>';
+    description = 'Manage moderation modules (ascii,links,weeb,bigfollows)';
+    usage = 'modmodule <module (ascii,links,weeb,bigfollows)> <timeout in seconds (set 0 for off)>';
+    extendedDescription = `Note: For the bigfollows module the timeout length does not matter as it will permaban regardless`;
     permission = 4;
     channelCooldown = 5;
     userCooldown = 5;
@@ -22,7 +24,7 @@ class testComand extends Command {
         if (!args[0])
             return {
                 success: false,
-                message: 'Missing module (ascii,links,weeb)',
+                message: 'Missing module (ascii,links,weeb,bigfollows)',
                 error: null,
             };
 

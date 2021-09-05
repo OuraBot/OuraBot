@@ -384,6 +384,18 @@ async function main(): Promise<void> {
                                         return;
                                     }
                                 }
+                            } else if (module.module === moduleEnum.BIGFOLLOWS) {
+                                if (message.includes('cutt.ly')) {
+                                    let urls = getUrls(message);
+                                    for (let url of urls) {
+                                        let urlData = await axios.get(`https://unshorten.me/json/${url}`);
+                                        if (urlData.data.resolved_url.includes('bigfollows')) {
+                                            chatClient.say(config.owner, `${user} has a bigfollows link in ${obfuscateName(channel)}`);
+                                            chatClient.say(channel, `/ban ${user} Bigfollows link detected in message`);
+                                            return;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -428,6 +440,18 @@ async function main(): Promise<void> {
                                             await redis.set(`WEEB:${channel}:${user}`, module.timeout * 2, 'EX', 3600);
                                             await chatClient.say(channel, `/timeout ${user} ${module.timeout} WEEB Mod Module (next timeout will be ${module.timeout * 2}s)`);
                                             return;
+                                        }
+                                    }
+                                } else if (module.module === moduleEnum.BIGFOLLOWS) {
+                                    if (message.includes('cutt.ly')) {
+                                        let urls = getUrls(message);
+                                        for (let url of urls) {
+                                            let urlData = await axios.get(`https://unshorten.me/json/${url}`);
+                                            if (urlData.data.resolved_url.includes('bigfollows')) {
+                                                chatClient.say(channel, `/ban ${user} Bigfollows link detected in message`);
+                                                chatClient.say(config.owner, `@${config.owner}, ${user} has a bigfollows link in ${obfuscateName(channel)}`);
+                                                return;
+                                            }
                                         }
                                     }
                                 }
@@ -1189,6 +1213,16 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
             } else if (module.module === moduleEnum.WEEB) {
                 if (msgToCheck.match(WEEB_REGEX)) {
                     return true;
+                }
+            } else if (module.module === moduleEnum.BIGFOLLOWS) {
+                if (msgToCheck.includes('cutt.ly')) {
+                    let urls = getUrls(msgToCheck);
+                    for (let url of urls) {
+                        let urlData = await axios.get(`https://unshorten.me/json/${url}`);
+                        if (urlData.data.resolved_url.includes('bigfollows')) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
