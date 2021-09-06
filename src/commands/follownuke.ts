@@ -3,6 +3,7 @@ import { apiClient, chatClient, redis } from '../index';
 import { Command, CommandReturnClass, getCommands } from '../utils/commandClass';
 import ms from 'ms';
 import { upload } from '../utils/apis/haste';
+import { config } from '../index';
 
 dotenv.config();
 
@@ -23,7 +24,9 @@ class testComand extends Command {
             };
 
         let dontBan = false;
+        let targetChannel = channel;
         if (args[1] === '--dont-ban') dontBan = true;
+        if (args[2] && config.admins.includes(user)) targetChannel = args[2];
 
         let timeToCallback = Math.abs(ms(args[0]));
         if (timeToCallback > 60000 * 60 * 24 * 3)
@@ -33,7 +36,7 @@ class testComand extends Command {
                 error: null,
             };
 
-        let channelID = (await apiClient.helix.users.getUserByName(channel.replace('#', ''))).id;
+        let channelID = (await apiClient.helix.users.getUserByName(targetChannel.replace('#', ''))).id;
         let callbackTime = Date.now() - timeToCallback;
 
         let users: string[] = [];
@@ -57,7 +60,7 @@ class testComand extends Command {
 
         const userList = await upload(users.join('\n'));
         if (dontBan) {
-            chatClient.say(channel, `@${user}, ItsBoshyTime DRYRUN Follownuke: Caught ${users.length} users | ${userList} ItsBoshyTime `);
+            chatClient.say(channel, `@${user}, DRYRUN Follownuke: Caught ${users.length} users | ${userList} (${targetChannel === channel ? '' : targetChannel})`);
         } else {
             chatClient.say(channel, `@${user}, ItsBoshyTime Follownuke: Banning ${users.length} users | ${userList} ItsBoshyTime`);
             for (const _user of users) {
