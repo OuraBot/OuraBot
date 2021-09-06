@@ -4,5 +4,7 @@
     },
     "owner": "auror6s",
     "prefix": "!",
-    "debugprefix": "?"
+    "debugprefix": "?",
+    "crossbanchannels": ["auror6s", "elpwsbot", "aurotest", "elpws"],
+    "admins": ["auror6s", "mmattbtw"]
 }

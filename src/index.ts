@@ -991,6 +991,14 @@ async function main(): Promise<void> {
             }
         }
 
+        if (requiredPermission === PermissionEnum.Admin) {
+            if (config.admins.includes(user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         if (requiredPermission === PermissionEnum.Broadcaster) {
             if (msg.userInfo.isBroadcaster) {
                 return true;
@@ -1008,6 +1016,8 @@ async function main(): Promise<void> {
                 return true;
             } else if (user === config.owner) {
                 return true;
+            } else if (config.admins.includes(user)) {
+                return true;
             } else {
                 return false;
             }
@@ -1021,6 +1031,8 @@ async function main(): Promise<void> {
             } else if (msg.userInfo.isBroadcaster) {
                 return true;
             } else if (user === config.owner) {
+                return true;
+            } else if (config.admins.includes(user)) {
                 return true;
             } else {
                 return false;

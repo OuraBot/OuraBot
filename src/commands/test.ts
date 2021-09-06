@@ -8,7 +8,7 @@ class testComand extends Command {
     name = 'test';
     description = 'Just for testing Pepege';
     usage = 'test';
-    permission = 4;
+    permission = 32;
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

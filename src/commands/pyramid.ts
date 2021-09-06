@@ -7,8 +7,8 @@ class pyramidCommand extends Command {
     name = 'pyramid';
     description = 'Make a pyramid';
     usage = 'pyramid <width> <emote/text>';
-    userCooldown = 15;
-    channelCooldown = 10;
+    userCooldown = 30;
+    channelCooldown = 30;
     permission = 4;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let width: any = args[0];

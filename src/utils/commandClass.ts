@@ -28,6 +28,7 @@ export enum PermissionEnum {
     Moderator = 4,
     VIP = 8,
     Subscriber = 16,
+    Admin = 32,
 }
 
 export class Command {
