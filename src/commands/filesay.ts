@@ -10,8 +10,9 @@ dotenv.config();
 class testComand extends Command {
     name = 'filesay';
     description = 'Say a hastebin file';
-    usage = 'filesayfast <url> <optional msg prefix?> <--silent?>';
+    usage = 'filesay <url> <optional msg prefix?> <--silent?>';
     hidden = true;
+    aliases = ['ob-filesay'];
     permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|mrauro\.dev|hastebin\.com\/raw|pastebin\.com\/raw|raw.githubusercontent.com)\/.+$/))
