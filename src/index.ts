@@ -26,6 +26,7 @@ import { unescapeHTML } from './commands/ddoi.js';
 import EventSource = require('eventsource');
 import { createServer } from 'http';
 import createHandler = require('github-webhook-handler');
+import { CustomModule, getModules } from './types/custommodule.js';
 
 export const WEEB_REGEX =
     /\b(SilverLove|SilverMelt|SilverCozy|SilverLurk|SilverHeadpat|SilverHug|SilverHype|SilverRaid|SilverREE|SilverWave|SilverYandere|SilverCry|SilverZoom|SilverSuffer|SilverWow|SilverPout|SilverPOG|SilverBlush|SilverAyaya|SilverDerp|SilverD|SilverAwoo|SilverDorime|SilverFacepalm|SilverGift|SilverGimmeL|SilverGimmeR|SilverGun|SilverHuh|SilverJam|SilverRIP|SilverShrug|SilverSip|SilverSleepy|SilverSmug|SilverStress|SilverThink|SilverYikes|SilverLUL|SilverWat|SilverScared|SilverHypers|SilverDisgust|SilverDone|SilverPlead|SilverQueen|SilverPeace|SilverThumbsUp|SilverSweat|SilverNoU|SilverWolf1|SilverWolf2|SilverWolf3|SilverMamaHug|SilverMamaLove|SilverMamaKisses|SilverMamaCrab|CuteAnimeFeet|muniDANK|muniClap|muniJam|muniPat|muniSit|muniSweat|muniSip|muniHug|muniPrime|muniWave|muniShy|muniHYPERS|muniBless|muniAww|muniREE|muniLurk|muniPout|muniSmug|muniWeird|muniWow|muniStare|muniYawn|muniCry|muniFlower|muniLUL|muniComfy|muniNotes|muniBonk|muniW|forsenPuke[0-5]*|naroSpeedL|naroDerping|naroAAAAA|naroDance|naroSpeedR|naroOh|naroFumo|naroSmug|naroSlain|naroBless|naroReally|naroHodo|naroBlush|naro2hu|naroLove|naroWo|naroStaryn|naroWOW|naroSalute|naroEh|naroSad|naroDesu|naroScared|naroWhat|naroEhehe|naroGasm|naroThug|naroDerp|naroRage|naroYay|naroXD|naroDX|xqcAYAYA|xqcLewd|xqcNom|happythoDinkDonk|happythoNod|happythoLove|happythoLurk|happythoNoted|happythoCrumpet|happythoShroom|happythoExcited|happytho7|happythoRee|happythoCross|happythoBonk|happythoBoop|happythoFacepalm|happythoGiggle|happythoGimmie|happythoNoBully|happythoWoah|happythoThumbsUp|happythoThumbsDown|happythoBlessed|happythoEvil|happythoCute|happythoNom|happythoShock|happythoSweat|happythoRIP|happythoPat|happythoSleepy|happythoNotLikeThis|happythoLUL|happythoWeird|happythoCry|happythoSilly|happythoKiss|happythoHug|happythoThink|happythoShy|happythoShrug|happythoPout|happythoHyper|happythoStare|happythoWave|happythoSip|happythoComfy|happythoSus|happythoRich|happythoSmile|happythoTuck|TPFufun|TehePelo|OiMinna|AYAYA|CuteAnimeFeetasleepyRainy|asleepyJAMMER|asleepyLoves|asleepyWaves|asleepyBrows|asleepyZOOM|asleepyRiot|asleepyWoah|asleepyUWU|asleepyThink|asleepyStab|asleepySad|asleepyREE|asleepyPat|asleepyLost|asleepyL|asleepyKiss|asleepyKEK|asleepyGib|asleepyDetective|asleepyComfy|asleepyClown|asleepyAYAYA|asleepyAww|asleepyHehe|asleepyLove|asleepyPlead|asleepyYes|asleepyWave|asleepyOMEGALUL|asleepyShy|asleepyLurk|asleepyHYPERS|asleepySip|asleepyFine|asleepyDevil|asleepyAngel|asleepyAngy|asleepySquish|asleepyBlob|asleepyISee|asleepyWow|asleepyHNGmendo7|mendoRage|mendoE|mendoLewd|mendoRIP|mendo4|mendo3|mendoWow|mendo2|mendo1|mendoClown|mendoThumb|mendoS|mendoWave|mendoUWU|mendoT|mendoBlind|mendoSmug|mendoSleepy|mendoHuh|mendoHands|mendoShrug|mendoFail|mendoB|mendoPeek|mendoGun|mendoU|mendoPantsu|mendoEZ|mendoDab|mendoLUL|mendoCry|mendoREE|mendoL|mendoKoda|mendoBark|mendoSip|mendoHug|mendoWink|mendoPat|mendoComfy|mendoDerp|mendoBanger|mendoM|mendoBlush|mendoAYAYA|mendoGasm|mendoH|mendoHypers|mendoFine)/g;
@@ -340,6 +341,7 @@ async function main(): Promise<void> {
     });
 
     let commands = await getCommands();
+    let custommodules = await getModules();
     chatClient.onMessage(async (channel, user, message, msg) => {
         redis.get(`tl:${channel}:module`).then(async (redisData) => {
             if (redisData) {
@@ -539,6 +541,13 @@ async function main(): Promise<void> {
                         }
                     }
                 });
+            }
+        });
+
+        custommodules.forEach((m: CustomModule) => {
+            console.log(m);
+            if (m.channels.includes(channel)) {
+                m.execute(channel, user, message, msg, chatClient, redis);
             }
         });
 

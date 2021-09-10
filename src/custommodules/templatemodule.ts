@@ -1,0 +1,18 @@
+import { Redis } from 'ioredis';
+import { ChatClient } from 'twitch-chat-client/lib';
+import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
+import { CustomModule } from '../types/custommodule';
+
+class customModule extends CustomModule {
+    name = 'templatemodule';
+    description = 'The execute function will be called every message only for the specified channels';
+    channels = ['#auror6s'];
+    author = ['AuroR6S'];
+    execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient, redis: Redis): Promise<void> => {
+        console.log(`Executing custom module: ${this.name}`);
+        chatClient.say(channel, 'dank123');
+        console.log(channel, user, message);
+    };
+}
+
+export const module = new customModule();
