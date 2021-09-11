@@ -3,6 +3,10 @@ import { ChatClient } from 'twitch-chat-client/lib';
 import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 import { KNOWN_BOT_LIST } from '../utils/knownBots';
 import { CustomModule } from '../types/custommodule';
+import { config } from '..';
+import { obfuscateName } from '../utils/stringManipulation';
+
+// .*h(o|0)ss0?
 
 class customModule extends CustomModule {
     name = 'se-follows';
@@ -21,6 +25,11 @@ class customModule extends CustomModule {
                                     console.log(err); // Error handling here isnt too important
                                 });
                                 chatClient.say(channel, `${username} is on the known bot list and has been banned`);
+                            } else if (username.match(/.*h(o|0)ss0?/)) {
+                                chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                    console.log(err); // Error handling here isnt too important
+                                });
+                                chatClient.say(config.owner, `${username} is NOT on the known bot list and has been banned in ${obfuscateName(channel)} - This was matched using the regex`);
                             }
                         }
                     }
@@ -34,6 +43,11 @@ class customModule extends CustomModule {
                                 chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
                                     console.log(err); // Error handling here isnt too important
                                 });
+                            } else if (username.match(/.*h(o|0)ss0?/)) {
+                                chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                    console.log(err); // Error handling here isnt too important
+                                });
+                                chatClient.say(config.owner, `${username} is NOT on the known bot list and has been banned in ${obfuscateName(channel)} - This was matched using the regex`);
                             }
                         }
                     }
@@ -47,6 +61,11 @@ class customModule extends CustomModule {
                                 chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
                                     console.log(err); // Error handling here isnt too important
                                 });
+                            } else if (username.match(/.*h(o|0)ss0?/)) {
+                                chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                    console.log(err); // Error handling here isnt too important
+                                });
+                                chatClient.say(config.owner, `${username} is NOT on the known bot list and has been banned in ${obfuscateName(channel)} - This was matched using the regex`);
                             }
                         }
                     }
@@ -56,10 +75,16 @@ class customModule extends CustomModule {
                     {
                         if (message.match(/^THANK YOU ([A-z0-9_]+) FOR THE FOLLOW TriHard/)) {
                             const username = message.match(/^THANK YOU ([A-z0-9_]+) FOR THE FOLLOW TriHard/)[1];
+                            console.log(username);
                             if (KNOWN_BOT_LIST.has(username)) {
                                 chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
                                     console.log(err); // Error handling here isnt too important
                                 });
+                            } else if (username.match(/.*h(o|0)ss0?/)) {
+                                chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                    console.log(err); // Error handling here isnt too important
+                                });
+                                chatClient.say(config.owner, `${username} is NOT on the known bot list and has been banned in ${obfuscateName(channel)} - This was matched using the regex`);
                             }
                         }
                     }
