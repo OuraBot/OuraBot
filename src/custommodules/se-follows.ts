@@ -11,10 +11,10 @@ import { obfuscateName } from '../utils/stringManipulation';
 class customModule extends CustomModule {
     name = 'se-follows';
     description = "Compares the user in StreamElement's follow chat message to a hash of known bots";
-    channels = ['#demonjoefrance', '#auror6s', '#jeffboys123', '#elpws'];
+    channels = ['#demonjoefrance', '#auror6s', '#jeffboys123', '#elpws', '#mmattbtw'];
     author = ['AuroR6S'];
     execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient, redis: Redis): Promise<void> => {
-        if (user === 'auror6s' || user === 'streamelements') {
+        if (user === 'auror6s' || user === 'streamelements' || user === 'fossabot') {
             switch (channel) {
                 case '#demonjoefrance':
                     {
@@ -89,8 +89,26 @@ class customModule extends CustomModule {
                         }
                     }
                     break;
-            }
-        }
+                
+                case '#mmattbtw': 
+                {
+                    if (message.match(/^([A-z0-9_]+) followed! peepoLove thank you/)) {
+                        const username = message.match(/^([A-z0-9_]+) followed! peepoLove thank you/)[1];
+                        console.log(username);
+                        if (KNOWN_BOT_LIST.has(username)) {
+                            chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                console.log(err); // Error handling here isnt too important
+                            });
+                        } else if (username.match(/.*h(o|0)ss0?/)) {
+                            chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
+                                console.log(err); // Error handling here isnt too important
+                            });
+                            chatClient.say(config.owner, `${username} is NOT on the known bot list and has been banned in ${obfuscateName(channel)} - This was matched using the regex`);
+                        }
+                    }
+                }
+                break;
+        }}
     };
 }
 
