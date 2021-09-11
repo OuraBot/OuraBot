@@ -1,7 +1,7 @@
 import { Redis } from 'ioredis';
 import { ChatClient } from 'twitch-chat-client/lib';
 import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
-import { KNOWN_BOT_LIST } from '..';
+import { KNOWN_BOT_LIST } from '../utils/knownBots';
 import { CustomModule } from '../types/custommodule';
 
 class customModule extends CustomModule {
