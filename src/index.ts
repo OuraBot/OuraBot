@@ -128,10 +128,8 @@ async function main(): Promise<void> {
     });
     */
 
-    const bots = (await axios.get(`https://gist.githubusercontent.com/MrAuro/68ec520b109c7f93d55c6cab4ffc7659/raw/57854edb3ee2e5ba8e200da289ad43f13e480cb0/bots.txt`)).data;
-
+    const bots = (await axios.get(`https://api.github.com/gists/68ec520b109c7f93d55c6cab4ffc7659`)).data.files['bots.txt'].content;
     KNOWN_BOT_LIST = new Set(bots.toString().split('\n'));
-    console.log(KNOWN_BOT_LIST);
 
     // check every hour
     setInterval(async () => {
