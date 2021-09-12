@@ -1,33 +1,34 @@
+import axios from 'axios';
 import * as dotenv from 'dotenv';
 import { promises as fs } from 'fs';
+import getUrls from 'get-urls';
+import { createServer } from 'http';
 import Redis from 'ioredis';
 import { connect } from 'mongoose';
 import { ApiClient } from 'twitch';
 import { ClientCredentialsAuthProvider, RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
 import { ChatClient, Whisper } from 'twitch-chat-client';
+import { Channel, IChannel } from './models/channel.model';
+import { unescapeHTML } from './commands/ddoi.js';
+import { moduleEnum } from './commands/modmodule.js';
+import { Afk, IAfk, Status } from './models/afk.model.js';
+import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import { createNewError } from './models/error.model.js';
+import { IModule, Module } from './models/module.model.js';
 import { IReminder, Reminder } from './models/reminder.model.js';
+import { ISub, Sub } from './models/sub.model.js';
+import { ITerm, Term } from './models/term.model.js';
+import { CustomModule, getModules } from './types/custommodule.js';
+import { checkPajbotBanphrase } from './utils/apis/banphrases';
+import { prettyTime } from './utils/auroMs';
 import { Command, CommandReturnClass, getCommands, PermissionEnum } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { getChannels } from './utils/fetchChannels';
-import { error } from './utils/logger.js';
-import { prettyTime } from './utils/auroMs';
-import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
-import { checkPajbotBanphrase } from './utils/apis/banphrases';
-import { CustomCommand, ICustomCommand } from './models/command.model.js';
-import axios from 'axios';
-import { Afk, IAfk, Status } from './models/afk.model.js';
-import { ITerm, Term } from './models/term.model.js';
-import { IModule, Module } from './models/module.model.js';
-import { moduleEnum } from './commands/modmodule.js';
-import getUrls from 'get-urls';
-import { ISub, Sub } from './models/sub.model.js';
-import { unescapeHTML } from './commands/ddoi.js';
-import EventSource = require('eventsource');
-import { createServer } from 'http';
-import createHandler = require('github-webhook-handler');
-import { CustomModule, getModules } from './types/custommodule.js';
 import { fetchBots } from './utils/knownBots.js';
+import { error } from './utils/logger.js';
+import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
+import EventSource = require('eventsource');
+import createHandler = require('github-webhook-handler');
 
 export const WEEB_REGEX =
     /\b(SilverLove|SilverMelt|SilverCozy|SilverLurk|SilverHeadpat|SilverHug|SilverHype|SilverRaid|SilverREE|SilverWave|SilverYandere|SilverCry|SilverZoom|SilverSuffer|SilverWow|SilverPout|SilverPOG|SilverBlush|SilverAyaya|SilverDerp|SilverD|SilverAwoo|SilverDorime|SilverFacepalm|SilverGift|SilverGimmeL|SilverGimmeR|SilverGun|SilverHuh|SilverJam|SilverRIP|SilverShrug|SilverSip|SilverSleepy|SilverSmug|SilverStress|SilverThink|SilverYikes|SilverLUL|SilverWat|SilverScared|SilverHypers|SilverDisgust|SilverDone|SilverPlead|SilverQueen|SilverPeace|SilverThumbsUp|SilverSweat|SilverNoU|SilverWolf1|SilverWolf2|SilverWolf3|SilverMamaHug|SilverMamaLove|SilverMamaKisses|SilverMamaCrab|CuteAnimeFeet|muniDANK|muniClap|muniJam|muniPat|muniSit|muniSweat|muniSip|muniHug|muniPrime|muniWave|muniShy|muniHYPERS|muniBless|muniAww|muniREE|muniLurk|muniPout|muniSmug|muniWeird|muniWow|muniStare|muniYawn|muniCry|muniFlower|muniLUL|muniComfy|muniNotes|muniBonk|muniW|forsenPuke[0-5]*|naroSpeedL|naroDerping|naroAAAAA|naroDance|naroSpeedR|naroOh|naroFumo|naroSmug|naroSlain|naroBless|naroReally|naroHodo|naroBlush|naro2hu|naroLove|naroWo|naroStaryn|naroWOW|naroSalute|naroEh|naroSad|naroDesu|naroScared|naroWhat|naroEhehe|naroGasm|naroThug|naroDerp|naroRage|naroYay|naroXD|naroDX|xqcAYAYA|xqcLewd|xqcNom|happythoDinkDonk|happythoNod|happythoLove|happythoLurk|happythoNoted|happythoCrumpet|happythoShroom|happythoExcited|happytho7|happythoRee|happythoCross|happythoBonk|happythoBoop|happythoFacepalm|happythoGiggle|happythoGimmie|happythoNoBully|happythoWoah|happythoThumbsUp|happythoThumbsDown|happythoBlessed|happythoEvil|happythoCute|happythoNom|happythoShock|happythoSweat|happythoRIP|happythoPat|happythoSleepy|happythoNotLikeThis|happythoLUL|happythoWeird|happythoCry|happythoSilly|happythoKiss|happythoHug|happythoThink|happythoShy|happythoShrug|happythoPout|happythoHyper|happythoStare|happythoWave|happythoSip|happythoComfy|happythoSus|happythoRich|happythoSmile|happythoTuck|TPFufun|TehePelo|OiMinna|AYAYA|CuteAnimeFeetasleepyRainy|asleepyJAMMER|asleepyLoves|asleepyWaves|asleepyBrows|asleepyZOOM|asleepyRiot|asleepyWoah|asleepyUWU|asleepyThink|asleepyStab|asleepySad|asleepyREE|asleepyPat|asleepyLost|asleepyL|asleepyKiss|asleepyKEK|asleepyGib|asleepyDetective|asleepyComfy|asleepyClown|asleepyAYAYA|asleepyAww|asleepyHehe|asleepyLove|asleepyPlead|asleepyYes|asleepyWave|asleepyOMEGALUL|asleepyShy|asleepyLurk|asleepyHYPERS|asleepySip|asleepyFine|asleepyDevil|asleepyAngel|asleepyAngy|asleepySquish|asleepyBlob|asleepyISee|asleepyWow|asleepyHNGmendo7|mendoRage|mendoE|mendoLewd|mendoRIP|mendo4|mendo3|mendoWow|mendo2|mendo1|mendoClown|mendoThumb|mendoS|mendoWave|mendoUWU|mendoT|mendoBlind|mendoSmug|mendoSleepy|mendoHuh|mendoHands|mendoShrug|mendoFail|mendoB|mendoPeek|mendoGun|mendoU|mendoPantsu|mendoEZ|mendoDab|mendoLUL|mendoCry|mendoREE|mendoL|mendoKoda|mendoBark|mendoSip|mendoHug|mendoWink|mendoPat|mendoComfy|mendoDerp|mendoBanger|mendoM|mendoBlush|mendoAYAYA|mendoGasm|mendoH|mendoHypers|mendoFine)/g;
@@ -102,6 +103,26 @@ async function main(): Promise<void> {
         useUnifiedTopology: true,
     });
 
+    const channels: IChannel[] = await Channel.find();
+    const sortedChannels = channels
+        .sort((a: any, b: any) => {
+            if (!a.priority && !b.priority) {
+                return 0;
+            }
+            if (!a.priority) {
+                return 1;
+            }
+            if (!b.priority) {
+                return -1;
+            }
+
+            return a.priority - b.priority;
+        })
+        .map((c) => c.channel);
+
+    const initialChannels = sortedChannels.slice(0, 19);
+    const remainingChannels = sortedChannels.slice(19);
+
     chatClient = new ChatClient(
         auth,
         process.env.DEBUG === 'TRUE'
@@ -109,23 +130,9 @@ async function main(): Promise<void> {
                   channels: config.tmi.channels,
               }
             : {
-                  channels: await getChannels(process.env.CLIENT_USERNAME),
+                  channels: initialChannels,
               }
     );
-
-    /*
-    Channel.find().then((ch: IChannel[]) => {
-        for (let channel of ch) {
-            chatClient.join(`#${channel.channel.toLocaleUpperCase()}`);
-        }
-
-        
-        for (let channel of ch.filter((c: IChannel) => c.bot === process.env.CLIENT_USERNAME)) {
-            chatClient.join(`${channel.channel}`);
-        }
-        
-    });
-    */
 
     await fetchBots();
 
@@ -1218,8 +1225,14 @@ async function main(): Promise<void> {
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
 
-    await chatClient.connect();
-    console.log(`Client connected!`);
+    await chatClient.connect().then(async () => {
+        console.log(`Client connected to intial channels`);
+        for (const chnl of remainingChannels) {
+            chatClient.join(chnl);
+            await new Promise((r) => setTimeout(r, 1250));
+        }
+    });
+    console.log(`Client connected to all channels`);
 }
 main();
 
