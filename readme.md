@@ -8,6 +8,7 @@ Needs:
 - Wolfram Alpha API Key (but this command is disabled rn because im too lazy to fix it)
 - Redis
 - Youtube API Key
+- Last.fm API Key (get here => https://www.last.fm/api/account/create)
 
 Clone the repo and install all the node modules
 `yarn install`
@@ -22,6 +23,7 @@ CLIENT_USERNAME=bot username
 YOUTUBE_KEY=youtube api key
 PORT=port the github commit log runs on
 DISCORD_WEBHOOK=yk
+LASTFMKEY=lastfm api key
 ```
 
 Fill out owner and prefix of config.json. The other fields were there because i used them previously but was too lazy to remove them
