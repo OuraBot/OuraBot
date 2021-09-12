@@ -1227,6 +1227,7 @@ async function main(): Promise<void> {
 
     await chatClient.connect().then(async () => {
         console.log(`Client connected to intial channels`);
+        await new Promise((resolve) => setTimeout(resolve, 30e3));
         for (const chnl of remainingChannels) {
             chatClient.join(chnl);
             await new Promise((r) => setTimeout(r, 1250));
