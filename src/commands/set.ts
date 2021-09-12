@@ -7,13 +7,14 @@ import { prettyTime } from '../utils/auroMs';
 import * as fs from 'fs';
 import getUrls from 'get-urls';
 import { PajbotApi } from '../utils/apis/banphrases';
+import { LastfmUsername } from '../utils/apis/lastfm';
 
 dotenv.config();
 
 class suggestCommand extends Command {
     name = 'set';
-    description = 'Set certain values within the bot: counter, 7tv';
-    extendedDescription = `counter (number): Counter variables for custom commands | 7tv: Whether you want newly added 7TV emotes to be posted to chat | pajbotapi: URL for the Pajbot Banphrase API`;
+    description = 'Set certain values within the bot: counter, 7tv, pajbotapi, lastfm';
+    extendedDescription = `counter (number): Counter variables for custom commands | 7tv: Whether you want newly added 7TV emotes to be posted to chat | pajbotapi: URL for the Pajbot Banphrase API | lastfm: Username for your (the streamer) Last.fm account`;
     usage = 'set <target> <value> <subvalue?>';
     userCooldown = 5;
     channelCooldown = 5;
@@ -188,6 +189,70 @@ class suggestCommand extends Command {
                     message: 'Invalid URL',
                     error: null,
                 };
+            }
+        } else if (args[0] === 'lastfm') {
+            if (!args[1]) {
+                return {
+                    success: false,
+                    message: 'Missing Lastfm username',
+                    error: null,
+                };
+            } else if (args[1].match(/^(remove|null|delete|nothing)$/i)) {
+                let redisData: any = await redis.get(`ob:lastfmusername`);
+
+                if (redisData) {
+                    redisData = JSON.parse(redisData);
+                    if (!redisData.map((e: LastfmUsername) => e.channel).includes(channel.replace('#', '')))
+                        return {
+                            success: false,
+                            message: 'Lastfm username is not set',
+                            error: null,
+                        };
+                    redisData = redisData.filter((e: LastfmUsername) => e.channel !== channel.replace('#', ''));
+                    console.log(redisData, 777);
+                    await redis.set(`ob:lastfmusername`, JSON.stringify(redisData));
+                    return {
+                        success: true,
+                        message: 'Lastfm username removed',
+                        error: null,
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: 'Lastfm username is not set',
+                        error: null,
+                    };
+                }
+            } else {
+                let redisData: any = await redis.get(`ob:lastfmusername`);
+
+                if (redisData) {
+                    redisData = JSON.parse(redisData);
+                    console.log(redisData);
+                    redisData = redisData.filter((e: LastfmUsername) => e.channel !== channel.replace('#', ''));
+                    redisData.push({
+                        channel: channel.replace('#', ''),
+                        LastfmUsername: args[1],
+                    });
+                    await redis.set(`ob:lastfmusername`, JSON.stringify(redisData));
+                    return {
+                        success: true,
+                        message: `Lastfm username set to "${args[1]}"`,
+                        error: null,
+                    };
+                } else {
+                    let channels: LastfmUsername[] = [];
+                    channels.push({
+                        channel: channel.replace('#', ''),
+                        LastfmUsername: args[1],
+                    });
+                    await redis.set(`ob:lastfmusername`, JSON.stringify(channels));
+                    return {
+                        success: true,
+                        message: `Lastfm username set to "${args[1]}"`,
+                        error: null,
+                    };
+                }
             }
         } else {
             return {
