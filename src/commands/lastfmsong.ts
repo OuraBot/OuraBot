@@ -12,6 +12,7 @@ class lastfmCommand extends Command {
     name = 'lastfmsong';
     description = 'Gets the current playing song from the streamers Last.fm profile.';
     usage = 'lastfmsong';
+    aliases = ['lastfm', 'np', 'thissong', 'currentsong', 'nowplaying'];
     userCooldown = 10;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
