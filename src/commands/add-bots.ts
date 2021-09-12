@@ -21,6 +21,7 @@ class testComand extends Command {
             botsToAdd = args;
         }
         await fetchBots();
+        botsToAdd = botsToAdd.map((bot) => bot.toLowerCase());
         const prevBots = Array.from(KNOWN_BOT_LIST);
         const newList = botsToAdd.concat(prevBots).sort();
         setBots(new Set(newList));
