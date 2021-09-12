@@ -7,3 +7,7 @@ export async function fetchBots(): Promise<Set<string>> {
     KNOWN_BOT_LIST = new Set(bots.toString().split('\n'));
     return KNOWN_BOT_LIST;
 }
+
+export function setBots(bots: Set<string>): void {
+    KNOWN_BOT_LIST = bots;
+}
