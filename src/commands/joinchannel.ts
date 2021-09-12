@@ -6,9 +6,10 @@ import { error } from '../utils/logger';
 dotenv.config();
 
 class testComand extends Command {
-    name = 'join';
+    name = 'joinchannel';
     description = 'Join a bot to a channel';
-    usage = 'join <channel>';
+    usage = 'joinchannel <channel>';
+    aliases = ['ob_joinchannel'];
     permission = 32;
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
