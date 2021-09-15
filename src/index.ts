@@ -655,10 +655,23 @@ async function main(): Promise<void> {
                                             timeout: 10000,
                                         });
                                         let commandResponse = customCommand.response;
+                                        let fetchedData = resp.data;
+
+                                        // log the type of data we're fetching
+                                        console.log(typeof fetchedData);
+
+                                        // check if the response is a JSON object
+                                        if (fetchedData.constructor === Object) {
+                                            let data: string[] = [];
+                                            for (let key in fetchedData) {
+                                                data.push(`${key}: ${fetchedData[key]}`);
+                                            }
+                                            fetchedData = data.join('; ');
+                                        }
                                         chatClient.say(
                                             channel,
                                             commandResponse
-                                                .replace(`$fetchURL(${urlToFetch})`, resp.data)
+                                                .replace(`$fetchURL(${urlToFetch})`, fetchedData)
                                                 .replace(/{user}/g, user)
                                                 .replace(/{channel}/g, channel.replace('#', ''))
                                         );
@@ -721,10 +734,23 @@ async function main(): Promise<void> {
                                                 timeout: 10000,
                                             });
                                             let commandResponse = customCommand.response;
+                                            let fetchedData = resp.data;
+
+                                            // log the type of data we're fetching
+                                            console.log(typeof fetchedData);
+
+                                            // check if the response is a JSON object
+                                            if (fetchedData.constructor === Object) {
+                                                let data: string[] = [];
+                                                for (let key in fetchedData) {
+                                                    data.push(`${key}: ${fetchedData[key]}`);
+                                                }
+                                                fetchedData = data.join('; ');
+                                            }
                                             chatClient.say(
                                                 channel,
                                                 commandResponse
-                                                    .replace(`$fetchURL(${urlToFetch})`, resp.data)
+                                                    .replace(`$fetchURL(${urlToFetch})`, fetchedData)
                                                     .replace(/{user}/g, user)
                                                     .replace(/{channel}/g, channel.replace('#', ''))
                                             );
