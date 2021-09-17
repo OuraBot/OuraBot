@@ -16,7 +16,7 @@ class lastfmCommand extends Command {
     userCooldown = 10;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        let song = await getNowPlaying(channel);
+        let song = await getNowPlaying(args[0] || channel, args[0] ? true : false);
 
         if (!song.success) {
             return {
@@ -37,7 +37,7 @@ class lastfmCommand extends Command {
             } else {
                 return {
                     success: true,
-                    message: `No recent tracks found for ${obfuscateName(channel.replace('#', ''))}`,
+                    message: `No recent tracks found for ${song.LastfmUsername}`,
                     error: null,
                 };
             }

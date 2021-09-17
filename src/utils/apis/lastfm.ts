@@ -15,22 +15,28 @@ class NowPlayingReturnClass {
     LastfmUsername: string;
 }
 
-export async function getNowPlaying(streamer: string): Promise<NowPlayingReturnClass> {
-    const LastfmUsername = JSON.parse(await redis.get(`ob:lastfmusername`));
+export async function getNowPlaying(user: string, ignoreredis?: boolean): Promise<NowPlayingReturnClass> {
+    let targetUser: string;
 
-    if (!LastfmUsername || !LastfmUsername.map((e: LastfmUsername) => e.channel).includes(streamer.replace('#', '')))
-        return {
-            result: 'No Last.fm username set for this channel',
-            artist: null,
-            success: false,
-            LastfmUsername: null,
-        };
+    if (!ignoreredis) {
+        const LastfmUsername = JSON.parse(await redis.get(`ob:lastfmusername`));
 
-    let obj = LastfmUsername.filter((e: LastfmUsername) => e.channel === streamer.replace('#', ''));
+        if (!LastfmUsername || !LastfmUsername.map((e: LastfmUsername) => e.channel).includes(user.replace('#', '')))
+            return {
+                result: 'No Last.fm username set for this channel',
+                artist: null,
+                success: false,
+                LastfmUsername: null,
+            };
 
-    console.log(obj[0].LastfmUsername);
+        let obj = LastfmUsername.filter((e: LastfmUsername) => e.channel === user.replace('#', ''));
 
-    let lastfmAPI = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${obj[0].LastfmUsername}&api_key=${process.env.LASTFMKEY}&format=json&limit=1`;
+        targetUser = obj[0].LastfmUsername;
+    } else {
+        targetUser = user;
+    }
+
+    let lastfmAPI = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${targetUser}&api_key=${process.env.LASTFMKEY}&format=json&limit=1`;
     let resp;
     try {
         resp = await axios.get(lastfmAPI);
@@ -58,13 +64,13 @@ export async function getNowPlaying(streamer: string): Promise<NowPlayingReturnC
             result: null,
             artist: null,
             success: true,
-            LastfmUsername: obj[0].LastfmUsername,
+            LastfmUsername: targetUser,
         };
 
     return {
         result: data['name'],
         artist: data['artist']['#text'],
         success: true,
-        LastfmUsername: obj[0].LastfmUsername,
+        LastfmUsername: targetUser,
     };
 }
