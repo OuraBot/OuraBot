@@ -8,7 +8,7 @@ class testComand extends Command {
     name = 'disable';
     description = 'Disable a command for the channel';
     usage = 'disable <command>';
-    permission = 2;
+    permission = 4;
     userCooldown = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
@@ -35,7 +35,7 @@ class testComand extends Command {
                 error: null,
             };
 
-        let blockedCommands = ['disable', 'enable', 'ping'];
+        let blockedCommands = ['disable', 'enable'];
 
         if (blockedCommands.indexOf(command) > -1)
             return {

@@ -953,10 +953,7 @@ async function main(): Promise<void> {
                         let disabledCommands: any = await redis.get(`disabledcommands:${channel.replace('#', '')}`);
                         if (disabledCommands) {
                             disabledCommands = JSON.parse(disabledCommands);
-                            if (disabledCommands.disabled.indexOf(targetCmd) > -1) {
-                                if (channel.replace('#', '') === 'demonjoefrance') return;
-                                return chatClient.say(channel, `@${user}, this command has been disabled by the broadcaster!`);
-                            }
+                            if (disabledCommands.disabled.indexOf(targetCmd) > -1) return;
                         }
 
                         command
