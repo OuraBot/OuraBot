@@ -13,6 +13,13 @@ class remindCommand extends Command {
     usage = 'remind <user> <message>';
     userCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
+        if (!args[0])
+            return {
+                success: false,
+                message: 'Missing user',
+                error: null,
+            };
+
         let userData = await resolveUser(args[0]);
         console.log(userData);
         if (!userData.success) {
