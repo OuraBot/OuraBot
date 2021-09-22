@@ -120,8 +120,8 @@ async function main(): Promise<void> {
         })
         .map((c) => c.channel);
 
-    const initialChannels = sortedChannels.slice(0, 19);
-    const remainingChannels = sortedChannels.slice(19);
+    const initialChannels = sortedChannels.slice(0, 199);
+    const remainingChannels = sortedChannels.slice(199);
 
     chatClient = new ChatClient(
         auth,
@@ -1250,7 +1250,7 @@ async function main(): Promise<void> {
         await new Promise((resolve) => setTimeout(resolve, 30e3));
         for (const chnl of remainingChannels) {
             chatClient.join(chnl);
-            await new Promise((r) => setTimeout(r, 1250));
+            await new Promise((r) => setTimeout(r, 300));
         }
     });
     console.log(`Client connected to all channels`);
