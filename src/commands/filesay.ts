@@ -12,18 +12,24 @@ class testComand extends Command {
     description = 'Say a hastebin file';
     usage = 'filesay <url> <optional msg prefix?> <--silent?>';
     hidden = true;
-    aliases = ['ob-filesay'];
-    permission = 1;
+    aliases = ['ob-filesay', 'ob_filesay'];
+    permission = 64;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|mrauro\.dev|hastebin\.com\/raw|pastebin\.com\/raw|raw.githubusercontent.com)\/.+$/))
+        if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|mrauro\.dev|hastebin\.com\/raw|pastebin\.com\/raw|(raw|gist).githubusercontent.com)\/.+$/))
             return {
                 success: false,
-                message: 'Missing RAW haste/pastebin link',
+                message: 'Missing RAW haste/pastebin/gist link',
                 error: null,
             };
 
         axios.get(args[0]).then(async (response: any) => {
             let msgs = response.data.split('\n');
+            if (msgs.length > 10000)
+                return {
+                    success: false,
+                    message: 'Too many lines to say (max 10k)',
+                    error: null,
+                };
             let silent = args[args.length - 1] === '--silent' ? true : false;
             if (!silent) await chatClient.say(channel, `@${user}, Filesay ETA: ${msgs.length / 10} seconds`);
             if (args[1] && args[1] !== '--silent') {

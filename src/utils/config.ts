@@ -9,6 +9,7 @@ interface botConfig {
     debugprefix: string;
     crossbanchannels: Array<string>;
     admins: Array<string>;
+    ambassadors: Array<string>;
 }
 
 export interface StreamData {

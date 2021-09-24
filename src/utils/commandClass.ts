@@ -29,6 +29,7 @@ export enum PermissionEnum {
     VIP = 8,
     Subscriber = 16,
     Admin = 32,
+    Ambassador = 64,
 }
 
 export class Command {

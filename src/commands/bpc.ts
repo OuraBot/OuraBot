@@ -8,7 +8,7 @@ class testComand extends Command {
     name = 'bpc';
     description = 'ban phrase checking Okayga';
     usage = 'test';
-    permission = 4;
+    permission = 64;
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let data = await banphraseCheck(args.join(' '), channel);

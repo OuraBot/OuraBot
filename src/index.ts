@@ -1092,6 +1092,18 @@ async function main(): Promise<void> {
                 return false;
             }
         }
+
+        if (requiredPermission === PermissionEnum.Ambassador) {
+            if (user === config.owner) {
+                return true;
+            } else if (config.admins.includes(user)) {
+                return true;
+            } else if (config.ambassadors.includes(user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
@@ -1303,5 +1315,6 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
 }
 
 process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     error(`Unhandled Rejection: ${reason} | ${p}`);
 });

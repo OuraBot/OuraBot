@@ -62,7 +62,7 @@ class testComand extends Command {
         if (dontBan) {
             chatClient.say(channel, `@${user}, DRYRUN Follownuke: Caught ${users.length} users | ${userList} (${targetChannel === channel ? '' : targetChannel})`);
         } else {
-            chatClient.say(channel, `@${user}, ItsBoshyTime Follownuke: Banning ${users.length} users | ${userList} ItsBoshyTime`);
+            chatClient.say(channel, `@${user}, Follownuke: Banning ${users.length} users | ${userList} ItsBoshyTime`);
             for (const _user of users) {
                 chatClient.ban(channel, _user, `Follownuke by ${user} | ${userList}`);
             }

@@ -10,7 +10,7 @@ class suggestCommand extends Command {
     description = 'Yoink bans from a channel';
     usage = 'yoinkbans <#channel>';
     hidden = true;
-    permission = 4;
+    permission = 64;
     userCooldown = 5;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
