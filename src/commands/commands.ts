@@ -6,6 +6,7 @@ import { getChannels } from '../utils/fetchChannels';
 import { prettyTime } from '../utils/auroMs';
 import { CustomCommand } from '../models/command.model';
 import axios from 'axios';
+import { upload } from '../utils/apis/haste';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -39,10 +40,10 @@ class suggestCommand extends Command {
 
         data += `\n\nBot made by @AuroR6S`;
 
-        let resp = await axios.post(`https://haste.zneix.eu/documents`, data);
+        let resp = await upload(data);
         return {
             success: true,
-            message: `View all the commands here: https://haste.zneix.eu/raw/${resp.data.key}`,
+            message: `View all the commands here: ${resp}`,
             error: null,
             ignorebanphrase: true,
         };
