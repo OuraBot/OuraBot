@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { banphraseCheck } from '..';
+import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 
 dotenv.config();
@@ -12,10 +13,10 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        let sdfg = await banphraseCheck(args.join(' '), channel.replace('#', ''));
+        const uploadData = await upload(args.join(' '));
         return {
             success: true,
-            message: `${sdfg}`,
+            message: uploadData,
             error: null,
         };
     };
