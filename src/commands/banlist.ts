@@ -51,7 +51,10 @@ class testComand extends Command {
                 await chatClient.say(channel, `@${user}, Banlist ETA: ${banlist.length / 10} seconds (${banlist.length} users)`);
 
                 for (let msg of banlist) {
-                    const target = msg.replace(/^(\.|\/)ban\s/, '').split(' ')[0];
+                    const target = msg
+                        .replace(/^(\.|\/)ban\s/, '')
+                        .split(' ')[0]
+                        .toLowerCase();
                     chatClient.say(channel, `/ban ${target}`);
                 }
 
