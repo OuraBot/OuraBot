@@ -11,7 +11,7 @@ export async function upload(message: string): Promise<string> {
 
         const form = new FormData();
         form.append('attachment', fs.createReadStream('./tempupload.txt'));
-        const response = await axios.post('https://mrauro.dev/', form, {
+        const response = await axios.post('https://i.mrauro.dev/', form, {
             headers: {
                 ...form.getHeaders(),
                 authorization: process.env.MRAURO_DEV_KEY,
