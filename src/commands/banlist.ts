@@ -15,6 +15,12 @@ class testComand extends Command {
     userCooldown = 30;
     channelCooldown = 30;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
+        if (!args[0])
+            return {
+                success: false,
+                message: 'Missing RAW HTTPS haste/pastebin/gist link',
+                error: null,
+            };
         if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|mrauro\.dev|hastebin\.com\/raw|pastebin\.com\/raw|(raw|gist).githubusercontent.com)\/.+$/))
             return {
                 success: false,
