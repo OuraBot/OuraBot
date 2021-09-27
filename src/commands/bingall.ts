@@ -12,6 +12,7 @@ class suggestCommand extends Command {
     name = 'bingall';
     description = 'Ping everyone in your chat';
     usage = 'bingall';
+    aliases = ['pingall', 'chaos'];
     userCooldown = 10;
     channelCooldown = 10;
     permission = 2;
