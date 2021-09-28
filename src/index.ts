@@ -1315,6 +1315,7 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
 }
 
 process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    console.log(reason);
+    console.log(p);
     error(`Unhandled Rejection: ${reason} | ${p}`);
 });
