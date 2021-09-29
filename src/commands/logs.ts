@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
+import { logger } from '..';
 import { isLoggedChannel } from '../utils/apis/ivr';
 import { Command, CommandReturnClass } from '../utils/commandClass';
-import { error } from '../utils/logger';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
@@ -12,12 +12,11 @@ class suggestCommand extends Command {
     userCooldown = 5;
     channelCooldown = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        let targetUser = args[0]?.replace('@', '')?.replace(',', '') || user;
-        let targetChannel = args[1]?.replace('#', '')?.replace('@', '')?.replace(',', '') || channel?.replace('#', '')?.replace('@', '')?.replace(',', '');
+        let targetUser = args[0]?.replace('@', '')?.replace(',', '').toLowerCase() || user.toLowerCase();
+        let targetChannel = args[1]?.replace('#', '')?.replace('@', '')?.replace(',', '').toLowerCase() || channel?.replace('#', '')?.replace('@', '')?.replace(',', '').toLowerCase();
 
         let isLogged = await isLoggedChannel(targetChannel);
-        console.log(isLogged);
-        if (isLogged.error) error(isLogged.error, ['isLoggedChannel error!!! 🚨']);
+        if (isLogged.error) throw new Error(isLogged.error);
         if (!isLogged.logged) {
             return {
                 success: true,

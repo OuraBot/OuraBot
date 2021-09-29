@@ -1,81 +1,118 @@
-import * as winston from 'winston';
-import 'winston-daily-rotate-file';
-import DiscordTransport from 'winston-discord-transport';
+require('dotenv').config();
+import axios from 'axios';
+import os from 'os';
+import chalk from 'chalk';
+import { redis } from '..';
+import { ErrorModel } from '../models/error.model';
 
-import dotenv from 'dotenv';
-import { addColors } from 'winston/lib/winston/config';
-dotenv.config();
+export enum ILogLevel {
+    WARN = 'WARN',
+    ERROR = 'ERROR',
+}
 
-const loggerlevels = {
-    colors: {
-        info: 'green',
-        error: 'underline bold red',
-        debug: 'bold magenta',
-        warn: 'yellow',
-    },
-};
+enum LogColors {
+    WARN = '#ffff00',
+    ERROR = '#ff0000',
+}
 
-const options = {
-    filename: `${process.env.CLIENT_USERNAME}-%DATE%.log`,
-    datePattern: 'YYYY-MM-DD',
-    maxSize: '20M',
-    dirname: `${process.env.CLIENT_USERNAME}-logs/`,
-};
+export class Logger {
+    logLevel: ILogLevel;
+    discordWebhook: string;
 
-const dailyTransport = new winston.transports.DailyRotateFile(options);
+    constructor(logLevel: ILogLevel) {
+        this.logLevel = logLevel;
+        this.discordWebhook = process.env.DISCORD_WEBHOOK;
+    }
 
-const logger = winston.createLogger({
-    level: process.env.DEBUG ? 'debug' : 'info',
-    format: winston.format.combine(
-        winston.format.timestamp({
-            format: 'DD-MM-YY HH:mm:ss.SSS',
-        }),
-        winston.format.colorize(),
-        winston.format.printf((info) => `${info.timestamp} ${info.level.toUpperCase()}: ${info.message}`)
-    ),
-    transports: [
-        new DiscordTransport({
-            webhook: process.env.DISCORD_WEBHOOK,
-            defaultMeta: { service: process.env.CLIENT_USERNAME },
-            level: 'error',
-        }),
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: `${process.env.CLIENT_USERNAME}-errors.log`, level: 'error' }),
-        new winston.transports.File({ filename: `${process.env.CLIENT_USERNAME}-info.log`, level: 'info' }),
-        dailyTransport,
-    ],
-});
+    async log(logLevel: ILogLevel, error: Error, ...args: any[]) {
+        if (this.logLevel >= logLevel) {
+            console.log(chalk.hex(LogColors[logLevel])(`[${logLevel}]`), ...args);
 
-addColors(loggerlevels.colors);
+            let counterData = Number(await redis.get(`ob:counter`));
+            if (!counterData) {
+                await redis.set(`ob:counter`, 1);
+                counterData = 1;
+            } else {
+                await redis.incr(`ob:counter`);
+            }
 
-export function info(message: string, args?: string[]): void {
-    if (args?.length > 0) {
-        logger.info(`INFO - ${process.env.CLIENT_USERNAME}: ${message} | ${args?.join(' - ')}`);
-    } else {
-        logger.info(`INFO - ${process.env.CLIENT_USERNAME}: ${message}`);
+            const newError = new ErrorModel({
+                args: args.join('\n'),
+                error: error.stack,
+                id: counterData,
+            });
+
+            newError.save();
+
+            axios.post(this.discordWebhook, {
+                embeds: [
+                    {
+                        title: `OuraBot :: Error - Error ID #${counterData}`,
+                        description: error.stack + '\n\n' + args.join('\n'),
+                        color: 16711680,
+                        author: {
+                            name: `OuraBot - ${os.hostname}`,
+                        },
+                        timestamp: new Date(),
+                    },
+                ],
+            });
+
+            return counterData;
+        }
+    }
+
+    async error(error: Error, ...args: any[]) {
+        return await this.log(ILogLevel.ERROR, error, args);
+    }
+
+    async warn(error: Error, ...args: any[]) {
+        return await this.log(ILogLevel.WARN, error, args);
     }
 }
 
-export function error(message: string, args?: string[]): void {
-    if (args?.length > 0) {
-        logger.error(`ERROR - ${process.env.CLIENT_USERNAME}: ${message} | ${args?.join(' - ')}`);
+export async function createNewError(channel: string, user: string, message: string, command: string, _error: string): Promise<Number> {
+    let counterData = Number(await redis.get(`ob:counter`));
+    if (!counterData) {
+        await redis.set(`ob:counter`, 1);
+        counterData = 1;
     } else {
-        logger.error(`ERROR - ${process.env.CLIENT_USERNAME}: ${message}`);
+        await redis.incr(`ob:counter`);
     }
+
+    const newError = new ErrorModel({
+        channel: channel,
+        user: user,
+        bot: `${process.env.CLIENT_cUSERNAME}`,
+        message: message,
+        command: command,
+        error: _error,
+        completed: false,
+        id: counterData,
+    });
+
+    newError.save();
+
+    return counterData;
 }
 
-export function debug(message: string, args?: string[]): void {
-    if (args?.length > 0) {
-        logger.debug(`DEBUG - ${process.env.CLIENT_USERNAME}: ${message} | ${args?.join(' - ')}`);
-    } else {
-        logger.debug(`DEBUG - ${process.env.CLIENT_USERNAME}: ${message}`);
-    }
-}
-
-export function warn(message: string, args?: string[]): void {
-    if (args?.length > 0) {
-        logger.warn(`WARN - ${process.env.CLIENT_USERNAME}: ${message} | ${args?.join(' - ')}`);
-    } else {
-        logger.warn(`WARN - ${process.env.CLIENT_USERNAME}: ${message}`);
-    }
-}
+/*
+            console.log(chalk.hex(LogColors[logLevel])(`[${logLevel}]`), ...args);
+            
+if (logLevel === ILogLevel.ERROR) {
+            // embed
+            axios.post(this.discordWebhook, {
+                embeds: [
+                    {
+                        title: `OuraBot :: Error`,
+                        description: args.join('\n'),
+                        color: 16711680,
+                        author: {
+                            name: `OuraBot - ${os.hostname}`,
+                        },
+                        timestamp: new Date(),
+                    },
+                ],
+            });
+        }
+*/

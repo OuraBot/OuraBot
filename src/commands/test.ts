@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import { banphraseCheck } from '..';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { logger } from '..';
+import axios from 'axios';
 
 dotenv.config();
 

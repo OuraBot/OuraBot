@@ -14,6 +14,7 @@ class suggestCommand extends Command {
     description = 'Query Wolfram|Alpha';
     usage = 'query <username?>';
     userCooldown = 30;
+    hidden = true;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         return {

@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import dotenv from 'dotenv';
 import { isLoggedChannel } from '../utils/apis/ivr';
 import { Command, CommandReturnClass } from '../utils/commandClass';
-import { error } from '../utils/logger';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -15,7 +14,7 @@ class suggestCommand extends Command {
         let targetUser = args[0]?.replace('@', '')?.replace(',', '') || user;
 
         let isLogged = await isLoggedChannel(channel);
-        if (isLogged.error) error(isLogged.error, ['isLoggedChannel error!!! 🚨']);
+        if (isLogged.error) throw new Error(isLogged.error);
         if (!isLogged.logged) {
             return {
                 success: true,

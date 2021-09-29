@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { chatClient, redis, WEEB_REGEX } from '..';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
-import { error } from '../utils/logger';
 import { Term } from '../models/term.model';
 dotenv.config();
 
@@ -106,7 +105,7 @@ class testComand extends Command {
 
             if (termRegex === '!{WEEB}') termRegex = WEEB_REGEX.toString().replace(/^\/|\/g$/g, '');
 
-            await Term.findOneAndRemove({ regex: termRegex })
+            await Term.findOneAndRemove({ regex: termRegex });
 
             let newTerm = new Term({
                 channel: channel.replace('#', ''),

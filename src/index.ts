@@ -13,7 +13,6 @@ import { unescapeHTML } from './commands/ddoi.js';
 import { moduleEnum } from './commands/modmodule.js';
 import { Afk, IAfk, Status } from './models/afk.model.js';
 import { CustomCommand, ICustomCommand } from './models/command.model.js';
-import { createNewError } from './models/error.model.js';
 import { IModule, Module } from './models/module.model.js';
 import { IReminder, Reminder } from './models/reminder.model.js';
 import { ISub, Sub } from './models/sub.model.js';
@@ -25,7 +24,7 @@ import { Command, CommandReturnClass, getCommands, PermissionEnum } from './util
 import { getConfig } from './utils/config.js';
 import { getChannels } from './utils/fetchChannels';
 import { fetchBots } from './utils/knownBots.js';
-import { error } from './utils/logger.js';
+import { Logger, ILogLevel } from './utils/logger.js';
 import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
@@ -75,6 +74,7 @@ export let chatClient: ChatClient;
 export let apiClient: ApiClient;
 export let apiClient2: ApiClient;
 export let sevenTVSource: EventSource;
+export const logger: Logger = new Logger(ILogLevel.WARN);
 
 async function main(): Promise<void> {
     const clientId = process.env.APP_CLIENTID;
@@ -157,9 +157,7 @@ async function main(): Promise<void> {
                 redis.set('DDOI-LATEST', video.id.videoId);
             }
         } catch (err) {
-            console.log(err);
-            error('DDOI Hourly Video Error', [err]);
-            createNewError('null', 'DDOI HOURLY VIDEO', 'null', 'null', err.toString() + '\n' + err.stack);
+            logger.error(err, 'DDOI Hourly Video Error');
         }
     }, 1000 * 60 * 60);
 
@@ -270,7 +268,7 @@ async function main(): Promise<void> {
                 if (e.readyState === EventSource.CLOSED) {
                     restart7TVEventApi()
                 } else { 
-                restart7TVEventApi()
+                    restart7TVEventApi()
                 }
             });
     }
@@ -283,7 +281,7 @@ async function main(): Promise<void> {
     }).listen(process.env.PORT || 8081);
 
     handler.on('error', function (err) {
-        console.error('Error:', err.message);
+        logger.error(err, 'Error in GitHub HTTP server');
     });
 
     handler.on('push', function (event) {
@@ -992,17 +990,15 @@ async function main(): Promise<void> {
                                 }
                             })
                             .catch(async (err) => {
-                                if (process.env.DEBUG === 'TRUE') {
-                                    chatClient.say(channel, `@${user}, error while executing command. Check the debug console...`);
-                                    return console.error(err);
-                                }
+                                // if (process.env.DEBUG === 'TRUE') {
+                                //     chatClient.say(channel, `@${user}, error while executing command. Check the debug console...`);
+                                //     return console.error(err);
+                                // }
                                 if (err?.status == 503) {
-                                    error(err, ['Error while executing command:', user, channel, command.name]);
-                                    let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
+                                    let errorID = await logger.error(err, channel, user, message, command.name);
                                     chatClient.say(channel, `@${user}, the requsted service is unavailable (503). Twitch server's might be having problems. Error ID: ${errorID}`);
                                 } else {
-                                    error(err, ['Error while executing command:', user, channel, command.name]);
-                                    let errorID = await createNewError(channel, user, message, command.name, err.toString() + '\n' + err.stack);
+                                    let errorID = await logger.error(err, channel, user, message, command.name);
                                     chatClient.say(channel, `@${user}, there was an unknown error while executing the command. Error ID: ${errorID}`);
                                 }
                             });
@@ -1314,8 +1310,6 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
     return false;
 }
 
-process.on('unhandledRejection', (reason, p) => {
-    console.log(reason);
-    console.log(p);
-    error(`Unhandled Rejection: ${reason} | ${p}`);
+process.on('unhandledRejection', (error: Error) => {
+    logger.error(error, 'Unhandled Rejection');
 });

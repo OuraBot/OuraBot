@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
+import { chatClient, logger } from '..';
 import { Channel } from '../models/channel.model';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
-import { error } from '../utils/logger';
 dotenv.config();
 
 class testComand extends Command {
@@ -23,30 +22,21 @@ class testComand extends Command {
         let channelName = args[0].replace('#', '');
         let clientUsername = process.env.CLIENT_USERNAME;
 
-        try {
-            const newChannel = new Channel({
-                channel: channelName,
-                bot: clientUsername,
-            });
+        const newChannel = new Channel({
+            channel: channelName,
+            bot: clientUsername,
+        });
 
-            newChannel.save();
+        newChannel.save();
 
-            await chatClient.join(channelName);
-            chatClient.say(channelName, `MrDestructoid Joined channel!`);
+        await chatClient.join(channelName);
+        chatClient.say(channelName, `MrDestructoid Joined channel!`);
 
-            return {
-                success: true,
-                message: 'Joined channel',
-                error: null,
-            };
-        } catch (err) {
-            error(err, [user, channel, args.join(' '), this.name]);
-            return {
-                success: false,
-                message: null,
-                error: ErrorEnum.UNKNOWN_ERROR,
-            };
-        }
+        return {
+            success: true,
+            message: 'Joined channel',
+            error: null,
+        };
     };
 }
 

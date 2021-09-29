@@ -1,5 +1,5 @@
+import { logger } from '..';
 import { Channel, IChannel } from '../models/channel.model';
-import { error } from './logger';
 
 export async function getChannels(bot: string): Promise<string[]> {
     let chs: string[] = [];
@@ -10,8 +10,7 @@ export async function getChannels(bot: string): Promise<string[]> {
             }
         })
         .catch((err) => {
-            error(err, ['Caught error in fetchChannels.ts']);
-            console.log(err);
+            logger.error(err, 'Error fetching channels');
         });
 
     return chs;

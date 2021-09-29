@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { redis } from '../..';
-import { error } from '../logger';
 
 export class ResolveUser {
     success: boolean;
