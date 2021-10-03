@@ -74,6 +74,7 @@ export let chatClient: ChatClient;
 export let apiClient: ApiClient;
 export let apiClient2: ApiClient;
 export let sevenTVSource: EventSource;
+export let badSites: Set<string>;
 export const logger: Logger = new Logger(ILogLevel.WARN);
 
 // TODO: put this model in a separate file
@@ -146,6 +147,9 @@ async function main(): Promise<void> {
     );
 
     await fetchBots();
+
+    const badSiteData = await axios.get('https://raw.githubusercontent.com/elbkr/bad-websites/main/websites.json');
+    badSites = new Set(badSiteData.data);
 
     // check every hour
     setInterval(async () => {
@@ -402,11 +406,13 @@ async function main(): Promise<void> {
                                         return;
                                     }
                                 }
-                            } else if (module.module === moduleEnum.LINKS) {
+                            }
+                            if (module.module === moduleEnum.LINKS) {
                                 if (getUrls(message).size > 0) {
                                     chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
                                 }
-                            } else if (module.module === moduleEnum.WEEB) {
+                            }
+                            if (module.module === moduleEnum.WEEB) {
                                 if (message.match(WEEB_REGEX)) {
                                     let redisData: string | number = await redis.get(`WEEB:${channel}:${user}`);
                                     if (redisData) {
@@ -421,7 +427,8 @@ async function main(): Promise<void> {
                                         return;
                                     }
                                 }
-                            } else if (module.module === moduleEnum.BIGFOLLOWS) {
+                            }
+                            if (module.module === moduleEnum.BIGFOLLOWS) {
                                 if (message.includes('cutt.ly')) {
                                     let urls = getUrls(message);
                                     for (let url of urls) {
@@ -431,6 +438,14 @@ async function main(): Promise<void> {
                                             chatClient.say(channel, `/ban ${user} Bigfollows link detected in message`);
                                             return;
                                         }
+                                    }
+                                }
+                            }
+                            if (module.module === moduleEnum.BADLINKS) {
+                                let urls = getUrls(message);
+                                for (let url of urls) {
+                                    if (badSites.has(url)) {
+                                        chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
                                     }
                                 }
                             }
@@ -460,11 +475,13 @@ async function main(): Promise<void> {
                                             return;
                                         }
                                     }
-                                } else if (module.module === moduleEnum.LINKS) {
+                                }
+                                if (module.module === moduleEnum.LINKS) {
                                     if (getUrls(message).size > 0) {
                                         chatClient.say(channel, `/timeout ${user} ${module.timeout} Link in message`);
                                     }
-                                } else if (module.module === moduleEnum.WEEB) {
+                                }
+                                if (module.module === moduleEnum.WEEB) {
                                     if (message.match(WEEB_REGEX)) {
                                         let redisData: string | number = await redis.get(`WEEB:${channel}:${user}`);
                                         if (redisData) {
@@ -479,7 +496,8 @@ async function main(): Promise<void> {
                                             return;
                                         }
                                     }
-                                } else if (module.module === moduleEnum.BIGFOLLOWS) {
+                                }
+                                if (module.module === moduleEnum.BIGFOLLOWS) {
                                     if (message.includes('cutt.ly')) {
                                         let urls = getUrls(message);
                                         for (let url of urls) {
@@ -489,6 +507,14 @@ async function main(): Promise<void> {
                                                 chatClient.say(config.owner, `@${config.owner}, ${user} has a bigfollows link in ${obfuscateName(channel)}`);
                                                 return;
                                             }
+                                        }
+                                    }
+                                }
+                                if (module.module === moduleEnum.BADLINKS) {
+                                    let urls = getUrls(message);
+                                    for (let url of urls) {
+                                        if (badSites.has(url)) {
+                                            chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
                                         }
                                     }
                                 }
@@ -1300,15 +1326,21 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
                 if (msgToCheck.match(ASCII_REGEX)?.length > 5) {
                     return true;
                 }
-            } else if (module.module === moduleEnum.LINKS) {
+            }
+
+            if (module.module === moduleEnum.LINKS) {
                 if (getUrls(msgToCheck).size > 0) {
                     return true;
                 }
-            } else if (module.module === moduleEnum.WEEB) {
+            }
+
+            if (module.module === moduleEnum.WEEB) {
                 if (msgToCheck.match(WEEB_REGEX)) {
                     return true;
                 }
-            } else if (module.module === moduleEnum.BIGFOLLOWS) {
+            }
+
+            if (module.module === moduleEnum.BIGFOLLOWS) {
                 if (msgToCheck.includes('cutt.ly')) {
                     let urls = getUrls(msgToCheck);
                     for (let url of urls) {
@@ -1316,6 +1348,15 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
                         if (urlData.data.resolved_url.includes('bigfollows')) {
                             return true;
                         }
+                    }
+                }
+            }
+
+            if (module.module === moduleEnum.BADLINKS) {
+                let urls = getUrls(msgToCheck);
+                for (let url of urls) {
+                    if (badSites.has(url)) {
+                        return true;
                     }
                 }
             }

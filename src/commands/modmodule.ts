@@ -10,13 +10,14 @@ export enum moduleEnum {
     LINKS = 'links',
     WEEB = 'weeb',
     BIGFOLLOWS = 'bigfollows',
+    BADLINKS = 'badlinks',
 }
 
 class testComand extends Command {
     name = 'modmodule';
-    description = 'Manage moderation modules (ascii,links,weeb,bigfollows)';
-    usage = 'modmodule <module (ascii,links,weeb,bigfollows)> <timeout in seconds (set 0 for off)>';
-    extendedDescription = `Note: For the bigfollows module the timeout length does not matter as it will permaban regardless`;
+    description = 'Manage moderation modules (ascii,links,weeb,bigfollows,badlinks)';
+    usage = 'modmodule <module (ascii,links,weeb,bigfollows,badlinks)> <timeout in seconds (set 0 for off)>';
+    extendedDescription = `Note: For the bigfollows and the badlinks module the timeout length does not matter as it will permaban regardless`;
     permission = 4;
     channelCooldown = 5;
     userCooldown = 5;
