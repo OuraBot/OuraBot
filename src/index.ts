@@ -76,6 +76,17 @@ export let apiClient2: ApiClient;
 export let sevenTVSource: EventSource;
 export const logger: Logger = new Logger(ILogLevel.WARN);
 
+// TODO: put this model in a separate file
+export interface NukeMessage {
+    channel: string;
+    message: string;
+    user: string;
+    cantTimeout: boolean;
+    sentAt: Number;
+}
+
+export const nukeMessages: NukeMessage[] = [];
+
 async function main(): Promise<void> {
     const clientId = process.env.APP_CLIENTID;
     const clientSecret = process.env.APP_SECRET;
@@ -351,6 +362,22 @@ async function main(): Promise<void> {
     let commands = await getCommands();
     let custommodules = await getModules();
     chatClient.onMessage(async (channel, user, message, msg) => {
+        nukeMessages.push({
+            channel: channel,
+            user: user,
+            message: message,
+            cantTimeout: msg.userInfo.isMod || msg.userInfo.isBroadcaster,
+            sentAt: Date.now(),
+        });
+
+        // Remove old nuke messages older than 30 minutes
+        // o(n) time complexity so shouldn't be a problem
+        for (let i = 0; i < nukeMessages.length; i++) {
+            if (nukeMessages[i].sentAt < Date.now() - 1000 * 60 * 30) {
+                nukeMessages.splice(i, 1);
+            }
+        }
+
         redis.get(`tl:${channel}:module`).then(async (redisData) => {
             if (redisData) {
                 const modules: IModule[] = JSON.parse(redisData);
@@ -990,10 +1017,10 @@ async function main(): Promise<void> {
                                 }
                             })
                             .catch(async (err) => {
-                                // if (process.env.DEBUG === 'TRUE') {
-                                //     chatClient.say(channel, `@${user}, error while executing command. Check the debug console...`);
-                                //     return console.error(err);
-                                // }
+                                if (process.env.DEBUG === 'TRUE') {
+                                    chatClient.say(channel, `@${user}, error while executing command. Check the debug console...`);
+                                    return console.error(err);
+                                }
                                 if (err?.status == 503) {
                                     let errorID = await logger.error(err, channel, user, message, command.name);
                                     chatClient.say(channel, `@${user}, the requsted service is unavailable (503). Twitch server's might be having problems. Error ID: ${errorID}`);
@@ -1310,6 +1337,9 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
     return false;
 }
 
-process.on('unhandledRejection', (error: Error) => {
-    logger.error(error, 'Unhandled Rejection');
-});
+if (process.env.DEBUG === 'TRUE') {
+} else {
+    process.on('unhandledRejection', (error: Error) => {
+        logger.error(error, 'Unhandled Rejection');
+    });
+}
