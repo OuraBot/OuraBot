@@ -7,6 +7,7 @@ class suggestCommand extends Command {
     name = 'suggest';
     description = 'Suggest a feature or report a bug to the developer';
     usage = 'suggest <suggestion/bug report>';
+    aliases = ['ob_suggest'];
     userCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let ID = await createNewSuggestion(user, args.join(' '));
