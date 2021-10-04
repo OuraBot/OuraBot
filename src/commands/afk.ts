@@ -11,7 +11,7 @@ class suggestCommand extends Command {
     usage = 'afk <reason?>';
     extendedDescription = `Use the "lurk" or "gn" alias for their corrosponding statuses.`;
     userCooldown = 10;
-    aliases = ['lurk', 'gn'];
+    aliases = ['lurk', 'gn', 'brb'];
     execute = async (user: string, channel: string, args: string[], cmdMsg: string): Promise<CommandReturnClass> => {
         let reason: string;
         if (!args[0]) {
@@ -25,6 +25,9 @@ class suggestCommand extends Command {
                     break;
 
                 case 'afk':
+                    reason = '(no message)';
+                    break;
+                case 'brb':
                     reason = '(no message)';
                     break;
             }
@@ -61,6 +64,28 @@ class suggestCommand extends Command {
                     };
                 }
                 break;
+                
+            case 'brb':
+                {
+                    afkMsg = `${reason}`;
+                    const newAfk = new Afk({
+                        user: user,
+                        message: afkMsg,
+                        status: Status.AFK,
+                        timestamp: new Date(),
+                    });
+                    newAfk.save();
+                    redis.del(`tl:${channel}:afk`);
+
+                    return {
+                        success: true,
+                        message: `${user} is now afk: ${(await banphraseCheck(afkMsg, channel)) ? '[Banphrased]' : afkMsg}`,
+                        error: null,
+                        noping: true,
+                    };
+                }
+                break;
+                
 
             case 'gn':
                 {
