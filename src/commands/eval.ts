@@ -6,6 +6,7 @@ import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
 import { prettyTime } from '../utils/auroMs';
 import { obfuscateName } from '../utils/stringManipulation';
+import { upload } from '../utils/apis/haste';
 dotenv.config();
 
 class evalCommand extends Command {
@@ -27,13 +28,32 @@ class evalCommand extends Command {
         redis;
         obfuscateName;
 
-        let code = args.join(' ');
-        let result = await eval(code);
-        return {
-            success: true,
-            message: `${result}`,
-            error: null,
-        };
+        try {
+            let code = args.join(' ');
+            let result = await eval(code);
+            if (result.length > 450) {
+                return {
+                    success: true,
+                    message: await upload(result),
+                    error: null,
+                };
+            } else {
+                return {
+                    success: true,
+                    message: `${result}`,
+                    error: null,
+                };
+            }
+        } catch (e) {
+            const errorURL = await upload(e.stack);
+            chatClient.whisper(user, `Error: ${e.message}: ${errorURL}`);
+
+            return {
+                success: true,
+                message: `Error: ${e.message} - I whispered you the stack trace`,
+                error: null,
+            };
+        }
     };
 }
 
