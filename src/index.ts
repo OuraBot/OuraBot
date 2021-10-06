@@ -606,9 +606,9 @@ async function main(): Promise<void> {
         });
 
         custommodules.forEach((m: CustomModule) => {
-            console.log(m);
             if (m.channels.includes(channel)) {
-                m.execute(channel, user, message, msg, chatClient, redis);
+                // we use 2 !'s because the m.enabled field might not be present
+                if (!!m.enabled) m.execute(channel, user, message, msg, chatClient, redis);
             }
         });
 

@@ -12,6 +12,7 @@ class customModule extends CustomModule {
     name = 'se-follows';
     description = "Compares the user in StreamElement's follow chat message to a hash of known bots";
     channels = ['#demonjoefrance', '#auror6s', '#jeffboys123', '#elpws', '#mmattbtw', '#docwaitingroom', '#liptongod', '#c3agle', '#xoosd'];
+    enabled = false;
     author = ['AuroR6S'];
     execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient, redis: Redis): Promise<void> => {
         if (user === 'auror6s' || user === 'streamelements' || user === 'fossabot') {
@@ -24,7 +25,6 @@ class customModule extends CustomModule {
                                 chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
                                     console.log(err); // Error handling here isnt too important
                                 });
-                                chatClient.say(channel, `${username} is on the known bot list and has been banned`);
                             } else if (username.match(/.*h(o|0)ss0?/)) {
                                 chatClient.ban(channel, username, 'User is on known bot list (follow/hate/ip grabber bots)').catch((err) => {
                                     console.log(err); // Error handling here isnt too important

@@ -7,6 +7,7 @@ export class CustomModule {
     name: string;
     description: string;
     channels: string[];
+    enabled?: boolean;
     author: string[];
     execute: (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient, redis: Redis) => Promise<void>;
 }
