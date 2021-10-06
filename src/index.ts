@@ -317,6 +317,7 @@ async function main(): Promise<void> {
     });
 
     chatClient.onNotice((target, user, message, msg) => {
+        console.log(`${new Date().toISOString()} NOTICE ${target} ${user} ${message} ${msg.rawLine}`);
         if (msg.tagsToString() === 'msg-id=msg_rejected_mandatory') {
             chatClient.say(target, `A message that was about to be posted violates this channel's moderation settings.`);
         }
@@ -366,6 +367,8 @@ async function main(): Promise<void> {
     let commands = await getCommands();
     let custommodules = await getModules();
     chatClient.onMessage(async (channel, user, message, msg) => {
+        console.log(`${new Date().toISOString()} PRIVMSG ${channel} :${message}`);
+
         nukeMessages.push({
             channel: channel,
             user: user,
