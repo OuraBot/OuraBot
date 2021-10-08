@@ -4,7 +4,7 @@ import { promises as fs } from 'fs';
 import getUrls from 'get-urls';
 import { createServer } from 'http';
 import Redis from 'ioredis';
-import { connect } from 'mongoose';
+import mongoose from 'mongoose';
 import { ApiClient } from 'twitch';
 import { ClientCredentialsAuthProvider, RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
 import { ChatClient, Whisper } from 'twitch-chat-client';
@@ -111,10 +111,40 @@ async function main(): Promise<void> {
     apiClient = new ApiClient({ authProvider });
     apiClient2 = new ApiClient({ authProvider: auth });
 
-    connect(process.env.MONGO_URL, {
+    mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
+
+    /*
+        Clueless TeaTime mongodb error incident of 10/8/2021
+        Clueless TeaTime 600 errors in 5 seconds
+        Clueless TeaTime recursive error handling
+        Clueless Teatime temp ip ban from discord
+        https://i.mrauro.dev/l3nf5.png
+        https://i.mrauro.dev/FL5Og.png
+    */
+
+    // check if mongoose is connected every 5 seconds and if not throw an error
+    setInterval(() => {
+        // check if mongoose.connection.readyState is 1 or 2
+        if (mongoose.connection.readyState !== 1 && mongoose.connection.readyState !== 2) {
+            axios.post(this.discordWebhook, {
+                embeds: [
+                    {
+                        title: `OuraBot :: MONGO NOT CONNECTED!`,
+                        description: `MONGO IS NOT CONNECTED! ${mongoose.connection.readyState}`,
+                        color: 16711680,
+                        timestamp: new Date(),
+                    },
+                ],
+            });
+            mongoose.connect(process.env.MONGO_URL, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            });
+        }
+    }, 5000);
 
     const channels: IChannel[] = await Channel.find();
     const sortedChannels = channels
