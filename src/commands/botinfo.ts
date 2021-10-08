@@ -6,7 +6,7 @@ class suggestCommand extends Command {
     name = 'botinfo';
     description = 'Get detailed information about the bot.';
     usage = 'botinfo';
-    aliases = ['ourabot', 'info', 'help', 'whoareyou', 'oura_bot'];
+    aliases = ['ourabot', 'info', 'whoareyou', 'oura_bot'];
     userCooldown = 10;
     channelCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

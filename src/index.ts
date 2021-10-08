@@ -64,7 +64,7 @@ const ApiAuth = new RefreshingAuthProvider(
         );
         */
 
-let commands = getCommands();
+export let commands = getCommands();
 export function refreshCommands() {
     commands = getCommands();
 }
