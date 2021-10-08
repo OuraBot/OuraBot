@@ -8,7 +8,7 @@ dotenv.config();
 
 class testComand extends Command {
     name = 'stats';
-    description = 'Gets the stats of a command, user, channel, or globally';
+    description = 'Gets the stats of a command, user, channel, or globally (since Oct 7 2021)';
     usage = 'stats (command|@user|#channel|<leave empty for global stats>) ';
     channelCooldown = 10;
     userCooldown = 10;
