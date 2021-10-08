@@ -25,7 +25,7 @@ import { getConfig } from './utils/config.js';
 import { getChannels } from './utils/fetchChannels';
 import { fetchBots } from './utils/knownBots.js';
 import { Logger, ILogLevel } from './utils/logger.js';
-import { chunkArr, obfuscateName } from './utils/stringManipulation.js';
+import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
 
@@ -539,10 +539,10 @@ async function main(): Promise<void> {
                                 if (term.response.includes('{newline}')) {
                                     let msgs = term.response.split('{newline}');
                                     for (let msg of msgs) {
-                                        chatClient.say(channel, msg.replace(/{user}/g, user));
+                                        chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
                                     }
                                 } else {
-                                    chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                    chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
                                 }
                             }
                         }
@@ -556,10 +556,10 @@ async function main(): Promise<void> {
                                     if (term.response.includes('{newline}')) {
                                         let msgs = term.response.split('{newline}');
                                         for (let msg of msgs) {
-                                            chatClient.say(channel, msg.replace(/{user}/g, user));
+                                            chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
                                         }
                                     } else {
-                                        chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                        chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
                                     }
                                 }
                             }
@@ -577,10 +577,10 @@ async function main(): Promise<void> {
                                     if (term.response.includes('{newline}')) {
                                         let msgs = term.response.split('{newline}');
                                         for (let msg of msgs) {
-                                            chatClient.say(channel, msg.replace(/{user}/g, user));
+                                            chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
                                         }
                                     } else {
-                                        chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                        chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
                                     }
                                 }
                             }
@@ -594,10 +594,10 @@ async function main(): Promise<void> {
                                         if (term.response.includes('{newline}')) {
                                             let msgs = term.response.split('{newline}');
                                             for (let msg of msgs) {
-                                                chatClient.say(channel, msg.replace(/{user}/g, user));
+                                                chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
                                             }
                                         } else {
-                                            chatClient.say(channel, term.response.replace(/{user}/g, user));
+                                            chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
                                         }
                                     }
                                 }
@@ -724,10 +724,12 @@ async function main(): Promise<void> {
                                         }
                                         chatClient.say(
                                             channel,
-                                            commandResponse
-                                                .replace(`$fetchURL(${urlToFetch})`, fetchedData)
-                                                .replace(/{user}/g, user)
-                                                .replace(/{channel}/g, channel.replace('#', ''))
+                                            sanitizeMessage(
+                                                commandResponse
+                                                    .replace(`$fetchURL(${urlToFetch})`, fetchedData)
+                                                    .replace(/{user}/g, user)
+                                                    .replace(/{channel}/g, channel.replace('#', ''))
+                                            )
                                         );
                                     } catch (err) {
                                         chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
@@ -739,23 +741,23 @@ async function main(): Promise<void> {
                                         if (redisData) {
                                             if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
                                                 let countValue = Number(redisData);
-                                                chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`));
+                                                chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`)));
                                             } else {
                                                 await redis.incr(`COUNT:${channel}:${countKey}`);
                                                 let countValue = Number(redisData);
-                                                chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`));
+                                                chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`)));
                                             }
                                         } else {
                                             if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
                                                 await redis.set(`COUNT:${channel}:${countKey}`, 0);
-                                                chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0'));
+                                                chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0')));
                                             } else {
                                                 await redis.set(`COUNT:${channel}:${countKey}`, 1);
-                                                chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
+                                                chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1')));
                                             }
                                         }
                                     } else {
-                                        chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', '')));
+                                        chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', ''))));
                                     }
                                 }
                             }
@@ -803,10 +805,12 @@ async function main(): Promise<void> {
                                             }
                                             chatClient.say(
                                                 channel,
-                                                commandResponse
-                                                    .replace(`$fetchURL(${urlToFetch})`, fetchedData)
-                                                    .replace(/{user}/g, user)
-                                                    .replace(/{channel}/g, channel.replace('#', ''))
+                                                sanitizeMessage(
+                                                    commandResponse
+                                                        .replace(`$fetchURL(${urlToFetch})`, fetchedData)
+                                                        .replace(/{user}/g, user)
+                                                        .replace(/{channel}/g, channel.replace('#', ''))
+                                                )
                                             );
                                         } catch (err) {
                                             chatClient.say(channel, `Error while fetching: ${urlToFetch}`);
@@ -818,23 +822,23 @@ async function main(): Promise<void> {
                                             if (redisData) {
                                                 if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
                                                     let countValue = Number(redisData);
-                                                    chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`));
+                                                    chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/GET{[A-z]{4,10}}/g, `${countValue}`)));
                                                 } else {
                                                     await redis.incr(`COUNT:${channel}:${countKey}`);
                                                     let countValue = Number(redisData);
-                                                    chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`));
+                                                    chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/INCR{[A-z]{4,10}}/g, `${countValue + 1}`)));
                                                 }
                                             } else {
                                                 if (customCommand.response.match(/GET{[A-z]{4,10}}/g)) {
                                                     await redis.set(`COUNT:${channel}:${countKey}`, 0);
-                                                    chatClient.say(channel, customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0'));
+                                                    chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/GET{[A-z]{4,10}}/g, '0')));
                                                 } else {
                                                     await redis.set(`COUNT:${channel}:${countKey}`, 1);
-                                                    chatClient.say(channel, customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1'));
+                                                    chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/INCR{[A-z]{4,10}}/g, '1')));
                                                 }
                                             }
                                         } else {
-                                            chatClient.say(channel, customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', '')));
+                                            chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', ''))));
                                         }
                                     }
                                 }
