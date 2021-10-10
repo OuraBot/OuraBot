@@ -759,7 +759,7 @@ async function main(): Promise<void> {
                                         }
                                     }
                                 } else {
-                                    if (customCommand.response.match(/^REPEAT\([0-9]{1,2}\)\s/)) {
+                                    if (customCommand.response.match(/^REPEAT\([0-9]{1,3}\)\s/)) {
                                         let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                         let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
                                         for (let i = 0; i < repeatCount && i < 150; i++) {
@@ -813,7 +813,7 @@ async function main(): Promise<void> {
                                             }
                                         }
                                     } else {
-                                        if (customCommand.response.match(/^REPEAT\([0-9]{1,2}\)\s/)) {
+                                        if (customCommand.response.match(/^REPEAT\([0-9]{1,3}\)\s/)) {
                                             let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                             let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
                                             for (let i = 0; i < repeatCount && i < 150; i++) {
