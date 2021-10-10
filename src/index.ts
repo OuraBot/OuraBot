@@ -383,7 +383,19 @@ async function main(): Promise<void> {
     chatClient.onJoin((channel, user) => {
         console.log(`${user} joined ${channel}`);
 
-        if (channel === `#${config.owner}`) chatClient.say(`#${config.owner}`, `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''}`);
+        if (channel === `#${config.owner}`) {
+            let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
+
+            chatClient.say(
+                `#${config.owner}`,
+                `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
+                    commitAuthor
+                )} (${dateSinceCommit} ago): ${commitMessage
+                    .split('\n')
+                    .filter((n) => n)
+                    .join(' - ')}`
+            );
+        }
     });
 
     chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
