@@ -17,23 +17,8 @@ class suggestCommand extends Command {
     channelCooldown = 1;
     aliases = ['fa'];
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        if (!args[0])
-            return {
-                success: false,
-                message: null,
-                error: ErrorEnum.MISSING_USER,
-            };
-
-        let targetUser = args[0].replace('@', '').replace(',', '').replace('#', '');
-
-        if (!args[1])
-            return {
-                success: false,
-                message: null,
-                error: ErrorEnum.MISSING_CHANNEL,
-            };
-
-        let targetChannel = args[1].replace('@', '').replace(',', '').replace('#', '');
+        let targetUser = args[0]?.replace('@', '')?.replace(',', '')?.replace('#', '') || user;
+        let targetChannel = args[1]?.replace('@', '')?.replace(',', '')?.replace('#', '') || channel.replace('#', '');
 
         let userResp = await subageLookup(targetUser, targetChannel);
         if (!userResp.success)
