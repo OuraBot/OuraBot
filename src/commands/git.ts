@@ -1,24 +1,27 @@
 import dotenv from 'dotenv';
-import { chatClient, commitDate, commitHash, redis } from '..';
+import { branch, chatClient, commitAuthor, commitDate, commitHash, commitMessage, redis } from '..';
 import { createNewSuggestion } from '../models/suggestion.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
 import { prettyTime } from '../utils/auroMs';
+import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
 class suggestCommand extends Command {
-    name = 'ping';
-    description = 'Pong! View information about the bot.';
-    usage = 'ping';
+    name = 'git';
+    description = "View information about the bot's latest commit";
+    usage = 'git';
+    aliases = ['github', 'commit'];
     userCooldown = 1;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        let channelList = await getChannels(process.env.CLIENT_USERNAME);
-        let keys = await redis.dbsize();
         let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
         return {
             success: true,
-            message: `Pong! Serving ${channelList.length} channels for ${prettyTime(Math.round(process.uptime() * 1000))}. ${keys} keys. On commit ${commitHash.substr(0, 7)} (${dateSinceCommit} ago)`,
+            message: `MrDestructoid ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago): ${commitMessage
+                .split('\n')
+                .filter((n) => n)
+                .join(' - ')}`,
             error: null,
         };
     };

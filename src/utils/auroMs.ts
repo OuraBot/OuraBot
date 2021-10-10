@@ -65,7 +65,7 @@ export function prettyTime(ms: number, long?: boolean) {
 
             return resultArr.join(', ');
         }
-    } else {
+    } else if (long == false) {
         let resultArr = [];
 
         if (years >= 1) {

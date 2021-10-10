@@ -15,10 +15,9 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        const uploadData = await upload(args.join(' '));
         return {
             success: true,
-            message: uploadData,
+            message: 'asdfasdf',
             error: null,
         };
     };

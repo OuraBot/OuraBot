@@ -17,12 +17,14 @@ import { IModule, Module } from './models/module.model.js';
 import { IReminder, Reminder } from './models/reminder.model.js';
 import { ISub, Sub } from './models/sub.model.js';
 import { ITerm, Term } from './models/term.model.js';
+import chalk from 'chalk';
 import { CustomModule, getModules } from './types/custommodule.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { prettyTime } from './utils/auroMs';
 import { Command, CommandReturnClass, getCommands, PermissionEnum } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { getChannels } from './utils/fetchChannels';
+import { execSync } from 'child_process';
 import { fetchBots } from './utils/knownBots.js';
 import { Logger, ILogLevel } from './utils/logger.js';
 import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
@@ -89,7 +91,26 @@ export interface NukeMessage {
 
 export let nukeMessages: NukeMessage[] = [];
 
+export let commitHash: string;
+export let commitMessage: string;
+export let commitAuthor: string;
+export let commitDate: string;
+export let branch: string;
+
 async function main(): Promise<void> {
+    commitHash = execSync('git rev-parse HEAD').toString().trim();
+    commitMessage = execSync('git log -1 --pretty=%B').toString().trim();
+    commitAuthor = execSync('git log -1 --pretty=%an').toString().trim();
+    commitDate = execSync('git log -1 --pretty=%ad').toString().trim();
+    branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+
+    // log with the git info and chalk
+    console.log(
+        `Oura_Bot starting on commit ${chalk.bold(commitHash.substr(0, 7))} by ${chalk.bold(commitAuthor)} on ${chalk.bold(commitDate)} on branch ${chalk.bold(branch)} ${
+            process.env.DEBUG === 'TRUE' ? `${chalk.inverse('IN DEBUG MODE')}` : ''
+        }`
+    );
+
     const clientId = process.env.APP_CLIENTID;
     const clientSecret = process.env.APP_SECRET;
     const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
