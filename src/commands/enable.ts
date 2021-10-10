@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { redis } from '../index';
+import { config, redis } from '../index';
 import { Command, CommandReturnClass, getCommands } from '../utils/commandClass';
 
 dotenv.config();
@@ -22,7 +22,7 @@ class testComand extends Command {
         let command: string;
         (await getCommands()).forEach(async (c: Command) => {
             if (!c?.hidden) {
-                if (c.name === args[0]) {
+                if (c.name === args[0].replace(config.prefix, '')) {
                     command = c.name;
                 }
             }
