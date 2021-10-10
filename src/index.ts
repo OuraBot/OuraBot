@@ -87,7 +87,7 @@ export interface NukeMessage {
     sentAt: Number;
 }
 
-export const nukeMessages: NukeMessage[] = [];
+export let nukeMessages: NukeMessage[] = [];
 
 async function main(): Promise<void> {
     const clientId = process.env.APP_CLIENTID;
@@ -115,6 +115,11 @@ async function main(): Promise<void> {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
+
+    let nukeMessagesCache = await redis.get(`ob:nukemessagescache`);
+    if (nukeMessagesCache) {
+        nukeMessages = JSON.parse(nukeMessagesCache);
+    }
 
     /*
         Clueless TeaTime mongodb error incident of 10/8/2021
@@ -1402,3 +1407,8 @@ if (process.env.DEBUG === 'TRUE') {
         logger.error(error, 'Unhandled Rejection');
     });
 }
+
+process.on('SIGINT', async () => {
+    await redis.set(`ob:nukemessagescache`, JSON.stringify(nukeMessages));
+    process.exit(0);
+});
