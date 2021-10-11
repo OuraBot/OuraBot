@@ -7,6 +7,8 @@
  * @return {string}       [string of the relative time]
  */
 export function prettyTime(ms: number, long?: boolean) {
+    long = long || false;
+
     let years, days, hours, minutes, seconds;
     seconds = Math.floor(ms / 1000);
 
