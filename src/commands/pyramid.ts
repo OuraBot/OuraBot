@@ -3,6 +3,8 @@ import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
+const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
+
 class pyramidCommand extends Command {
     name = 'pyramid';
     description = 'Make a pyramid';
@@ -33,10 +35,10 @@ class pyramidCommand extends Command {
             };
         }
 
-        if (width < 2 || width > 10)
+        if (width < 2 || width > 20)
             return {
                 success: false,
-                message: 'Width must be between 2 and 10',
+                message: 'Width must be between 2 and 20',
                 error: null,
                 reducedcooldown: 1,
             };
@@ -51,12 +53,20 @@ class pyramidCommand extends Command {
 
         // first half
         for (let i = 0; i < width; i++) {
+            let color = poorColorList[i % poorColorList.length];
+            await chatClient.say(channel, `/color ${color}`);
             chatClient.say(channel, emote.repeat(i + 1));
         }
 
         // second half
         for (let i = width; i > 0; i--) {
+            let color = poorColorList[i % poorColorList.length];
+            await chatClient.say(channel, `/color ${color}`);
             if (i != width) chatClient.say(channel, emote.repeat(i));
+
+            if (i == 1) {
+                await chatClient.say(channel, `/color dodgerblue`);
+            }
         }
 
         return {

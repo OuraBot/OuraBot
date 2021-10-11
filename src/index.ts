@@ -385,6 +385,7 @@ async function main(): Promise<void> {
 
         if (channel === `#${config.owner}`) {
             let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
+            chatClient.say(channel, `/color dodgerblue`);
 
             chatClient.say(
                 `#${config.owner}`,
