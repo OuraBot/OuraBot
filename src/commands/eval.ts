@@ -31,7 +31,7 @@ class evalCommand extends Command {
         try {
             let code = args.join(' ');
             let result = await eval(code);
-            if (result.length > 450) {
+            if (result?.length > 450) {
                 return {
                     success: true,
                     message: await upload(result),
