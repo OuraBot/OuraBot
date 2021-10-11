@@ -796,7 +796,7 @@ async function main(): Promise<void> {
                                         let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                         let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
                                         for (let i = 0; i < repeatCount && i < 150; i++) {
-                                            await new Promise((resolve) => setTimeout(resolve, 100));
+                                            await new Promise((resolve) => setTimeout(resolve, 500));
                                             chatClient.say(channel, sanitizeMessage(response));
                                         }
                                     } else {
@@ -851,7 +851,7 @@ async function main(): Promise<void> {
                                             let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                             let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
                                             for (let i = 0; i < repeatCount && i < 150; i++) {
-                                                await new Promise((resolve) => setTimeout(resolve, 100));
+                                                await new Promise((resolve) => setTimeout(resolve, 500));
                                                 chatClient.say(channel, sanitizeMessage(response));
                                             }
                                         } else {
