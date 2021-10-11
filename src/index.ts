@@ -45,6 +45,8 @@ export const config = getConfig();
 
 export const redis = new Redis();
 
+const maxSpamClients = 10;
+
 /*
 const ApiAuth = new RefreshingAuthProvider(
     {
@@ -88,6 +90,8 @@ export interface NukeMessage {
     cantTimeout: boolean;
     sentAt: Number;
 }
+
+export let spamClients: ChatClient[] = [];
 
 export let nukeMessages: NukeMessage[] = [];
 
@@ -201,6 +205,15 @@ async function main(): Promise<void> {
             : {
                   channels: initialChannels,
               }
+    );
+
+    Promise.all(
+        [...Array(maxSpamClients)].map(async (_, i) => {
+            spamClients[i] = new ChatClient(auth, {
+                channels: [config.owner],
+            });
+            spamClients[i].connect();
+        })
     );
 
     await fetchBots();
@@ -387,15 +400,15 @@ async function main(): Promise<void> {
             let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
             chatClient.say(channel, `/color dodgerblue`);
 
-            chatClient.say(
-                `#${config.owner}`,
-                `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
-                    commitAuthor
-                )} (${dateSinceCommit} ago): ${commitMessage
-                    .split('\n')
-                    .filter((n) => n)
-                    .join(' - ')}`
-            );
+            // chatClient.say(
+            //     `#${config.owner}`,
+            //     `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
+            //         commitAuthor
+            //     )} (${dateSinceCommit} ago): ${commitMessage
+            //         .split('\n')
+            //         .filter((n) => n)
+            //         .join(' - ')}`
+            // );
         }
     });
 

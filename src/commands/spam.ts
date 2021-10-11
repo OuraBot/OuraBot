@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { getClient } from '../utils/spamClients';
 dotenv.config();
 
 const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
@@ -23,6 +24,13 @@ class spamCommand extends Command {
             .slice(1)
             .join(' ')
             .replace(/^(\.|\/)/, '');
+
+        let isFast = false;
+        if (spamText.includes('--fast')) {
+            isFast = true;
+            spamText = spamText.replace('--fast', '');
+        }
+
         if (isNaN(spamCount))
             return {
                 success: false,
@@ -30,10 +38,10 @@ class spamCommand extends Command {
                 error: null,
             };
 
-        if (spamCount > 1000)
+        if (spamCount > 500)
             return {
                 success: false,
-                message: 'Spam count too high (1000 max)',
+                message: 'Spam count too high (500 max)',
                 error: null,
             };
 
@@ -44,12 +52,18 @@ class spamCommand extends Command {
                 error: null,
             };
 
-        for (let i = 0; i < spamCount; i++) {
-            let color = poorColorList[i % poorColorList.length];
-            await chatClient.say(channel, `/color ${color}`);
-            chatClient.say(channel, `/me ${spamText}`);
+        if (isFast) {
+            for (let i = 0; i < spamCount; i++) {
+                await getClient().say(channel, spamText);
+            }
+        } else {
+            for (let i = 0; i < spamCount; i++) {
+                let color = poorColorList[i % poorColorList.length];
+                await chatClient.say(channel, `/color ${color}`);
+                chatClient.say(channel, `/me ${spamText}`);
 
-            if (i === spamCount - 1) await chatClient.say(channel, '/color dodgerblue');
+                if (i === spamCount - 1) await chatClient.say(channel, '/color dodgerblue');
+            }
         }
 
         return {

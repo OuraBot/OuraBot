@@ -4,6 +4,7 @@ import { ChatClient } from 'twitch-chat-client';
 import { chatClient } from '../index';
 import axios from 'axios';
 import { prettyTime } from '../utils/auroMs';
+import { getClient } from '../utils/spamClients';
 
 dotenv.config();
 
@@ -30,18 +31,25 @@ class testComand extends Command {
                     message: 'Too many lines to say (max 10k)',
                     error: null,
                 };
-            let silent = args[args.length - 1] === '--silent' ? true : false;
+            let fast = args.includes('--fast');
+            let silent = args.includes('--silent');
             if (!silent) await chatClient.say(channel, `@${user}, Filesay ETA: ${msgs.length / 10} seconds`);
-            if (args[1] && args[1] !== '--silent') {
-                for (let msg of msgs) {
-                    await chatClient.say(channel, `${args[1]} ${msg}`);
+            if (fast) {
+                for (let i = 0; i < msgs.length; i++) {
+                    await getClient().say(channel, msgs[i]);
                 }
             } else {
-                for (let msg of msgs) {
-                    await chatClient.say(channel, msg);
+                if (args[1] && args[1] !== '--silent') {
+                    for (let msg of msgs) {
+                        await chatClient.say(channel, `${args[1]} ${msg}`);
+                    }
+                } else {
+                    for (let msg of msgs) {
+                        await chatClient.say(channel, msg);
+                    }
                 }
+                if (!silent) await chatClient.say(channel, `@${user}, Filesay completed!`);
             }
-            if (!silent) await chatClient.say(channel, `@${user}, Filesay completed!`);
         });
 
         return {
