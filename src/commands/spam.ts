@@ -19,7 +19,10 @@ class spamCommand extends Command {
             };
 
         let spamCount = parseInt(args[0]);
-        let spamText = args.slice(1).join(' ');
+        let spamText = args
+            .slice(1)
+            .join(' ')
+            .replace(/^(\.|\/)/, '');
         if (isNaN(spamCount))
             return {
                 success: false,
