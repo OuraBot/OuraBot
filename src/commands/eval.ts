@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-// @ts-ignore
-import { apiClient, chatClient, redis } from '..';
+import * as index from '..';
 import { createNewSuggestion } from '../models/suggestion.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
@@ -19,17 +18,19 @@ class evalCommand extends Command {
         if (!args[0])
             return {
                 success: false,
-                message: 'Missing code to evaluate (use __1.apiClient|chatClient|redis to access those)',
+                message: 'Missing code to evaluate',
                 error: null,
             };
 
-        apiClient;
-        chatClient;
-        redis;
-        obfuscateName;
+        let apiClient = index.apiClient;
+        let chatClient = index.chatClient;
+        let redis = index.redis;
 
         try {
             let code = args.join(' ');
+            if (code.includes('await')) {
+                code = `(async () => { ${code} })()`;
+            }
             let result = await eval(code);
             if (result?.length > 450) {
                 return {
@@ -45,12 +46,12 @@ class evalCommand extends Command {
                 };
             }
         } catch (e) {
-            const errorURL = await upload(e.stack);
-            chatClient.whisper(user, `Error: ${e.message}: ${errorURL}`);
+            // const errorURL = await upload(e.stack);
+            // chatClient.whisper(user, `Error: ${e.message}: ${errorURL}`);
 
             return {
                 success: true,
-                message: `Error: ${e.message} - I whispered you the stack trace`,
+                message: `Error: ${e.message}`,
                 error: null,
             };
         }
