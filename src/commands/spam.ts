@@ -47,7 +47,7 @@ class spamCommand extends Command {
         for (let i = 0; i < spamCount; i++) {
             let color = poorColorList[i % poorColorList.length];
             await chatClient.say(channel, `/color ${color}`);
-            chatClient.say(channel, `${spamText}`);
+            chatClient.say(channel, `/me ${spamText}`);
 
             if (i === spamCount - 1) await chatClient.say(channel, '/color dodgerblue');
         }

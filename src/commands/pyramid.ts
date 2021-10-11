@@ -55,14 +55,14 @@ class pyramidCommand extends Command {
         for (let i = 0; i < width; i++) {
             let color = poorColorList[i % poorColorList.length];
             await chatClient.say(channel, `/color ${color}`);
-            chatClient.say(channel, emote.repeat(i + 1));
+            chatClient.say(channel, '/me ' + emote.repeat(i + 1));
         }
 
         // second half
         for (let i = width; i > 0; i--) {
             let color = poorColorList[i % poorColorList.length];
             await chatClient.say(channel, `/color ${color}`);
-            if (i != width) chatClient.say(channel, emote.repeat(i));
+            if (i != width) chatClient.say(channel, '/me ' + emote.repeat(i));
 
             if (i == 1) {
                 await chatClient.say(channel, `/color dodgerblue`);
