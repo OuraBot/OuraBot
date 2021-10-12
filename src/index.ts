@@ -23,7 +23,7 @@ import { logCommandUse } from './models/usage';
 import { CustomModule, getModules } from './types/custommodule.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { prettyTime } from './utils/auroMs';
-import { Command, CommandReturnClass, getCommands, PermissionEnum } from './utils/commandClass.js';
+import { Command, CommandReturnClass, getCommands, getPermissions, PermissionEnum } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { fetchBots } from './utils/knownBots.js';
 import { ILogLevel, Logger } from './utils/logger.js';
@@ -1083,7 +1083,7 @@ async function main(): Promise<void> {
                         }
 
                         command
-                            .execute(user, channel, args, cmd)
+                            .execute(user, channel, args, cmd, msg)
                             .then(async (data: CommandReturnClass) => {
                                 console.table(data);
                                 if (data.success) {
@@ -1181,87 +1181,25 @@ async function main(): Promise<void> {
     });
 
     function hasPermisison(requiredPermission: PermissionEnum, user: string, channel: string, msg: any): boolean {
-        if (requiredPermission === PermissionEnum.Developer) {
-            if (user === config.owner) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        let permissionInt: number = 0;
+        if (user === config.owner) permissionInt += PermissionEnum.Developer;
+        if (config.admins.includes(user)) permissionInt += PermissionEnum.Admin;
+        if (msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.Broadcaster;
+        if (msg.userInfo.isMod) permissionInt += PermissionEnum.Moderator;
+        if (msg.userInfo.isVip) permissionInt += PermissionEnum.VIP;
+        if (msg.userInfo.isSubscriber) permissionInt += PermissionEnum.Subscriber;
+        if (config.ambassadors.includes(user)) permissionInt += PermissionEnum.Ambassador;
+        if (config.ambassadors.includes(user) && msg.userInfo.isVip) permissionInt += PermissionEnum.AmbassadorVIP;
+        if (config.ambassadors.includes(user) && msg.userInfo.isMod) permissionInt += PermissionEnum.AmbassadorMod;
+        if (config.ambassadors.includes(user) && msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.AmbassadorBroadcaster;
 
-        if (requiredPermission === PermissionEnum.Admin) {
-            if (config.admins.includes(user)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        const userPermissions = getPermissions(permissionInt);
+        const commandPermissions = getPermissions(requiredPermission);
 
-        if (requiredPermission === PermissionEnum.Broadcaster) {
-            if (msg.userInfo.isBroadcaster) {
-                return true;
-            } else if (user === config.owner) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        // console.log(permissionInt, user);
+        // console.log(userPermissions, commandPermissions);
 
-        if (requiredPermission === PermissionEnum.Moderator) {
-            if (msg.userInfo.isMod) {
-                return true;
-            } else if (msg.userInfo.isBroadcaster) {
-                return true;
-            } else if (user === config.owner) {
-                return true;
-            } else if (config.admins.includes(user)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (requiredPermission === PermissionEnum.VIP) {
-            if (msg.userInfo.isVip) {
-                return true;
-            } else if (msg.userInfo.isMod) {
-                return true;
-            } else if (msg.userInfo.isBroadcaster) {
-                return true;
-            } else if (user === config.owner) {
-                return true;
-            } else if (config.admins.includes(user)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (requiredPermission === PermissionEnum.Subscriber) {
-            if (msg.userInfo.isSubscriber) {
-                return true;
-            } else if (msg.userInfo.isMod) {
-                return true;
-            } else if (msg.userInfo.isBroadcaster) {
-                return true;
-            } else if (user === config.owner) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (requiredPermission === PermissionEnum.Ambassador) {
-            if (user === config.owner) {
-                return true;
-            } else if (config.admins.includes(user)) {
-                return true;
-            } else if (config.ambassadors.includes(user)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        return userPermissions.some((p) => commandPermissions.includes(p));
     }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {

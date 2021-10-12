@@ -14,7 +14,7 @@ class suggestCommand extends Command {
     usage = 'set <target> <value> <subvalue?>';
     userCooldown = 5;
     channelCooldown = 5;
-    permission = 4;
+    permission = 39;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (args[0] === 'counter') {
             if (!args[1])

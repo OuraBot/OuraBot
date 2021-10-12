@@ -9,7 +9,7 @@ class testComand extends Command {
     description = 'Join a bot to a channel';
     usage = 'joinchannel <channel>';
     aliases = ['ob_joinchannel', 'ob-joinchannel'];
-    permission = 32;
+    permission = 33;
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

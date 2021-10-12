@@ -10,7 +10,7 @@ class testComand extends Command {
     name = 'add-bots';
     description = 'Adds bots to the known bots list and formats them properly';
     usage = 'add-bots';
-    permission = 32;
+    permission = 1;
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let botsToAdd: string[] = [];

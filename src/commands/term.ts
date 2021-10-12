@@ -9,7 +9,7 @@ class testComand extends Command {
     description = 'Add or remove moderation terms';
     extendedDescription = 'Regex ignores case. Response can use "{newline}" to send more messages. Use / commands to time users out. Use {user} to get the user.';
     usage = 'term <add|edit|remove> <regex> <response>';
-    permission = 4;
+    permission = 39;
     userCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

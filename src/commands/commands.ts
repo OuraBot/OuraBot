@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { config, redis } from '..';
 import { CustomCommand, ICustomCommand } from '../models/command.model';
 import { upload } from '../utils/apis/haste';
-import { Command, CommandReturnClass, getCommands, PermissionEnum } from '../utils/commandClass';
+import { Command, CommandReturnClass, getCommands, getPermissions } from '../utils/commandClass';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -34,7 +34,7 @@ class suggestCommand extends Command {
         commandMap.forEach((command: Command) => {
             if (!command.hidden) {
                 // prettier-ignore
-                data += `Command: ${channelPrefix}${command.name}\nDescription: ${command.description}\n${command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``}${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${command.permission ? `Permission: ${PermissionEnum[command.permission]}\n` : ''}${command?.userCooldown ? `User Cooldown: ${command.userCooldown}s\n` : ``}${command?.channelCooldown ? `Channel Cooldown: ${command.channelCooldown}s\n` : ``}\n`;
+                data += `Command: ${channelPrefix}${command.name}\nDescription: ${command.description}\n${command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``}${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${command.permission ? `Permission (any of): ${getPermissions(command.permission).join(' ')}\n` : ''}${command?.userCooldown ? `User Cooldown: ${command.userCooldown}s\n` : ``}${command?.channelCooldown ? `Channel Cooldown: ${command.channelCooldown}s\n` : ``}\n`;
             }
         });
 

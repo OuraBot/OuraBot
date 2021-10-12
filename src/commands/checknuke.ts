@@ -6,7 +6,7 @@ dotenv.config();
 class suggestCommand extends Command {
     name = 'checknuke';
     description = 'Returns the size of nukeMessages';
-    permission = 32;
+    permission = 33;
     hidden = true;
     usage = 'checknuke';
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

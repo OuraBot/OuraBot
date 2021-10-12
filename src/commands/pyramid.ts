@@ -11,7 +11,7 @@ class pyramidCommand extends Command {
     usage = 'pyramid <width> <emote/text>';
     userCooldown = 30;
     channelCooldown = 30;
-    permission = 4;
+    permission = 7;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let width: any = args[0];
         args.shift();

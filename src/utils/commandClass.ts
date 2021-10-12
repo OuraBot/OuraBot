@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs-extra';
+import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 
 export enum ErrorEnum {
     MISSING_ARGS = 'Missing arguments',
@@ -30,6 +31,9 @@ export enum PermissionEnum {
     Subscriber = 16,
     Admin = 32,
     Ambassador = 64,
+    AmbassadorVIP = 128,
+    AmbassadorMod = 256,
+    AmbassadorBroadcaster = 512,
 }
 
 export class Command {
@@ -42,7 +46,7 @@ export class Command {
     permission?: PermissionEnum | undefined;
     hidden?: boolean | undefined;
     aliases?: string[] | undefined;
-    execute: (user: string, channel: string, args: string[], cmdMsg?: string) => Promise<any> | undefined;
+    execute: (user: string, channel: string, args: string[], cmdMsg?: string, msg?: TwitchPrivateMessage) => Promise<any> | undefined;
 }
 
 export async function getCommands(): Promise<Map<string, any>> {
@@ -55,4 +59,15 @@ export async function getCommands(): Promise<Map<string, any>> {
                 return [cmd.cmd.name, cmd.cmd];
             })
     );
+}
+
+export function getPermissions(int: number): string[] {
+    let permissions: string[] = [];
+    for (let permission in PermissionEnum) {
+        // we have to do this mess because of typescript
+        if ((int & (PermissionEnum as any)[permission]) === (PermissionEnum as any)[permission]) {
+            permissions.push(permission);
+        }
+    }
+    return permissions;
 }

@@ -12,7 +12,7 @@ class suggestCommand extends Command {
     aliases = ['pingall', 'chaos'];
     userCooldown = 10;
     channelCooldown = 10;
-    permission = 2;
+    permission = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
         const msg = args.join(' ') || (await getBestEmote(channel, ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink'], '')).bestAvailableEmote;

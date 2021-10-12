@@ -8,7 +8,7 @@ class testComand extends Command {
     name = 'disable';
     description = 'Disable a command for the channel';
     usage = 'disable <command>';
-    permission = 4;
+    permission = 39;
     userCooldown = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

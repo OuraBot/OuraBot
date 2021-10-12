@@ -6,11 +6,10 @@ import { Command, CommandReturnClass, getPermissions, PermissionEnum } from '../
 dotenv.config();
 
 class testComand extends Command {
-    name = 'test';
-    description = 'Just for testing Pepege';
-    usage = 'test';
-    permission = 33;
-    aliases = ['t'];
+    name = 'permissions';
+    description = 'Get your user permissions';
+    usage = 'permissions';
+    userCooldown = 5;
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
         let permissionInt: number = 0;

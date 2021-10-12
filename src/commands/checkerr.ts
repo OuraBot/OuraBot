@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     name = 'checkerr';
     description = 'Check an error by ID';
     aliases = ['checkerror'];
-    permission = 32;
+    permission = 33;
     hidden = true;
     usage = 'checkerr <ID>';
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

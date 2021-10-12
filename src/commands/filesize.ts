@@ -8,7 +8,7 @@ class suggestCommand extends Command {
     description = 'Get the filesize of a raw file';
     usage = 'yoinkbans <file url>';
     hidden = true;
-    permission = 1;
+    permission = 33;
     userCooldown = 5;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

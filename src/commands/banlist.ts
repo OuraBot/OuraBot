@@ -9,7 +9,7 @@ class testComand extends Command {
     name = 'banlist';
     description = 'Ban users from a file (useful against bots) - Max of 1000 lines per use';
     usage = 'banlist <paste/haste/gist url>';
-    permission = 4;
+    permission = 7; // Developer, Broadcaster, Moderator
     userCooldown = 30;
     channelCooldown = 30;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
