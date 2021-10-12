@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient } from '..';
+import { apiClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { getClient } from '../utils/spamClients';
 dotenv.config();
 
 let knownBots = [
@@ -10,8 +11,6 @@ let knownBots = [
     'moobot',
     'wizebot',
     'streamdeckerbot',
-    'vivbot',
-    'dinu',
     'streamkit',
     'tipeeebot',
     'logviewer',
@@ -25,17 +24,16 @@ let knownBots = [
     'creatisbot',
     'soundalerts',
     'fossabot',
-    'mikuia',
     'supibot',
     'oura_bot',
 ];
 
 class suggestCommand extends Command {
     name = 'timeoutall';
-    description = 'Timeout everyone for a specified amount of time - MAKE SURE ANY OTHER BOTS YOU DONT WANT TO BE TIMED OUT ARE MODS! THEY MIGHT LEAVE THE CHANNEL IF THEY GET TIMED OUT';
+    description = 'Timeout everyone in your chat for a specified amount of time';
     usage = 'timeoutall <length>';
-    userCooldown = 10;
-    channelCooldown = 10;
+    userCooldown = 30;
+    channelCooldown = 30;
     permission = 2;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let length = args[0] || 1;
@@ -49,15 +47,8 @@ class suggestCommand extends Command {
                 error: null,
             };
 
-        if (chatters.length > 100)
-            return {
-                success: false,
-                message: 'Too many users to timeout',
-                error: null,
-            };
-
         for (let chatter of chatters) {
-            chatClient.say(channel, `/timeout ${chatter} ${length}`);
+            getClient().say(channel, `/timeout ${chatter} ${length}`);
         }
 
         return {
