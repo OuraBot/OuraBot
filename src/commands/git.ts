@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { branch, commitAuthor, commitDate, commitHash, commitMessage } from '..';
+import { branch, commitAuthor, commitCount, commitDate, commitHash, commitMessage } from '..';
 import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
@@ -16,7 +16,7 @@ class suggestCommand extends Command {
         let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
         return {
             success: true,
-            message: `MrDestructoid ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago): ${commitMessage
+            message: `MrDestructoid ${commitCount} commits. ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago): ${commitMessage
                 .split('\n')
                 .filter((n) => n)
                 .join(' - ')}`,

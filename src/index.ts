@@ -99,6 +99,7 @@ export let commitMessage: string;
 export let commitAuthor: string;
 export let commitDate: string;
 export let branch: string;
+export let commitCount: number;
 
 async function main(): Promise<void> {
     commitHash = execSync('git rev-parse HEAD').toString().trim();
@@ -106,6 +107,7 @@ async function main(): Promise<void> {
     commitAuthor = execSync('git log -1 --pretty=%an').toString().trim();
     commitDate = execSync('git log -1 --pretty=%ad').toString().trim();
     branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+    commitCount = parseInt(execSync('git rev-list --count HEAD').toString().trim());
 
     // log with the git info and chalk
     console.log(
