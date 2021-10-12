@@ -12,7 +12,7 @@
     "author": "Auro <35087590+MrAuro@users.noreply.github.com>",
     "license": "MIT",
     "dependencies": {
-        "axios": "^0.21.1",
+        "axios": "^0.21.2",
         "bull": "^3.22.9",
         "chalk": "^4.1.2",
         "discord.js": "^12.5.3",
