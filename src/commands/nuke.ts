@@ -3,6 +3,7 @@ import ms from 'ms';
 import { chatClient, NukeMessage, nukeMessages } from '..';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { getClient } from '../utils/spamClients';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -109,20 +110,20 @@ class suggestCommand extends Command {
         usersToTimeout = [...new Set(usersToTimeout)];
         for (const userToTimeout of usersToTimeout) {
             if (perma) {
-                await chatClient.ban(channel, userToTimeout, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
+                await getClient().ban(channel, userToTimeout, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
             } else {
-                await chatClient.timeout(channel, userToTimeout, timeoutTime, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
+                await getClient().timeout(channel, userToTimeout, timeoutTime, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
             }
         }
 
         // prettier-ignore
         const finalString = `Nuke from ${channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${perma ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.join('\n')}`;
         const URL = await upload(finalString);
-        chatClient.whisper(user, `Nuke report: ${URL}`);
+        chatClient.whisper(user, `Nuke report from ${channel}: ${URL}`);
 
         return {
             success: true,
-            message: `Nuke successful! I whispered you more details`,
+            message: null,
             error: null,
         };
 
