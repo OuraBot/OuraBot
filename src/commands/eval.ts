@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import * as index from '..';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import * as spamClients from '../utils/spamClients';
 dotenv.config();
 
 class evalCommand extends Command {
@@ -21,6 +22,9 @@ class evalCommand extends Command {
         let apiClient = index.apiClient;
         let chatClient = index.chatClient;
         let redis = index.redis;
+        let getClient = () => {
+            return spamClients.getClient();
+        };
 
         try {
             let code = args.join(' ');

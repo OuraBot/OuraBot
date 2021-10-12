@@ -399,15 +399,15 @@ async function main(): Promise<void> {
             let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
             chatClient.say(channel, `/color dodgerblue`);
 
-            // chatClient.say(
-            //     `#${config.owner}`,
-            //     `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
-            //         commitAuthor
-            //     )} (${dateSinceCommit} ago): ${commitMessage
-            //         .split('\n')
-            //         .filter((n) => n)
-            //         .join(' - ')}`
-            // );
+            chatClient.say(
+                `#${config.owner}`,
+                `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
+                    commitAuthor
+                )} (${dateSinceCommit} ago): ${commitMessage
+                    .split('\n')
+                    .filter((n) => n)
+                    .join(' - ')}`
+            );
         }
     });
 
