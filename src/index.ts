@@ -449,7 +449,7 @@ async function main(): Promise<void> {
     let commands = await getCommands();
     let custommodules = await getModules();
     chatClient.onMessage(async (channel, user, message, msg) => {
-        console.log(`${new Date().toISOString()} PRIVMSG ${channel} :${message}`);
+        // console.log(`${new Date().toISOString()} PRIVMSG ${channel} :${message}`);
 
         nukeMessages.push({
             channel: channel,
@@ -1000,8 +1000,45 @@ async function main(): Promise<void> {
             });
         }
 
-        if (message.startsWith(process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix)) {
-            let cmdmsg = message.substring(process.env.DEBUG === 'TRUE' ? config.debugprefix.length : config.prefix.length).split(' ');
+        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
+        if (channelPrefix) {
+            channelPrefix = channelPrefix;
+        } else {
+            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
+        }
+
+        // This is a bad way of doing this, but i can't think of a better way to do it
+        if (message.startsWith(`!ping`)) {
+            const pingCommand: Command = commands.get('ping');
+
+            if (await handleCooldown()) {
+                pingCommand.execute(user, channel, []).then((data: CommandReturnClass) => {
+                    chatClient.say(channel, `${data.noping ? '' : `@${user}, `} ${data.message}`);
+                });
+                return;
+            } else {
+                return;
+            }
+
+            async function handleCooldown(): Promise<Boolean> {
+                if (!pingCommand?.userCooldown) return true;
+                if (!pingCommand?.channelCooldown) return true;
+
+                let userCooldownData = await redis.get(`cooldown:${pingCommand.name}:${channel}:${user}`);
+                if (userCooldownData) return false;
+
+                let channelCooldownData = await redis.get(`cooldown:${pingCommand.name}:${channel}`);
+                if (channelCooldownData) return false;
+
+                await redis.set(`cooldown:${pingCommand.name}:${channel}:${user}`, Date.now(), 'EX', pingCommand.userCooldown);
+                await redis.set(`cooldown:${pingCommand.name}:${channel}`, Date.now(), 'EX', pingCommand.channelCooldown);
+
+                return true;
+            }
+        }
+
+        if (message.startsWith(channelPrefix)) {
+            let cmdmsg = message.substring(channelPrefix.length).split(' ');
             const cmd = cmdmsg[0];
             const args = cmdmsg.slice(1);
             let _cmds = commands;
