@@ -158,7 +158,7 @@ async function main(): Promise<void> {
     setInterval(() => {
         // check if mongoose.connection.readyState is 1 or 2
         if (mongoose.connection.readyState !== 1 && mongoose.connection.readyState !== 2) {
-            axios.post(this.discordWebhook, {
+            axios.post(process.env.DISCORD_WEBHOOK, {
                 embeds: [
                     {
                         title: `OuraBot :: MONGO NOT CONNECTED!`,
