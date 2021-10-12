@@ -6,6 +6,7 @@ import { getChannels } from '../utils/fetchChannels';
 import { prettyTime } from '../utils/auroMs';
 import { getBestEmote } from '../utils/channelEmotes';
 import { chunkArr } from '../utils/stringManipulation';
+import { getClient } from '../utils/spamClients';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -20,7 +21,7 @@ class suggestCommand extends Command {
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
         const msg = args.join(' ') || (await getBestEmote(channel, ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink'], '')).bestAvailableEmote;
         for (let chatter of chatters) {
-            chatClient.say(channel, `@${chatter} ${msg}`);
+            getClient().say(channel, `@${chatter} ${msg}`);
         }
         return {
             success: true,
