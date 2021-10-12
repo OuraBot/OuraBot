@@ -18,11 +18,18 @@ class testComand extends Command {
                 error: null,
             };
 
+        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
+        if (channelPrefix) {
+            channelPrefix = channelPrefix;
+        } else {
+            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
+        }
+
         channel = channel.replace('#', '');
         let command: string;
         (await getCommands()).forEach(async (c: Command) => {
             if (!c?.hidden) {
-                if (c.name === args[0].replace(config.prefix, '')) {
+                if (c.name === args[0].replace(channelPrefix, '')) {
                     command = c.name;
                 }
             }

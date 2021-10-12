@@ -23,11 +23,18 @@ class suggestCommand extends Command {
 
         data += `Global Commands:\n\n`;
 
+        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
+        if (channelPrefix) {
+            channelPrefix = channelPrefix;
+        } else {
+            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
+        }
+
         let commandMap: any = await getCommands();
         commandMap.forEach((command: Command) => {
             if (!command.hidden) {
                 // prettier-ignore
-                data += `Command: ${config.prefix}${command.name}\nDescription: ${command.description}\n${command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``}${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${command.permission ? `Permission: ${PermissionEnum[command.permission]}\n` : ''}${command?.userCooldown ? `User Cooldown: ${command.userCooldown}s\n` : ``}${command?.channelCooldown ? `Channel Cooldown: ${command.channelCooldown}s\n` : ``}\n`;
+                data += `Command: ${channelPrefix}${command.name}\nDescription: ${command.description}\n${command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``}${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${command.permission ? `Permission: ${PermissionEnum[command.permission]}\n` : ''}${command?.userCooldown ? `User Cooldown: ${command.userCooldown}s\n` : ``}${command?.channelCooldown ? `Channel Cooldown: ${command.channelCooldown}s\n` : ``}\n`;
             }
         });
 

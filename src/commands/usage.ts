@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { commands, config } from '..';
+import { commands, config, redis } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
@@ -34,9 +34,16 @@ class suggestCommand extends Command {
             }
         }
 
+        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
+        if (channelPrefix) {
+            channelPrefix = channelPrefix;
+        } else {
+            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
+        }
+
         return {
             success: true,
-            message: `${config.prefix}${command.usage}`,
+            message: `${channelPrefix}${command.usage}`,
             error: null,
         };
     };
