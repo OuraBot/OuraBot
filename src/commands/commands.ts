@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { config } from '..';
+import { config, redis } from '..';
 import { CustomCommand, ICustomCommand } from '../models/command.model';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass, getCommands, PermissionEnum } from '../utils/commandClass';
