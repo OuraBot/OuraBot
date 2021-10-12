@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
-import { Channel } from '../models/channel.model';
-import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 import { getNowPlaying } from '../utils/apis/lastfm';
 import { getBestEmote } from '../utils/channelEmotes';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 

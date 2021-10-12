@@ -1,11 +1,6 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
+import { isUserBot } from '../utils/apis/ivr';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import { obfuscateName } from '../utils/stringManipulation';
-import { isUserBot, resolveUser } from '../utils/apis/ivr';
 dotenv.config();
 
 class suggestCommand extends Command {

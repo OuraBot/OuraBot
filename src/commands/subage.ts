@@ -1,12 +1,9 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import { obfuscateName } from '../utils/stringManipulation';
-import { resolveUser, subageLookup } from '../utils/apis/ivr';
 import moment from 'moment';
+import { subageLookup } from '../utils/apis/ivr';
+import { prettyTime } from '../utils/auroMs';
+import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
+import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
 class suggestCommand extends Command {

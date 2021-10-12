@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import { chatClient, redis } from '..';
-import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
+import { redis } from '..';
 import { CustomCommand } from '../models/command.model';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
 class testComand extends Command {

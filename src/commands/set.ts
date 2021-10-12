@@ -1,13 +1,9 @@
 import dotenv from 'dotenv';
-import { chatClient, redis, sevenTVSource } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import * as fs from 'fs';
 import getUrls from 'get-urls';
+import { redis } from '..';
 import { PajbotApi } from '../utils/apis/banphrases';
 import { LastfmUsername } from '../utils/apis/lastfm';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 
 dotenv.config();
 

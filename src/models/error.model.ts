@@ -1,5 +1,4 @@
-import { Schema, model, connection, SchemaTimestampsConfig } from 'mongoose';
-import { redis } from '../index';
+import { connection, model, Schema, SchemaTimestampsConfig } from 'mongoose';
 
 delete connection.models['Error'];
 

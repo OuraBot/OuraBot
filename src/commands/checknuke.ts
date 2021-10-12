@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient, nukeMessages } from '..';
-import { ErrorModel, IError } from '../models/error.model';
+import { nukeMessages } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 

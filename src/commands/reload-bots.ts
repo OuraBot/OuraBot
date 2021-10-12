@@ -1,4 +1,3 @@
-import axios from 'axios';
 import dotenv from 'dotenv';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { fetchBots, KNOWN_BOT_LIST } from '../utils/knownBots';

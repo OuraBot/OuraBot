@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
-import { branch, chatClient, commitAuthor, commitDate, commitHash, commitMessage, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
+import { branch, commitAuthor, commitDate, commitHash, commitMessage } from '..';
 import { prettyTime } from '../utils/auroMs';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 

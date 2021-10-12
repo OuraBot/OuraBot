@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import { chatClient, redis, WEEB_REGEX } from '..';
-import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
+import { redis, WEEB_REGEX } from '..';
 import { Term } from '../models/term.model';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
 class testComand extends Command {

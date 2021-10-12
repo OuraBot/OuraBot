@@ -1,11 +1,7 @@
 import dotenv from 'dotenv';
 import * as index from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
-import { obfuscateName } from '../utils/stringManipulation';
 import { upload } from '../utils/apis/haste';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
 class evalCommand extends Command {

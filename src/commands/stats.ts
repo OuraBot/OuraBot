@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { commands, redis } from '../index';
+import { commands } from '../index';
 import { IUsage, Usage } from '../models/usage';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';

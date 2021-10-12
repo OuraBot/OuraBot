@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
-import { chatClient, commitDate, commitHash, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
+import { commitDate, commitHash, redis } from '..';
+import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
 dotenv.config();
 
 class suggestCommand extends Command {

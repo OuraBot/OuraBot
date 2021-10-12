@@ -1,4 +1,4 @@
-import { Schema, model, connection } from 'mongoose';
+import { connection, model, Schema } from 'mongoose';
 
 delete connection.models['Term'];
 

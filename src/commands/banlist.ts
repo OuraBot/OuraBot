@@ -1,9 +1,7 @@
-import dotenv from 'dotenv';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { ChatClient } from 'twitch-chat-client';
-import { chatClient } from '../index';
 import axios from 'axios';
-import { prettyTime } from '../utils/auroMs';
+import dotenv from 'dotenv';
+import { chatClient } from '../index';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 
 dotenv.config();
 

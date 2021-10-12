@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { logger } from '..';
 import { isLoggedChannel } from '../utils/apis/ivr';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';

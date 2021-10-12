@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { KNOWN_BOT_LIST } from '../utils/knownBots';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { KNOWN_BOT_LIST } from '../utils/knownBots';
 dotenv.config();
 
 class suggestCommand extends Command {

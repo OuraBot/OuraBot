@@ -1,7 +1,7 @@
-import { Schema, model, connection } from 'mongoose';
-import { redis } from '../index';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { connection, model, Schema } from 'mongoose';
+import { redis } from '../index';
 dotenv.config();
 
 delete connection.models['Suggestion'];

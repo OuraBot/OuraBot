@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient, redis } from '..';
-import { Channel } from '../models/channel.model';
+import { redis } from '..';
 import { Reminder } from '../models/reminder.model';
 import { resolveUser } from '../utils/apis/ivr';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';

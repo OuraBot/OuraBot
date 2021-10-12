@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient, logger } from '..';
+import { chatClient } from '..';
 import { Channel } from '../models/channel.model';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 dotenv.config();

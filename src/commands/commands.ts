@@ -1,12 +1,8 @@
 import dotenv from 'dotenv';
-import { chatClient, config, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass, getCommands, PermissionEnum } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
+import { config } from '..';
 import { CustomCommand, ICustomCommand } from '../models/command.model';
-import axios from 'axios';
 import { upload } from '../utils/apis/haste';
+import { Command, CommandReturnClass, getCommands, PermissionEnum } from '../utils/commandClass';
 dotenv.config();
 
 class suggestCommand extends Command {

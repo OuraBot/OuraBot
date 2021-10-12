@@ -1,11 +1,8 @@
+import axios from 'axios';
 import { Redis } from 'ioredis';
 import { ChatClient } from 'twitch-chat-client/lib';
 import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
-import { KNOWN_BOT_LIST } from '../utils/knownBots';
 import { CustomModule } from '../types/custommodule';
-import { config } from '..';
-import { obfuscateName } from '../utils/stringManipulation';
-import axios from 'axios';
 
 class customModule extends CustomModule {
     name = 'requestjoin';

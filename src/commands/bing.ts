@@ -1,10 +1,7 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
+import { apiClient } from '..';
 import { getBestEmote } from '../utils/channelEmotes';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
 class suggestCommand extends Command {

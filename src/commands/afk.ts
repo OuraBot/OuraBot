@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
-import { Afk, Status } from '../models/afk.model';
-import { SuggestionModel } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
 import { banphraseCheck, redis } from '../index';
+import { Afk, Status } from '../models/afk.model';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
 class suggestCommand extends Command {

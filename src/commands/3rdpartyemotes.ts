@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
 import { getAllEmotes } from '../utils/channelEmotes';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { chunkArr } from '../utils/stringManipulation';

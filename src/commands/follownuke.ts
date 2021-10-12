@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient, redis } from '../index';
-import { Command, CommandReturnClass, getCommands } from '../utils/commandClass';
 import ms from 'ms';
+import { apiClient, chatClient, config } from '../index';
 import { upload } from '../utils/apis/haste';
-import { config } from '../index';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 
 dotenv.config();
 

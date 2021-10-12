@@ -1,9 +1,9 @@
 import { Redis } from 'ioredis';
 import { ChatClient } from 'twitch-chat-client/lib';
 import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
-import { KNOWN_BOT_LIST } from '../utils/knownBots';
-import { CustomModule } from '../types/custommodule';
 import { config } from '..';
+import { CustomModule } from '../types/custommodule';
+import { KNOWN_BOT_LIST } from '../utils/knownBots';
 import { obfuscateName } from '../utils/stringManipulation';
 
 // .*h(o|0)ss0?

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as fs from 'fs';
 import { redis } from '../..';
 
 export class PajbotApi {

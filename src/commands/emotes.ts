@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { HelixChannelEmote, UserIdResolvable } from 'twitch/lib';
-import { apiClient, banphraseCheck, redis } from '..';
+import { apiClient, redis } from '..';
 import { resolveUser } from '../utils/apis/ivr';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { chunkArr } from '../utils/stringManipulation';

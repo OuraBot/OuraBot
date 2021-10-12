@@ -1,7 +1,7 @@
 require('dotenv').config();
 import axios from 'axios';
-import os from 'os';
 import chalk from 'chalk';
+import os from 'os';
 import { redis } from '..';
 import { ErrorModel } from '../models/error.model';
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import fs from 'fs';
 import FormData from 'form-data';
+import fs from 'fs';
 dotenv.config();
 
 export async function upload(message: string): Promise<string> {

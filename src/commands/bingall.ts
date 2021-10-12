@@ -1,11 +1,7 @@
 import dotenv from 'dotenv';
-import { apiClient, chatClient, redis } from '..';
-import { createNewSuggestion } from '../models/suggestion.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
-import { getChannels } from '../utils/fetchChannels';
-import { prettyTime } from '../utils/auroMs';
+import { apiClient } from '..';
 import { getBestEmote } from '../utils/channelEmotes';
-import { chunkArr } from '../utils/stringManipulation';
+import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
 dotenv.config();
 
