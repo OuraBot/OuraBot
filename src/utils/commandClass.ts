@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs-extra';
 import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
+import { config } from '..';
 
 export enum ErrorEnum {
     MISSING_ARGS = 'Missing arguments',
@@ -70,4 +71,26 @@ export function getPermissions(int: number): string[] {
         }
     }
     return permissions;
+}
+
+export function hasPermisison(requiredPermission: PermissionEnum, user: string, channel: string, msg: any): boolean {
+    let permissionInt: number = 0;
+    if (user === config.owner) permissionInt += PermissionEnum.Developer;
+    if (config.admins.includes(user)) permissionInt += PermissionEnum.Admin;
+    if (msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.Broadcaster;
+    if (msg.userInfo.isMod) permissionInt += PermissionEnum.Moderator;
+    if (msg.userInfo.isVip) permissionInt += PermissionEnum.VIP;
+    if (msg.userInfo.isSubscriber) permissionInt += PermissionEnum.Subscriber;
+    if (config.ambassadors.includes(user)) permissionInt += PermissionEnum.Ambassador;
+    if (config.ambassadors.includes(user) && msg.userInfo.isVip) permissionInt += PermissionEnum.AmbassadorVIP;
+    if (config.ambassadors.includes(user) && msg.userInfo.isMod) permissionInt += PermissionEnum.AmbassadorMod;
+    if (config.ambassadors.includes(user) && msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.AmbassadorBroadcaster;
+
+    const userPermissions = getPermissions(permissionInt);
+    const commandPermissions = getPermissions(requiredPermission);
+
+    // console.log(permissionInt, user);
+    // console.log(userPermissions, commandPermissions);
+
+    return userPermissions.some((p) => commandPermissions.includes(p));
 }

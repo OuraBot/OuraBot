@@ -10,8 +10,8 @@ class testComand extends Command {
     name = 'filesay';
     description = 'Say a hastebin file';
     usage = 'filesay <url> <optional msg prefix?> <--silent?>';
-    hidden = true;
     aliases = ['ob-filesay', 'ob_filesay'];
+    hidden = true;
     permission = 97;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|mrauro\.dev|hastebin\.com\/raw|pastebin\.com\/raw|(raw|gist).githubusercontent.com)\/.+$/))

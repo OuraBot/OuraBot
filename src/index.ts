@@ -23,7 +23,7 @@ import { logCommandUse } from './models/usage';
 import { CustomModule, getModules } from './types/custommodule.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { prettyTime } from './utils/auroMs';
-import { Command, CommandReturnClass, getCommands, getPermissions, PermissionEnum } from './utils/commandClass.js';
+import { Command, CommandReturnClass, getCommands, hasPermisison } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { fetchBots } from './utils/knownBots.js';
 import { ILogLevel, Logger } from './utils/logger.js';
@@ -1179,28 +1179,6 @@ async function main(): Promise<void> {
             }
         }
     });
-
-    function hasPermisison(requiredPermission: PermissionEnum, user: string, channel: string, msg: any): boolean {
-        let permissionInt: number = 0;
-        if (user === config.owner) permissionInt += PermissionEnum.Developer;
-        if (config.admins.includes(user)) permissionInt += PermissionEnum.Admin;
-        if (msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.Broadcaster;
-        if (msg.userInfo.isMod) permissionInt += PermissionEnum.Moderator;
-        if (msg.userInfo.isVip) permissionInt += PermissionEnum.VIP;
-        if (msg.userInfo.isSubscriber) permissionInt += PermissionEnum.Subscriber;
-        if (config.ambassadors.includes(user)) permissionInt += PermissionEnum.Ambassador;
-        if (config.ambassadors.includes(user) && msg.userInfo.isVip) permissionInt += PermissionEnum.AmbassadorVIP;
-        if (config.ambassadors.includes(user) && msg.userInfo.isMod) permissionInt += PermissionEnum.AmbassadorMod;
-        if (config.ambassadors.includes(user) && msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.AmbassadorBroadcaster;
-
-        const userPermissions = getPermissions(permissionInt);
-        const commandPermissions = getPermissions(requiredPermission);
-
-        // console.log(permissionInt, user);
-        // console.log(userPermissions, commandPermissions);
-
-        return userPermissions.some((p) => commandPermissions.includes(p));
-    }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
