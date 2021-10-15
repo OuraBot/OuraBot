@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { commands } from '../index';
-import { IUsage, Usage } from '../models/usage';
+import { IUsage, Usage } from '../models/usage.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 

@@ -19,7 +19,7 @@ import { IModule, Module } from './models/module.model.js';
 import { IReminder, Reminder } from './models/reminder.model.js';
 import { ISub, Sub } from './models/sub.model.js';
 import { ITerm, Term } from './models/term.model.js';
-import { logCommandUse } from './models/usage';
+import { logCommandUse } from './models/usage.model';
 import { CustomModule, getModules } from './types/custommodule.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { prettyTime } from './utils/auroMs';
