@@ -1,4 +1,4 @@
-import { ChatClient } from 'twitch-chat-client/lib';
+import { ChatClient } from '@twurple/chat';
 import { spamClients } from '..';
 
 let lastIndex = 0;

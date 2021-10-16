@@ -11,6 +11,7 @@ class testComand extends Command {
     usage = '3rdpartyemotes';
     channelCooldown = 60;
     userCooldown = 120;
+    requireFastLimits = true;
     aliases = ['allemotes'];
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let allEmotes = await getAllEmotes(channel.replace('#', ''));

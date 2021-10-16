@@ -1,7 +1,7 @@
+import { ChatClient } from '@twurple/chat';
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { promises as fs } from 'fs-extra';
 import { Redis } from 'ioredis';
-import { ChatClient } from 'twitch-chat-client/lib';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 
 export class CustomModule {
     name: string;

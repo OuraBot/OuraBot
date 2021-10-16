@@ -1,5 +1,5 @@
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { promises as fs } from 'fs-extra';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 import { config } from '..';
 
 export enum ErrorEnum {
@@ -47,6 +47,8 @@ export class Command {
     permission?: PermissionEnum | undefined;
     hidden?: boolean | undefined;
     aliases?: string[] | undefined;
+    requiresMod?: boolean | undefined;
+    requireFastLimits?: boolean | undefined;
     execute: (user: string, channel: string, args: string[], cmdMsg?: string, msg?: TwitchPrivateMessage) => Promise<any> | undefined;
 }
 

@@ -15,6 +15,7 @@ class changelogCommand extends Command {
     name = 'changelog';
     description = 'View the latests commits for the past 7 days';
     usage = 'changelog';
+    hidden = true;
     userCooldown = 10;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

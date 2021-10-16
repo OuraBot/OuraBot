@@ -1,5 +1,5 @@
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 import { config } from '..';
 import { Command, CommandReturnClass, getPermissions, PermissionEnum } from '../utils/commandClass';
 

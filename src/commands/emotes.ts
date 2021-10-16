@@ -1,5 +1,5 @@
+import { HelixChannelEmote, UserIdResolvable } from '@twurple/api/lib';
 import dotenv from 'dotenv';
-import { HelixChannelEmote, UserIdResolvable } from 'twitch/lib';
 import { apiClient, redis } from '..';
 import { resolveUser } from '../utils/apis/ivr';
 import { Command, CommandReturnClass } from '../utils/commandClass';
@@ -12,6 +12,7 @@ class testComand extends Command {
     description = 'Get the Twitch emotes of the channel';
     usage = 'emotes';
     channelCooldown = 5;
+    requireFastLimits = true;
     userCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let redisData = await redis.get(`emotes:${channel}`);

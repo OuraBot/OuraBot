@@ -9,6 +9,7 @@ class suggestCommand extends Command {
     description = 'Get all the channels OuraBot is in';
     usage = 'channels';
     permission = 97;
+    requireFastLimits = true;
     userCooldown = 30;
     channelCooldown = 60;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

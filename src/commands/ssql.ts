@@ -1,6 +1,6 @@
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
 import { SQLParser } from 'sql-in-mongodb';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 import { chatClient } from '..';
 /*
     tables:

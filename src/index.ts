@@ -1,3 +1,6 @@
+import { ApiClient } from '@twurple/api';
+import { AccessToken, ClientCredentialsAuthProvider, RefreshingAuthProvider } from '@twurple/auth';
+import { ChatClient, Whisper } from '@twurple/chat';
 import axios from 'axios';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
@@ -7,9 +10,6 @@ import getUrls from 'get-urls';
 import { createServer } from 'http';
 import Redis from 'ioredis';
 import mongoose from 'mongoose';
-import { ApiClient } from 'twitch';
-import { ClientCredentialsAuthProvider, RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
-import { ChatClient, Whisper } from 'twitch-chat-client';
 import { unescapeHTML } from './commands/ddoi.js';
 import { moduleEnum } from './commands/modmodule.js';
 import { Afk, IAfk, Status } from './models/afk.model.js';
@@ -117,21 +117,17 @@ async function main(): Promise<void> {
     );
 
     const clientId = process.env.APP_CLIENTID;
+    //  ['clips:edit', 'chat:read', 'chat:edit', 'channel:moderate']
     const clientSecret = process.env.APP_SECRET;
-    const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
-    const auth = new RefreshableAuthProvider(new StaticAuthProvider(clientId, tokenData.accessToken, ['clips:edit', 'chat:read', 'chat:edit', 'channel:moderate']), {
-        clientSecret,
-        refreshToken: tokenData.refreshToken,
-        expiry: tokenData.expiryTimestamp === null ? null : new Date(tokenData.expiryTimestamp),
-        onRefresh: async ({ accessToken, refreshToken, expiryDate }) => {
-            const newTokenData = {
-                accessToken,
-                refreshToken,
-                expiryTimestamp: expiryDate === null ? null : expiryDate.getTime(),
-            };
-            await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), 'utf-8');
+    const tokenData: AccessToken = JSON.parse(await fs.readFile('./tokens.json', 'utf-8'));
+    const auth = new RefreshingAuthProvider(
+        {
+            clientId,
+            clientSecret,
+            onRefresh: async (newTokenData) => await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), 'utf-8'),
         },
-    });
+        tokenData
+    );
 
     const authProvider: ClientCredentialsAuthProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
     apiClient = new ApiClient({ authProvider });
@@ -198,20 +194,28 @@ async function main(): Promise<void> {
     const remainingChannels = sortedChannels.slice(199);
 
     chatClient = new ChatClient(
-        auth,
         process.env.DEBUG === 'TRUE'
             ? {
+                  authProvider: auth,
                   channels: config.tmi.channels,
+                  botLevel: 'verified',
+                  isAlwaysMod: true,
               }
             : {
+                  authProvider: auth,
                   channels: initialChannels,
+                  botLevel: 'verified',
+                  isAlwaysMod: true,
               }
     );
 
     Promise.all(
         [...Array(maxSpamClients)].map(async (_, i) => {
-            spamClients[i] = new ChatClient(auth, {
+            spamClients[i] = new ChatClient({
+                authProvider: auth,
                 channels: [config.owner],
+                botLevel: 'verified',
+                isAlwaysMod: true,
             });
             spamClients[i].connect();
         })
@@ -612,7 +616,7 @@ async function main(): Promise<void> {
             }
         });
 
-        redis.get(`tl:${channel}:term`).then((redisData) => {
+        redis.get(`tl:${channel}:term`).then(async (redisData) => {
             if (redisData) {
                 const terms: ITerm[] = JSON.parse(redisData);
                 for (let term of terms) {
@@ -621,9 +625,13 @@ async function main(): Promise<void> {
                             let regex = new RegExp(term.regex, 'gi');
                             if (regex.test(message)) {
                                 if (term.response.includes('{newline}')) {
-                                    let msgs = term.response.split('{newline}');
-                                    for (let msg of msgs) {
-                                        chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                    if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                        let msgs = term.response.split('{newline}');
+                                        for (let msg of msgs) {
+                                            chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                        }
+                                    } else {
+                                        chatClient.say(channel, `A custom command was triggered but I am not a moderator or a VIP`);
                                     }
                                 } else {
                                     chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
@@ -638,9 +646,13 @@ async function main(): Promise<void> {
                                 let regex = new RegExp(term.regex, 'gi');
                                 if (regex.test(message)) {
                                     if (term.response.includes('{newline}')) {
-                                        let msgs = term.response.split('{newline}');
-                                        for (let msg of msgs) {
-                                            chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                            let msgs = term.response.split('{newline}');
+                                            for (let msg of msgs) {
+                                                chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                            }
+                                        } else {
+                                            chatClient.say(channel, `A custom command was triggered but I am not a moderator or a VIP`);
                                         }
                                     } else {
                                         chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
@@ -651,7 +663,7 @@ async function main(): Promise<void> {
                     }
                 }
             } else {
-                Term.find().then((terms: ITerm[]) => {
+                Term.find().then(async (terms: ITerm[]) => {
                     redis.set(`tl:${channel}:term`, JSON.stringify(terms), 'EX', 5);
                     for (let term of terms) {
                         if (term.ignorepermissions) {
@@ -659,9 +671,13 @@ async function main(): Promise<void> {
                                 let regex = new RegExp(term.regex, 'gi');
                                 if (regex.test(message)) {
                                     if (term.response.includes('{newline}')) {
-                                        let msgs = term.response.split('{newline}');
-                                        for (let msg of msgs) {
-                                            chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                            let msgs = term.response.split('{newline}');
+                                            for (let msg of msgs) {
+                                                chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                            }
+                                        } else {
+                                            chatClient.say(channel, `A moderation term was triggered but I do not have moderator permissions`);
                                         }
                                     } else {
                                         chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
@@ -676,9 +692,13 @@ async function main(): Promise<void> {
                                     let regex = new RegExp(term.regex, 'gi');
                                     if (regex.test(message)) {
                                         if (term.response.includes('{newline}')) {
-                                            let msgs = term.response.split('{newline}');
-                                            for (let msg of msgs) {
-                                                chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                                let msgs = term.response.split('{newline}');
+                                                for (let msg of msgs) {
+                                                    chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
+                                                }
+                                            } else {
+                                                chatClient.say(channel, `A moderation term was triggered but I do not have moderator permissions`);
                                             }
                                         } else {
                                             chatClient.say(channel, sanitizeMessage(term.response.replace(/{user}/g, user)));
@@ -823,9 +843,13 @@ async function main(): Promise<void> {
                                     if (customCommand.response.match(/^REPEAT\([0-9]{1,3}\)\s/)) {
                                         let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                         let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
-                                        for (let i = 0; i < repeatCount && i < 150; i++) {
-                                            await new Promise((resolve) => setTimeout(resolve, 500));
-                                            chatClient.say(channel, sanitizeMessage(response));
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                            for (let i = 0; i < repeatCount && i < 150; i++) {
+                                                await new Promise((resolve) => setTimeout(resolve, 500));
+                                                chatClient.say(channel, sanitizeMessage(response));
+                                            }
+                                        } else {
+                                            chatClient.say(channel, `A custom command was triggered but I am not a moderator or a VIP`);
                                         }
                                     } else {
                                         chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', ''))));
@@ -878,9 +902,16 @@ async function main(): Promise<void> {
                                         if (customCommand.response.match(/^REPEAT\([0-9]{1,3}\)\s/)) {
                                             let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                             let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
-                                            for (let i = 0; i < repeatCount && i < 150; i++) {
-                                                await new Promise((resolve) => setTimeout(resolve, 500));
-                                                chatClient.say(channel, sanitizeMessage(response));
+                                            if (
+                                                (await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) ||
+                                                (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)
+                                            ) {
+                                                for (let i = 0; i < repeatCount && i < 150; i++) {
+                                                    await new Promise((resolve) => setTimeout(resolve, 500));
+                                                    chatClient.say(channel, sanitizeMessage(response));
+                                                }
+                                            } else {
+                                                chatClient.say(channel, `A custom command was triggered but I am not a moderator or a VIP`);
                                             }
                                         } else {
                                             chatClient.say(channel, sanitizeMessage(customCommand.response.replace(/{user}/g, user).replace(/{channel}/g, channel.replace('#', ''))));
@@ -923,8 +954,21 @@ async function main(): Promise<void> {
                             }
                         }
                         let reminderArr = chunkArr(userReminders, 450);
-                        for (let reminder of reminderArr) {
-                            chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                        if (reminderArr.length >= 2) {
+                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                for (let reminder of reminderArr) {
+                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                }
+                            } else {
+                                for (let reminder of reminderArr) {
+                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                    await new Promise((resolve) => setTimeout(resolve, 1100));
+                                }
+                            }
+                        } else {
+                            for (let reminder of reminderArr) {
+                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                            }
                         }
                     } else {
                         Reminder.find().then(async (reminders) => {
@@ -948,8 +992,21 @@ async function main(): Promise<void> {
                                 }
                             }
                             let reminderArr = chunkArr(userReminders, 450);
-                            for (let reminder of reminderArr) {
-                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                            if (reminderArr.length >= 2) {
+                                if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                    for (let reminder of reminderArr) {
+                                        chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                    }
+                                } else {
+                                    for (let reminder of reminderArr) {
+                                        chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                        await new Promise((resolve) => setTimeout(resolve, 1100));
+                                    }
+                                }
+                            } else {
+                                for (let reminder of reminderArr) {
+                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                }
                             }
                         });
                     }
@@ -980,8 +1037,21 @@ async function main(): Promise<void> {
                         }
                     }
                     let reminderArr = chunkArr(userReminders, 450);
-                    for (let reminder of reminderArr) {
-                        chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                    if (reminderArr.length >= 2) {
+                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                            for (let reminder of reminderArr) {
+                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                            }
+                        } else {
+                            for (let reminder of reminderArr) {
+                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                await new Promise((resolve) => setTimeout(resolve, 1100));
+                            }
+                        }
+                    } else {
+                        for (let reminder of reminderArr) {
+                            chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                        }
                     }
                 } else {
                     Reminder.find().then(async (reminders) => {
@@ -1007,8 +1077,21 @@ async function main(): Promise<void> {
                             }
                         }
                         let reminderArr = chunkArr(userReminders, 450);
-                        for (let reminder of reminderArr) {
-                            chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                        if (reminderArr.length >= 2) {
+                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
+                                for (let reminder of reminderArr) {
+                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                }
+                            } else {
+                                for (let reminder of reminderArr) {
+                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                                    await new Promise((resolve) => setTimeout(resolve, 1100));
+                                }
+                            }
+                        } else {
+                            for (let reminder of reminderArr) {
+                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
+                            }
                         }
                     });
                 }
@@ -1094,6 +1177,17 @@ async function main(): Promise<void> {
                         if (disabledCommands) {
                             disabledCommands = JSON.parse(disabledCommands);
                             if (disabledCommands.disabled.indexOf(targetCmd) > -1) return;
+                        }
+
+                        if (
+                            command.requireFastLimits &&
+                            !((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME))
+                        ) {
+                            return chatClient.say(channel, `@${user}, I need to be a VIP or a moderator to execute this command!`);
+                        }
+
+                        if (command.requiresMod && !(await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
+                            return chatClient.say(channel, `@${user}, I need to be a moderator to execute this command!`);
                         }
 
                         command

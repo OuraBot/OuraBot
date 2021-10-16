@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
-import { ChatClient } from 'twitch-chat-client/lib';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
+import { ChatClient } from '@twurple/chat/lib';
+import { TwitchPrivateMessage } from '@twurple/chat/lib/StandardCommands/TwitchPrivateMessage';
 import { CustomModule } from '../types/custommodule';
 
 class customModule extends CustomModule {

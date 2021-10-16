@@ -11,6 +11,7 @@ class testComand extends Command {
     usage = 'banlist <paste/haste/gist url>';
     permission = 7; // Developer, Broadcaster, Moderator
     userCooldown = 30;
+    requiresMod = true;
     channelCooldown = 30;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

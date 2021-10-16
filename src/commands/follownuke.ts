@@ -12,6 +12,7 @@ class testComand extends Command {
     usage = 'folownuke <time (30s, 5m, 1h)> <--dont-ban?>';
     extendedDescription = 'Use the "--dont-ban" to send a file of all the users';
     permission = 7;
+    requiresMod = true;
     userCooldown = 1;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

@@ -14,28 +14,28 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
-"@d-fischer/cache-decorators@^2.1.1":
-  version "2.1.3"
-  resolved "https://registry.npmjs.org/@d-fischer/cache-decorators/-/cache-decorators-2.1.3.tgz"
-  integrity sha512-MlM8ipg5Exkc0Ok//sG83smBW4mLRL+/ZngfxYQ8IgxBjfpM3m2M+Y2X+a9St3EyJfYoVKHR8RWdICsU+W3gSA==
+"@d-fischer/cache-decorators@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@d-fischer/cache-decorators/-/cache-decorators-3.0.0.tgz#6456c3f8c74c4dd22d80faa7985d4efff6d2ff77"
+  integrity sha512-mYUCjrp5hJgimceC5bof3zzmElyxzW4ty+73IjY12wvxLAqsq0CbgLGspnJm6KgwEfGoeRnISZD4EXJidG3FvA==
   dependencies:
     "@d-fischer/shared-utils" "^3.0.1"
     "@types/node" "^14.14.22"
     tslib "^2.1.0"
 
-"@d-fischer/connection@^6.4.2":
-  version "6.4.2"
-  resolved "https://registry.npmjs.org/@d-fischer/connection/-/connection-6.4.2.tgz"
-  integrity sha512-1ABkXOJWuIg21sumWVjzpYk+LWYvKWR8fBe/xRn9KcNver4ktOpq6ne/QwjQ1KDVHm1N61y+GzVMMZiOaGla6w==
+"@d-fischer/connection@^6.6.0":
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/@d-fischer/connection/-/connection-6.6.1.tgz#cbda6ff31220edbd431442707262ea2a5e51a0e1"
+  integrity sha512-YO+5bbfj6Fh8JPO1jm8VeQ7CN0yFuzbg402UoSjnQ0R1T4PiuYRkvVfo0wihhqqRIBJ73CdAQyWHE8YvsTeltg==
   dependencies:
-    "@d-fischer/isomorphic-ws" "^5.0.2"
-    "@d-fischer/logger" "^3.0.0"
+    "@d-fischer/isomorphic-ws" "^7.0.0"
+    "@d-fischer/logger" "^4.0.0"
     "@d-fischer/shared-utils" "^3.0.1"
     "@d-fischer/typed-event-emitter" "^3.2.2"
-    "@types/node" "^14.14.19"
-    "@types/ws" "^7.2.7"
+    "@types/node" "^16.7.10"
+    "@types/ws" "^8.2.0"
     tslib "^2.0.3"
-    ws "^7.4.2"
+    ws "^8.2.2"
 
 "@d-fischer/cross-fetch@^4.0.2":
   version "4.0.2"
@@ -54,16 +54,17 @@
   resolved "https://registry.npmjs.org/@d-fischer/escape-string-regexp/-/escape-string-regexp-5.0.0.tgz"
   integrity sha512-7eoxnxcto5eVPW5h1T+ePnVFukmI9f/ZR9nlBLh1t3kyzJDUNor2C+YW9H/Terw3YnbZSDgDYrpCJCHtOtAQHw==
 
-"@d-fischer/isomorphic-ws@^5.0.2":
-  version "5.0.3"
-  resolved "https://registry.npmjs.org/@d-fischer/isomorphic-ws/-/isomorphic-ws-5.0.3.tgz"
-  integrity sha512-jT9J/ehLgPXMW3akVRpIJ7CeMKJLH/gCw+PksATT2lN5B5ceEE+am111P2niyEQKxKGYpHrsCEMmK+IdS+E/dQ==
+"@d-fischer/isomorphic-ws@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@d-fischer/isomorphic-ws/-/isomorphic-ws-7.0.0.tgz#ea578e6b8ab6ae9e0c44618a5a8c87b97c92358e"
+  integrity sha512-bydCy1tKvPKvyF0KeDvN1aiAZA4CzQVa2gHifNQczW9Czl89vZ4QHnJMjUcTboWKecbnz5mGiM9PjKA1Xx2Dyg==
 
-"@d-fischer/logger@^3.0.0", "@d-fischer/logger@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@d-fischer/logger/-/logger-3.1.0.tgz"
-  integrity sha512-kNg9PjmiyH9DMr70mAWU+i+dy3+e1hI0lR+No5RJduQtexI247NmEzNd0pethpwm+1uA0MRf3w9QnqZ1PHKvyA==
+"@d-fischer/logger@^4.0.0":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@d-fischer/logger/-/logger-4.1.1.tgz#8d2b74da24ffebbacd19edded276b45004ac1261"
+  integrity sha512-yQPteWFcO7+js+AxE/uO01gN4E6rxaePWLKnLAUT+0aFcaRq+kWWCoI5r2fa04jbadn9qUpSVxvK/YiC9cfVjw==
   dependencies:
+    "@d-fischer/shared-utils" "^3.2.0"
     detect-node "^2.0.4"
     tslib "^2.0.3"
 
@@ -84,12 +85,12 @@
   resolved "https://registry.npmjs.org/@d-fischer/qs/-/qs-7.0.2.tgz"
   integrity sha512-yAu3xDooiL+ef84Jo8nLjDjWBRk7RXk163Y6aTvRB7FauYd3spQD/dWvgT7R4CrN54Juhrrc3dMY7mc+jZGurQ==
 
-"@d-fischer/rate-limiter@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.npmjs.org/@d-fischer/rate-limiter/-/rate-limiter-0.4.3.tgz"
-  integrity sha512-KzmssPK/uKONvq1oQpmOvMoacrfTPocNlkBTf7/3VYFSvk8mbs9maeDLelbLYk0QJZjpl6o6gCEyi8s9nt/A4A==
+"@d-fischer/rate-limiter@^0.4.4":
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/@d-fischer/rate-limiter/-/rate-limiter-0.4.5.tgz#db2e538376c98c95423ea0d1014407797dddd441"
+  integrity sha512-Q6TSDCbQcHShZAmX7UqG4ipPLjedAE2N5eV+30tr9c3QrejE5zTlNVY6CyX2bydXu+tVKmsajFix89ydpc9fWA==
   dependencies:
-    "@d-fischer/logger" "^3.1.0"
+    "@d-fischer/logger" "^4.0.0"
     "@d-fischer/promise.allsettled" "^2.0.2"
     "@types/node" "^12.12.5"
     tslib "^2.0.3"
@@ -98,6 +99,14 @@
   version "3.0.1"
   resolved "https://registry.npmjs.org/@d-fischer/shared-utils/-/shared-utils-3.0.1.tgz"
   integrity sha512-q+ipJ0HN1SeC9MXYLpZvtNjNwaEhqmVK0pquaEjWWAZGntEzTQ1KugBUHeYo04dPdOCh7Eovn/hp1mvobc0rgg==
+  dependencies:
+    "@types/node" "^14.11.2"
+    tslib "^2.0.3"
+
+"@d-fischer/shared-utils@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@d-fischer/shared-utils/-/shared-utils-3.2.0.tgz#4e2fd8aca396707d217375c59ca6a7c6cf3b1ff8"
+  integrity sha512-YgAPpd0jxtchZlEqvVmL21A+/Ottx5759s6THiJs0o5+8pPIrshBlULhmfunbaidHmViuUhjxzZfqRkYl0MR9g==
   dependencies:
     "@types/node" "^14.11.2"
     tslib "^2.0.3"
@@ -252,6 +261,65 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@twurple/api-call@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-5.0.5.tgz#67ed845bd29acec5f3df77e5ebc13c7bca03ea95"
+  integrity sha512-J4tkiPCckYi6yIsdgJmF5mBpPepv8va2yHiHgxzl8SUD1kPT3EAEE4uz2lYm+yM3T/NFraaup028FXWIbJ8dYw==
+  dependencies:
+    "@d-fischer/cross-fetch" "^4.0.2"
+    "@d-fischer/qs" "^7.0.2"
+    "@twurple/common" "^5.0.5"
+    "@types/node-fetch" "^2.5.7"
+    tslib "^2.0.3"
+
+"@twurple/api@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@twurple/api/-/api-5.0.5.tgz#bf306f0b0ee3acbf97fe0b4aee79b936bfd04a65"
+  integrity sha512-VcZjm/Nre90EwXYJex3RxleGOH/mKaXpoN7g5UgZJ1EG1gFS3xFXWSYm12fhjVU6sAREA3b02cCbmjtfZTXoMQ==
+  dependencies:
+    "@d-fischer/cache-decorators" "^3.0.0"
+    "@d-fischer/logger" "^4.0.0"
+    "@d-fischer/rate-limiter" "^0.4.4"
+    "@d-fischer/shared-utils" "^3.2.0"
+    "@twurple/api-call" "^5.0.5"
+    "@twurple/common" "^5.0.5"
+    tslib "^2.0.3"
+
+"@twurple/auth@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-5.0.5.tgz#2ed34a3aee5f83412843607007793f0c7149c6ed"
+  integrity sha512-U2M/seGTx4FhnLeL8HFmtc3B7OAfDrWIih6hzCYihESeufw6VLiLgEXLzJumtZlgXXA5Z26LeOtKh3cr2et3fw==
+  dependencies:
+    "@d-fischer/logger" "^4.0.0"
+    "@d-fischer/shared-utils" "^3.2.0"
+    "@twurple/api-call" "^5.0.5"
+    "@twurple/common" "^5.0.5"
+    tslib "^2.0.3"
+
+"@twurple/chat@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@twurple/chat/-/chat-5.0.5.tgz#41055eaf3796bd8e1450a1d0203ca651ade1a66e"
+  integrity sha512-PdufTw0JkBzGBHorHhQcNLHqIFNJl+VyTjQ023a56UGRGc4D/k5urd3l046yCjCcDpBPzQm54RBxXuQwP2HFzQ==
+  dependencies:
+    "@d-fischer/cache-decorators" "^3.0.0"
+    "@d-fischer/deprecate" "^2.0.2"
+    "@d-fischer/logger" "^4.0.0"
+    "@d-fischer/rate-limiter" "^0.4.4"
+    "@d-fischer/shared-utils" "^3.2.0"
+    "@d-fischer/typed-event-emitter" "^3.2.2"
+    "@twurple/common" "^5.0.5"
+    ircv3 "^0.28.0"
+    tslib "^2.0.3"
+
+"@twurple/common@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-5.0.5.tgz#c831b436cb6c1be8f01eea15491446dd8e270855"
+  integrity sha512-ZosJZLJnJVnJw9YHVO7I9hATjky/tvW4+qWFGBhU27xXHINKTO/k3e2W0xdMxRaMa91BP+anjDk5kroNyUyBgQ==
+  dependencies:
+    "@d-fischer/shared-utils" "^3.2.0"
+    klona "^2.0.4"
+    tslib "^2.0.3"
+
 "@types/bson@*":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@types/bson/-/bson-4.2.0.tgz#a2f71e933ff54b2c3bf267b67fa221e295a33337"
@@ -328,6 +396,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-14.14.34.tgz"
   integrity sha512-dBPaxocOK6UVyvhbnpFIj2W+S+1cBTkHQbFQfeeJhoKFbzYcVUGHvddeWPSucKATb3F0+pgDq0i6ghEaZjsugA==
 
+"@types/node@^16.7.10":
+  version "16.11.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.0.tgz#4b95f2327bacd1ef8f08d8ceda193039c5d7f52e"
+  integrity sha512-8MLkBIYQMuhRBQzGN9875bYsOhPnf/0rgXGo66S2FemHkhbn9qtsz9ywV1iCG+vbjigE4WUNVvw37Dx+L0qsPg==
+
 "@types/winston@^2.4.4":
   version "2.4.4"
   resolved "https://registry.npmjs.org/@types/winston/-/winston-2.4.4.tgz"
@@ -335,10 +408,10 @@
   dependencies:
     winston "*"
 
-"@types/ws@^7.2.7":
-  version "7.4.0"
-  resolved "https://registry.npmjs.org/@types/ws/-/ws-7.4.0.tgz"
-  integrity sha512-Y29uQ3Uy+58bZrFLhX36hcI3Np37nqWE7ky5tjiDoy1GDZnIwVxS0CgF+s+1bXMzjKBFy+fqaRfb708iNzdinw==
+"@types/ws@^8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.2.0.tgz#75faefbe2328f3b833cb8dc640658328990d04f3"
+  integrity sha512-cyeefcUCgJlEk+hk2h3N+MqKKsPViQgF5boi9TTHSK+PoR9KWBb/C5ccPcDyAqgsbAYHTwulch725DV84+pSpg==
   dependencies:
     "@types/node" "*"
 
@@ -1771,14 +1844,14 @@ ip@^1.1.5:
   resolved "https://registry.npmjs.org/ip/-/ip-1.1.5.tgz"
   integrity sha1-vd7XARQpCCjAoDnnLvJfWq7ENUo=
 
-ircv3@^0.26.14:
-  version "0.26.14"
-  resolved "https://registry.npmjs.org/ircv3/-/ircv3-0.26.14.tgz"
-  integrity sha512-R0wiULLrl2d6Rrmw3vgyi9Cxw1KHky9/RwTkSo/Y6sXFH45EuLpVJhm9eLHFTs8EKrayq4H6FYfEN95KBC1qMQ==
+ircv3@^0.28.0:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/ircv3/-/ircv3-0.28.1.tgz#fd07f909f47269416fa92785cf56d388b0e64c19"
+  integrity sha512-zYTN7S96evwQrQF7+1024JpGzPrK0enSiabd9uhzik9TZMstsellIUkLcQHYOxdq+P0dfDPqbvGqKrg2OAiaeA==
   dependencies:
-    "@d-fischer/connection" "^6.4.2"
+    "@d-fischer/connection" "^6.6.0"
     "@d-fischer/escape-string-regexp" "^5.0.0"
-    "@d-fischer/logger" "^3.1.0"
+    "@d-fischer/logger" "^4.0.0"
     "@d-fischer/shared-utils" "^3.0.1"
     "@d-fischer/typed-event-emitter" "^3.2.2"
     "@types/node" "^14.14.19"
@@ -3435,11 +3508,6 @@ toidentifier@1.0.0:
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.0.tgz"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
-top-package@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/top-package/-/top-package-1.0.1.tgz"
-  integrity sha512-tsuhQlHSigOTTvonxHXwqSKEVSnWMh2GvpTvXa5YmoyOwL5YvU4lTd/KNVZlKM5v7gqx44UEuQxyPQEpmaIHdg==
-
 touch@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/touch/-/touch-3.1.0.tgz#fe365f5f75ec9ed4e56825e0bb76d24ab74af83b"
@@ -3519,71 +3587,6 @@ tweetnacl@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/tweetnacl/-/tweetnacl-1.0.3.tgz"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
-
-twitch-api-call@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/twitch-api-call/-/twitch-api-call-4.6.3.tgz"
-  integrity sha512-Y7ouiDLPM1gOeMR5R3d4Bd0mgTbZuwJU87pECV6pV/oqcUpfMjDcOodj07dAefee0mrw8t/U+KWajP/EDVI4Lg==
-  dependencies:
-    "@d-fischer/cross-fetch" "^4.0.2"
-    "@d-fischer/qs" "^7.0.2"
-    "@types/node-fetch" "^2.5.7"
-    node-fetch "^2.6.1"
-    tslib "^2.0.3"
-    twitch-common "^4.6.3"
-
-twitch-auth@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/twitch-auth/-/twitch-auth-4.6.3.tgz"
-  integrity sha512-Pd9zkYWUlYYQIXqoj0/0VPKYbmhq/vzauu4QfderZbtvNRXgCDD9ariSuOaOkqvSt9fFH8NRRZa5CKxMTXticA==
-  dependencies:
-    "@d-fischer/deprecate" "^2.0.2"
-    "@d-fischer/logger" "^3.1.0"
-    "@d-fischer/shared-utils" "^3.0.1"
-    tslib "^2.0.3"
-    twitch-api-call "^4.6.3"
-    twitch-common "^4.6.3"
-
-twitch-chat-client@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/twitch-chat-client/-/twitch-chat-client-4.6.3.tgz"
-  integrity sha512-QpHpDUEJN4qKH/P01ktEHhCqwaXTwTZW6NEOYTZWcmsigFf+lmR1z0z+pdtQxRaVYVIW5ickU4KBIM0AX7S9Fw==
-  dependencies:
-    "@d-fischer/cache-decorators" "^2.1.1"
-    "@d-fischer/deprecate" "^2.0.2"
-    "@d-fischer/logger" "^3.1.0"
-    "@d-fischer/rate-limiter" "^0.4.3"
-    "@d-fischer/shared-utils" "^3.0.1"
-    "@d-fischer/typed-event-emitter" "^3.2.2"
-    ircv3 "^0.26.14"
-    tslib "^2.0.3"
-    twitch-auth "^4.6.3"
-    twitch-common "^4.6.3"
-
-twitch-common@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/twitch-common/-/twitch-common-4.6.3.tgz"
-  integrity sha512-GHwgHZ9cDgXvWy7Mg8POBHOJ4nQ3YJXaFzM0mxFp9914bxYDIov5LpgF7UahXsFblXjljuVxec6GS+U+H+snwA==
-  dependencies:
-    "@d-fischer/logger" "^3.1.0"
-    "@d-fischer/shared-utils" "^3.0.1"
-    tslib "^2.0.3"
-
-twitch@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/twitch/-/twitch-4.6.3.tgz"
-  integrity sha512-5atCUeq7OMkAvbdrsI4XCpVjFUCdN2tj349znjthbbOJXM83XNQ8KUbQO9LeSV6Borq4yszz6YsZ7xF/n1svdQ==
-  dependencies:
-    "@d-fischer/cache-decorators" "^2.1.1"
-    "@d-fischer/deprecate" "^2.0.2"
-    "@d-fischer/logger" "^3.1.0"
-    "@d-fischer/rate-limiter" "^0.4.3"
-    "@d-fischer/shared-utils" "^3.0.1"
-    top-package "^1.0.0"
-    tslib "^2.0.3"
-    twitch-api-call "^4.6.3"
-    twitch-auth "^4.6.3"
-    twitch-common "^4.6.3"
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -3855,10 +3858,15 @@ write-file-atomic@^3.0.0:
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
 
-ws@^7.0.0, ws@^7.4.2, ws@^7.4.4:
+ws@^7.0.0, ws@^7.4.4:
   version "7.4.4"
   resolved "https://registry.npmjs.org/ws/-/ws-7.4.4.tgz"
   integrity sha512-Qm8k8ojNQIMx7S+Zp8u/uHOx7Qazv3Yv4q68MiWWWOJhiwG5W3x7iqmRtJo8xxrciZUY4vRxUTJCKuRnF28ZZw==
+
+ws@^8.2.2:
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.2.3.tgz#63a56456db1b04367d0b721a0b80cae6d8becbba"
+  integrity sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==
 
 ws@~7.2.0:
   version "7.2.5"

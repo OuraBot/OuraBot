@@ -1,5 +1,5 @@
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
-import { TwitchPrivateMessage } from 'twitch-chat-client/lib/StandardCommands/TwitchPrivateMessage';
 import { config, redis } from '..';
 import { CustomCommand, ICustomCommand } from '../models/command.model';
 import { upload } from '../utils/apis/haste';

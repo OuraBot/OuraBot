@@ -10,6 +10,7 @@ class spamCommand extends Command {
     name = 'spam';
     description = 'Spam a message';
     usage = 'spam <spam count> <text>';
+    requireFastLimits = true;
     permission = 419;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (args.length < 2)
