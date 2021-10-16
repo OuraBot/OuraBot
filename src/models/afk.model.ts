@@ -6,6 +6,7 @@ export enum Status {
     SLEEP = 'SLEEPING',
     LURK = 'LURKING',
     AFK = 'AFK',
+    EATING = 'EATING',
 }
 
 export interface IAfk extends Schema {

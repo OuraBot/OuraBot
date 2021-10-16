@@ -725,6 +725,13 @@ async function main(): Promise<void> {
                                     `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
                                 );
                                 break;
+
+                            case Status.EATING:
+                                chatClient.say(
+                                    channel,
+                                    `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                );
+                                break;
                         }
                         await Afk.findByIdAndDelete(afk._id);
                         redis.del(`tl:${channel}:afk`);
@@ -755,6 +762,13 @@ async function main(): Promise<void> {
                                     chatClient.say(
                                         channel,
                                         `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                    );
+                                    break;
+
+                                case Status.EATING:
+                                    chatClient.say(
+                                        channel,
+                                        `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
                                     );
                                     break;
                             }
