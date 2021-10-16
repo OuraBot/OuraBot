@@ -10,10 +10,17 @@ class suggestCommand extends Command {
     userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
+        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
+        if (channelPrefix) {
+            channelPrefix = channelPrefix;
+        } else {
+            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
+        }
+
         if (!args[0])
             return {
                 success: false,
-                message: 'Missing command name',
+                message: `Missing command name (use ${channelPrefix}commands for a list of commands)`,
                 error: null,
             };
 
@@ -32,13 +39,6 @@ class suggestCommand extends Command {
                         error: null,
                     };
             }
-        }
-
-        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
-        if (channelPrefix) {
-            channelPrefix = channelPrefix;
-        } else {
-            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
         }
 
         return {
