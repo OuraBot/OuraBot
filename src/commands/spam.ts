@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
+import { sanitizeMessage } from '../utils/stringManipulation';
 dotenv.config();
 
 const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
@@ -21,10 +22,7 @@ class spamCommand extends Command {
             };
 
         let spamCount = parseInt(args[0]);
-        let spamText = args
-            .slice(1)
-            .join(' ')
-            .replace(/^(\.|\/)/, '');
+        let spamText = sanitizeMessage(args.slice(1).join(' '));
 
         let isFast = false;
         if (spamText.includes('--fast')) {
