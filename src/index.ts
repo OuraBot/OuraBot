@@ -1027,7 +1027,7 @@ async function main(): Promise<void> {
         }
 
         // This is a bad way of doing this, but i can't think of a better way to do it
-        if (message.startsWith(`!ping`)) {
+        if (message.match(/^!ping\b/)) {
             const pingCommand: Command = commands.get('ping');
 
             if (await handleCooldown()) {
