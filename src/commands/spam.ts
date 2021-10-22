@@ -13,6 +13,8 @@ class spamCommand extends Command {
     usage = 'spam <spam count> <text>';
     requireFastLimits = true;
     permission = 419;
+    userCooldown = 10;
+    channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (args.length < 2)
             return {
@@ -37,10 +39,10 @@ class spamCommand extends Command {
                 error: null,
             };
 
-        if (spamCount > 500)
+        if (spamCount > 150)
             return {
                 success: false,
-                message: 'Spam count too high (500 max)',
+                message: 'Spam count too high (150 max)',
                 error: null,
             };
 
