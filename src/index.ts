@@ -1165,10 +1165,10 @@ async function main(): Promise<void> {
                 async function executeCommand() {
                     if (await handleCooldown()) {
                         if (useCustomProperties) {
-
                             // Check if the command is allowed in offline only
-                            if ((commandProperties as ChannelCommandData).commands[command.name]?.offline == true) {
-                                let stream = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+                            let ignoreOffline = msg.userInfo.isBroadcaster || msg.userInfo.isMod;
+                            if ((commandProperties as ChannelCommandData).commands[command.name]?.offline == true && !ignoreOffline) {
+                                let stream = await apiClient.streams.getStreamByUserName(channel.replace('#', ''));
                                 if (stream) return;
                             }
 
