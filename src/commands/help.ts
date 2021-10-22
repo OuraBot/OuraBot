@@ -43,9 +43,9 @@ class suggestCommand extends Command {
 
         return {
             success: true,
-            message: `${channelPrefix}${command.name}${command.aliases.length > 0 ? ` (${command.aliases.map((a) => `${channelPrefix}${a}`).join(', ')})` : ''}: ${command.description} - ${
-                command.userCooldown
-            }s user cooldown & ${command.channelCooldown}s channel cooldown `,
+            message: `${channelPrefix}${command.name}${command.aliases?.length > 0 ? ` (${command.aliases.map((a) => `${channelPrefix}${a}`).join(', ')})` : ''}: ${command.description} - ${
+                command?.userCooldown ? command.userCooldown : 0
+            }s user cooldown & ${command?.channelCooldown ? command.channelCooldown : 0}s channel cooldown `,
             error: null,
         };
     };
