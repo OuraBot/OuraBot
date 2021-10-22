@@ -28,7 +28,7 @@ class suggestCommand extends Command {
         let userID = args[0];
         let userResp;
         try {
-            userResp = await apiClient.helix.users.getUserById(userID);
+            userResp = await apiClient.users.getUserById(userID);
         } catch (err) {
             return {
                 success: false,

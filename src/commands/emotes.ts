@@ -22,12 +22,12 @@ class testComand extends Command {
             channelEmotes = JSON.parse(redisData);
         } else {
             channelID = (await resolveUser(channel.replace('#', ''))).user.id;
-            channelEmotes = await apiClient.helix.chat.getChannelEmotes(channelID);
+            channelEmotes = await apiClient.chat.getChannelEmotes(channelID);
             await redis.set(`emotes:${channel}`, JSON.stringify(channelEmotes), 'EX', 60 * 60 * 12);
         }
 
         // let channelID = (await resolveUser(channel.replace('#', ''))).user.id;
-        // channelEmotes = await apiClient.helix.chat.getChannelEmotes(channelID);
+        // channelEmotes = await apiClient.chat.getChannelEmotes(channelID);
         let sortedEmotes = channelEmotes
             .sort((a, b) => {
                 if (a.id < b.id) return -1;

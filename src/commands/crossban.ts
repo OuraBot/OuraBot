@@ -22,7 +22,7 @@ class suggestCommand extends Command {
 
         let missedChannels = [];
         for (let _channel of config.crossbanchannels) {
-            let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+            let streamResp = await apiClient.streams.getStreamByUserName(channel.replace('#', ''));
             if (streamResp != null) missedChannels.push(_channel);
             await chatClient.say(channel, `/ban ${args[0]} ${reason}`);
         }

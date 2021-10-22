@@ -37,12 +37,12 @@ class testComand extends Command {
                 error: null,
             };
 
-        let channelID = (await apiClient.helix.users.getUserByName(targetChannel.replace('#', ''))).id;
+        let channelID = (await apiClient.users.getUserByName(targetChannel.replace('#', ''))).id;
         let callbackTime = Date.now() - timeToCallback;
 
         let users: string[] = [];
 
-        let followsResp = apiClient.helix.users.getFollowsPaginated({ followedUser: channelID });
+        let followsResp = apiClient.users.getFollowsPaginated({ followedUser: channelID });
         for await (const _user of followsResp) {
             let followTime = new Date(_user.followDate).getTime();
             if (callbackTime > followTime) {

@@ -18,7 +18,7 @@ class suggestCommand extends Command {
             discordData = clips.filter((c) => c.channel === channel.replace('#', ''))[0];
         });
 
-        let streamResp = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+        let streamResp = await apiClient.streams.getStreamByUserName(channel.replace('#', ''));
         if (streamResp == null)
             return {
                 success: false,
@@ -27,22 +27,22 @@ class suggestCommand extends Command {
             };
 
         chatClient.say(channel, `@${user}, GivePLZ Creating your clip...`);
-        let clippedResp = await apiClient2.helix.clips.createClip({
+        let clippedResp = await apiClient2.clips.createClip({
             channelId: streamResp.userId,
             createAfterDelay: true,
         });
 
         await new Promise((r) => setTimeout(r, 5000));
-        let getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+        let getClipResp = await apiClient.clips.getClipById(clippedResp);
 
         if (getClipResp == null) {
             chatClient.say(channel, `@${user}, there was an error while creating your clip, give me a few more seconds Jebaited`);
-            clippedResp = await apiClient2.helix.clips.createClip({
+            clippedResp = await apiClient2.clips.createClip({
                 channelId: streamResp.userId,
                 createAfterDelay: true,
             });
             await new Promise((r) => setTimeout(r, 5000 * 2));
-            getClipResp = await apiClient.helix.clips.getClipById(clippedResp);
+            getClipResp = await apiClient.clips.getClipById(clippedResp);
         }
 
         if (getClipResp == null)

@@ -35,7 +35,7 @@ class suggestCommand extends Command {
             for (let _channel of config.crossbanchannels) {
                 // check if we have already checked if the channel is live
                 if (!checkedChannels.has(_channel)) {
-                    let streamResp = await apiClient.helix.streams.getStreamByUserName(_channel.replace('#', ''));
+                    let streamResp = await apiClient.streams.getStreamByUserName(_channel.replace('#', ''));
                     if (streamResp != null) {
                         // channel IS LIVE
                         missedChannels.push(_channel);
