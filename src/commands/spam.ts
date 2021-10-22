@@ -13,7 +13,7 @@ class spamCommand extends Command {
     usage = 'spam <spam count> <text>';
     requireFastLimits = true;
     permission = 419;
-    allowCustomPermission = true;
+    allowCustomPermissions = true;
     userCooldown = 10;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
