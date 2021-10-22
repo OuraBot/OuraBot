@@ -39,10 +39,10 @@ class spamCommand extends Command {
                 error: null,
             };
 
-        if (spamCount > 150)
+        if (spamCount > 100)
             return {
                 success: false,
-                message: 'Spam count too high (150 max)',
+                message: 'Spam count too high (100 max)',
                 error: null,
             };
 

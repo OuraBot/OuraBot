@@ -3,6 +3,7 @@ import ms from 'ms';
 import { apiClient, chatClient, config } from '../index';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { getClient } from '../utils/spamClients';
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ class testComand extends Command {
         } else {
             chatClient.say(channel, `@${user}, Follownuke: Banning ${users.length} users | ${userList} ItsBoshyTime`);
             for (const _user of users) {
-                chatClient.ban(channel, _user, `Follownuke by ${user} | ${userList}`);
+                getClient().ban(channel, _user, `Follownuke by ${user}`);
             }
         }
 
