@@ -36,7 +36,7 @@ class suggestCommand extends Command {
     channelCooldown = 30;
     permission = 3;
     requiresMod = true;
-    allowCustomPermission = true;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let length = args[0] || 1;
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
