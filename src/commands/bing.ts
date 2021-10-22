@@ -10,6 +10,7 @@ class suggestCommand extends Command {
     usage = 'bing';
     userCooldown = 15;
     channelCooldown = 15;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;
         let preferredEmote = await getBestEmote(channel, ['Bing', 'DinkDonk', 'dinkDonk', 'pajaDink'], ':tf: 🔔');

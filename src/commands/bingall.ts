@@ -13,6 +13,7 @@ class suggestCommand extends Command {
     userCooldown = 10;
     channelCooldown = 10;
     requireFastLimits = true;
+    allowCustomPermission = true;
     permission = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let chatters = (await apiClient.unsupported.getChatters(channel.replace('#', ''))).allChatters;

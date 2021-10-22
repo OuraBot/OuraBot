@@ -9,9 +9,10 @@ class suggestCommand extends Command {
     usage = 'tuck <user> <emote?>';
     userCooldown = 5;
     channelCooldown = 0;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         const userToTuck = args[0] || 'Themself';
-        const emote = args[1] || (await getBestEmote(channel, ['peepoHappyDank', 'Bedge', 'peepoHappy', 'FeelsOkayMan'], '😀')).bestAvailableEmote;
+        const emote = args[1] || (await getBestEmote(channel, ['peepoHappyDank', 'peepoHappy', 'FeelsOkayMan'], '😀')).bestAvailableEmote;
         return {
             success: true,
             message: `${user} tucks ${userToTuck} to bed ${emote} 👉 🛏`,

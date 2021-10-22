@@ -10,6 +10,7 @@ class suggestCommand extends Command {
     usage = 'logs <user?> <channel?> <normal,mod?>';
     userCooldown = 5;
     channelCooldown = 3;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let targetUser = args[0]?.replace('@', '')?.replace(',', '').toLowerCase() || user.toLowerCase();
         let targetChannel = args[1]?.replace('#', '')?.replace('@', '')?.replace(',', '').toLowerCase() || channel?.replace('#', '')?.replace('@', '')?.replace(',', '').toLowerCase();

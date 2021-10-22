@@ -13,6 +13,7 @@ class testComand extends Command {
     userCooldown = 120;
     requireFastLimits = true;
     aliases = ['allemotes'];
+    allowCustomPermission = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let allEmotes = await getAllEmotes(channel.replace('#', ''));
 

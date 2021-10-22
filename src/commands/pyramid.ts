@@ -13,6 +13,7 @@ class pyramidCommand extends Command {
     channelCooldown = 30;
     requireFastLimits = true;
     permission = 7;
+    allowCustomPermission = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let width: any = args[0];
         args.shift();

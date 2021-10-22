@@ -12,6 +12,7 @@ class suggestCommand extends Command {
     userCooldown = 3;
     channelCooldown = 1;
     aliases = ['aa'];
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let targetUser = args[0] || user;
 

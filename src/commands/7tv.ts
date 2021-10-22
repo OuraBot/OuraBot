@@ -14,6 +14,7 @@ class testComand extends Command {
     requireFastLimits = true;
     userCooldown = 60;
     aliases = ['7tvemotes'];
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let stvEmotes = await getStvChannelEmotes(channel.replace('#', ''));
         if (stvEmotes) {

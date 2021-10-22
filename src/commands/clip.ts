@@ -12,6 +12,7 @@ class suggestCommand extends Command {
     usage = 'clip <title>';
     userCooldown = 15;
     channelCooldown = 15;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let discordData: { url: string };
         Clip.find().then(async (clips) => {

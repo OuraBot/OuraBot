@@ -14,6 +14,7 @@ class testComand extends Command {
     channelCooldown = 30;
     userCooldown = 60;
     aliases = ['ffzemotes'];
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let ffzEmotes = await getFfzChannelEmotes(channel.replace('#', ''));
         if (ffzEmotes) {

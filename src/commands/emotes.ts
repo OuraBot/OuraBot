@@ -14,6 +14,7 @@ class testComand extends Command {
     channelCooldown = 5;
     requireFastLimits = true;
     userCooldown = 10;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let redisData = await redis.get(`emotes:${channel}`);
         let channelEmotes: HelixChannelEmote[];

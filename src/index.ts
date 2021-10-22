@@ -30,6 +30,9 @@ import { ILogLevel, Logger } from './utils/logger.js';
 import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
+import { ChannelCommandData, Permissions } from './commands/command.js';
+
+const shh = false;
 
 export const WEEB_REGEX =
     /\b(SilverLove|SilverMelt|SilverCozy|SilverLurk|SilverHeadpat|SilverHug|SilverHype|SilverRaid|SilverREE|SilverWave|SilverYandere|SilverCry|SilverZoom|SilverSuffer|SilverWow|SilverPout|SilverPOG|SilverBlush|SilverAyaya|SilverDerp|SilverD|SilverAwoo|SilverDorime|SilverFacepalm|SilverGift|SilverGimmeL|SilverGimmeR|SilverGun|SilverHuh|SilverJam|SilverRIP|SilverShrug|SilverSip|SilverSleepy|SilverSmug|SilverStress|SilverThink|SilverYikes|SilverLUL|SilverWat|SilverScared|SilverHypers|SilverDisgust|SilverDone|SilverPlead|SilverQueen|SilverPeace|SilverThumbsUp|SilverSweat|SilverNoU|SilverWolf1|SilverWolf2|SilverWolf3|SilverMamaHug|SilverMamaLove|SilverMamaKisses|SilverMamaCrab|CuteAnimeFeet|muniDANK|muniClap|muniJam|muniPat|muniSit|muniSweat|muniSip|muniHug|muniPrime|muniWave|muniShy|muniHYPERS|muniBless|muniAww|muniREE|muniLurk|muniPout|muniSmug|muniWeird|muniWow|muniStare|muniYawn|muniCry|muniFlower|muniLUL|muniComfy|muniNotes|muniBonk|muniW|forsenPuke[0-5]*|naroSpeedL|naroDerping|naroAAAAA|naroDance|naroSpeedR|naroOh|naroFumo|naroSmug|naroSlain|naroBless|naroReally|naroHodo|naroBlush|naro2hu|naroLove|naroWo|naroStaryn|naroWOW|naroSalute|naroEh|naroSad|naroDesu|naroScared|naroWhat|naroEhehe|naroGasm|naroThug|naroDerp|naroRage|naroYay|naroXD|naroDX|xqcAYAYA|xqcLewd|xqcNom|happythoDinkDonk|happythoNod|happythoLove|happythoLurk|happythoNoted|happythoCrumpet|happythoShroom|happythoExcited|happytho7|happythoRee|happythoCross|happythoBonk|happythoBoop|happythoFacepalm|happythoGiggle|happythoGimmie|happythoNoBully|happythoWoah|happythoThumbsUp|happythoThumbsDown|happythoBlessed|happythoEvil|happythoCute|happythoNom|happythoShock|happythoSweat|happythoRIP|happythoPat|happythoSleepy|happythoNotLikeThis|happythoLUL|happythoWeird|happythoCry|happythoSilly|happythoKiss|happythoHug|happythoThink|happythoShy|happythoShrug|happythoPout|happythoHyper|happythoStare|happythoWave|happythoSip|happythoComfy|happythoSus|happythoRich|happythoSmile|happythoTuck|TPFufun|TehePelo|OiMinna|AYAYA|CuteAnimeFeetasleepyRainy|asleepyJAMMER|asleepyLoves|asleepyWaves|asleepyBrows|asleepyZOOM|asleepyRiot|asleepyWoah|asleepyUWU|asleepyThink|asleepyStab|asleepySad|asleepyREE|asleepyPat|asleepyLost|asleepyL|asleepyKiss|asleepyKEK|asleepyGib|asleepyDetective|asleepyComfy|asleepyClown|asleepyAYAYA|asleepyAww|asleepyHehe|asleepyLove|asleepyPlead|asleepyYes|asleepyWave|asleepyOMEGALUL|asleepyShy|asleepyLurk|asleepyHYPERS|asleepySip|asleepyFine|asleepyDevil|asleepyAngel|asleepyAngy|asleepySquish|asleepyBlob|asleepyISee|asleepyWow|asleepyHNGmendo7|mendoRage|mendoE|mendoLewd|mendoRIP|mendo4|mendo3|mendoWow|mendo2|mendo1|mendoClown|mendoThumb|mendoS|mendoWave|mendoUWU|mendoT|mendoBlind|mendoSmug|mendoSleepy|mendoHuh|mendoHands|mendoShrug|mendoFail|mendoB|mendoPeek|mendoGun|mendoU|mendoPantsu|mendoEZ|mendoDab|mendoLUL|mendoCry|mendoREE|mendoL|mendoKoda|mendoBark|mendoSip|mendoHug|mendoWink|mendoPat|mendoComfy|mendoDerp|mendoBanger|mendoM|mendoBlush|mendoAYAYA|mendoGasm|mendoH|mendoHypers|mendoFine)/g;
@@ -405,15 +408,12 @@ async function main(): Promise<void> {
             let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
             chatClient.say(channel, `/color dodgerblue`);
 
-            chatClient.say(
-                `#${config.owner}`,
-                `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
-                    commitAuthor
-                )} (${dateSinceCommit} ago): ${commitMessage
-                    .split('\n')
-                    .filter((n) => n)
-                    .join(' - ')}`
-            );
+            if (!shh) {
+                chatClient.say(
+                    `#${config.owner}`,
+                    `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago)`
+                );
+            }
         }
     });
 
@@ -925,94 +925,15 @@ async function main(): Promise<void> {
             }
         });
 
+        let disableReminders = false;
+        let commandProperties: ChannelCommandData | string = await redis.get(`ob:properties:${channel}`);
+        if (commandProperties) {
+            commandProperties = JSON.parse(commandProperties);
+            if ((commandProperties as ChannelCommandData).commands['remind']) disableReminders = !(commandProperties as ChannelCommandData).commands['remind'].enabled;
+        }
+
         let userReminders: string[] = [];
-        let disabledCommands: any = await redis.get(`disabledcommands:${channel.replace('#', '')}`);
-        if (disabledCommands) {
-            disabledCommands = JSON.parse(disabledCommands);
-            if (disabledCommands.disabled.indexOf('remind') > -1) {
-                //
-            } else {
-                redis.get(`tl:${channel}:reminders`).then(async (redisData) => {
-                    if (redisData) {
-                        let reminders: IReminder[] = JSON.parse(redisData);
-                        for (let reminder of reminders) {
-                            if (reminder.username === user) {
-                                let time = new Date(reminder.timestamp);
-                                if (reminder.author === 'SYSTEM') {
-                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                                    Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                        console.log(`Deleted reminder for ${user}`);
-                                    });
-                                } else {
-                                    if (!(await banphraseCheck(`${reminder.message}`, channel))) {
-                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                                        Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                            console.log(`Deleted reminder for ${user}`);
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                        let reminderArr = chunkArr(userReminders, 450);
-                        if (reminderArr.length >= 2) {
-                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
-                                for (let reminder of reminderArr) {
-                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                                }
-                            } else {
-                                for (let reminder of reminderArr) {
-                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                                    await new Promise((resolve) => setTimeout(resolve, 1100));
-                                }
-                            }
-                        } else {
-                            for (let reminder of reminderArr) {
-                                chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                            }
-                        }
-                    } else {
-                        Reminder.find().then(async (reminders) => {
-                            redis.set(`tl:${channel}:reminders`, JSON.stringify(reminders), 'EX', 5);
-                            for (let reminder of reminders) {
-                                if (reminder.username === user) {
-                                    let time = new Date(reminder.timestamp);
-                                    if (reminder.author === 'SYSTEM') {
-                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                                        Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                            console.log(`Deleted reminder for ${user}`);
-                                        });
-                                    } else {
-                                        if (!(await banphraseCheck(`${reminder.message}`, channel))) {
-                                            userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
-                                            Reminder.findByIdAndDelete(reminder._id).then(() => {
-                                                console.log(`Deleted reminder for ${user}`);
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                            let reminderArr = chunkArr(userReminders, 450);
-                            if (reminderArr.length >= 2) {
-                                if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
-                                    for (let reminder of reminderArr) {
-                                        chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                                    }
-                                } else {
-                                    for (let reminder of reminderArr) {
-                                        chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                                        await new Promise((resolve) => setTimeout(resolve, 1100));
-                                    }
-                                }
-                            } else {
-                                for (let reminder of reminderArr) {
-                                    chatClient.say(channel, `@${user}, reminders - ${reminder}`);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        } else {
+        if (!disableReminders) {
             redis.get(`tl:${channel}:reminders`).then(async (redisData) => {
                 if (redisData) {
                     let reminders: IReminder[] = JSON.parse(redisData);
@@ -1170,13 +1091,92 @@ async function main(): Promise<void> {
                     return true;
                 }
 
+                let useCustomPermission = false;
+                let customHasPermission = false;
+                let useCustomProperties = false;
+
+                let commandProperties: ChannelCommandData | string = await redis.get(`ob:properties:${channel}`);
+                if (commandProperties) {
+                    commandProperties = JSON.parse(commandProperties);
+                    useCustomProperties = true;
+                }
+
+                if (useCustomProperties) {
+                    // Check if the command has a custom permission
+                    if ((commandProperties as ChannelCommandData).commands[command.name]?.requiredPermission) {
+                        useCustomPermission = true;
+
+                        // none -> sub -> vip -> mod -> broadcaster
+                        let requiredPermission = (commandProperties as ChannelCommandData).commands[command.name]?.requiredPermission;
+                        if (requiredPermission === 'none') {
+                            customHasPermission = true;
+                        }
+
+                        if (requiredPermission === 'sub') {
+                            if (msg.userInfo.isSubscriber) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isVip) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isMod) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isBroadcaster) {
+                                customHasPermission = true;
+                            }
+                        }
+
+                        if (requiredPermission === 'vip') {
+                            if (msg.userInfo.isVip) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isMod) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isBroadcaster) {
+                                customHasPermission = true;
+                            }
+                        }
+
+                        if (requiredPermission === 'mod') {
+                            if (msg.userInfo.isMod) {
+                                customHasPermission = true;
+                            }
+
+                            if (msg.userInfo.isBroadcaster) {
+                                customHasPermission = true;
+                            }
+                        }
+
+                        if (requiredPermission === 'broadcaster') {
+                            if (msg.userInfo.isBroadcaster) {
+                                customHasPermission = true;
+                            }
+                        }
+                    }
+                }
+
                 async function executeCommand() {
                     if (await handleCooldown()) {
-                        // Check if the command is disabled
-                        let disabledCommands: any = await redis.get(`disabledcommands:${channel.replace('#', '')}`);
-                        if (disabledCommands) {
-                            disabledCommands = JSON.parse(disabledCommands);
-                            if (disabledCommands.disabled.indexOf(targetCmd) > -1) return;
+                        if (useCustomProperties) {
+
+                            // Check if the command is allowed in offline only
+                            if ((commandProperties as ChannelCommandData).commands[command.name]?.offline == true) {
+                                let stream = await apiClient.helix.streams.getStreamByUserName(channel.replace('#', ''));
+                                if (stream) return;
+                            }
+
+                            // Check if the command is disabled
+                            // we shouldnt need to do == false, but it doesnt work without it
+                            if ((commandProperties as ChannelCommandData).commands[command.name]?.enabled == false) {
+                                return;
+                            }
                         }
 
                         if (
@@ -1276,13 +1276,21 @@ async function main(): Promise<void> {
                 }
 
                 if (command.permission) {
-                    if (hasPermisison(command.permission, user, channel, msg)) {
-                        executeCommand();
-                    } else if (!command?.hidden) {
-                        chatClient.say(channel, `@${user}, you do not have permission to use this command!`);
+                    if (useCustomPermission) {
+                        if (customHasPermission) executeCommand();
+                    } else {
+                        if (hasPermisison(command.permission, user, channel, msg)) {
+                            executeCommand();
+                        } else if (!command?.hidden) {
+                            chatClient.say(channel, `@${user}, you do not have permission to use this command!`);
+                        }
                     }
                 } else {
-                    executeCommand();
+                    if (useCustomPermission) {
+                        if (customHasPermission) executeCommand();
+                    } else {
+                        executeCommand();
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ import { config, redis } from '..';
 import { CustomCommand, ICustomCommand } from '../models/command.model';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass, getCommands, getPermissions, hasPermisison } from '../utils/commandClass';
+import { ChannelCommandData } from './command';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -32,6 +33,7 @@ class suggestCommand extends Command {
         }
 
         interface CommandPermission {
+            command: string;
             msg: string;
             hasPermission: boolean;
             hidden: boolean;
@@ -39,10 +41,22 @@ class suggestCommand extends Command {
 
         let commandsPermissions: CommandPermission[] = [];
 
+        let disabledCommands: string[] = [];
+        let commandProperties: ChannelCommandData | string = await redis.get(`ob:properties:${channel}`);
+        if (commandProperties) {
+            commandProperties = JSON.parse(commandProperties);
+            for (let command in (commandProperties as ChannelCommandData).commands) {
+                if (!(commandProperties as ChannelCommandData).commands[command].enabled) {
+                    disabledCommands.push(command);
+                }
+            }
+        }
+
         let commandMap: any = await getCommands();
         commandMap.forEach((command: Command) => {
             if (command.permission) {
                 commandsPermissions.push({
+                    command: command.name,
                     msg: `Command: ${channelPrefix}${command.name}\nDescription: ${command.description}\n${
                         command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``
                     }${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${
@@ -53,6 +67,7 @@ class suggestCommand extends Command {
                 });
             } else {
                 commandsPermissions.push({
+                    command: command.name,
                     msg: `Command: ${channelPrefix}${command.name}\nDescription: ${command.description}\n${
                         command?.extendedDescription ? `Extended Description: ${command.extendedDescription}\n` : ``
                     }${command?.aliases ? `Aliases: ${command.aliases.join(' ')}\n` : ''}Usage: ${command.usage}\n${
@@ -65,6 +80,9 @@ class suggestCommand extends Command {
         });
 
         commandsPermissions = commandsPermissions.filter((command: CommandPermission) => {
+            if (disabledCommands.includes(command.command)) {
+                return false;
+            }
             if (command.hidden) {
                 if (command.hasPermission) {
                     return true;

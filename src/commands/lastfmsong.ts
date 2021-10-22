@@ -12,6 +12,7 @@ class lastfmCommand extends Command {
     aliases = ['lastfm', 'np', 'thissong', 'currentsong', 'nowplaying'];
     userCooldown = 10;
     channelCooldown = 5;
+    allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let song = await getNowPlaying(args[0] || channel, args[0] ? true : false);
 
