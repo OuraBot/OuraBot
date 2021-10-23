@@ -3,17 +3,18 @@ import dotenv from 'dotenv';
 import { chatClient, FILE_URLS_REGEX } from '../index';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
+import { sanitizeMessage } from '../utils/stringManipulation';
 
 dotenv.config();
 
 class testComand extends Command {
     name = 'filesay';
     description = 'Say a hastebin file';
-    usage = 'filesay <url> <optional msg prefix?> <--silent?>';
+    usage = 'filesay <url> <formatting - use {line} to access username> <--fast?> <--silent?> <--slow?>';
     aliases = ['ob-filesay', 'ob_filesay'];
     hidden = true;
     requireFastLimits = true;
-    permission = 97;
+    permission = 929;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0].match(FILE_URLS_REGEX))
             return {
@@ -22,34 +23,95 @@ class testComand extends Command {
                 error: null,
             };
 
-        axios.get(args[0]).then(async (response: any) => {
-            let msgs = response.data.split('\n');
-            if (msgs.length > 10000)
-                return {
-                    success: false,
-                    message: 'Too many lines to say (max 10k)',
-                    error: null,
-                };
-            let fast = args.includes('--fast');
-            let silent = args.includes('--silent');
-            if (!silent) await chatClient.say(channel, `@${user}, Filesay ETA: ${msgs.length / 10} seconds`);
-            if (fast) {
-                for (let i = 0; i < msgs.length; i++) {
-                    await getClient().say(channel, msgs[i]);
-                }
-            } else {
-                if (args[1] && args[1] !== '--silent') {
-                    for (let msg of msgs) {
-                        await chatClient.say(channel, `${args[1]} ${msg}`);
+        let users = (await axios.get(args[0])).data.split('\n');
+
+        const fast = args.includes('--fast');
+        const silent = args.includes('--silent');
+        const slow = args.includes('--slow');
+
+        if (fast && slow)
+            return {
+                success: false,
+                message: `FailFish You can't use fast and slow flags simultaneously`,
+                error: null,
+            };
+
+        if (args.length >= 2) {
+            const formattedMessage = args.slice(1).join(' ').replace('--fast', '').replace('--silent', '').replace('--slow', '');
+            if (fast && silent) {
+                if (users.length > 3000) {
+                    for (let user of users) {
+                        getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                        await new Promise((resolve) => setTimeout(resolve, 100));
                     }
                 } else {
-                    for (let msg of msgs) {
-                        await chatClient.say(channel, msg);
+                    for (let user of users) {
+                        getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                     }
                 }
-                if (!silent) await chatClient.say(channel, `@${user}, Filesay completed!`);
+            } else if (fast) {
+                if (users.length > 3000) {
+                    chatClient.say(channel, `@${user}, ${users.length} lines`);
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    let t1 = Date.now();
+                    for (let user of users) {
+                        getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                        await new Promise((resolve) => setTimeout(resolve, 100));
+                    }
+                    let t2 = Date.now();
+                    chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
+                } else {
+                    chatClient.say(channel, `@${user}, ${users.length} lines`);
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    let t1 = Date.now();
+                    for (let user of users) {
+                        getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                    }
+                    let t2 = Date.now();
+                    chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
+                }
+            } else if (silent) {
+                for (let user of users) {
+                    getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                }
+            } else if (silent && slow) {
+                for (let user of users) {
+                    getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                    await new Promise((resolve) => setTimeout(resolve, 1100));
+                }
+            } else if (slow) {
+                chatClient.say(channel, `@${user}, ${users.length} lines - ETA: ${users.length * 1.1}s`);
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                let t1 = Date.now();
+                for (let user of users) {
+                    getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                }
+                let t2 = Date.now();
+                chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
+            } else {
+                chatClient.say(channel, `@${user}, ${users.length} lines - ETA: ${users.length * 0.5}s`);
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                let t1 = Date.now();
+                for (let user of users) {
+                    getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                }
+                let t2 = Date.now();
+                chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
             }
-        });
+        } else {
+            chatClient.say(channel, `@${user}, ${users.length} lines - ETA: ${users.length * 0.5}s`);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            let t1 = Date.now();
+            for (let user of users) {
+                getClient().say(channel, user);
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+            let t2 = Date.now();
+            chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
+        }
 
         return {
             success: true,
