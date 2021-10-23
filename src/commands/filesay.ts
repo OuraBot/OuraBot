@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { chatClient, FILE_URLS_REGEX } from '../index';
+import { cancelFilesayChannels, chatClient, FILE_URLS_REGEX } from '../index';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
 import { sanitizeMessage } from '../utils/stringManipulation';
@@ -43,6 +43,12 @@ class testComand extends Command {
                     for (let user of users) {
                         getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                         await new Promise((resolve) => setTimeout(resolve, 100));
+                        if (cancelFileSay(channel))
+                            return {
+                                success: true,
+                                message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                                error: null,
+                            };
                     }
                 } else {
                     for (let user of users) {
@@ -57,6 +63,12 @@ class testComand extends Command {
                     for (let user of users) {
                         getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                         await new Promise((resolve) => setTimeout(resolve, 100));
+                        if (cancelFileSay(channel))
+                            return {
+                                success: true,
+                                message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                                error: null,
+                            };
                     }
                     let t2 = Date.now();
                     chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
@@ -74,11 +86,23 @@ class testComand extends Command {
                 for (let user of users) {
                     getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                     await new Promise((resolve) => setTimeout(resolve, 500));
+                    if (cancelFileSay(channel))
+                        return {
+                            success: true,
+                            message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                            error: null,
+                        };
                 }
             } else if (silent && slow) {
                 for (let user of users) {
                     getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                     await new Promise((resolve) => setTimeout(resolve, 1100));
+                    if (cancelFileSay(channel))
+                        return {
+                            success: true,
+                            message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                            error: null,
+                        };
                 }
             } else if (slow) {
                 chatClient.say(channel, `@${user}, ${users.length} lines - ETA: ${users.length * 1.1}s`);
@@ -87,6 +111,12 @@ class testComand extends Command {
                 for (let user of users) {
                     getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                     await new Promise((resolve) => setTimeout(resolve, 1000));
+                    if (cancelFileSay(channel))
+                        return {
+                            success: true,
+                            message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                            error: null,
+                        };
                 }
                 let t2 = Date.now();
                 chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
@@ -97,6 +127,12 @@ class testComand extends Command {
                 for (let user of users) {
                     getClient().say(channel, sanitizeMessage(formattedMessage.replace('{line}', user)));
                     await new Promise((resolve) => setTimeout(resolve, 500));
+                    if (cancelFileSay(channel))
+                        return {
+                            success: true,
+                            message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                            error: null,
+                        };
                 }
                 let t2 = Date.now();
                 chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
@@ -108,6 +144,12 @@ class testComand extends Command {
             for (let user of users) {
                 getClient().say(channel, user);
                 await new Promise((resolve) => setTimeout(resolve, 500));
+                if (cancelFileSay(channel))
+                    return {
+                        success: true,
+                        message: `Stopped filesay on line ${users.indexOf(user) + 1}`,
+                        error: null,
+                    };
             }
             let t2 = Date.now();
             chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
@@ -122,3 +164,12 @@ class testComand extends Command {
 }
 
 export const cmd = new testComand();
+
+function cancelFileSay(channel: string) {
+    if (cancelFilesayChannels.has(channel)) {
+        cancelFilesayChannels.delete(channel);
+        return true;
+    } else {
+        return false;
+    }
+}
