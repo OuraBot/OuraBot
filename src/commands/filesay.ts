@@ -37,7 +37,8 @@ class testComand extends Command {
             };
 
         if (args.length >= 2) {
-            const formattedMessage = args.slice(1).join(' ').replace('--fast', '').replace('--silent', '').replace('--slow', '');
+            let formattedMessage = args.slice(1).join(' ').replace('--fast', '').replace('--silent', '').replace('--slow', '');
+            if (formattedMessage.length == 0) formattedMessage = '{line}';
             if (fast && silent) {
                 if (users.length > 3000) {
                     for (let user of users) {
