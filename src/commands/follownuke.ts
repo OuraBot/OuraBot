@@ -61,9 +61,9 @@ class testComand extends Command {
 
         const userList = await upload(users.join('\n'));
         if (dontBan) {
-            chatClient.say(channel, `@${user}, DRYRUN Follownuke: Caught ${users.length} users | ${userList} ${targetChannel === channel ? '' : `(${targetChannel})`}`);
+            chatClient.whisper(user, `${channel}: DRYRUN Follownuke: Caught ${users.length} users | ${userList} ${targetChannel === channel ? '' : `(${targetChannel})`}`);
         } else {
-            chatClient.say(channel, `@${user}, Follownuke: Banning ${users.length} users | ${userList} ItsBoshyTime`);
+            chatClient.whisper(user, `${channel}: Follownuke: Banning ${users.length} users | ${userList}`);
             for (const _user of users) {
                 getClient().ban(channel, _user, `Follownuke by ${user}`);
             }
