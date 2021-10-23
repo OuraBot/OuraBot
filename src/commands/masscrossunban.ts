@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { chatClient, config } from '..';
+import { chatClient, config, FILE_URLS_REGEX } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
@@ -11,7 +11,7 @@ class suggestCommand extends Command {
     permission = 1;
     hidden = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        if (!args[0].match(/^https:\/\/(haste\.zneix\.eu\/raw|hastebin\.com\/raw|mrauro\.dev|pastebin\.com\/raw|raw.githubusercontent.com)\/.+$/))
+        if (!args[0].match(FILE_URLS_REGEX))
             return {
                 success: false,
                 message: 'Missing RAW haste/pastebin link',
