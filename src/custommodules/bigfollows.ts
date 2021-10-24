@@ -1,0 +1,25 @@
+import { ChatClient } from '@twurple/chat';
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
+import { Redis } from 'ioredis';
+import { config } from '..';
+import { CustomModule } from '../types/custommodule';
+import { KNOWN_BOT_LIST } from '../utils/knownBots';
+import { obfuscateName, removeAccents } from '../utils/stringManipulation';
+
+class customModule extends CustomModule {
+    name = 'bigfollows';
+    description = "Checks if a user's first message is a bigfollows advertisement";
+    channels = ['#auror6s', '#mmattbtw', '#demonjoefrance', '#liptongod', '#elpws', '#c3agle', '#xoosd'];
+    author = ['AuroR6S'];
+    execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient): Promise<void> => {
+        if (msg.tags.get('first-msg') == '1') {
+            let looseMessage = removeAccents(message.toLowerCase());
+            if (looseMessage.includes('wanna become famous?') && looseMessage.includes('bigfollows')) {
+                chatClient.ban(channel, user, 'Bigfollows advertisement bot');
+                chatClient.say(config.owner, `CUSTOMMODULE bigfollows: ${user} banned in ${obfuscateName(channel)}`);
+            }
+        }
+    };
+}
+
+export const module = new customModule();

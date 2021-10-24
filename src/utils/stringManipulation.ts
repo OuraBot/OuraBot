@@ -32,3 +32,14 @@ export function sanitizeMessage(str: string): string {
         ''
     );
 }
+
+/**
+ * Returns a string without any accents
+ *
+ * @export
+ * @param {string} str
+ * @return {*}  {string}
+ */
+export function removeAccents(str: string): string {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
