@@ -10,7 +10,7 @@ class suggestCommand extends Command {
     description = 'Fetch either a random or latest DDOI video';
     usage = 'ddoi <random,latest>';
     userCooldown = 5;
-    channelCooldown = 5;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (args[0] === 'random') {
             let redisData: any = await redis.get(`DDOIVIDEOS`);

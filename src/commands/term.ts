@@ -11,6 +11,7 @@ class testComand extends Command {
     usage = 'term <add|edit|remove> <regex> <response>';
     permission = 39;
     userCooldown = 5;
+    channelCooldown = 5;
     requiresMod = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

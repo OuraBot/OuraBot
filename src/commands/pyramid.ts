@@ -10,7 +10,7 @@ class pyramidCommand extends Command {
     description = 'Make a pyramid';
     usage = 'pyramid <width> <emote/text>';
     userCooldown = 30;
-    channelCooldown = 30;
+    channelCooldown = 15;
     requireFastLimits = true;
     permission = 7;
     allowCustomPermissions = true;

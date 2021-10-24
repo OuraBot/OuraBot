@@ -10,7 +10,7 @@ class suggestCommand extends Command {
     name = 'subage';
     description = 'Check how long someone has been subscribed to a channel';
     usage = 'subage <user> <channel>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     aliases = ['sa', 'subbage'];
     allowCustomPermissions = true;

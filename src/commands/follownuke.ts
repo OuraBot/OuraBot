@@ -14,8 +14,8 @@ class testComand extends Command {
     extendedDescription = 'Use the "--dont-ban" to send a file of all the users';
     permission = 7;
     requiresMod = true;
-    userCooldown = 1;
-    channelCooldown = 1;
+    userCooldown = 5;
+    channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {

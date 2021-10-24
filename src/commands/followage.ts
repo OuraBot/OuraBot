@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     name = 'followage';
     description = 'Check how long a user has been following a channel';
     usage = 'followage <username> <channel>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     aliases = ['fa'];
     allowCustomPermissions = true;

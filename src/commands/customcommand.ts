@@ -11,6 +11,7 @@ class testComand extends Command {
     extendedDescription = `Use {user} and {channel} for their respective values. Use GET,INCR{COUNTERNAME} to either get or increment a counter - doesn't work with fetchURL. Use the !set command to chagne a value.`;
     permission = 39;
     userCooldown = 5;
+    channelCooldown = 5;
     requireFastLimits = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

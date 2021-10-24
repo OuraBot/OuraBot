@@ -8,7 +8,7 @@ class suggestCommand extends Command {
     name = 'bing';
     description = 'Ping a random user in the chat';
     usage = 'bing';
-    userCooldown = 15;
+    userCooldown = 30;
     channelCooldown = 15;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

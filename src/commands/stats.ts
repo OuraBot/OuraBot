@@ -10,8 +10,8 @@ class testComand extends Command {
     name = 'stats';
     description = 'Gets the stats of a command, user, channel, or globally (since Oct 7 2021)';
     usage = 'stats (command|@user|#channel|<leave empty for global stats>) ';
-    channelCooldown = 10;
-    userCooldown = 10;
+    userCooldown = 5;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0]) {
             let commandsExecuted: number, successCount: number, mostCommonCommand: string, mostCommonCommandCount: number;

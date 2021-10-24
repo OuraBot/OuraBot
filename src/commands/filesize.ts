@@ -6,7 +6,7 @@ dotenv.config();
 class suggestCommand extends Command {
     name = 'filesize';
     description = 'Get the filesize of a raw file';
-    usage = 'yoinkbans <file url>';
+    usage = 'filesize <file url>';
     hidden = true;
     permission = 33;
     userCooldown = 5;

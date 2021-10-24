@@ -12,7 +12,7 @@ class suggestCommand extends Command {
     hidden = true;
     permission = 103;
     userCooldown = 5;
-    channelCooldown = 5;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {

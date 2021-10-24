@@ -11,9 +11,9 @@ class testComand extends Command {
     name = 'emotes';
     description = 'Get the Twitch emotes of the channel';
     usage = 'emotes';
-    channelCooldown = 5;
     requireFastLimits = true;
     userCooldown = 10;
+    channelCooldown = 5;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let redisData = await redis.get(`emotes:${channel}`);

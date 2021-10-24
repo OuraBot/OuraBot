@@ -7,8 +7,8 @@ class suggestCommand extends Command {
     name = 'setprefix';
     description = 'Set the channel prefix for the bot';
     usage = 'setprefix <prefix>';
-    userCooldown = 1;
-    channelCooldown = 1;
+    userCooldown = 5;
+    channelCooldown = 5;
     permission: 39;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

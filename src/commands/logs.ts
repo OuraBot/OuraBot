@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     description = 'View the logs of a user. (specified channel must have justlog logs enabled)';
     usage = 'logs <user?> <channel?> <normal,mod?>';
     userCooldown = 5;
-    channelCooldown = 3;
+    channelCooldown = 1;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let targetUser = args[0]?.replace('@', '')?.replace(',', '').toLowerCase() || user.toLowerCase();

@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     name = 'accountage';
     description = 'Get the account age of a user';
     usage = 'accountage <username?>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     aliases = ['aa'];
     allowCustomPermissions = true;

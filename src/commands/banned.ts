@@ -8,7 +8,7 @@ class suggestCommand extends Command {
     name = 'banned';
     description = 'Check if a specified user is banned on Twitch';
     usage = 'banned <username>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

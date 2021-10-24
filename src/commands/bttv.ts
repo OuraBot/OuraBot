@@ -10,8 +10,8 @@ class testComand extends Command {
     name = 'bttv';
     description = 'Get all BetterTTV emotes for the channel';
     usage = 'bttv';
-    channelCooldown = 30;
     userCooldown = 60;
+    channelCooldown = 30;
     requireFastLimits = true;
     aliases = ['bttvemotes'];
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

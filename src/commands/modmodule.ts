@@ -19,8 +19,8 @@ class testComand extends Command {
     usage = 'modmodule <module (ascii,links,weeb,bigfollows,badlinks)> <timeout in seconds (set 0 for off)>';
     extendedDescription = `Note: For the bigfollows and the badlinks module the timeout length does not matter as it will permaban regardless`;
     permission = 7;
-    channelCooldown = 5;
     userCooldown = 5;
+    channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {

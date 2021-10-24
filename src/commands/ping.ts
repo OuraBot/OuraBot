@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     name = 'ping';
     description = 'Pong! View information about the bot.';
     usage = 'ping';
-    userCooldown = 1;
+    userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let channelList = await getChannels(process.env.CLIENT_USERNAME);

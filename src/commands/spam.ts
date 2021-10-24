@@ -14,8 +14,8 @@ class spamCommand extends Command {
     requireFastLimits = true;
     permission = 419;
     allowCustomPermissions = true;
-    userCooldown = 10;
-    channelCooldown = 5;
+    userCooldown = 30;
+    channelCooldown = 15;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (args.length < 2)
             return {

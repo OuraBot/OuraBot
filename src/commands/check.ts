@@ -8,6 +8,7 @@ class suggestCommand extends Command {
     description = 'Check the status of a suggestion.';
     usage = 'check <ID>';
     userCooldown = 5;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         const idToCheck = Number(args[0]);
         if (isNaN(idToCheck))

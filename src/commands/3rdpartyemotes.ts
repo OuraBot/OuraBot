@@ -9,8 +9,8 @@ class testComand extends Command {
     name = '3rdpartyemotes';
     description = 'Get all 3rd party emotes for the channel';
     usage = '3rdpartyemotes';
-    channelCooldown = 60;
-    userCooldown = 120;
+    userCooldown = 60;
+    channelCooldown = 30;
     requireFastLimits = true;
     aliases = ['allemotes'];
     allowCustomPermissions = true;

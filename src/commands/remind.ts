@@ -10,6 +10,7 @@ class remindCommand extends Command {
     description = 'Remind a user for when they next type in chat';
     usage = 'remind <user> <message>';
     userCooldown = 10;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {

@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     name = 'whois';
     description = 'Get information about a user';
     usage = 'whois <username?>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let targetUser = args[0] || user;

@@ -10,8 +10,8 @@ class suggestCommand extends Command {
     usage = 'channels';
     permission = 97;
     requireFastLimits = true;
-    userCooldown = 30;
     channelCooldown = 60;
+    userCooldown = 30;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let channels = await getChannels(process.env.CLIENT_USERNAME);
         channels = channels.map((channel) => obfuscateName(channel));

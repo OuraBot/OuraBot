@@ -10,9 +10,9 @@ class testComand extends Command {
     name = '7tv';
     description = 'Get all 7TV emotes for the channel';
     usage = '7tv';
+    userCooldown = 60;
     channelCooldown = 30;
     requireFastLimits = true;
-    userCooldown = 60;
     aliases = ['7tvemotes'];
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

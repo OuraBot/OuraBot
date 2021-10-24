@@ -10,6 +10,7 @@ class testComand extends Command {
     description = 'Get your user permissions';
     usage = 'permissions';
     userCooldown = 5;
+    channelCooldown = 1;
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
         if (!args[0]) {

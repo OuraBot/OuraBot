@@ -11,8 +11,8 @@ class suggestCommand extends Command {
     name = 'commands';
     description = 'View all global and custom commands for the channel.';
     usage = 'commands';
-    userCooldown = 60;
-    channelCooldown = 60;
+    userCooldown = 30;
+    channelCooldown = 15;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
         let data = `Commands for ${channel} | Oura_Bot | ${new Date()}\n\n`;
 

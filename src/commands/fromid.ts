@@ -8,7 +8,7 @@ class suggestCommand extends Command {
     name = 'fromid';
     description = 'Get a username from an ID';
     usage = 'fromid <username>';
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

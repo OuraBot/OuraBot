@@ -10,8 +10,8 @@ class suggestCommand extends Command {
     description = 'Ping everyone in your chat';
     usage = 'bingall';
     aliases = ['pingall', 'chaos'];
-    userCooldown = 10;
-    channelCooldown = 10;
+    userCooldown = 30;
+    channelCooldown = 15;
     requireFastLimits = true;
     allowCustomPermissions = true;
     permission = 3;

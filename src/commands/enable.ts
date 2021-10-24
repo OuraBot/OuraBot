@@ -9,7 +9,8 @@ class testComand extends Command {
     description = '[Deprecated] Enable a command for the channel';
     usage = 'enable <command>';
     permission = 39;
-    userCooldown = 3;
+    userCooldown = 10;
+    channelCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         return {
             success: true,

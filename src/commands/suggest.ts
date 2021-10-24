@@ -9,6 +9,7 @@ class suggestCommand extends Command {
     usage = 'suggest <suggestion/bug report>';
     aliases = ['ob_suggest'];
     userCooldown = 10;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let ID = await createNewSuggestion(user, args.join(' '));
 

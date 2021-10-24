@@ -8,7 +8,7 @@ class suggestCommand extends Command {
     description = 'Check if a specified user is on the known bot list';
     usage = 'knownbot';
     aliases = ['checkbot'];
-    userCooldown = 3;
+    userCooldown = 5;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

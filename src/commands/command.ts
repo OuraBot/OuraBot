@@ -29,7 +29,7 @@ class suggestCommand extends Command {
     //                                                                                                                                                                                                                                                                                     \n\t\taliases - <comma seperated list> - Set channel aliases for a command (OVERWRITES DEFAULTS)
     extendedDescription = `Available properties:\n\t\toffline - true/false - Make the command only work in offline chat?\n\t\trequiredpermission - None/Sub/VIP/Mod/Broadcaster - Set a custom permission for a command (and above)\n\t\tenabled - true/false - Enable or disable a command`;
     usage = 'command <command> <property> <value>';
-    userCooldown = 1;
+    userCooldown = 5;
     channelCooldown = 1;
     disableLocked = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

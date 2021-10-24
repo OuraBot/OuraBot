@@ -33,7 +33,7 @@ class suggestCommand extends Command {
     description = 'Timeout everyone in your chat for a specified amount of time';
     usage = 'timeoutall <length>';
     userCooldown = 30;
-    channelCooldown = 30;
+    channelCooldown = 15;
     permission = 3;
     requiresMod = true;
     allowCustomPermissions = true;

@@ -7,7 +7,7 @@ class suggestCommand extends Command {
     description = 'Flip a coin!';
     usage = 'flip';
     userCooldown = 5;
-    channelCooldown = 3;
+    channelCooldown = 5;
     aliases = ['coinflip'];
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

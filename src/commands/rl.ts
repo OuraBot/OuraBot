@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     description = 'Get a random line from a specified user. (channel must have justlog logs enabled)';
     usage = 'rl <user?>';
     userCooldown = 5;
-    channelCooldown = 5;
+    channelCooldown = 1;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let targetUser = args[0]?.replace('@', '')?.replace(',', '') || user;

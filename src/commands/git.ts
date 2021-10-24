@@ -10,8 +10,8 @@ class suggestCommand extends Command {
     description = "View information about the bot's latest commit";
     usage = 'git';
     aliases = ['github', 'commit'];
-    userCooldown = 1;
-    channelCooldown = 1;
+    userCooldown = 5;
+    channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
         return {

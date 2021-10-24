@@ -12,8 +12,8 @@ class testComand extends Command {
     description = 'Get the information about a live channel';
     usage = 'streaminfo <channel>';
     aliases = ['si'];
-    channelCooldown = 3;
     userCooldown = 5;
+    channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
         let channelId = msg.channelId;
         if (args[0]) {

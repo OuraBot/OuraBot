@@ -11,8 +11,8 @@ class testComand extends Command {
     description = 'Get all FrankerfaceZ emotes for the channel';
     usage = 'ffz';
     requireFastLimits = true;
-    channelCooldown = 30;
     userCooldown = 60;
+    channelCooldown = 30;
     aliases = ['ffzemotes'];
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
