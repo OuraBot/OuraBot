@@ -106,6 +106,8 @@ export let commitDate: string;
 export let branch: string;
 export let commitCount: number;
 
+export let firstStart = true;
+
 async function main(): Promise<void> {
     commitHash = execSync('git rev-parse HEAD').toString().trim();
     commitMessage = execSync('git log -1 --pretty=%B').toString().trim();
@@ -411,10 +413,17 @@ async function main(): Promise<void> {
             chatClient.say(channel, `/color dodgerblue`);
 
             if (!shh) {
-                chatClient.say(
-                    `#${config.owner}`,
-                    `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago)`
-                );
+                if (firstStart) {
+                    chatClient.say(
+                        `#${config.owner}`,
+                        `PagMan v2 BOT CONNECTED ${process.env.DEBUG === 'TRUE' ? 'IN DEBUG MODE' : ''} on  ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(
+                            commitAuthor
+                        )} (${dateSinceCommit} ago)`
+                    );
+                    firstStart = false;
+                } else {
+                    chatClient.say(`#${config.owner}`, `dankCircle JOINED CHANNEL (${commitHash})`);
+                }
             }
         }
     });
