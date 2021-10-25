@@ -32,7 +32,7 @@ import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
 import { ChannelCommandData, Permissions } from './commands/command.js';
 
-const shh = false;
+const shh = process.env.SHH == 'TRUE';
 
 export const FILE_URLS_REGEX = /^https:\/\/(((haste\.zneix\.eu\/|hastebin\.com\/|pastebin\.com\/)raw\/)|(i\.(mrauro\.dev|mmatt\.link))).+$/;
 export const WEEB_REGEX =
