@@ -17,7 +17,7 @@ class pyramidCommand extends Command {
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let width: any = args[0];
         args.shift();
-        let emote = (args.join(' ') + ' ').replace(/^(\.|\/)/, '');
+        let emote = (args.join(' ') + ' ').replace(/^(\.|\/|!)/, '');
 
         if (!width || !emote)
             return {
