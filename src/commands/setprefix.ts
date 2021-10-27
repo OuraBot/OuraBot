@@ -9,7 +9,7 @@ class suggestCommand extends Command {
     usage = 'setprefix <prefix>';
     userCooldown = 5;
     channelCooldown = 5;
-    permission: 39;
+    permission = 39;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {
