@@ -109,18 +109,19 @@ class suggestCommand extends Command {
             };
 
         usersToTimeout = [...new Set(usersToTimeout)];
-        for (const userToTimeout of usersToTimeout) {
-            if (perma) {
-                await getClient().ban(channel, userToTimeout, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
-            } else {
-                await getClient().timeout(channel, userToTimeout, timeoutTime, `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
-            }
-        }
 
         // prettier-ignore
         const finalString = `Nuke from ${channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${perma ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.join('\n')}`;
         const URL = await upload(finalString);
         chatClient.whisper(user, `Nuke report from ${channel}: ${URL}`);
+
+        for (const userToTimeout of usersToTimeout) {
+            if (perma) {
+                await getClient().say(channel, `/ban ${userToTimeout} Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
+            } else {
+                await getClient().say(channel, `/timeout ${userToTimeout} ${timeoutTime} Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
+            }
+        }
 
         return {
             success: true,
