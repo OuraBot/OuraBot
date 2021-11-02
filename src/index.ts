@@ -758,9 +758,13 @@ async function main(): Promise<void> {
                                 break;
 
                             case Status.EATING:
+                                // 25% chance of saying describe taste
+                                let OpieOP = Math.random() < 0.25 ? 'describe taste OpieOP' : '';
                                 chatClient.say(
                                     channel,
-                                    `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                    `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                        Date.now() - time.getTime()
+                                    )} ago) ${OpieOP}`
                                 );
                                 break;
                         }
