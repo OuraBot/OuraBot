@@ -18,6 +18,7 @@ class changelogCommand extends Command {
     hidden = true;
     userCooldown = 10;
     channelCooldown = 5;
+    permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         // get all the commits from the last 7 days
         const hashes = execSync(`git log --pretty=format:"%h" --since="7 days ago"`).toString();
