@@ -40,7 +40,9 @@ class testComand extends Command {
             // remove the first 2 elements of args
             args.splice(0, 2);
 
-            let termResponse = args.join(' ');
+            const ignorePermissions = args.includes('--ip');
+
+            let termResponse = args.join(' ').replace('--ip', '');
             if (termResponse.length > 400)
                 return {
                     success: false,
@@ -61,6 +63,7 @@ class testComand extends Command {
                 channel: channel.replace('#', ''),
                 regex: termRegex,
                 response: termResponse,
+                ignorepermissions: ignorePermissions,
             });
 
             await newTerm.save();
@@ -90,7 +93,9 @@ class testComand extends Command {
             // remove the first 2 elements of args
             args.splice(0, 2);
 
-            let termResponse = args.join(' ');
+            const ignorePermissions = args.includes('--ip');
+
+            let termResponse = args.join(' ').replace('--ip', '');
             if (termResponse.length > 400)
                 return {
                     success: false,
@@ -113,6 +118,7 @@ class testComand extends Command {
                 channel: channel.replace('#', ''),
                 regex: termRegex,
                 response: termResponse,
+                ignorepermissions: ignorePermissions,
             });
 
             await newTerm.save();
