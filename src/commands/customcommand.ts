@@ -7,7 +7,7 @@ dotenv.config();
 class testComand extends Command {
     name = 'customcommand';
     description = 'Add or remove custom commands';
-    usage = 'customcommand <add|remove> <command> <response> <channel cooldown?> <user cooldown?>';
+    usage = 'customcommand <add|edit|remove> <command> <response> <channel cooldown?> <user cooldown?>';
     extendedDescription = `Use {user} and {channel} for their respective values. Use GET,INCR{COUNTERNAME} to either get or increment a counter - doesn't work with fetchURL. Use the !set command to chagne a value.`;
     permission = 39;
     userCooldown = 5;
@@ -17,7 +17,7 @@ class testComand extends Command {
         if (!args[0])
             return {
                 success: false,
-                message: 'Missing subcommand (add,remove)',
+                message: 'Missing subcommand (add,edit,remove)',
                 error: null,
             };
 
@@ -108,10 +108,60 @@ class testComand extends Command {
                 message: `Custom command "${commandName}" removed`,
                 error: null,
             };
+        } else if (args[0] === 'edit') {
+            if (!args[1]) {
+                return {
+                    success: false,
+                    message: 'Missing custom command name',
+                    error: null,
+                };
+            }
+
+            let commandName = args[1];
+            let command = await CustomCommand.findOne({ command: commandName });
+            if (!command) {
+                return {
+                    success: false,
+                    message: `Custom command "${commandName}" not found`,
+                    error: null,
+                };
+            }
+
+            if (!args[2]) {
+                return {
+                    success: false,
+                    message: 'Missing custom command response',
+                    error: null,
+                };
+            }
+
+            let commandResponse = args.slice(2).join(' ');
+            if (commandResponse.length > 400)
+                return {
+                    success: false,
+                    message: 'Custom command response must be less than 400 characters',
+                    error: null,
+                };
+
+            if (!commandResponse)
+                return {
+                    success: false,
+                    message: 'Missing custom command response',
+                    error: null,
+                };
+
+            command.response = commandResponse;
+            await command.save();
+            redis.del(`tl:${channel}:customcommands`);
+            return {
+                success: true,
+                message: `Custom command "${commandName}" edited`,
+                error: null,
+            };
         } else {
             return {
                 success: false,
-                message: 'Invalid subcommand (add,remove)',
+                message: 'Invalid subcommand (add,edit,remove)',
                 error: null,
             };
         }
