@@ -28,6 +28,30 @@ export class Logger {
         if (this.logLevel >= logLevel) {
             console.log(chalk.hex(LogColors[logLevel])(`[${logLevel}]`), ...args);
 
+            // check if error is mongo timeout error
+            if (error.message.includes('MongooseServerSelectionError: connection timed out')) {
+                // implement a 5s rate limit to prevent spamming the discord channel
+                const rateLimit = await redis.get('mongoose_timeout_rate_limit');
+                if (rateLimit) {
+                    return;
+                }
+                await redis.set('mongoose_timeout_rate_limit', '1', 'EX', 5);
+                axios.post(this.discordWebhook, {
+                    embeds: [
+                        {
+                            title: `OuraBot :: MONGO DB CONNECTION TIMED OUT @everyone`,
+                            description: error.stack + '\n\n' + args.join('\n'),
+                            color: 16711680,
+                            author: {
+                                name: `OuraBot - ${os.hostname}`,
+                            },
+                            timestamp: new Date(),
+                        },
+                    ],
+                });
+                return;
+            }
+
             let counterData = Number(await redis.get(`ob:counter`));
             if (!counterData) {
                 await redis.set(`ob:counter`, 1);
