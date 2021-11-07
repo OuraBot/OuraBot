@@ -8,7 +8,7 @@ class testComand extends Command {
     name = 'customcommand';
     description = 'Add or remove custom commands';
     usage = 'customcommand <add|edit|remove> <command> <response> <channel cooldown?> <user cooldown?>';
-    extendedDescription = `Use {user} and {channel} for their respective values. Use GET,INCR{COUNTERNAME} to either get or increment a counter - doesn't work with fetchURL. Use the !set command to chagne a value.`;
+    extendedDescription = `Use {user} and {channel} for their respective values. Use GET,INCR{COUNTERNAME} to either get or increment a counter - doesn't work with fetchURL. Use the !set command to change a value.`;
     permission = 39;
     userCooldown = 5;
     channelCooldown = 5;
