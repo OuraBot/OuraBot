@@ -31,6 +31,7 @@ import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipula
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
 import { ChannelCommandData, Permissions } from './commands/command.js';
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 
 const shh = process.env.SHH == 'TRUE';
 
@@ -465,7 +466,16 @@ async function main(): Promise<void> {
 
     let commands = await getCommands();
     let custommodules = await getModules();
+
+    chatClient.onAction((channel, user, message, msg) => {
+        onMessageOrAction(channel, user, message, msg);
+    });
+
     chatClient.onMessage(async (channel, user, message, msg) => {
+        onMessageOrAction(channel, user, message, msg);
+    });
+
+    async function onMessageOrAction(channel: string, user: string, message: string, msg: TwitchPrivateMessage) {
         // console.log(`${new Date().toISOString()} PRIVMSG ${channel} :${message}`);
 
         nukeMessages.push({
@@ -1309,7 +1319,7 @@ async function main(): Promise<void> {
                 }
             }
         }
-    });
+    }
 
     chatClient.onStandardPayForward(async (channel, user, forwardInfo, msg) => {
         let subResp: ISub = (await Sub.find()).filter((s) => s.channel === channel.replace('#', ''))[0];
