@@ -10,7 +10,7 @@ class customModule extends CustomModule {
     channels = ['#auror6s', '#oura_bot'];
     author = ['AuroR6S'];
     execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient, redis: Redis): Promise<void> => {
-        if (message === '!requestjoin') {
+        if (message.startsWith('!requestjoin')) {
             chatClient.say(channel, `@${user}, The bot has been requested to join your channel! Please wait for one of the admins to add it to your channel`);
             axios.post(process.env.DISCORD_WEBHOOK, {
                 username: 'Oura_Bot Request',
