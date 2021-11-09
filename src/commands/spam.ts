@@ -63,7 +63,10 @@ class spamCommand extends Command {
                 let color = poorColorList[i % poorColorList.length];
 
                 await new Promise((resolve) => setTimeout(resolve, 100));
-                if (cancelSpam(channel)) break;
+                if (cancelSpam(channel)) {
+                    await chatClient.say(channel, '/color dodgerblue');
+                    break;
+                }
 
                 await chatClient.say(channel, `/color ${color}`);
                 chatClient.say(channel, `/me ${spamText}`);
