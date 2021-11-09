@@ -430,6 +430,10 @@ async function main(): Promise<void> {
         }
     });
 
+    setInterval(() => {
+        chatClient.say(`#oura_bot`, `Bot requests will be processed within 24 hours. Please read the panels before requesting.`);
+    }, 1000 * 60 * 5);
+
     chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
         if (user === config.owner) {
             try {
