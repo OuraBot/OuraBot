@@ -1,4 +1,7 @@
+import axios from 'axios';
 import { connection, model, Schema, SchemaTimestampsConfig } from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
 delete connection.models['Usage'];
 
@@ -28,6 +31,27 @@ const schema = new Schema<IUsage>(
 export const Usage = model<IUsage>('Usage', schema);
 
 export function logCommandUse(user: string, channel: string, command: string, success: boolean, args: string[], response: string) {
+    axios.post(process.env.DISCORD_MIRROR_WEBHOOK, {
+        embeds: [
+            {
+                author: {
+                    name: channel,
+                },
+                fields: [
+                    {
+                        name: `${user}:`,
+                        value: `${command} ${args.join(' ')}`,
+                    },
+                    {
+                        name: 'Response:',
+                        value: response,
+                    },
+                ],
+                timestamp: new Date(),
+                color: success ? 0x00ff00 : 0xff0000,
+            },
+        ],
+    });
     return new Usage({
         user,
         channel,
