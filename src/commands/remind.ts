@@ -19,6 +19,13 @@ class remindCommand extends Command {
                 error: null,
             };
 
+        if (args[0] == 'in')
+            return {
+                success: false,
+                message: "FailFish I can't set timed reminders",
+                error: null,
+            };
+
         let userData = await resolveUser(args[0]);
         console.log(userData);
         if (!userData.success) {
