@@ -27,7 +27,6 @@ class remindCommand extends Command {
             };
 
         let userData = await resolveUser(args[0]);
-        console.log(userData);
         if (!userData.success) {
             return {
                 success: false,
@@ -40,6 +39,14 @@ class remindCommand extends Command {
             return {
                 success: false,
                 message: 'Missing message',
+                error: null,
+            };
+        }
+
+        if (userData.user.login === 'oura_bot') {
+            return {
+                success: false,
+                message: "FailFish You can't remind me. I'm right here.",
                 error: null,
             };
         }
