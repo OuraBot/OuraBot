@@ -80,6 +80,7 @@ export function refreshCommands() {
 const handler = createHandler({ path: '/wh', secret: 'nNJ9M}x|?#8$2(5aAaT?xSQ:rV^h{->s7:_TQ4t!>AGE0#Q]-W=)b+?}~^G-,Nr5' });
 
 export let cancelFilesayChannels: Set<string> = new Set();
+export let cancelSpamChannels: Set<string> = new Set();
 export let chatClient: ChatClient;
 export let apiClient: ApiClient;
 export let apiClient2: ApiClient;

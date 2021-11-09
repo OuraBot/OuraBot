@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { chatClient } from '..';
+import { cancelSpamChannels, chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
 import { sanitizeMessage } from '../utils/stringManipulation';
@@ -61,6 +61,10 @@ class spamCommand extends Command {
         } else {
             for (let i = 0; i < spamCount; i++) {
                 let color = poorColorList[i % poorColorList.length];
+
+                await new Promise((resolve) => setTimeout(resolve, 100));
+                if (cancelSpam(channel)) break;
+
                 await chatClient.say(channel, `/color ${color}`);
                 chatClient.say(channel, `/me ${spamText}`);
 
@@ -77,3 +81,12 @@ class spamCommand extends Command {
 }
 
 export const cmd = new spamCommand();
+
+function cancelSpam(channel: string) {
+    if (cancelSpamChannels.has(channel)) {
+        cancelSpamChannels.delete(channel);
+        return true;
+    } else {
+        return false;
+    }
+}
