@@ -1227,20 +1227,26 @@ async function main(): Promise<void> {
                                 if (data.success) {
                                     if (data.message) {
                                         if (Array.isArray(data.message)) {
+                                            logCommandUse(
+                                                user,
+                                                channel,
+                                                command.name,
+                                                data.success,
+                                                args,
+                                                `${data.noping ? '' : `@${user}, `}${
+                                                    data?.ignorebanphrase
+                                                        ? data.message.join(' { NEW LINE }')
+                                                        : (await banphraseCheck(data.message.join(' { NEW LINE } '), channel))
+                                                        ? 'Command result is banphrased'
+                                                        : data.message.join(' { NEW LINE }')
+                                                }`
+                                            );
                                             for (let m of data.message) {
                                                 if (process.env?.DEBUG !== 'TRUE')
-                                                    logCommandUse(
-                                                        user,
+                                                    chatClient.say(
                                                         channel,
-                                                        command.name,
-                                                        data.success,
-                                                        args,
                                                         `${data.noping ? '' : `@${user}, `}${data?.ignorebanphrase ? m : (await banphraseCheck(m, channel)) ? 'Command result is banphrased' : m}`
                                                     );
-                                                chatClient.say(
-                                                    channel,
-                                                    `${data.noping ? '' : `@${user}, `}${data?.ignorebanphrase ? m : (await banphraseCheck(m, channel)) ? 'Command result is banphrased' : m}`
-                                                );
                                             }
                                         } else {
                                             if (process.env?.DEBUG !== 'TRUE')
