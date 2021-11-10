@@ -22,6 +22,7 @@ class spamCommand extends Command {
                 success: false,
                 message: 'Not enough arguments',
                 error: null,
+                reducedcooldown: 1,
             };
 
         let spamCount = parseInt(args[0]);
@@ -38,6 +39,7 @@ class spamCommand extends Command {
                 success: false,
                 message: 'Invalid spam count',
                 error: null,
+                reducedcooldown: 1,
             };
 
         if (spamCount > 100)
@@ -45,6 +47,7 @@ class spamCommand extends Command {
                 success: false,
                 message: 'Spam count too high (100 max)',
                 error: null,
+                reducedcooldown: 1,
             };
 
         if (spamCount < 1)
@@ -52,6 +55,7 @@ class spamCommand extends Command {
                 success: false,
                 message: 'Spam count too low (1 min)',
                 error: null,
+                reducedcooldown: 1,
             };
 
         if (isFast) {
