@@ -1235,10 +1235,10 @@ async function main(): Promise<void> {
                                                 args,
                                                 `${data.noping ? '' : `@${user}, `}${
                                                     data?.ignorebanphrase
-                                                        ? data.message.join(' { NEW LINE }')
-                                                        : (await banphraseCheck(data.message.join(' { NEW LINE } '), channel))
+                                                        ? data.message[0] + ' . . .'
+                                                        : (await banphraseCheck(data.message[0] + ' . . .', channel))
                                                         ? 'Command result is banphrased'
-                                                        : data.message.join(' { NEW LINE }')
+                                                        : data.message[0] + ' . . .'
                                                 }`
                                             );
                                             for (let m of data.message) {
