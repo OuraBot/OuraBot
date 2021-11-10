@@ -37,10 +37,10 @@ class pyramidCommand extends Command {
             };
         }
 
-        if (width < 2 || width > 20)
+        if (width < 2 || width > 100)
             return {
                 success: false,
-                message: 'Width must be between 2 and 20',
+                message: 'Width must be between 2 and 100',
                 error: null,
                 reducedcooldown: 1,
             };
