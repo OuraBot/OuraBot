@@ -746,7 +746,7 @@ async function main(): Promise<void> {
             }
         });
 
-        redis.get(`tl:${channel}:afk`).then(async (redisData) => {
+        redis.get(`tl:afk`).then(async (redisData) => {
             if (redisData) {
                 const afks: IAfk[] = JSON.parse(redisData);
                 for (let afk of afks) {
@@ -756,21 +756,27 @@ async function main(): Promise<void> {
                             case Status.AFK:
                                 chatClient.say(
                                     channel,
-                                    `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                    `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                    )} ago)`
                                 );
                                 break;
 
                             case Status.LURK:
                                 chatClient.say(
                                     channel,
-                                    `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                    `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                    )} ago)`
                                 );
                                 break;
 
                             case Status.SLEEP:
                                 chatClient.say(
                                     channel,
-                                    `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                    `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                    )} ago)`
                                 );
                                 break;
 
@@ -786,12 +792,12 @@ async function main(): Promise<void> {
                                 break;
                         }
                         await Afk.findByIdAndDelete(afk._id);
-                        redis.del(`tl:${channel}:afk`);
+                        redis.del(`tl:afk`);
                     }
                 }
             } else {
                 Afk.find().then(async (afks) => {
-                    redis.set(`tl:${channel}:afk`, JSON.stringify(afks), 'EX', 5);
+                    redis.set(`tl:afk`, JSON.stringify(afks), 'EX', 5);
                     for (let afk of afks) {
                         if (afk.user === user) {
                             let time = new Date(afk.timestamp);
@@ -799,33 +805,41 @@ async function main(): Promise<void> {
                                 case Status.AFK:
                                     chatClient.say(
                                         channel,
-                                        `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                        `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                        )} ago)`
                                     );
                                     break;
 
                                 case Status.LURK:
                                     chatClient.say(
                                         channel,
-                                        `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                        `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                        )} ago)`
                                     );
                                     break;
 
                                 case Status.SLEEP:
                                     chatClient.say(
                                         channel,
-                                        `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                        `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                        )} ago)`
                                     );
                                     break;
 
                                 case Status.EATING:
                                     chatClient.say(
                                         channel,
-                                        `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Date.now() - time.getTime())} ago)`
+                                        `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+                                        )} ago)`
                                     );
                                     break;
                             }
                             await Afk.findByIdAndDelete(afk._id);
-                            redis.del(`tl:${channel}:afk`);
+                            redis.del(`tl:afk`);
                         }
                     }
                 });
@@ -973,14 +987,14 @@ async function main(): Promise<void> {
                         if (reminder.username === user) {
                             let time = new Date(reminder.timestamp);
                             if (reminder.author === 'SYSTEM') {
-                                userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Math.ceil((Date.now() - time.getTime()) / 1000) * 1000)} ago)`);
                                 Reminder.findByIdAndDelete(reminder._id).then(() => {
                                     console.log(`Deleted reminder for ${user}`);
                                     redis.del(`tl:${channel}:reminders`);
                                 });
                             } else {
                                 if (!(await banphraseCheck(`${reminder.message}`, channel))) {
-                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Math.ceil((Date.now() - time.getTime()) / 1000) * 1000)} ago)`);
                                     Reminder.findByIdAndDelete(reminder._id).then(() => {
                                         console.log(`Deleted reminder for ${user}`);
                                         redis.del(`tl:${channel}:reminders`);
@@ -1013,14 +1027,14 @@ async function main(): Promise<void> {
                             if (reminder.username === user) {
                                 let time = new Date(reminder.timestamp);
                                 if (reminder.author === 'SYSTEM') {
-                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                    userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Math.ceil((Date.now() - time.getTime()) / 1000) * 1000)} ago)`);
                                     Reminder.findByIdAndDelete(reminder._id).then(() => {
                                         console.log(`Deleted reminder for ${user}`);
                                     });
                                     redis.del(`tl:${channel}:reminders`);
                                 } else {
                                     if (!(await banphraseCheck(`${reminder.message}`, channel))) {
-                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Date.now() - time.getTime())} ago)`);
+                                        userReminders.push(`${reminder.author}: ${reminder.message} (${prettyTime(Math.ceil((Date.now() - time.getTime()) / 1000) * 1000)} ago)`);
                                         Reminder.findByIdAndDelete(reminder._id).then(() => {
                                             console.log(`Deleted reminder for ${user}`);
                                         });

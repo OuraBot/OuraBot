@@ -116,7 +116,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
-                    redis.del(`tl:${channel}:afk`);
+                    redis.del(`tl:afk`);
 
                     return {
                         success: true,
@@ -137,7 +137,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
-                    redis.del(`tl:${channel}:afk`);
+                    redis.del(`tl:afk`);
 
                     return {
                         success: true,
@@ -158,7 +158,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
-                    redis.del(`tl:${channel}:afk`);
+                    redis.del(`tl:afk`);
 
                     return {
                         success: true,
@@ -179,7 +179,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
-                    redis.del(`tl:${channel}:afk`);
+                    redis.del(`tl:afk`);
 
                     return {
                         success: true,
@@ -200,7 +200,7 @@ class suggestCommand extends Command {
                         timestamp: new Date(),
                     });
                     newAfk.save();
-                    redis.del(`tl:${channel}:afk`);
+                    redis.del(`tl:afk`);
 
                     return {
                         success: true,
