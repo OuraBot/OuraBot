@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { banphraseCheck, redis } from '../index';
-import { Afk, Status } from '../models/afk.model';
+import { Status, getUserAfk, clearUserAfk, setUserAfk } from '../utils/afkManager';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
@@ -86,9 +86,11 @@ class suggestCommand extends Command {
                 case 'afk':
                     reason = '(no message)';
                     break;
+
                 case 'brb':
                     reason = '(no message)';
                     break;
+
                 case 'food':
                     reason = `OpieOP ${foodEmojis[Math.floor(Math.random() * foodEmojis.length)]}`;
                     break;
@@ -109,14 +111,7 @@ class suggestCommand extends Command {
             case 'afk':
                 {
                     afkMsg = `${reason}`;
-                    const newAfk = new Afk({
-                        user: user,
-                        message: afkMsg,
-                        status: Status.AFK,
-                        timestamp: new Date(),
-                    });
-                    newAfk.save();
-                    redis.del(`tl:afk`);
+                    setUserAfk(user, Status.AFK, afkMsg);
 
                     return {
                         success: true,
@@ -130,14 +125,7 @@ class suggestCommand extends Command {
             case 'brb':
                 {
                     afkMsg = `${reason}`;
-                    const newAfk = new Afk({
-                        user: user,
-                        message: afkMsg,
-                        status: Status.AFK,
-                        timestamp: new Date(),
-                    });
-                    newAfk.save();
-                    redis.del(`tl:afk`);
+                    setUserAfk(user, Status.AFK, afkMsg);
 
                     return {
                         success: true,
@@ -151,14 +139,7 @@ class suggestCommand extends Command {
             case 'gn':
                 {
                     afkMsg = `${reason} 💤`;
-                    const newAfk = new Afk({
-                        user: user,
-                        message: afkMsg,
-                        status: Status.SLEEP,
-                        timestamp: new Date(),
-                    });
-                    newAfk.save();
-                    redis.del(`tl:afk`);
+                    setUserAfk(user, Status.SLEEP, afkMsg);
 
                     return {
                         success: true,
@@ -172,14 +153,7 @@ class suggestCommand extends Command {
             case 'lurk':
                 {
                     afkMsg = `${reason} 👥`;
-                    const newAfk = new Afk({
-                        user: user,
-                        message: afkMsg,
-                        status: Status.LURK,
-                        timestamp: new Date(),
-                    });
-                    newAfk.save();
-                    redis.del(`tl:afk`);
+                    setUserAfk(user, Status.LURK, afkMsg);
 
                     return {
                         success: true,
@@ -193,14 +167,7 @@ class suggestCommand extends Command {
             case 'food':
                 {
                     afkMsg = `${reason}`;
-                    const newAfk = new Afk({
-                        user: user,
-                        message: afkMsg,
-                        status: Status.EATING,
-                        timestamp: new Date(),
-                    });
-                    newAfk.save();
-                    redis.del(`tl:afk`);
+                    setUserAfk(user, Status.EATING, afkMsg);
 
                     return {
                         success: true,
