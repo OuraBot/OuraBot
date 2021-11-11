@@ -12,7 +12,6 @@ import Redis from 'ioredis';
 import mongoose from 'mongoose';
 import { unescapeHTML } from './commands/ddoi.js';
 import { moduleEnum } from './commands/modmodule.js';
-import { Afk, IAfk, Status } from './models/afk.model.js';
 import { Channel, IChannel } from './models/channel.model';
 import { CustomCommand, ICustomCommand } from './models/command.model.js';
 import { IModule, Module } from './models/module.model.js';
@@ -32,6 +31,7 @@ import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
 import { ChannelCommandData, Permissions } from './commands/command.js';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
+import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
 
 const shh = process.env.SHH == 'TRUE';
 
@@ -746,103 +746,148 @@ async function main(): Promise<void> {
             }
         });
 
-        redis.get(`tl:afk`).then(async (redisData) => {
-            if (redisData) {
-                const afks: IAfk[] = JSON.parse(redisData);
-                for (let afk of afks) {
-                    if (afk.user === user) {
-                        let time = new Date(afk.timestamp);
-                        switch (afk.status) {
-                            case Status.AFK:
-                                chatClient.say(
-                                    channel,
-                                    `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                    )} ago)`
-                                );
-                                break;
+        // redis.get(`tl:afk`).then(async (redisData) => {
+        //     if (redisData) {
+        //         const afks: IAfk[] = JSON.parse(redisData);
+        //         for (let afk of afks) {
+        //             if (afk.user === user) {
+        //                 let time = new Date(afk.timestamp);
+        //                 switch (afk.status) {
+        //                     case Status.AFK:
+        //                         chatClient.say(
+        //                             channel,
+        //                             `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                 Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                             )} ago)`
+        //                         );
+        //                         break;
 
-                            case Status.LURK:
-                                chatClient.say(
-                                    channel,
-                                    `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                    )} ago)`
-                                );
-                                break;
+        //                     case Status.LURK:
+        //                         chatClient.say(
+        //                             channel,
+        //                             `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                 Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                             )} ago)`
+        //                         );
+        //                         break;
 
-                            case Status.SLEEP:
-                                chatClient.say(
-                                    channel,
-                                    `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                        Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                    )} ago)`
-                                );
-                                break;
+        //                     case Status.SLEEP:
+        //                         chatClient.say(
+        //                             channel,
+        //                             `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                 Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                             )} ago)`
+        //                         );
+        //                         break;
 
-                            case Status.EATING:
-                                // 25% chance of saying describe taste
-                                let OpieOP = Math.random() < 0.25 ? 'describe taste OpieOP' : '';
-                                chatClient.say(
-                                    channel,
-                                    `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                        Date.now() - time.getTime()
-                                    )} ago) ${OpieOP}`
-                                );
-                                break;
-                        }
-                        await Afk.findByIdAndDelete(afk._id);
-                        redis.del(`tl:afk`);
-                    }
+        //                     case Status.EATING:
+        //                         // 25% chance of saying describe taste
+        //                         let OpieOP = Math.random() < 0.25 ? 'describe taste OpieOP' : '';
+        //                         chatClient.say(
+        //                             channel,
+        //                             `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                 Date.now() - time.getTime()
+        //                             )} ago) ${OpieOP}`
+        //                         );
+        //                         break;
+        //                 }
+        //                 await Afk.findByIdAndDelete(afk._id);
+        //                 redis.del(`tl:afk`);
+        //             }
+        //         }
+        //     } else {
+        //         Afk.find().then(async (afks) => {
+        //             redis.set(`tl:afk`, JSON.stringify(afks), 'EX', 5);
+        //             for (let afk of afks) {
+        //                 if (afk.user === user) {
+        //                     let time = new Date(afk.timestamp);
+        //                     switch (afk.status) {
+        //                         case Status.AFK:
+        //                             chatClient.say(
+        //                                 channel,
+        //                                 `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                     Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                                 )} ago)`
+        //                             );
+        //                             break;
+
+        //                         case Status.LURK:
+        //                             chatClient.say(
+        //                                 channel,
+        //                                 `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                     Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                                 )} ago)`
+        //                             );
+        //                             break;
+
+        //                         case Status.SLEEP:
+        //                             chatClient.say(
+        //                                 channel,
+        //                                 `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                     Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                                 )} ago)`
+        //                             );
+        //                             break;
+
+        //                         case Status.EATING:
+        //                             chatClient.say(
+        //                                 channel,
+        //                                 `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+        //                                     Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
+        //                                 )} ago)`
+        //                             );
+        //                             break;
+        //                     }
+        //                     await Afk.findByIdAndDelete(afk._id);
+        //                     redis.del(`tl:afk`);
+        //                 }
+        //             }
+        //         });
+        //     }
+        // });
+
+        getUserAfk(user).then(async (afk) => {
+            console.log(afk);
+            if (afk) {
+                await clearUserAfk(user.toLowerCase());
+
+                switch (afk.status) {
+                    case Status.AFK:
+                        chatClient.say(
+                            channel,
+                            `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                Math.ceil((Date.now() - afk.time) / 1000) * 1000
+                            )} ago)`
+                        );
+                        break;
+
+                    case Status.LURK:
+                        chatClient.say(
+                            channel,
+                            `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                Math.ceil((Date.now() - afk.time) / 1000) * 1000
+                            )} ago)`
+                        );
+                        break;
+
+                    case Status.SLEEP:
+                        chatClient.say(
+                            channel,
+                            `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(Math.ceil((Date.now() - afk.time) / 1000) * 1000)} ago)`
+                        );
+                        break;
+
+                    case Status.EATING:
+                        // 25% chance of saying describe taste
+                        let OpieOP = Math.random() < 0.25 ? 'describe taste OpieOP' : '';
+                        chatClient.say(
+                            channel,
+                            `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
+                                Math.ceil((Date.now() - afk.time) / 1000) * 1000
+                            )} ago) ${OpieOP}`
+                        );
+                        break;
                 }
-            } else {
-                Afk.find().then(async (afks) => {
-                    redis.set(`tl:afk`, JSON.stringify(afks), 'EX', 5);
-                    for (let afk of afks) {
-                        if (afk.user === user) {
-                            let time = new Date(afk.timestamp);
-                            switch (afk.status) {
-                                case Status.AFK:
-                                    chatClient.say(
-                                        channel,
-                                        `${user} is no longer afk: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                        )} ago)`
-                                    );
-                                    break;
-
-                                case Status.LURK:
-                                    chatClient.say(
-                                        channel,
-                                        `${user} is no longer lurking: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                        )} ago)`
-                                    );
-                                    break;
-
-                                case Status.SLEEP:
-                                    chatClient.say(
-                                        channel,
-                                        `${user} just woke up: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                        )} ago)`
-                                    );
-                                    break;
-
-                                case Status.EATING:
-                                    chatClient.say(
-                                        channel,
-                                        `${user} is no longer eating: ${(await banphraseCheck(afk.message, channel)) ? '[Banphrased]' : afk.message} (${prettyTime(
-                                            Math.ceil((Date.now() - time.getTime()) / 1000) * 1000
-                                        )} ago)`
-                                    );
-                                    break;
-                            }
-                            await Afk.findByIdAndDelete(afk._id);
-                            redis.del(`tl:afk`);
-                        }
-                    }
-                });
             }
         });
 

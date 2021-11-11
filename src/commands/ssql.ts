@@ -4,7 +4,6 @@ import { SQLParser } from 'sql-in-mongodb';
 import { chatClient } from '..';
 /*
     tables:
-    afk
     channel
     clip
     command
@@ -16,7 +15,6 @@ import { chatClient } from '..';
     term
     usage
 */
-import { Afk } from '../models/afk.model';
 import { Channel } from '../models/channel.model';
 import { Clip } from '../models/clip.model';
 import { CustomCommand } from '../models/command.model';
@@ -46,19 +44,6 @@ class testComand extends Command {
             const parser = new SQLParser();
 
             switch (table) {
-                case 'afks':
-                    {
-                        let data = await Afk.find(parser.parseSql(sqlQuery));
-                        const url = await upload(data.toString());
-                        chatClient.whisper(user, `${url}`);
-
-                        return {
-                            success: true,
-                            message: null,
-                            error: null,
-                        };
-                    }
-                    break;
                 case 'channels':
                     {
                         let data = await Channel.find(parser.parseSql(sqlQuery));
