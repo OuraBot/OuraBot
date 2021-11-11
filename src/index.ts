@@ -199,8 +199,8 @@ async function main(): Promise<void> {
         })
         .map((c) => c.channel);
 
-    const initialChannels = sortedChannels.slice(0, 199);
-    const remainingChannels = sortedChannels.slice(199);
+    const initialChannels = sortedChannels.slice(0, 99);
+    const remainingChannels = sortedChannels.slice(99);
 
     chatClient = new ChatClient(
         process.env.DEBUG === 'TRUE'
@@ -429,6 +429,23 @@ async function main(): Promise<void> {
             }
         }
     });
+
+    // Wait 30 seconds after the initaL creation of the client then start joining remainingChannels
+    setTimeout(async () => {
+        if (remainingChannels.length > 0) {
+            console.log(`Connecting to remaining channels (${remainingChannels.length})`);
+            let t0 = new Date().getTime();
+            for (let channel of remainingChannels) {
+                chatClient.join(channel);
+                await new Promise((resolve) => setTimeout(resolve, 300));
+            }
+
+            let t1 = new Date().getTime();
+            console.log(`Connected to all remaining channels (${remainingChannels.length}) in ${(t1 - t0) / 1000} seconds`);
+        } else {
+            console.log(`No remaining channels to connect to`);
+        }
+    }, 30000);
 
     if (process.env.DEBUG === 'TRUE') {
         setInterval(() => {
@@ -1543,16 +1560,6 @@ async function main(): Promise<void> {
 
         chatClient.say(channel, subResp['onPrimePaidUpgrade'].replace('${displayName}', subInfo.displayName));
     });
-
-    await chatClient.connect().then(async () => {
-        console.log(`Client connected to intial channels`);
-        await new Promise((resolve) => setTimeout(resolve, 30e3));
-        for (const chnl of remainingChannels) {
-            chatClient.join(chnl);
-            await new Promise((r) => setTimeout(r, 300));
-        }
-    });
-    console.log(`Client connected to all channels`);
 }
 main();
 
