@@ -215,11 +215,15 @@ async function main(): Promise<void> {
               }
             : {
                   authProvider: auth,
-                  channels: initialChannels,
+                  channels: [config.owner],
                   botLevel: 'verified',
                   isAlwaysMod: true,
               }
     );
+
+    for (let channel of initialChannels) {
+        chatClient.join(channel);
+    }
 
     Promise.all(
         [...Array(maxSpamClients)].map(async (_, i) => {
