@@ -202,6 +202,9 @@ async function main(): Promise<void> {
     const initialChannels = sortedChannels.slice(0, 99);
     const remainingChannels = sortedChannels.slice(99);
 
+    console.log(`Initial channels: ${initialChannels.join(', ')}`);
+    console.log(`Remaining channels: ${remainingChannels.join(', ')}`);
+
     chatClient = new ChatClient(
         process.env.DEBUG === 'TRUE'
             ? {
