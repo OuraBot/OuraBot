@@ -202,9 +202,6 @@ async function main(): Promise<void> {
     const initialChannels = sortedChannels.slice(0, 199);
     const remainingChannels = sortedChannels.slice(199);
 
-    console.log(`Initial channels: ${initialChannels.join(', ')}`);
-    console.log(`Remaining channels: ${remainingChannels.join(', ')}`);
-
     chatClient = new ChatClient(
         process.env.DEBUG === 'TRUE'
             ? {
@@ -215,15 +212,11 @@ async function main(): Promise<void> {
               }
             : {
                   authProvider: auth,
-                  channels: [config.owner],
+                  channels: initialChannels,
                   botLevel: 'verified',
                   isAlwaysMod: true,
               }
     );
-
-    for (let channel of initialChannels) {
-        chatClient.join(channel);
-    }
 
     Promise.all(
         [...Array(maxSpamClients)].map(async (_, i) => {
