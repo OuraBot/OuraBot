@@ -52,6 +52,30 @@ export class Logger {
                 return;
             }
 
+            // check if error is 429 rate limit error
+            if (error.message.includes('429')) {
+                // implement a 5s rate limit to prevent spamming the discord channel
+                const rateLimit = await redis.get('rate_limit_rate_limit');
+                if (rateLimit) {
+                    return;
+                }
+                await redis.set('rate_limit_rate_limit', '1', 'EX', 10);
+                axios.post(this.discordWebhook, {
+                    embeds: [
+                        {
+                            title: `OuraBot :: TOO MANY REQUESTS 429 @everyone`,
+                            description: error.stack + '\n\n' + args.join('\n'),
+                            color: 16711680,
+                            author: {
+                                name: `OuraBot - ${os.hostname}`,
+                            },
+                            timestamp: new Date(),
+                        },
+                    ],
+                });
+                return;
+            }
+
             let counterData = Number(await redis.get(`ob:counter`));
             if (!counterData) {
                 await redis.set(`ob:counter`, 1);
