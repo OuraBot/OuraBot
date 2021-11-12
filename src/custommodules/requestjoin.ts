@@ -24,8 +24,8 @@ class customModule extends CustomModule {
             axios.post(process.env.DISCORD_WEBHOOK, {
                 username: 'Oura_Bot Request',
                 content: `@everyone **${user}** has requested the bot to join their channel! (${msg.userInfo.userId})\nFFZ Emotes: **${
-                    (await getFfzChannelEmotes(user)).split(' ').length
-                }**\nBTTV Emotes: **${(await getBttvChannelEmotes(user)).split(' ').length}**\n7TV Emotes: **${(await getStvChannelEmotes(user)).length}**\nRecent Messages: **${
+                    (await getFfzChannelEmotes(user))?.split(' ').length
+                }**\nBTTV Emotes: **${(await getBttvChannelEmotes(user))?.split(' ').length}**\n7TV Emotes: **${(await getStvChannelEmotes(user))?.length}**\nRecent Messages: **${
                     recentMessages.data.messages.length
                 }**`,
             });
@@ -42,8 +42,8 @@ class customModule extends CustomModule {
             axios.post(process.env.DISCORD_WEBHOOK, {
                 username: 'Oura_Bot Request',
                 content: `@everyone **${user}** has requested the bot to join their channel! (${msg.userInfo.userId})\nFFZ Emotes: **${
-                    (await getFfzChannelEmotes(user)).split(' ').length
-                }**\nBTTV Emotes: **${(await getBttvChannelEmotes(user)).split(' ').length}**\n7TV Emotes: **${(await getStvChannelEmotes(user)).length}**\nRecent Messages: **${
+                    (await getFfzChannelEmotes(user))?.split(' ').length
+                }**\nBTTV Emotes: **${(await getBttvChannelEmotes(user))?.split(' ').length}**\n7TV Emotes: **${(await getStvChannelEmotes(user))?.length}**\nRecent Messages: **${
                     recentMessages.data.messages.length
                 }**`,
             });
