@@ -66,7 +66,7 @@ class suggestCommand extends Command {
                 <td>${command.usage.replace('<', '&lt;').replace('>', '&gt;')}</td>
                 <td>${cmdData?.requiredPermission?.length > 0 ? cmdData.requiredPermission : getPermissions(command.permission).join(', ')}</td>
                 <td>${command.userCooldown}s</td>
-                <td>${command.channelCooldown}s</td>
+                <td>${command.channelCooldown ? command.channelCooldown : 0}s</td>
                 <td>${command.aliases?.length > 0 ? command.aliases.join(', ') : ''}</td>
                 <td>${command.description}</td>
                 <td>${command.extendedDescription ? command.extendedDescription : ''}</td>
@@ -79,7 +79,7 @@ class suggestCommand extends Command {
                 <td>${command.usage.replace('<', '&lt;').replace('>', '&gt;')}</td>
                 <td>${getPermissions(command.permission).join(', ')}</td>
                 <td>${command.userCooldown}s</td>
-                <td>${command.channelCooldown}s</td>
+                <td>${command.channelCooldown ? command.channelCooldown : 0}s</td>
                 <td>${command.aliases?.length > 0 ? command.aliases.join(', ') : ''}</td>
                 <td>${command.description}</td>
                 <td>${command.extendedDescription ? command.extendedDescription : ''}</td>

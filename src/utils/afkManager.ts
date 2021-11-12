@@ -14,6 +14,8 @@ export enum Status {
     EATING = 'EATING',
 }
 
+let expiringAfks: Afk[] = [];
+
 export async function getUserAfk(user: string): Promise<Afk> {
     let redisData: string = await redis.get(`ob:afks`);
     let afks: Afk[] = [];
@@ -34,25 +36,47 @@ export async function getUserAfk(user: string): Promise<Afk> {
     }
 }
 
+export async function resumeUserAfk(user: string): Promise<boolean> {
+    let afk: Afk = expiringAfks.find((a) => a.user === user);
+    if (afk) {
+        expiringAfks = expiringAfks.filter((a) => a.user !== user);
+
+        let redisData: string = await redis.get(`ob:afks`);
+        let afks: Afk[] = [];
+        if (redisData) {
+            afks = JSON.parse(redisData);
+        } else {
+            afks = [];
+        }
+
+        afks.push(afk);
+        await redis.set(`ob:afks`, JSON.stringify(afks));
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export async function clearUserAfk(user: string) {
     let redisData: string = await redis.get(`ob:afks`);
     let afks: Afk[] = [];
     if (redisData) {
         afks = JSON.parse(redisData);
     } else {
-        return false;
+        return;
     }
 
     if (afks.length === 0) {
-        return false;
+        return;
     }
 
     if (afks.map((a) => a.user).includes(user)) {
         const cleanedAfks = afks.filter((a) => a.user !== user);
         await redis.set(`ob:afks`, JSON.stringify(cleanedAfks));
-        return true;
-    } else {
-        return false;
+        expiringAfks.push(afks.find((a) => a.user === user));
+        setTimeout(() => {
+            expiringAfks = expiringAfks.filter((a) => a.user !== user);
+        }, 1000 * 60 * 5);
     }
 }
 

@@ -1550,8 +1550,13 @@ async function main(): Promise<void> {
     await chatClient.connect().then(async () => {
         console.log(`Client connected to intial channels`);
 
+        if (process.env.DEBUG === 'TRUE') return;
+
         if (remainingChannels.length > 0) {
-            console.log(`Connecting to remaining channels ${remainingChannels.length}`);
+            console.log(`Waiting before connecting to remaining channels (${remainingChannels.length})`);
+            await new Promise((resolve) => setTimeout(resolve, 30000));
+
+            console.log(`Connecting to remaining channels (${remainingChannels.length})`);
             let t0 = Date.now();
             for (let channel of remainingChannels) {
                 chatClient.join(channel);
