@@ -32,6 +32,10 @@ import createHandler = require('github-webhook-handler');
 import { ChannelCommandData, Permissions } from './commands/command.js';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
+import consoleStamp from 'console-stamp';
+consoleStamp(console, {
+    format: ':date(HH:MM:ss.l)',
+});
 
 const shh = process.env.SHH == 'TRUE';
 
@@ -199,8 +203,8 @@ async function main(): Promise<void> {
         })
         .map((c) => c.channel);
 
-    const initialChannels = sortedChannels.slice(0, 199);
-    const remainingChannels = sortedChannels.slice(199);
+    const initialChannels = sortedChannels.slice(0, 99);
+    const remainingChannels = sortedChannels.slice(99);
 
     chatClient = new ChatClient(
         process.env.DEBUG === 'TRUE'
@@ -483,7 +487,7 @@ async function main(): Promise<void> {
     });
 
     async function onMessageOrAction(channel: string, user: string, message: string, msg: TwitchPrivateMessage) {
-        // console.log(`${new Date().toISOString()} PRIVMSG ${channel} :${message}`);
+        console.log(`${new Date().toISOString()} PRIVMSG ${channel} @${user} :${message}`);
 
         nukeMessages.push({
             channel: channel,
@@ -847,7 +851,6 @@ async function main(): Promise<void> {
         // });
 
         getUserAfk(user).then(async (afk) => {
-            console.log(afk);
             if (afk) {
                 await clearUserAfk(user.toLowerCase());
 
@@ -1546,10 +1549,18 @@ async function main(): Promise<void> {
 
     await chatClient.connect().then(async () => {
         console.log(`Client connected to intial channels`);
-        await new Promise((resolve) => setTimeout(resolve, 30e3));
-        for (const chnl of remainingChannels) {
-            chatClient.join(chnl);
-            await new Promise((r) => setTimeout(r, 300));
+
+        if (remainingChannels.length > 0) {
+            console.log(`Connecting to remaining channels ${remainingChannels.length}`);
+            let t0 = Date.now();
+            for (let channel of remainingChannels) {
+                chatClient.join(channel);
+                await new Promise((resolve) => setTimeout(resolve, 300));
+            }
+
+            console.log(`Connected to remaining channels (${remainingChannels.length}) in ${Date.now() - t0}ms`);
+        } else {
+            console.log(`No remaining channels to connect to`);
         }
     });
     console.log(`Client connected to all channels`);
