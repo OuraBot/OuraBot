@@ -1177,9 +1177,16 @@ async function main(): Promise<void> {
 
         if (message.startsWith(channelPrefix)) {
             let cmdmsg = message.substring(channelPrefix.length).split(' ');
-            const cmd = cmdmsg[0];
+            let cmd = cmdmsg[0];
             const args = cmdmsg.slice(1);
             let _cmds = commands;
+
+            // This is a stupid way of doing this, but i can't think of a better way to do it
+            if (message.startsWith(`${channelPrefix} FarmingCommits`)) {
+                cmd = 'farmingcommits';
+                args.shift();
+            }
+            console.log(cmdmsg, cmd, args, 1111);
 
             let targetCmd: string = cmd;
             _cmds.forEach((c: Command) => {
