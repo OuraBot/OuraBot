@@ -107,14 +107,11 @@ export class Discord {
         const sevenTvEmoteCount = (await getStvChannelEmotes(user))?.length ?? 0;
 
         let recentMessagesCount = 0;
-        axios
-            .get(`https://recent-messages.robotty.de/api/v2/recent-messages/${user}`)
-            .then((res) => {
-                recentMessagesCount = res.data.messages.length;
-            })
-            .catch((err) => {
-                recentMessagesCount = 0;
-            });
+        try {
+            recentMessagesCount = (await axios.get(`https://recent-messages.robotty.de/api/v2/recent-messages/${user}`)).data.messages.length;
+        } catch (err) {
+            recentMessagesCount = 0;
+        }
 
         const embed = new MessageEmbed()
             .setTitle(`${user}`)
