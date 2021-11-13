@@ -1369,8 +1369,8 @@ async function main(): Promise<void> {
                                         }
                                     }
                                     if (process.env?.DEBUG !== 'TRUE')
-                                        logCommandUse(user, channel, command.name, data.success, args, `@${user}, command unsucessful: ${data?.message ? data.message : data.error}`);
-                                    chatClient.say(channel, `@${user}, command unsucessful: ${data?.message ? data.message : data.error}`);
+                                        logCommandUse(user, channel, command.name, data.success, args, `@${user}, command unsuccessful: ${data?.message ? data.message : data.error}`);
+                                    chatClient.say(channel, `@${user}, command unsuccessful: ${data?.message ? data.message : data.error}`);
                                 }
                             })
                             .catch(async (err) => {
