@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { redis } from '../index';
+import { resolveUser } from './apis/ivr';
 
 class BaeReturnClass {
     allEmotes: any;
@@ -139,11 +140,29 @@ export async function getAllEmotes(displayName: string): Promise<GetAllEmotesCla
 }
 
 export async function getFfzChannelEmotes(displayName: string): Promise<any> {
+    let redisData = await redis.get(`id:${displayName}`);
+    let channelId = null;
+    if (redisData) {
+        channelId = redisData;
+    } else {
+        const resolvedData = await resolveUser(displayName);
+        channelId = resolvedData.user.id;
+        redis.set(`id:${displayName}`, channelId);
+    }
+
     let respData = null;
     await axios
-        .get(`https://customapi.aidenwallis.co.uk/api/v1/emotes/${displayName}/ffz`)
+        .get(`https://api.frankerfacez.com/v1/room/id/${channelId}`)
         .then((data) => {
-            respData = data.data;
+            console.log(data.data);
+
+            let emotes = [];
+            for (let set in data.data.sets) {
+                for (let emote of data.data.sets[set].emoticons) {
+                    emotes.push(emote.name);
+                }
+            }
+            respData = emotes.join(' ');
         })
         .catch((err) => {
             respData = null;
@@ -152,11 +171,23 @@ export async function getFfzChannelEmotes(displayName: string): Promise<any> {
 }
 
 export async function getBttvChannelEmotes(displayName: string): Promise<any> {
+    let redisData = await redis.get(`id:${displayName}`);
+    let channelId = null;
+    if (redisData) {
+        channelId = redisData;
+    } else {
+        const resolvedData = await resolveUser(displayName);
+        channelId = resolvedData.user.id;
+        redis.set(`id:${displayName}`, channelId);
+    }
+
     let respData = null;
     await axios
-        .get(`https://customapi.aidenwallis.co.uk/api/v1/emotes/${displayName}/bttv`)
+        .get(`https://api.betterttv.net/3/cached/users/twitch/${channelId}`)
         .then((data) => {
-            respData = data.data;
+            const channelEmotes = data.data.channelEmotes.map((emote: any) => emote.code);
+            const sharedEmotes = data.data.sharedEmotes.map((emote: any) => emote.code);
+            respData = channelEmotes.concat(sharedEmotes).join(' ');
         })
         .catch((err) => {
             respData = null;

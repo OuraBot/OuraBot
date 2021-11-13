@@ -1,6 +1,7 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
 import { config, discordManager } from '..';
+import { getBttvChannelEmotes, getFfzChannelEmotes } from '../utils/channelEmotes';
 import { Command, CommandReturnClass, getPermissions, PermissionEnum } from '../utils/commandClass';
 import { Discord } from '../utils/discord';
 
@@ -14,7 +15,8 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
-        throw new Error('test');
+        console.log(await getBttvChannelEmotes(channel), 'bttv');
+        console.log(await getFfzChannelEmotes(channel), 'ffz');
 
         return {
             success: true,

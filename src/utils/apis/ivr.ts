@@ -7,7 +7,7 @@ export class ResolveUser {
 }
 
 export async function resolveUser(user: string): Promise<ResolveUser> {
-    let targetuser = user.toLowerCase().replace('@', '').replace(',', '');
+    let targetuser = user.toLowerCase().replace('@', '').replace(',', '').replace('#', '');
     try {
         let redisData = await redis.get(`cache:ivr/twitch/resolve/${targetuser}`);
         let resp;
