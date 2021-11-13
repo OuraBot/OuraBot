@@ -1,8 +1,9 @@
 require('dotenv').config();
 import axios from 'axios';
 import chalk from 'chalk';
+import { MessageEmbed } from 'discord.js';
 import os from 'os';
-import { redis } from '..';
+import { discordManager, redis } from '..';
 import { ErrorModel } from '../models/error.model';
 
 export enum ILogLevel {
@@ -36,19 +37,13 @@ export class Logger {
                     return;
                 }
                 await redis.set('mongoose_timeout_rate_limit', '1', 'EX', 5);
-                axios.post(this.discordWebhook, {
-                    embeds: [
-                        {
-                            title: `OuraBot :: MONGO DB CONNECTION TIMED OUT @everyone`,
-                            description: error.stack + '\n\n' + args.join('\n'),
-                            color: 16711680,
-                            author: {
-                                name: `OuraBot - ${os.hostname}`,
-                            },
-                            timestamp: new Date(),
-                        },
-                    ],
-                });
+                const embed = new MessageEmbed()
+                    .setTitle('Mongoose Timeout Error')
+                    .setColor(LogColors[logLevel])
+                    .setTimestamp()
+                    .setDescription(`${error.stack}\n\n${args.join('\n')}`);
+
+                discordManager.postError(embed);
                 return;
             }
 
@@ -60,19 +55,14 @@ export class Logger {
                     return;
                 }
                 await redis.set('rate_limit_rate_limit', '1', 'EX', 10);
-                axios.post(this.discordWebhook, {
-                    embeds: [
-                        {
-                            title: `OuraBot :: TOO MANY REQUESTS 429 @everyone`,
-                            description: error.stack + '\n\n' + args.join('\n'),
-                            color: 16711680,
-                            author: {
-                                name: `OuraBot - ${os.hostname}`,
-                            },
-                            timestamp: new Date(),
-                        },
-                    ],
-                });
+
+                const embed = new MessageEmbed()
+                    .setTitle('Rate Limit Error')
+                    .setColor(LogColors[logLevel])
+                    .setTimestamp()
+                    .setDescription(`${error.stack}\n\n${args.join('\n')}`);
+
+                discordManager.postError(embed);
                 return;
             }
 
@@ -92,19 +82,13 @@ export class Logger {
 
             newError.save();
 
-            axios.post(this.discordWebhook, {
-                embeds: [
-                    {
-                        title: `OuraBot :: Error - Error ID #${counterData}`,
-                        description: error.stack + '\n\n' + args.join('\n'),
-                        color: 16711680,
-                        author: {
-                            name: `OuraBot - ${os.hostname}`,
-                        },
-                        timestamp: new Date(),
-                    },
-                ],
-            });
+            const embed = new MessageEmbed()
+                .setTitle('Error:' + ' ' + error.message)
+                .setColor(LogColors[logLevel])
+                .setTimestamp()
+                .setDescription(`${error.stack}\n\n${args.join('\n')}`);
+
+            discordManager.postError(embed);
 
             return counterData;
         }

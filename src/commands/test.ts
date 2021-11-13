@@ -1,7 +1,8 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
-import { config } from '..';
+import { config, discordManager } from '..';
 import { Command, CommandReturnClass, getPermissions, PermissionEnum } from '../utils/commandClass';
+import { Discord } from '../utils/discord';
 
 dotenv.config();
 
@@ -13,23 +14,11 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
-        let permissionInt: number = 0;
-        if (user === config.owner) permissionInt += PermissionEnum.Developer;
-        if (config.admins.includes(user)) permissionInt += PermissionEnum.Admin;
-        if (msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.Broadcaster;
-        if (msg.userInfo.isMod) permissionInt += PermissionEnum.Moderator;
-        if (msg.userInfo.isVip) permissionInt += PermissionEnum.VIP;
-        if (msg.userInfo.isSubscriber) permissionInt += PermissionEnum.Subscriber;
-        if (config.ambassadors.includes(user)) permissionInt += PermissionEnum.Ambassador;
-        if (config.ambassadors.includes(user) && msg.userInfo.isVip) permissionInt += PermissionEnum.AmbassadorVIP;
-        if (config.ambassadors.includes(user) && msg.userInfo.isMod) permissionInt += PermissionEnum.AmbassadorMod;
-        if (config.ambassadors.includes(user) && msg.userInfo.isBroadcaster) permissionInt += PermissionEnum.AmbassadorBroadcaster;
-
-        const permissions = getPermissions(permissionInt);
+        throw new Error('test');
 
         return {
             success: true,
-            message: `Int: ${permissionInt} | ${permissions.join(', ')}`,
+            message: `asdfasdf`,
             error: null,
         };
     };

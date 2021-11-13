@@ -26,6 +26,7 @@ import { Command, CommandReturnClass, getCommands, hasPermisison } from './utils
 import { getConfig } from './utils/config.js';
 import { fetchBots } from './utils/knownBots.js';
 import { ILogLevel, Logger } from './utils/logger.js';
+import { Discord } from './utils/discord';
 import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
@@ -90,6 +91,7 @@ export let apiClient: ApiClient;
 export let apiClient2: ApiClient;
 export let sevenTVSource: EventSource;
 export let badSites: Set<string>;
+export let discordManager: Discord;
 export const logger: Logger = new Logger(ILogLevel.WARN);
 
 // TODO: put this model in a separate file
@@ -1548,6 +1550,8 @@ async function main(): Promise<void> {
     });
 
     await chatClient.connect().then(async () => {
+        discordManager = new Discord();
+
         console.log(`Client connected to intial channels`);
 
         if (process.env.DEBUG === 'TRUE') return;
