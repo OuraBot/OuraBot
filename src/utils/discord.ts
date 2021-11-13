@@ -10,6 +10,7 @@ const channelIds = {
     joinRequests: '908913516642189392',
     errors: '908914129757147157',
     mirroring: '908914196543066182',
+    notices: '908955253016256543',
 };
 
 export class Discord {
@@ -168,6 +169,61 @@ export class Discord {
         }
 
         return (channel as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+
+    async joinFailure(channel: string, reason: string) {
+        const embed = new MessageEmbed().setTitle(`Failed to join ${channel}`).setColor('#ff0000').setDescription(`Failed to join ${channel} for: "${reason}"`).setTimestamp();
+
+        const channel2 = Discord.client.channels.cache.get(channelIds.notices);
+        if (!channel2) {
+            console.log('Could not find join failures channel');
+            return;
+        }
+
+        return (channel2 as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+
+    async logNotice(target: string, user: string, message: string, msg: any) {
+        const embed = new MessageEmbed().setAuthor('NOTICE').setDescription(`${target} - ${user}\n\n${msg.tagsToString()}\n\n${message}`);
+
+        const channel2 = Discord.client.channels.cache.get(channelIds.notices);
+        if (!channel2) {
+            console.log('Could not find notices channel');
+            return;
+        }
+
+        return (channel2 as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+
+    async logTimeout(channel: string, duration: number) {
+        const embed = new MessageEmbed().setAuthor(`I have been timed out in ${channel} for ${duration}`).setColor('#ff0000').setTimestamp();
+
+        const channel2 = Discord.client.channels.cache.get(channelIds.notices);
+        if (!channel2) {
+            console.log('Could not find notices channel');
+            return;
+        }
+
+        return (channel2 as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+    async logBan(channel: string) {
+        const embed = new MessageEmbed().setAuthor(`I have banned in ${channel}`).setColor('#ff0000').setTimestamp();
+
+        const channel2 = Discord.client.channels.cache.get(channelIds.notices);
+        if (!channel2) {
+            console.log('Could not find notices channel');
+            return;
+        }
+
+        return (channel2 as TextChannel).send({
             embeds: [embed],
         });
     }

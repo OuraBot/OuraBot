@@ -407,9 +407,25 @@ async function main(): Promise<void> {
     });
 
     chatClient.onNotice((target, user, message, msg) => {
+        const logNotices = ['msg_timedout', 'msg_banned', 'invalid_user', 'msg_channel_suspended', 'msg_channel_blocked', 'msg_rejected', 'msg_suspended'];
+
         console.log(`${new Date().toISOString()} NOTICE ${target} ${user} ${message} ${msg.rawLine}`);
         if (msg.tagsToString() === 'msg-id=msg_rejected_mandatory') {
             chatClient.say(target, `A message that was about to be posted violates this channel's moderation settings.`);
+        } else if (logNotices.includes(msg.tagsToString())) {
+            discordManager.logNotice(target, user, message, msg);
+        }
+    });
+
+    chatClient.onBan((channel, user) => {
+        if (user === process.env.CLIENT_USERNAME) {
+            discordManager.logBan(channel);
+        }
+    });
+
+    chatClient.onTimeout((channel, user, duration) => {
+        if (user === process.env.CLIENT_USERNAME) {
+            discordManager.logTimeout(channel, duration);
         }
     });
 
@@ -434,6 +450,10 @@ async function main(): Promise<void> {
                 }
             }
         }
+    });
+
+    chatClient.onJoinFailure((channel, reason) => {
+        discordManager.joinFailure(channel, reason);
     });
 
     if (process.env.DEBUG === 'TRUE') {
