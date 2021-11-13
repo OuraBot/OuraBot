@@ -2,35 +2,41 @@ import { exec } from 'child_process';
 import dotenv from 'dotenv';
 import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { safeRestart } from '../utils/taskManager';
 dotenv.config();
 
 class suggestCommand extends Command {
-    name = 'pull';
-    description = 'Pull from Github';
-    usage = 'pull';
+    name = 'update';
+    description = 'Update the bot safely';
+    usage = 'update';
     hidden = true;
     permission = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         exec(`git pull origin`, async (error, stdout, stderr) => {
-            if (error) chatClient.say(channel, `Error: "${error.message}`);
-            if (stderr) chatClient.say(channel, `VisLaud 👉 ${stderr.replace('https://github.com/OuraBot/Twitch-Bot', 'OuraBot/Twitch-Bot')}`);
+            if (error) throw error;
+
             if (stderr) {
                 if (stderr.includes('Already up to date')) {
+                    chatClient.say(channel, 'Already up to date! FailFish');
                 } else {
-                    await chatClient.say(channel, 'peepoSad 👋 process.exit();');
-                    process.exit();
+                    await exec(`yarn install`);
+                    await chatClient.say(channel, 'peepoSad 👋 Restarting');
+                    safeRestart();
                 }
             } else if (stdout) {
                 if (stdout.includes('Already up to date')) {
                     chatClient.say(channel, stdout);
                 } else {
-                    await chatClient.say(channel, 'peepoSad 👋 process.exit();');
-                    process.exit();
+                    await exec(`yarn install`);
+                    await chatClient.say(channel, 'peepoSad 👋 Restarting');
+                    safeRestart();
                 }
             } else {
                 throw new Error(error + stdout + stderr);
             }
         });
+
+        // safeRestart();
 
         return {
             success: true,

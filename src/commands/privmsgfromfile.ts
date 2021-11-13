@@ -5,6 +5,7 @@ import { chatClient, commands, FILE_URLS_REGEX, redis } from '..';
 import { Term } from '../models/term.model';
 import { logCommandUse } from '../models/usage.model';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
 class testComand extends Command {
@@ -24,6 +25,8 @@ class testComand extends Command {
         let msgs = (await axios.get(args[0])).data.split('\n');
 
         const silent = args.includes('--silent');
+
+        addTask(channel, this.name);
 
         for (let msg of msgs) {
             let args = msg.split(' ');
@@ -58,6 +61,7 @@ class testComand extends Command {
                 chatClient.say(channel, `Unrecognizd command`);
             }
         }
+        removeTask(channel, this.name);
 
         return {
             success: true,

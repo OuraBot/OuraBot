@@ -3,6 +3,7 @@ import { cancelSpamChannels, chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
 import { sanitizeMessage } from '../utils/stringManipulation';
+import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
 const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
@@ -58,6 +59,8 @@ class spamCommand extends Command {
                 reducedcooldown: 1,
             };
 
+        addTask(channel, this.name);
+
         if (isFast) {
             for (let i = 0; i < spamCount; i++) {
                 await getClient().say(channel, spamText);
@@ -78,6 +81,7 @@ class spamCommand extends Command {
                 if (i === spamCount - 1) await chatClient.say(channel, '/color dodgerblue');
             }
         }
+        removeTask(channel, this.name);
 
         return {
             success: true,

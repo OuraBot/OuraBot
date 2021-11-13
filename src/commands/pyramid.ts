@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
 const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
@@ -53,6 +54,8 @@ class pyramidCommand extends Command {
                 reducedcooldown: 1,
             };
 
+        addTask(channel, this.name);
+
         // first half
         for (let i = 0; i < width; i++) {
             let color = poorColorList[i % poorColorList.length];
@@ -70,6 +73,7 @@ class pyramidCommand extends Command {
                 await chatClient.say(channel, `/color dodgerblue`);
             }
         }
+        removeTask(channel, this.name);
 
         return {
             success: true,

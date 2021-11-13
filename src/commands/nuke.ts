@@ -4,6 +4,7 @@ import { chatClient, NukeMessage, nukeMessages } from '..';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
+import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -115,6 +116,7 @@ class suggestCommand extends Command {
         const URL = await upload(finalString);
         chatClient.whisper(user, `Nuke report from ${channel}: ${URL}`);
 
+        addTask(channel, this.name);
         for (const userToTimeout of usersToTimeout) {
             if (perma) {
                 await getClient().say(channel, `/ban ${userToTimeout} Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
@@ -122,6 +124,7 @@ class suggestCommand extends Command {
                 await getClient().say(channel, `/timeout ${userToTimeout} ${timeoutTime} Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`);
             }
         }
+        removeTask(channel, this.name);
 
         return {
             success: true,

@@ -4,6 +4,7 @@ import { cancelFilesayChannels, chatClient, FILE_URLS_REGEX } from '../index';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
 import { sanitizeMessage } from '../utils/stringManipulation';
+import { addTask, removeTask } from '../utils/taskManager';
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ class testComand extends Command {
                 message: `FailFish You can't use fast and slow flags simultaneously`,
                 error: null,
             };
+
+        addTask(channel, this.name);
 
         if (args.length >= 2) {
             let formattedMessage = args.slice(1).join(' ').replace('--fast', '').replace('--silent', '').replace('--slow', '');
@@ -155,6 +158,8 @@ class testComand extends Command {
             let t2 = Date.now();
             chatClient.say(channel, `@${user}, ${users.length} lines - Took ${(t2 - t1) / 1000} seconds.`);
         }
+
+        removeTask(channel, this.name);
 
         return {
             success: true,

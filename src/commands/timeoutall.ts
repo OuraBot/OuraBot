@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { apiClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
+import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
 let knownBots = [
@@ -49,9 +50,12 @@ class suggestCommand extends Command {
                 error: null,
             };
 
+        addTask(channel, this.name);
+
         for (let chatter of chatters) {
             getClient().say(channel, `/timeout ${chatter} ${length}`);
         }
+        removeTask(channel, this.name);
 
         return {
             success: true,

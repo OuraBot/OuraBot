@@ -4,6 +4,7 @@ import { apiClient, chatClient, config } from '../index';
 import { upload } from '../utils/apis/haste';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getClient } from '../utils/spamClients';
+import { addTask, removeTask } from '../utils/taskManager';
 
 dotenv.config();
 
@@ -64,9 +65,11 @@ class testComand extends Command {
             chatClient.whisper(user, `${channel}: DRYRUN Follownuke: Caught ${users.length} users | ${userList} ${targetChannel === channel ? '' : `(${targetChannel})`}`);
         } else {
             chatClient.whisper(user, `${channel}: Follownuke: Banning ${users.length} users | ${userList}`);
+            addTask(channel, this.name);
             for (const _user of users) {
                 getClient().ban(channel, _user, `Follownuke by ${user}`);
             }
+            removeTask(channel, this.name);
         }
 
         return {
