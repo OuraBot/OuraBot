@@ -32,7 +32,7 @@ const schema = new Schema<IUsage>(
 export const Usage = model<IUsage>('Usage', schema);
 
 export function logCommandUse(user: string, channel: string, command: string, success: boolean, args: string[], response: string) {
-    discordManager.mirrorUsage(channel, user, message, args, response, success);
+    discordManager.mirrorUsage(channel, user, command, args, response, success);
     return new Usage({
         user,
         channel,
