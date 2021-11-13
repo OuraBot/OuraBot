@@ -28,7 +28,7 @@ class suggestCommand extends Command {
         } else {
             return {
                 success: true,
-                message: 'You cannot resumve your AFK status because it ended more than 5 minutes ago',
+                message: 'You cannot resume your AFK status because it ended more than 5 minutes ago',
                 error: null,
             };
         }
