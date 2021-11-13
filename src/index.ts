@@ -34,6 +34,7 @@ import { ChannelCommandData, Permissions } from './commands/command.js';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
 import consoleStamp from 'console-stamp';
+import { canUseCommand } from './utils/blockManager.js';
 consoleStamp(console, {
     format: ':date(HH:MM:ss.l)',
 });
@@ -872,6 +873,8 @@ async function main(): Promise<void> {
         //     }
         // });
 
+        if (!(await canUseCommand)) return;
+
         getUserAfk(user).then(async (afk) => {
             if (afk) {
                 await clearUserAfk(user.toLowerCase());
@@ -1190,6 +1193,7 @@ async function main(): Promise<void> {
             if (_cmds.get(targetCmd)) {
                 const command: Command = commands.get(targetCmd);
                 console.log(command);
+                if (!(await canUseCommand(user, command.name))) return;
 
                 async function handleCooldown() {
                     if (!command?.userCooldown) return true;
