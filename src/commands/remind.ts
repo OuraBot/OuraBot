@@ -72,7 +72,7 @@ class remindCommand extends Command {
 
         return {
             success: true,
-            message: `I will remind ${userData.user.displayName} when they next type SeemsGood (use the unremind cmomand to unset this reminder)`,
+            message: `I will remind ${userData.user.displayName} when they next type SeemsGood (use the unremind command to unset this reminder)`,
             error: null,
         };
     };
