@@ -35,6 +35,8 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
 import consoleStamp from 'console-stamp';
 import { canUseCommand } from './utils/blockManager.js';
+import { getTimedReminders, removeReminder } from './utils/timedReminders.js';
+import prettyMilliseconds = require('pretty-ms');
 consoleStamp(console, {
     format: ':date(HH:MM:ss.l)',
 });
@@ -462,6 +464,17 @@ async function main(): Promise<void> {
             chatClient.say(`#oura_bot`, `Bot requests will be processed within 24 hours. Please read the panels before requesting.`);
         }, 1000 * 60 * 5);
     }
+
+    // Check for timed reminders
+    setInterval(async () => {
+        const reminders = await getTimedReminders();
+        for (const reminder of reminders) {
+            if (reminder.timestamp <= Date.now()) {
+                chatClient.say(reminder.channel, `@${reminder.user}, timed reminder: "${reminder.reminder}" from ${prettyMilliseconds(Date.now() - reminder.now, { secondsDecimalDigits: 0 })} ago`);
+                await removeReminder(reminder.reminder, reminder.user, reminder.timestamp, reminder.channel);
+            }
+        }
+    }, 1000);
 
     chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
         if (user === config.owner) {
