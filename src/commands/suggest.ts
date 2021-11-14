@@ -11,6 +11,13 @@ class suggestCommand extends Command {
     userCooldown = 10;
     channelCooldown = 1;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
+        if (args.length === 0)
+            return {
+                success: false,
+                message: 'Missing suggestion message',
+                error: null,
+            };
+
         let ID = await createNewSuggestion(user, args.join(' '));
 
         return {
