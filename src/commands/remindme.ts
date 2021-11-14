@@ -11,7 +11,7 @@ dotenv.config();
 class remindCommand extends Command {
     name = 'remindme';
     description = 'Remind yourself in a given amount of time with a given mesage';
-    usage = 'remindme <message> (in/on) <time>';
+    usage = 'remindme <message> (in/on) <time (use full unit names instead of abbreviated ones (minutes instead of m, etc))>';
     userCooldown = 10;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])

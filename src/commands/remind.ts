@@ -7,7 +7,7 @@ dotenv.config();
 
 class remindCommand extends Command {
     name = 'remind';
-    description = 'Remind a user for when they next type in chat';
+    description = 'Remind a user for when they next type in chat (use the remindme for timed reminders)';
     usage = 'remind <user> <message>';
     userCooldown = 10;
     channelCooldown = 1;
@@ -16,13 +16,6 @@ class remindCommand extends Command {
             return {
                 success: false,
                 message: 'Missing user',
-                error: null,
-            };
-
-        if (args[0] == 'in')
-            return {
-                success: false,
-                message: "FailFish I can't set timed reminders",
                 error: null,
             };
 
@@ -79,7 +72,7 @@ class remindCommand extends Command {
 
         return {
             success: true,
-            message: `I will remind ${userData.user.displayName} when they next type SeemsGood`,
+            message: `I will remind ${userData.user.displayName} when they next type SeemsGood (use the unremind cmomand to unset this reminder)`,
             error: null,
         };
     };
