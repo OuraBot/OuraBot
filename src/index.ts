@@ -514,6 +514,12 @@ async function main(): Promise<void> {
     let commands = await getCommands();
     let custommodules = await getModules();
 
+    commands.forEach((command: Command) => {
+        if (!command.userCooldown && !command.hidden) {
+            console.warn(chalk.yellow(`Command ${command.name} has no userCooldown set.`));
+        }
+    });
+
     chatClient.onAction((channel, user, message, msg) => {
         onMessageOrAction(channel, user, message, msg);
     });
@@ -1216,17 +1222,14 @@ async function main(): Promise<void> {
                 if (!(await canUseCommand(user, command.name))) return;
 
                 async function handleCooldown() {
-                    if (!command?.userCooldown) return true;
-                    if (!command?.channelCooldown) return true;
-
                     let userCooldownData = await redis.get(`cooldown:${command.name}:${channel}:${user}`);
                     if (userCooldownData) return false;
 
                     let channelCooldownData = await redis.get(`cooldown:${command.name}:${channel}`);
                     if (channelCooldownData) return false;
 
-                    await redis.set(`cooldown:${command.name}:${channel}:${user}`, Date.now(), 'EX', command.userCooldown);
-                    await redis.set(`cooldown:${command.name}:${channel}`, Date.now(), 'EX', command.channelCooldown);
+                    if (command?.userCooldown) await redis.set(`cooldown:${command.name}:${channel}:${user}`, Date.now(), 'EX', command.userCooldown);
+                    if (command?.channelCooldown) await redis.set(`cooldown:${command.name}:${channel}`, Date.now(), 'EX', command.channelCooldown);
 
                     return true;
                 }

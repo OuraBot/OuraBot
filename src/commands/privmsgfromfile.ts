@@ -14,6 +14,7 @@ class testComand extends Command {
     extendedDescription = 'Runs a list of messages';
     usage = 'privmsgfromfile <file url>';
     permission = 1;
+    hidden = true;
     execute = async (user: string, channel: string, args: string[], _: string, _msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
         if (!args[0].match(FILE_URLS_REGEX))
             return {
