@@ -11,6 +11,7 @@ const channelIds = {
     errors: '908914129757147157',
     mirroring: '908914196543066182',
     notices: '908955253016256543',
+    suggestions: '908913179109773363',
 };
 
 export class Discord {
@@ -98,7 +99,7 @@ export class Discord {
     async postJoinRequest(user: string, userId: string) {
         const channel = Discord.client.channels.cache.get(channelIds.joinRequests);
         if (!channel) {
-            console.log('Could not find join requests channel');
+            throw new Error('Could not find join requests channel');
             return;
         }
 
@@ -140,7 +141,7 @@ export class Discord {
     async postError(embed: MessageEmbed) {
         const channel = Discord.client.channels.cache.get(channelIds.errors);
         if (!channel) {
-            console.log('Could not find errors channel');
+            throw new Error('Could not find errors channel');
             return;
         }
 
@@ -161,7 +162,7 @@ export class Discord {
 
         const channel = Discord.client.channels.cache.get(channelIds.mirroring);
         if (!channel) {
-            console.log('Could not find mirror channel');
+            throw new Error('Could not find mirror channel');
             return;
         }
 
@@ -175,7 +176,7 @@ export class Discord {
 
         const channel2 = Discord.client.channels.cache.get(channelIds.notices);
         if (!channel2) {
-            console.log('Could not find join failures channel');
+            throw new Error('Could not find join failures channel');
             return;
         }
 
@@ -189,7 +190,7 @@ export class Discord {
 
         const channel2 = Discord.client.channels.cache.get(channelIds.notices);
         if (!channel2) {
-            console.log('Could not find notices channel');
+            throw new Error('Could not find notices channel');
             return;
         }
 
@@ -203,7 +204,7 @@ export class Discord {
 
         const channel2 = Discord.client.channels.cache.get(channelIds.notices);
         if (!channel2) {
-            console.log('Could not find notices channel');
+            throw new Error('Could not find notices channel');
             return;
         }
 
@@ -216,11 +217,25 @@ export class Discord {
 
         const channel2 = Discord.client.channels.cache.get(channelIds.notices);
         if (!channel2) {
-            console.log('Could not find notices channel');
+            throw new Error('Could not find notices channel');
             return;
         }
 
         return (channel2 as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+
+    async postSuggestion(user: string, suggestion: string) {
+        const channel = Discord.client.channels.cache.get(channelIds.suggestions);
+        if (!channel) {
+            throw new Error('Could not find suggestions channel');
+            return;
+        }
+
+        const embed = new MessageEmbed().setAuthor('New Suggestion').setTitle(`${user}`).setColor('#0099ff').setDescription(suggestion).setTimestamp();
+
+        return (channel as TextChannel).send({
             embeds: [embed],
         });
     }

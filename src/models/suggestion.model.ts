@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { connection, model, Schema } from 'mongoose';
-import { redis } from '../index';
+import { discordManager, redis } from '../index';
 dotenv.config();
 
 delete connection.models['Suggestion'];
@@ -31,19 +31,7 @@ export async function createNewSuggestion(user: string, message: string): Promis
         await redis.incr(`ob:counter`);
     }
 
-    axios.post(process.env.DISCORD_WEBHOOK, {
-        embeds: [
-            {
-                title: `OuraBot Suggestion - Suggestion ID #${counterData}`,
-                description: `${message}`,
-                color: 0x00ff00,
-                author: {
-                    name: `Suggestion by ${user}`,
-                },
-                timestamp: new Date(),
-            },
-        ],
-    });
+    discordManager.postSuggestion(user, message);
 
     const newError = new SuggestionModel({
         user: user,
