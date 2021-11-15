@@ -66,6 +66,25 @@ export class Logger {
                 return;
             }
 
+            // check if error is duplicate key error
+            if (error.message.includes('E11000 duplicate key error')) {
+                // implement a 30s rate limit to prevent spamming the discord channel
+                const rateLimit = await redis.get('duplicate_key_rate_limit');
+                if (rateLimit) {
+                    return;
+                }
+                await redis.set('duplicate_key_rate_limit', '1', 'EX', 30);
+
+                const embed = new MessageEmbed()
+                    .setTitle('Duplicate Key Error')
+                    .setColor(LogColors[logLevel])
+                    .setTimestamp()
+                    .setDescription(`${error.stack}\n\n${args.join('\n')}`);
+
+                discordManager.postError(embed);
+                return;
+            }
+
             let counterData = Number(await redis.get(`ob:counter`));
             if (!counterData) {
                 await redis.set(`ob:counter`, 1);
