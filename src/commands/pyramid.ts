@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { chatClient } from '..';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { getClient } from '../utils/spamClients';
 import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
@@ -59,18 +60,20 @@ class pyramidCommand extends Command {
         // first half
         for (let i = 0; i < width; i++) {
             let color = poorColorList[i % poorColorList.length];
-            await chatClient.say(channel, `/color ${color}`);
-            chatClient.say(channel, '/me ' + emote.repeat(i + 1).replace(/^(\.|\/|!)/, ''));
+            await getClient().say(channel, `/color ${color}`);
+            getClient().say(channel, '/me ' + emote.repeat(i + 1).replace(/^(\.|\/|!)/, ''));
+            await new Promise((resolve) => setTimeout(resolve, 200));
         }
 
         // second half
         for (let i = width; i > 0; i--) {
             let color = poorColorList[i % poorColorList.length];
-            await chatClient.say(channel, `/color ${color}`);
-            if (i != width) chatClient.say(channel, '/me ' + emote.repeat(i).replace(/^(\.|\/|!)/, ''));
+            await getClient().say(channel, `/color ${color}`);
+            if (i != width) getClient().say(channel, '/me ' + emote.repeat(i).replace(/^(\.|\/|!)/, ''));
+            await new Promise((resolve) => setTimeout(resolve, 200));
 
             if (i == 1) {
-                await chatClient.say(channel, `/color dodgerblue`);
+                await getClient().say(channel, `/color dodgerblue`);
             }
         }
         removeTask(channel, this.name);
