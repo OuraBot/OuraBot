@@ -8,7 +8,6 @@ class suggestCommand extends Command {
     description = 'Tuck a user to bed :)';
     usage = 'tuck <user> <emote?>';
     userCooldown = 5;
-    channelCooldown = 1;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         const userToTuck = args[0] || 'Themself';

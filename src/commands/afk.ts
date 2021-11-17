@@ -69,7 +69,6 @@ class suggestCommand extends Command {
     usage = 'afk <reason?>';
     extendedDescription = `Use the "lurk" or "gn" alias for their corrosponding statuses.`;
     userCooldown = 10;
-    channelCooldown = 1;
     aliases = ['lurk', 'gn', 'brb', 'food'];
     execute = async (user: string, channel: string, args: string[], cmdMsg: string): Promise<CommandReturnClass> => {
         let reason: string;
