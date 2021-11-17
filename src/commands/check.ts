@@ -1,33 +1,39 @@
 import dotenv from 'dotenv';
 import { SuggestionModel } from '../models/suggestion.model';
+import { getUserAfk, Status } from '../utils/afkManager';
 import { Command, CommandReturnClass } from '../utils/commandClass';
+import { capitalizeFirstLetter, obfuscateName } from '../utils/stringManipulation';
+import prettyMs from 'pretty-ms';
 dotenv.config();
 
 class suggestCommand extends Command {
     name = 'check';
-    description = 'Check the status of a suggestion.';
-    usage = 'check <ID>';
+    description = 'Check if a user is AFK';
+    usage = 'check <user>';
     userCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        const idToCheck = Number(args[0]);
-        if (isNaN(idToCheck))
+        if (!args[0])
             return {
                 success: false,
-                message: 'Invalid suggestion ID',
+                message: 'Missing user to check',
                 error: null,
             };
-        let suggestion = await SuggestionModel.findOne({ id: idToCheck });
-        console.log(suggestion);
-        if (!suggestion) {
+
+        let sanitizedUser = args[0].toLowerCase().trim().replace(/^@/, '').replace(/,$/, '');
+        const afk = await getUserAfk(sanitizedUser);
+        if (afk) {
+            const type = afk.status === Status.AFK ? 'AFK' : `${afk.status.toLowerCase()}`;
+            const delta = Math.floor(Date.now() - afk.time);
+
             return {
-                success: false,
-                message: 'Suggestion not found',
+                success: true,
+                message: `${obfuscateName(sanitizedUser)} is ${type}: ${afk.message} (${prettyMs(delta)} ago)`,
                 error: null,
             };
         } else {
             return {
                 success: true,
-                message: `Suggestion ID: ${suggestion.id} ${suggestion.completed ? 'has been completed. ✅ ' : `has not been completed.`} Suggestion: ${suggestion.message}`,
+                message: `${obfuscateName(sanitizedUser)} is not AFK`,
                 error: null,
             };
         }
