@@ -98,6 +98,10 @@ export async function setUserAfk(user: string, status: Status, message: string) 
         time: Date.now(),
     };
 
+    if (expiringAfks.map((a) => a.user).includes(user)) {
+        expiringAfks = expiringAfks.filter((a) => a.user !== user);
+    }
+
     afks.push(afk);
 
     await redis.set('ob:afks', JSON.stringify(afks));
