@@ -212,8 +212,27 @@ export class Discord {
             embeds: [embed],
         });
     }
+
     async logBan(channel: string) {
         const embed = new MessageEmbed().setAuthor(`I have banned in ${channel}`).setColor('#ff0000').setTimestamp();
+
+        const channel2 = Discord.client.channels.cache.get(channelIds.notices);
+        if (!channel2) {
+            throw new Error('Could not find notices channel');
+            return;
+        }
+
+        return (channel2 as TextChannel).send({
+            embeds: [embed],
+        });
+    }
+
+    async logBadMessage(channel: string, message: string) {
+        const embed = new MessageEmbed()
+            .setAuthor(`I have received a bad message in ${channel}`)
+            .setColor('#ff0000')
+            .setTimestamp()
+            .setDescription(`\`${message}\`\n\n**SOMEONE SHOULD LOOK INTO THIS CHANNEL!!!**`);
 
         const channel2 = Discord.client.channels.cache.get(channelIds.notices);
         if (!channel2) {

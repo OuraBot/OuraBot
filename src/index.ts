@@ -1,15 +1,18 @@
 import { ApiClient } from '@twurple/api';
 import { AccessToken, ClientCredentialsAuthProvider, RefreshingAuthProvider } from '@twurple/auth';
 import { ChatClient, Whisper } from '@twurple/chat';
+import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import axios from 'axios';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
+import consoleStamp from 'console-stamp';
 import * as dotenv from 'dotenv';
 import { promises as fs } from 'fs';
 import getUrls from 'get-urls';
 import { createServer } from 'http';
 import Redis from 'ioredis';
 import mongoose from 'mongoose';
+import { ChannelCommandData } from './commands/command.js';
 import { unescapeHTML } from './commands/ddoi.js';
 import { moduleEnum } from './commands/modmodule.js';
 import { Channel, IChannel } from './models/channel.model';
@@ -20,23 +23,21 @@ import { ISub, Sub } from './models/sub.model.js';
 import { ITerm, Term } from './models/term.model.js';
 import { logCommandUse } from './models/usage.model';
 import { CustomModule, getModules } from './types/custommodule.js';
+import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { prettyTime } from './utils/auroMs';
+import { canUseCommand } from './utils/blockManager.js';
 import { Command, CommandReturnClass, getCommands, hasPermisison } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
+import { Discord } from './utils/discord';
 import { fetchBots } from './utils/knownBots.js';
 import { ILogLevel, Logger } from './utils/logger.js';
-import { Discord } from './utils/discord';
 import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
+import { getTimedReminders, removeReminder } from './utils/timedReminders.js';
 import EventSource = require('eventsource');
 import createHandler = require('github-webhook-handler');
-import { ChannelCommandData, Permissions } from './commands/command.js';
-import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
-import consoleStamp from 'console-stamp';
-import { canUseCommand } from './utils/blockManager.js';
-import { getTimedReminders, removeReminder } from './utils/timedReminders.js';
 import prettyMilliseconds = require('pretty-ms');
+import { checkMessage } from './utils/safeMessage.js';
 consoleStamp(console, {
     format: ':date(HH:MM:ss.l)',
 });
@@ -226,6 +227,17 @@ async function main(): Promise<void> {
                   isAlwaysMod: true,
               }
     );
+
+    const _chatClientSay = chatClient.say;
+    chatClient.say = (channel: string, message: string): Promise<void> => {
+        console.log(`[${channel}] ${message}`);
+        if (checkMessage(message)) {
+            return _chatClientSay.call(chatClient, channel, message);
+        } else {
+            discordManager.logBadMessage(channel, message);
+            return _chatClientSay.call(chatClient, channel, 'A message that was supposed to be posted here was held back');
+        }
+    };
 
     Promise.all(
         [...Array(maxSpamClients)].map(async (_, i) => {
