@@ -16,5 +16,5 @@ export function checkMessage(message: string): Boolean {
 }
 
 export function checkForAscii(message: string): Boolean {
-    return message.match(ASCII_REGEX) ? true : false;
+    return message.match(ASCII_REGEX)?.length >= 5 ? true : false;
 }
