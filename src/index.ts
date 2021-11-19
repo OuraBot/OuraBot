@@ -481,8 +481,25 @@ async function main(): Promise<void> {
         const reminders = await getTimedReminders();
         for (const reminder of reminders) {
             if (reminder.timestamp <= Date.now()) {
-                chatClient.say(reminder.channel, `@${reminder.user}, timed reminder: "${reminder.reminder}" from ${prettyMilliseconds(Date.now() - reminder.now, { secondsDecimalDigits: 0 })} ago`);
-                await removeReminder(reminder.reminder, reminder.user, reminder.timestamp, reminder.channel);
+                if (getUserAfk(reminder.user)) {
+                    chatClient.say(
+                        reminder.channel,
+                        `@${reminder.user}, timed reminder: "${reminder.reminder}" from ${prettyMilliseconds(Date.now() - reminder.now, { secondsDecimalDigits: 0 })} ago`
+                    );
+                    new Reminder({
+                        username: reminder.user,
+                        message: `Timed reminder from yourself: ${reminder.reminder}`,
+                        timestamp: new Date(reminder.now),
+                        author: 'oura_bot',
+                    }).save();
+                    await removeReminder(reminder.reminder, reminder.user, reminder.timestamp, reminder.channel);
+                } else {
+                    chatClient.say(
+                        reminder.channel,
+                        `@${reminder.user}, timed reminder: "${reminder.reminder}" from ${prettyMilliseconds(Date.now() - reminder.now, { secondsDecimalDigits: 0 })} ago`
+                    );
+                    await removeReminder(reminder.reminder, reminder.user, reminder.timestamp, reminder.channel);
+                }
             }
         }
     }, 1000);
