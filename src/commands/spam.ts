@@ -71,14 +71,16 @@ class spamCommand extends Command {
 
                 await new Promise((resolve) => setTimeout(resolve, 100));
                 if (cancelSpam(channel)) {
-                    await chatClient.say(channel, '/color dodgerblue');
+                    await getClient().say(channel, '/color dodgerblue');
                     break;
                 }
 
-                await chatClient.say(channel, `/color ${color}`);
-                chatClient.say(channel, `/me ${spamText}`);
+                await getClient().say(channel, `/color ${color}`);
+                getClient().say(channel, `/me ${spamText}`);
 
-                if (i === spamCount - 1) await chatClient.say(channel, '/color dodgerblue');
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                if (i === spamCount - 1) await getClient().say(channel, '/color dodgerblue');
             }
         }
         removeTask(channel, this.name);
