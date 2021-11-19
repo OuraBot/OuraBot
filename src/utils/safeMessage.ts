@@ -1,3 +1,5 @@
+import { ASCII_REGEX } from '..';
+
 export function checkMessage(message: string): Boolean {
     message = message.replace(/[\u200B-\u200D\uFEFF]/g, '').replace('\u{E0000}', '');
     if (message.match(/VoteNay\s*g{1,2}(?:a|er)/gi)) {
@@ -11,4 +13,8 @@ export function checkMessage(message: string): Boolean {
     } else {
         return true;
     }
+}
+
+export function checkForAscii(message: string): Boolean {
+    return message.match(ASCII_REGEX) ? true : false;
 }
