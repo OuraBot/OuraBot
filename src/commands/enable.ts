@@ -14,7 +14,7 @@ class testComand extends Command {
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         return {
             success: true,
-            message: `This command is now deprecated. Please use the "command" command to set certain command properties.`,
+            message: `Please use the "command" command to set certain command properties. (Do "${this.prefix}command <command> enabled true")`,
             error: null,
         };
     };

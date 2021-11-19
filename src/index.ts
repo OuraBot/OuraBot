@@ -1120,6 +1120,7 @@ async function main(): Promise<void> {
             const pingCommand: Command = commands.get('ping');
 
             if (await handleCooldown()) {
+                pingCommand.prefix = channelPrefix;
                 pingCommand.execute(user, channel, []).then((data: CommandReturnClass) => {
                     chatClient.say(channel, `${data.noping ? '' : `@${user}, `} ${data.message}`);
                 });
@@ -1374,6 +1375,8 @@ async function main(): Promise<void> {
                             });
                     }
                 }
+
+                command.prefix = channelPrefix;
 
                 if (command.permission) {
                     if (useCustomPermission) {

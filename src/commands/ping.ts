@@ -17,17 +17,12 @@ class suggestCommand extends Command {
         let dateSinceCommit = prettyMilliseconds(new Date().getTime() - new Date(commitDate).getTime(), {
             secondsDecimalDigits: 0,
         });
-        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
-        if (channelPrefix) {
-            channelPrefix = channelPrefix;
-        } else {
-            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
-        }
+
         return {
             success: true,
             message: `Pong! Serving ${channelList.length} channels for ${prettyMilliseconds(Math.round(process.uptime() * 1000), {
                 secondsDecimalDigits: 0,
-            })}. ${keys} keys. On commit ${commitHash.substr(0, 7)} (${dateSinceCommit} ago). Prefix: ${channelPrefix}`,
+            })}. ${keys} keys. On commit ${commitHash.substr(0, 7)} (${dateSinceCommit} ago). Prefix: ${this.prefix}`,
             error: null,
         };
     };

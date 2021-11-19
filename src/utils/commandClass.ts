@@ -53,6 +53,7 @@ export class Command {
     allowCustomPermissions?: boolean | undefined;
     disableLocked?: boolean | undefined;
     aliasLocked?: boolean | undefined;
+    prefix: string | undefined;
     execute: (user: string, channel: string, args: string[], cmdMsg?: string, msg?: TwitchPrivateMessage) => Promise<any> | undefined;
 }
 

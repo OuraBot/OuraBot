@@ -34,16 +34,9 @@ class suggestCommand extends Command {
             }
         }
 
-        let channelPrefix = await redis.get(`ob:${channel}:prefix`);
-        if (channelPrefix) {
-            channelPrefix = channelPrefix;
-        } else {
-            channelPrefix = process.env.DEBUG === 'TRUE' ? config.debugprefix : config.prefix;
-        }
-
         return {
             success: true,
-            message: `${channelPrefix}${command.usage}`,
+            message: `${this.prefix}${command.usage}`,
             error: null,
         };
     };
