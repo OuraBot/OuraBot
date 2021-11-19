@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import moment from 'moment';
+import prettyMilliseconds from 'pretty-ms';
 import { subageLookup } from '../utils/apis/ivr';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
@@ -46,8 +46,12 @@ class suggestCommand extends Command {
         if (resp.data.subscribed) {
             let tier = resp.data.meta.tier;
             let dnr = resp.data.meta.dnr;
-            let endsAt = prettyTime(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now());
-            let renewsAt = prettyTime(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now());
+            let endsAt = prettyMilliseconds(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now(), {
+                secondsDecimalDigits: 0,
+            });
+            let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
+                secondsDecimalDigits: 0,
+            });
             let gift = resp.data.meta?.gift;
 
             let saReturn: string;
@@ -94,7 +98,9 @@ class suggestCommand extends Command {
                 error: null,
             };
         } else {
-            let endedAt = prettyTime(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000);
+            let endedAt = prettyMilliseconds(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000, {
+                secondsDecimalDigits: 0,
+            });
 
             if (resp.data.cumulative.months > 0) {
                 // prettier-ignore

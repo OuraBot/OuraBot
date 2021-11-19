@@ -1,8 +1,8 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { apiClient } from '..';
 import { resolveUser } from '../utils/apis/ivr';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 
 dotenv.config();
@@ -45,7 +45,9 @@ class testComand extends Command {
                 success: true,
                 message: `${args[0] ? args[0] : 'This channel'} is ${streamInfo?.gameName ? `playing ${streamInfo.gameName}` : `streaing under no category`} for ${
                     streamInfo.viewers
-                } viewers for ${prettyTime(new Date().getTime() - streamInfo.startDate.getTime(), false)}. https://twitch.tv/${streamInfo.userName} `,
+                } viewers for ${prettyMilliseconds(new Date().getTime() - streamInfo.startDate.getTime(), {
+                    secondsDecimalDigits: 0,
+                })}. https://twitch.tv/${streamInfo.userName} `,
                 error: null,
             };
         } else {

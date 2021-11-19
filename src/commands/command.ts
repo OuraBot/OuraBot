@@ -1,7 +1,6 @@
 import { Channel } from 'discord.js';
 import dotenv from 'dotenv';
 import { commands, commitDate, commitHash, config, redis } from '..';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
 dotenv.config();

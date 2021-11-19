@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { subageLookup } from '../utils/apis/ivr';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
@@ -29,8 +29,11 @@ class suggestCommand extends Command {
             let followedAt = Date.now() - new Date(userResp.data.followedAt).getTime();
             return {
                 success: true,
-                message: `${targetUser.toLowerCase() === user.toLowerCase() ? 'You have' : `${obfuscateName(targetUser)} has`} been following ${obfuscateName(targetChannel)} for ${prettyTime(
-                    followedAt
+                message: `${targetUser.toLowerCase() === user.toLowerCase() ? 'You have' : `${obfuscateName(targetUser)} has`} been following ${obfuscateName(targetChannel)} for ${prettyMilliseconds(
+                    followedAt,
+                    {
+                        secondsDecimalDigits: 0,
+                    }
                 )}`,
                 error: null,
             };

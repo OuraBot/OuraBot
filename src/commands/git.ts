@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { branch, commitAuthor, commitCount, commitDate, commitHash, commitMessage } from '..';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
@@ -13,7 +13,9 @@ class suggestCommand extends Command {
     userCooldown = 5;
     channelCooldown = 5;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        let dateSinceCommit = prettyTime(new Date().getTime() - new Date(commitDate).getTime(), false);
+        let dateSinceCommit = prettyMilliseconds(new Date().getTime() - new Date(commitDate).getTime(), {
+            secondsDecimalDigits: 0,
+        });
         return {
             success: true,
             message: `MrDestructoid ${commitCount} commits. ${branch}@${commitHash.substr(0, 7)} by ${obfuscateName(commitAuthor)} (${dateSinceCommit} ago): ${commitMessage

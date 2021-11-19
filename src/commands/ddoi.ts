@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { redis } from '..';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 dotenv.config();
 
@@ -19,9 +19,11 @@ class suggestCommand extends Command {
                 let randomNumber = Math.floor(Math.random() * redisData.length);
                 return {
                     success: true,
-                    message: `Random video from DDOI: "${redisData[randomNumber].title}" - ${redisData[randomNumber].url} [${prettyTime(
+                    message: `Random video from DDOI: "${redisData[randomNumber].title}" - ${redisData[randomNumber].url} [${prettyMilliseconds(
                         Date.now() - new Date(redisData[randomNumber].publishedAt).getTime(),
-                        false
+                        {
+                            secondsDecimalDigits: 0,
+                        }
                     )} ago]`,
                     error: null,
                     ignorebanphrase: true,
@@ -54,10 +56,9 @@ class suggestCommand extends Command {
                 let randomNumber = Math.floor(Math.random() * data.length);
                 return {
                     success: true,
-                    message: `Random video from DDOI: "${data[randomNumber].title}" - ${data[randomNumber].url} [${prettyTime(
-                        Date.now() - new Date(data[randomNumber].publishedAt).getTime(),
-                        false
-                    )} ago]`,
+                    message: `Random video from DDOI: "${data[randomNumber].title}" - ${data[randomNumber].url} [${prettyMilliseconds(Date.now() - new Date(data[randomNumber].publishedAt).getTime(), {
+                        secondsDecimalDigits: 0,
+                    })} ago]`,
                     error: null,
                     ignorebanphrase: true,
                 };
@@ -67,9 +68,11 @@ class suggestCommand extends Command {
             video = video.data.items[0];
             return {
                 success: true,
-                message: `Latest video from DDOI: "${unescapeHTML(video.snippet.title)}" - https://www.youtube.com/watch?v=${video.id.videoId} [${prettyTime(
+                message: `Latest video from DDOI: "${unescapeHTML(video.snippet.title)}" - https://www.youtube.com/watch?v=${video.id.videoId} [${prettyMilliseconds(
                     Date.now() - new Date(video.snippet.publishedAt).getTime(),
-                    false
+                    {
+                        secondsDecimalDigits: 0,
+                    }
                 )} ago]`,
                 error: null,
                 ignorebanphrase: true,

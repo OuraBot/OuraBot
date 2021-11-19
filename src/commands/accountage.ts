@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { resolveUser } from '../utils/apis/ivr';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
@@ -36,7 +36,9 @@ class suggestCommand extends Command {
 
         return {
             success: true,
-            message: `${targetUser === user ? 'Your' : obfuscateName(targetUser) + "'s "} account was created ${prettyTime(Date.now() - new Date(userResp.user.createdAt).getTime())} ago`,
+            message: `${targetUser === user ? 'Your' : obfuscateName(targetUser) + "'s "} account was created ${prettyMilliseconds(Date.now() - new Date(userResp.user.createdAt).getTime(), {
+                secondsDecimalDigits: 0,
+            })} ago`,
             error: null,
         };
     };

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
+import prettyMilliseconds from 'pretty-ms';
 import { resolveUser } from '../utils/apis/ivr';
-import { prettyTime } from '../utils/auroMs';
 import { Command, CommandReturnClass } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
@@ -50,7 +50,9 @@ class suggestCommand extends Command {
         }
         let finalStr = `user: ${obfuscateName(targetUser)}, ${userResp.user.banned ? '⛔ BANNED | ' : ''} chat color: ${
             userResp.user.chatColor ? userResp.user.chatColor : 'gray name'
-        } | account created ${prettyTime(Date.now() - new Date(userResp.user.createdAt).getTime())} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${userResp.user.id}`;
+        } | account created ${prettyMilliseconds(Date.now() - new Date(userResp.user.createdAt).getTime(), {
+            secondsDecimalDigits: 0,
+        })} ago | roles: ${rolesArr.length == 0 ? 'None' : rolesArr.join(' ')} | id: ${userResp.user.id}`;
 
         let tempStr = finalStr + ` | bio: ${userResp.user.bio}`;
         if (tempStr.length >= 499) {
