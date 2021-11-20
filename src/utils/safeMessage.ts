@@ -1,22 +1,25 @@
 import { ASCII_REGEX } from '..';
 
 export function checkMessage(message: string): Boolean {
+    console.log(message);
+    let sanitizedMessage = message
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+        .replace('\u{E0000}', '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    console.log(sanitizedMessage);
+    if (sanitizedMessage.match(/(im|i\sam|i'm)\s(1|2|3|4|5|6|7|8|9)(1|2)/gi)) {
+        return false;
+    }
+
+    // check for racism
+    if (sanitizedMessage.match(/(n|ñ|Ñ|ń|ņ|ň|ɲ|ŋ|ƞ|ǹ|ȵ|ɳ|ṉ|ṋ|ṅ|ṇ|\/\\\/|\|\\\|)[_\.\-\s]?[!1i|l][_\.\-\s]?[GgbB6934Q🅱qğĜƃ၅5]{2,}/gi)) {
+        return false;
+    }
+
     return true;
-    // message = message.replace(/[\u200B-\u200D\uFEFF]/g, '').replace('\u{E0000}', '');
-    // if (message.match(/VoteNay\s*g{1,2}(?:a|er)/gi)) {
-    //     return false;
-    // } else if (message.match(/N\sTriHard/gi)) {
-    //     return false;
-    // } else if (
-    //     message.match(/(?:(?:\b(?<![-=\.])(?<!\.com\/)|monka)(?:[Nn\x{00F1}]|[Ii7]V)|\/\\\/)[\s\.]*?[liI1y!j|\/]+[\s\.]*?(?:[GgbB6934Q🅱qğĜƃ၅5\*][\s\.]*?){2,}(?!arcS|l|Ktlw|ylul|ie217|64|\d? ?times)/g)
-    // ) {
-    //     return false;
-    // } else {
-    //     return true;
-    // }
 }
 
 export function checkForAscii(message: string): Boolean {
-    return false;
-    // return message.match(ASCII_REGEX)?.length >= 5 ? true : false;
+    return message.match(ASCII_REGEX)?.length >= 5 ? true : false;
 }
