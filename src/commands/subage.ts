@@ -98,11 +98,11 @@ class suggestCommand extends Command {
                 error: null,
             };
         } else {
-            let endedAt = prettyMilliseconds(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000, {
-                secondsDecimalDigits: 0,
-            });
-
             if (resp.data.cumulative.months > 0) {
+                let endedAt = prettyMilliseconds(Date.now() - moment(resp.data.cumulative?.end).unix() * 1000, {
+                    secondsDecimalDigits: 0,
+                });
+
                 // prettier-ignore
                 return {
                     success: true,
