@@ -49,9 +49,7 @@ class suggestCommand extends Command {
             let endsAt = prettyMilliseconds(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now(), {
                 secondsDecimalDigits: 0,
             });
-            let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
-                secondsDecimalDigits: 0,
-            });
+
             let gift = resp.data.meta?.gift;
 
             let saReturn: string;
@@ -64,6 +62,9 @@ class suggestCommand extends Command {
                         // prettier-ignore
                         saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                     } else {
+                        let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
+                            secondsDecimalDigits: 0,
+                        });
                         // prettier-ignore
                         saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
                     }
@@ -80,6 +81,9 @@ class suggestCommand extends Command {
                         // prettier-ignore
                         saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
                     } else {
+                        let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
+                            secondsDecimalDigits: 0,
+                        });
                         // prettier-ignore
                         saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak}${renewsAt ? ` and renews in ${renewsAt}` : '. This is a permanent sub!'}`;
                     }
