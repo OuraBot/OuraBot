@@ -368,7 +368,7 @@ async function main(): Promise<void> {
                 console.log(emoteData);
                 switch(emoteData.action) {
                     case 'ADD':
-                        chatClient.say(emoteData.channel, `New 7\u{E0000}TV emote has been added: ${emoteData.name}`)
+                        chatClient.say(emoteData.channel, `New 7TV emote has been added: ${emoteData.name}`)
                     break;
     
                     case 'REMOVE':
