@@ -51,34 +51,10 @@ export const ASCII_REGEX =
 dotenv.config();
 
 export const config = getConfig();
-// const apiTokens = getAPITokens();
-// const TMITokens = getTMITokens();
 
 export const redis = new Redis();
 
 const maxSpamClients = 10;
-
-/*
-const ApiAuth = new RefreshingAuthProvider(
-    {
-        clientId: process.env.APP_CLIENTID,
-        clientSecret: process.env.APP_SECRET,
-        onRefresh: async (newToken) => await fs.writeFile('./src/APItokens.json', JSON.stringify(newToken, null, 4), 'utf-8'),
-    },
-    apiTokens
-    );
-    */
-
-/*
-   const tmiAuth = new RefreshingAuthProvider(
-       {
-           clientId: process.env.APP_CLIENTID,
-           clientSecret: process.env.APP_SECRET,
-           onRefresh: async (newToken) => await fs.writeFile('./src/TMItokens.json', JSON.stringify(newToken, null, 4), 'utf-8'),
-        },
-        TMITokens
-        );
-        */
 
 export let commands = getCommands();
 export function refreshCommands() {
@@ -158,15 +134,6 @@ async function main(): Promise<void> {
     if (nukeMessagesCache) {
         nukeMessages = JSON.parse(nukeMessagesCache);
     }
-
-    /*
-        Clueless TeaTime mongodb error incident of 10/8/2021
-        Clueless TeaTime 600 errors in 5 seconds
-        Clueless TeaTime recursive error handling
-        Clueless Teatime temp ip ban from discord
-        https://i.mrauro.dev/l3nf5.png
-        https://i.mrauro.dev/FL5Og.png
-    */
 
     // check if mongoose is connected every 5 seconds and if not throw an error
     setInterval(() => {
