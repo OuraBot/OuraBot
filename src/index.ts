@@ -34,7 +34,6 @@ import { ILogLevel, Logger } from './utils/logger.js';
 import { chunkArr, obfuscateName, sanitizeMessage } from './utils/stringManipulation.js';
 import { getTimedReminders, removeReminder } from './utils/timedReminders.js';
 import EventSource = require('eventsource');
-import createHandler = require('github-webhook-handler');
 import prettyMilliseconds = require('pretty-ms');
 import { checkForAscii, checkMessage } from './utils/safeMessage.js';
 consoleStamp(console, {
@@ -85,7 +84,6 @@ export let commands = getCommands();
 export function refreshCommands() {
     commands = getCommands();
 }
-const handler = createHandler({ path: '/wh', secret: 'nNJ9M}x|?#8$2(5aAaT?xSQ:rV^h{->s7:_TQ4t!>AGE0#Q]-W=)b+?}~^G-,Nr5' });
 
 export let cancelFilesayChannels: Set<string> = new Set();
 export let cancelSpamChannels: Set<string> = new Set();
@@ -396,34 +394,6 @@ async function main(): Promise<void> {
                 }
             });
     }
-
-    createServer(function (req, res) {
-        handler(req, res, function (err) {
-            res.statusCode = 404;
-            res.end('no such location');
-        });
-    }).listen(process.env.PORT || 8081);
-
-    handler.on('error', function (err) {
-        logger.error(err, 'Error in GitHub HTTP server');
-    });
-
-    handler.on('push', function (event) {
-        try {
-            if (event.payload.repository.name === 'Twitch-Bot') {
-                if (event.payload.head_commit.message.includes('PRIVATE')) {
-                    chatClient.say(config.owner, `NotSureDank New Hidden OuraBot commit by ${obfuscateName(event.payload.pusher.name)} on branch: ${event.payload.ref.replace('refs/heads/', '')}`);
-                } else {
-                    chatClient.say(
-                        config.owner,
-                        `ppHop New OuraBot commit by ${obfuscateName(event.payload.pusher.name)}: "${event.payload.head_commit.message}" on branch: ${event.payload.ref.replace('refs/heads/', '')}`
-                    );
-                }
-            }
-        } catch (err) {
-            console.log(err, event);
-        }
-    });
 
     chatClient.onNotice((target, user, message, msg) => {
         const logNotices = ['msg_timedout', 'msg_banned', 'invalid_user', 'msg_channel_suspended', 'msg_channel_blocked', 'msg_rejected', 'msg_suspended'];
