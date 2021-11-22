@@ -16,6 +16,7 @@ class spamCommand extends Command {
                 success: false,
                 message: 'Missing GitHub username',
                 error: null,
+                reducedcooldown: 2,
             };
 
         let githubUsernameRegex = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
