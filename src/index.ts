@@ -222,8 +222,8 @@ async function main(): Promise<void> {
 
     await fetchBots();
 
-    // const badSiteData = await axios.get('https://raw.githubusercontent.com/elbkr/bad-websites/main/websites.json');
-    // badSites = new Set(badSiteData.data);
+    const badSiteData = await axios.get('https://raw.githubusercontent.com/elbkr/bad-websites/main/websites.json');
+    badSites = new Set(badSiteData.data.links);
 
     // check every hour
     setInterval(async () => {
@@ -577,12 +577,12 @@ async function main(): Promise<void> {
                                 }
                             }
                             if (module.module === moduleEnum.BADLINKS) {
-                                // let urls = getUrls(message);
-                                // for (let url of urls) {
-                                //     if (badSites.has(url)) {
-                                //         chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
-                                //     }
-                                // }
+                                let urls = getUrls(message);
+                                for (let url of urls) {
+                                    if (badSites.has(url)) {
+                                        chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
+                                    }
+                                }
                             }
                         }
                     }
@@ -646,12 +646,12 @@ async function main(): Promise<void> {
                                     }
                                 }
                                 if (module.module === moduleEnum.BADLINKS) {
-                                    // let urls = getUrls(message);
-                                    // for (let url of urls) {
-                                    //     if (badSites.has(url)) {
-                                    //         chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
-                                    //     }
-                                    // }
+                                    let urls = getUrls(message);
+                                    for (let url of urls) {
+                                        if (badSites.has(url)) {
+                                            chatClient.say(channel, `/ban ${user} URL detected in message is on known Bad URLs list`);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1549,12 +1549,12 @@ export async function banphraseCheck(msgToCheck: string, channel: string): Promi
             }
 
             if (module.module === moduleEnum.BADLINKS) {
-                // let urls = getUrls(msgToCheck);
-                // for (let url of urls) {
-                //     if (badSites.has(url)) {
-                //         return true;
-                //     }
-                // }
+                let urls = getUrls(msgToCheck);
+                for (let url of urls) {
+                    if (badSites.has(url)) {
+                        return true;
+                    }
+                }
             }
         }
     }
