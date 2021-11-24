@@ -13,7 +13,7 @@ export function checkMessage(message: string): Boolean {
     }
 
     // check for racism
-    if (sanitizedMessage.match(/(n|ñ|Ñ|ń|ņ|ň|ɲ|ŋ|ƞ|ǹ|ȵ|ɳ|ṉ|ṋ|ṅ|ṇ|\/\\\/|\|\\\|)[_\.\-\s]?[!1i|l][_\.\-\s]?[GgbB6934Q🅱qğĜƃ၅5]{2,}/gi)) {
+    if (sanitizedMessage.match(/((n|ñ|Ñ|ń|ņ|ň|ɲ|ŋ|ƞ|ǹ|ȵ|ɳ|ṉ|ṋ|ṅ|ṇ|\/\\\/|\|\\\|)[_\.\-\s]?[!1i|l][_\.\-\s]?[GgbB6934Q🅱qğĜƃ၅5]{1,3})(a|e|4)/gi)) {
         return false;
     }
 
