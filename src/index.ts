@@ -509,6 +509,23 @@ async function main(): Promise<void> {
             sentAt: Date.now(),
         });
 
+        let oldStalkData = await redis.get(`ob:stalk:${user}`);
+        let optedOut = false;
+        if (oldStalkData) {
+            optedOut = JSON.parse(oldStalkData).optedOut;
+        }
+
+        redis.set(
+            `ob:stalk:${user}`,
+            JSON.stringify({
+                user: user.toLowerCase(),
+                message: message,
+                channel: channel,
+                timestamp: Date.now(),
+                optedOut: optedOut,
+            })
+        );
+
         // Remove old nuke messages older than 30 minutes
         // o(n) time complexity so shouldn't be a problem
         for (let i = 0; i < nukeMessages.length; i++) {
