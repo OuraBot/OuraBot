@@ -18,7 +18,7 @@ class testComand extends Command {
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let ffzEmotes = await getFfzChannelEmotes(channel.replace('#', ''));
         if (ffzEmotes) {
-            ffzEmotes = ffzEmotes.split(' ');
+            ffzEmotes = ffzEmotes.split(/ +/);
         } else {
             return {
                 success: false,

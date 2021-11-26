@@ -446,41 +446,6 @@ async function main(): Promise<void> {
         }
     }, 1000);
 
-    chatClient.onWhisper((user: string, message: string, msg: Whisper) => {
-        if (user === config.owner) {
-            try {
-                let args = message.split(' ');
-                const channel = args[1].replace('#', '');
-                switch (args[0]) {
-                    case '!filesayfast':
-                        if (args[2].match(FILE_URLS_REGEX)) {
-                            axios.get(args[2]).then(async (response: any) => {
-                                let msgs = response.data.split('\n');
-                                for (let msg of msgs) {
-                                    await chatClient.say(channel, msg);
-                                }
-                            });
-                        }
-                        break;
-
-                    case '!filesayslow':
-                        if (args[2].match(FILE_URLS_REGEX)) {
-                            axios.get(args[2]).then(async (response: any) => {
-                                let msgs = response.data.split('\n');
-                                for (let msg of msgs) {
-                                    await new Promise((resolve) => setTimeout(resolve, 1200));
-                                    await chatClient.say(channel, msg);
-                                }
-                            });
-                        }
-                        break;
-                }
-            } catch (err) {
-                console.log(err, 'whispered');
-            }
-        }
-    });
-
     let commands = await getCommands();
     let custommodules = await getModules();
 
@@ -832,7 +797,7 @@ async function main(): Promise<void> {
                 let c: ICustomCommand[] = JSON.parse(redisData);
                 for (let customCommand of c) {
                     if (customCommand.channel === channel.replace('#', '')) {
-                        let customArgs = message.toLowerCase().split(' ');
+                        let customArgs = message.toLowerCase().split(/ +/);
                         if (customCommand.command.toLowerCase() === customArgs[0]) {
                             let onCooldown = false;
 
@@ -891,7 +856,7 @@ async function main(): Promise<void> {
                     redis.set(`tl:${channel}:customcommands`, JSON.stringify(c), 'EX', 5);
                     for (let customCommand of c) {
                         if (customCommand.channel === channel.replace('#', '')) {
-                            let customArgs = message.toLowerCase().split(' ');
+                            let customArgs = message.toLowerCase().split(/ +/);
                             if (customCommand.command.toLowerCase() === customArgs[0]) {
                                 let onCooldown = false;
 
@@ -1101,7 +1066,7 @@ async function main(): Promise<void> {
         }
 
         if (message.startsWith(channelPrefix)) {
-            let cmdmsg = message.substring(channelPrefix.length).split(' ');
+            let cmdmsg = message.substring(channelPrefix.length).split(/ +/);
             let cmd = cmdmsg[0];
             const args = cmdmsg.slice(1);
             let _cmds = commands;

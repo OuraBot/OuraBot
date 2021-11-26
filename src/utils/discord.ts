@@ -103,8 +103,8 @@ export class Discord {
             return;
         }
 
-        const ffzEmoteCount = ((await getFfzChannelEmotes(user))?.split(' ') ?? []).length;
-        const bttvEmoteCount = ((await getBttvChannelEmotes(user))?.split(' ') ?? []).length;
+        const ffzEmoteCount = ((await getFfzChannelEmotes(user))?.split(/ +/) ?? []).length;
+        const bttvEmoteCount = ((await getBttvChannelEmotes(user))?.split(/ +/) ?? []).length;
         const sevenTvEmoteCount = (await getStvChannelEmotes(user))?.length ?? 0;
 
         let recentMessagesCount = 0;

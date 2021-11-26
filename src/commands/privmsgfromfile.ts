@@ -30,7 +30,7 @@ class testComand extends Command {
         addTask(channel, this.name);
 
         for (let msg of msgs) {
-            let args = msg.split(' ');
+            let args = msg.split(/ +/);
             let targetCmd = args[0];
             args.shift();
 

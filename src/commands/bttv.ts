@@ -17,7 +17,7 @@ class testComand extends Command {
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let bttvEmotes = await getBttvChannelEmotes(channel.replace('#', ''));
         if (bttvEmotes) {
-            bttvEmotes = bttvEmotes.split(' ');
+            bttvEmotes = bttvEmotes.split(/ +/);
         } else {
             return {
                 success: false,

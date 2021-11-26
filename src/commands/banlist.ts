@@ -52,7 +52,7 @@ class testComand extends Command {
                 for (let msg of banlist) {
                     const target = msg
                         .replace(/^(\.|\/)ban\s/, '')
-                        .split(' ')[0]
+                        .split(/ +/)[0]
                         .toLowerCase();
                     chatClient.say(channel, `/ban ${target}`);
                 }

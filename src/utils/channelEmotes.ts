@@ -82,14 +82,14 @@ export async function getAllEmotes(displayName: string): Promise<GetAllEmotesCla
 
             if (ffzChannelResp != null) {
                 // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
-                for (let emote of ffzChannelResp.split(' ')) {
+                for (let emote of ffzChannelResp.split(/ +/)) {
                     allEmotes.push(emote);
                 }
             }
 
             if (bttvChannelResp != null) {
                 // Loop through each emote (split by spaces because Aiden's api returns a space seperated string)
-                for (let emote of bttvChannelResp.split(' ')) {
+                for (let emote of bttvChannelResp.split(/ +/)) {
                     allEmotes.push(emote);
                 }
             }
