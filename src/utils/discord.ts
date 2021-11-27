@@ -114,8 +114,17 @@ export class Discord {
             recentMessagesCount = 0;
         }
 
+        let currentChatterCount = 0;
+        try {
+            currentChatterCount = (await axios.get(`https://tmi.twitch.tv/group/user/${user}/chatters`)).data.chatter_count;
+        } catch (err) {
+            currentChatterCount = 0;
+        }
+
+        let escapedUser = user.replace('_', '\\_');
+
         const embed = new MessageEmbed()
-            .setTitle(`${user}`)
+            .setTitle(`${escapedUser}`)
             .setColor('#0099ff')
             .setAuthor('New Join Request')
             .addFields([
@@ -123,6 +132,7 @@ export class Discord {
                 { name: 'BTTV Emotes', value: `${bttvEmoteCount}`, inline: true },
                 { name: '7TV Emotes', value: `${sevenTvEmoteCount}`, inline: true },
                 { name: 'Recent Messages', value: `${recentMessagesCount}`, inline: true },
+                { name: 'Chatter Count', value: `${currentChatterCount}`, inline: true },
             ])
             .setTimestamp();
 
