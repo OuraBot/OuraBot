@@ -6,7 +6,7 @@ import { sanitizeMessage } from '../utils/stringManipulation';
 import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
-const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
+// const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
 
 class spamCommand extends Command {
     name = 'spam';
@@ -67,20 +67,20 @@ class spamCommand extends Command {
             }
         } else {
             for (let i = 0; i < spamCount; i++) {
-                let color = poorColorList[i % poorColorList.length];
+                // let color = poorColorList[i % poorColorList.length];
+                // await new Promise((resolve) => setTimeout(resolve, 100));
 
-                await new Promise((resolve) => setTimeout(resolve, 100));
                 if (cancelSpam(channel)) {
-                    await getClient().say(channel, '/color dodgerblue');
+                    // await getClient().say(channel, '/color dodgerblue');
                     break;
                 }
 
-                await getClient().say(channel, `/color ${color}`);
+                // await getClient().say(channel, `/color ${color}`);
                 getClient().say(channel, `/me ${spamText}`);
 
-                await new Promise((resolve) => setTimeout(resolve, 100));
+                await new Promise((resolve) => setTimeout(resolve, 75));
 
-                if (i === spamCount - 1) await getClient().say(channel, '/color dodgerblue');
+                // if (i === spamCount - 1) await getClient().say(channel, '/color dodgerblue');
             }
         }
         removeTask(channel, this.name);

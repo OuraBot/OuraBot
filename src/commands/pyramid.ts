@@ -5,7 +5,7 @@ import { getClient } from '../utils/spamClients';
 import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
-const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
+// const poorColorList = ['red', 'firebrick', 'orangered', 'chocolate', 'goldenrod', 'yellowgreen', 'green', 'seasgreen', 'springgreen', 'dodgerblue', 'blue', 'blueviolet', 'hotpink'];
 
 class pyramidCommand extends Command {
     name = 'pyramid';
@@ -59,23 +59,24 @@ class pyramidCommand extends Command {
 
         // first half
         for (let i = 0; i < width; i++) {
-            let color = poorColorList[i % poorColorList.length];
-            await getClient().say(channel, `/color ${color}`);
+            // let color = poorColorList[i % poorColorList.length];
+            // await getClient().say(channel, `/color ${color}`);
             getClient().say(channel, '/me ' + emote.repeat(i + 1).replace(/^(\.|\/|!)/, ''));
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            await new Promise((resolve) => setTimeout(resolve, 75));
         }
 
         // second half
         for (let i = width; i > 0; i--) {
-            let color = poorColorList[i % poorColorList.length];
-            await getClient().say(channel, `/color ${color}`);
+            // let color = poorColorList[i % poorColorList.length];
+            // await getClient().say(channel, `/color ${color}`);
             if (i != width) getClient().say(channel, '/me ' + emote.repeat(i).replace(/^(\.|\/|!)/, ''));
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            await new Promise((resolve) => setTimeout(resolve, 75));
 
-            if (i == 1) {
-                await getClient().say(channel, `/color dodgerblue`);
-            }
+            // if (i == 1) {
+            //     await getClient().say(channel, `/color dodgerblue`);
+            // }
         }
+
         removeTask(channel, this.name);
 
         return {
