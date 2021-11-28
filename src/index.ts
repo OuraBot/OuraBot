@@ -428,12 +428,6 @@ async function main(): Promise<void> {
                         reminder.channel,
                         `@${reminder.user}, timed reminder: "${reminder.reminder}" from ${prettyMilliseconds(Date.now() - reminder.now, { secondsDecimalDigits: 0 })} ago`
                     );
-                    new Reminder({
-                        username: reminder.user,
-                        message: `Timed reminder from yourself: ${reminder.reminder}`,
-                        timestamp: new Date(reminder.now),
-                        author: 'oura_bot',
-                    }).save();
                     await removeReminder(reminder.reminder, reminder.user, reminder.timestamp, reminder.channel);
                 } else {
                     chatClient.say(
