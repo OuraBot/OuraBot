@@ -1,10 +1,10 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { chatClient, commands, FILE_URLS_REGEX, redis } from '..';
+import { chatClient, FILE_URLS_REGEX, redis } from '..';
 import { Term } from '../models/term.model';
 import { logCommandUse } from '../models/usage.model';
-import { Command, CommandReturnClass } from '../utils/commandClass';
+import { commands, Command, CommandReturnClass } from '../utils/commandClass';
 import { addTask, removeTask } from '../utils/taskManager';
 dotenv.config();
 
@@ -37,7 +37,7 @@ class testComand extends Command {
             let _cmds = commands;
             if ((await _cmds).get(targetCmd)) {
                 let cmd = (await _cmds).get(targetCmd);
-                cmd.execute(user, channel, args, cmd, _msg).then((data: CommandReturnClass) => {
+                cmd.execute(user, channel, args, cmd.name, _msg).then((data: CommandReturnClass) => {
                     if (!silent) {
                         if (data.success) {
                             if (data.message) {

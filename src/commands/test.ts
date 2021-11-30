@@ -20,7 +20,7 @@ class testComand extends Command {
 
         return {
             success: true,
-            message: `asdfasdf`,
+            message: `PAGGING`,
             error: null,
         };
     };

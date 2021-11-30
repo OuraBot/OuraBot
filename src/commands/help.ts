@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { commands, config, redis } from '..';
-import { Command, CommandReturnClass } from '../utils/commandClass';
+import { config, redis } from '..';
+import { Command, CommandReturnClass, commands } from '../utils/commandClass';
 dotenv.config();
 
 class suggestCommand extends Command {
@@ -17,9 +17,9 @@ class suggestCommand extends Command {
                 error: null,
             };
 
-        let command: Command = (await commands).get(args[0]);
+        let command: Command = commands.get(args[0]);
         if (!command) {
-            for (const cmd of (await commands).values()) {
+            for (const cmd of commands.values()) {
                 if (cmd.aliases.includes(args[0])) {
                     command = cmd;
                     break;

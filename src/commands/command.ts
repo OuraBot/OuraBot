@@ -1,7 +1,7 @@
 import { Channel } from 'discord.js';
 import dotenv from 'dotenv';
-import { commands, commitDate, commitHash, config, redis } from '..';
-import { Command, CommandReturnClass } from '../utils/commandClass';
+import { commitDate, commitHash, config, redis } from '..';
+import { Command, CommandReturnClass, commands } from '../utils/commandClass';
 import { getChannels } from '../utils/fetchChannels';
 dotenv.config();
 
@@ -55,7 +55,7 @@ class suggestCommand extends Command {
                 error: null,
             };
 
-        const botcommands = await commands;
+        const botcommands = commands;
         if (botcommands.has(args[0])) {
             const command: Command = botcommands.get(args[0]);
             if (command.hidden)

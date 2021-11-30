@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
-import { commands, redis } from '..';
+import { redis } from '..';
 import { resolveUser } from '../utils/apis/ivr';
 import { Block } from '../utils/blockManager';
-import { Command, CommandReturnClass, ErrorEnum } from '../utils/commandClass';
+import { Command, CommandReturnClass, commands, ErrorEnum } from '../utils/commandClass';
 import { obfuscateName } from '../utils/stringManipulation';
 dotenv.config();
 
@@ -48,7 +48,7 @@ class suggestCommand extends Command {
                 error: null,
             };
         } else {
-            if (!(await commands).has(targetCommand))
+            if (!commands.has(targetCommand))
                 return {
                     success: false,
                     message: 'Invalid command (use command name, not aliases)',

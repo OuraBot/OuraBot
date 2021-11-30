@@ -26,7 +26,7 @@ import { CustomModule, getModules } from './types/custommodule.js';
 import { clearUserAfk, getUserAfk, Status } from './utils/afkManager.js';
 import { checkPajbotBanphrase } from './utils/apis/banphrases';
 import { canUseCommand } from './utils/blockManager.js';
-import { Command, CommandReturnClass, getCommands, hasPermisison } from './utils/commandClass.js';
+import { Command, CommandReturnClass, commands, getCommands, hasPermisison, refreshCommands } from './utils/commandClass.js';
 import { getConfig } from './utils/config.js';
 import { Discord } from './utils/discord';
 import { fetchBots } from './utils/knownBots.js';
@@ -55,11 +55,6 @@ export const config = getConfig();
 export const redis = new Redis();
 
 const maxSpamClients = 10;
-
-export let commands = getCommands();
-export function refreshCommands() {
-    commands = getCommands();
-}
 
 export let cancelFilesayChannels: Set<string> = new Set();
 export let cancelSpamChannels: Set<string> = new Set();
@@ -412,7 +407,7 @@ async function main(): Promise<void> {
         discordManager.joinFailure(channel, reason);
     });
 
-    if (process.env.DEBUG === 'TRUE') {
+    if (process.env.DEBUG !== 'TRUE') {
         setInterval(() => {
             chatClient.say(`#oura_bot`, `Bot requests will be processed within 24 hours. Please read the panels before requesting.`);
         }, 1000 * 60 * 5);
@@ -440,8 +435,12 @@ async function main(): Promise<void> {
         }
     }, 1000);
 
-    let commands = await getCommands();
+    await refreshCommands();
     let custommodules = await getModules();
+
+    setInterval(() => {
+        console.log(commands.size);
+    }, 100);
 
     commands.forEach((command: Command) => {
         if (!command.userCooldown && !command.hidden) {

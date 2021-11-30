@@ -57,6 +57,8 @@ export class Command {
     execute: (user: string, channel: string, args: string[], cmdMsg?: string, msg?: TwitchPrivateMessage) => Promise<any> | undefined;
 }
 
+export let commands: Map<string, Command>;
+
 export async function getCommands(): Promise<Map<string, any>> {
     return new Map(
         (await fs.readdir('src/commands'))
@@ -67,6 +69,10 @@ export async function getCommands(): Promise<Map<string, any>> {
                 return [cmd.cmd.name, cmd.cmd];
             })
     );
+}
+
+export async function refreshCommands(): Promise<void> {
+    commands = await getCommands();
 }
 
 export function getPermissions(int: number): string[] {
