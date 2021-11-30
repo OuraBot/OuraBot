@@ -438,10 +438,6 @@ async function main(): Promise<void> {
     await refreshCommands();
     let custommodules = await getModules();
 
-    setInterval(() => {
-        console.log(commands.size);
-    }, 100);
-
     commands.forEach((command: Command) => {
         if (!command.userCooldown && !command.hidden) {
             console.warn(chalk.yellow(`Command ${command.name} has no userCooldown set.`));
