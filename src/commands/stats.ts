@@ -42,13 +42,15 @@ class testComand extends Command {
                 },
             ]);
 
+            let uniqueUserCount = (await Usage.distinct('user')).length;
+
             let mostUsedCommand = usages.sort((a, b) => b.count - a.count)[0];
             let totalCount = usages.reduce((a, b) => a + b.count, 0);
             let channelCount = await Channel.countDocuments({});
 
             return {
                 success: true,
-                message: `I am currently in ${channelCount} channels. ${totalCount} commands have been used. The most used command is ${mostUsedCommand._id.command} at ${mostUsedCommand.count} uses.`,
+                message: `I am currently in ${channelCount} channels. ${totalCount} commands have been used. The most used command is ${mostUsedCommand._id.command} at ${mostUsedCommand.count} uses. There are ${uniqueUserCount} unique users.`,
                 error: null,
             };
         } else {
