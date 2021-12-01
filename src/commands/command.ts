@@ -24,8 +24,7 @@ export class ChannelCommandData {
 class suggestCommand extends Command {
     name = 'command';
     description = 'Manage multiple properties of commands for this channel (see extended description)';
-    permission = 7;
-    //                                                                                                                                                                                                                                                                                     \n\t\taliases - <comma seperated list> - Set channel aliases for a command (OVERWRITES DEFAULTS)
+    permission = 39;
     extendedDescription = `Available properties:\n\t\toffline - true/false - Make the command only work in offline chat?\n\t\trequiredpermission - None/Sub/VIP/Mod/Broadcaster - Set a custom permission for a command (and above)\n\t\tenabled - true/false - Enable or disable a command`;
     usage = 'command <command> <property> <value>';
     userCooldown = 5;
