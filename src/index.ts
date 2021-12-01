@@ -407,12 +407,6 @@ async function main(): Promise<void> {
         discordManager.joinFailure(channel, reason);
     });
 
-    if (process.env.DEBUG !== 'TRUE') {
-        setInterval(() => {
-            chatClient.say(`#oura_bot`, `Bot requests will be processed within 24 hours. Please read the panels before requesting.`);
-        }, 1000 * 60 * 5);
-    }
-
     // Check for timed reminders
     setInterval(async () => {
         const reminders = await getTimedReminders();
