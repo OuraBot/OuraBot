@@ -211,6 +211,21 @@ async function main(): Promise<void> {
                 botLevel: 'verified',
                 isAlwaysMod: true,
             });
+            const _chatClientSaySpam = spamClients[i].say;
+            spamClients[i].say = (channel: string, message: string): Promise<void> => {
+                console.log(`[${channel}] ${message}`);
+                if (checkMessage(message)) {
+                    if (checkForAscii(message)) {
+                        discordManager.logBadMessage(channel, message);
+                        return _chatClientSaySpam.call(spamClients[i], channel, message.replace(ASCII_REGEX, '[ASCII Art]').replace(/(\[ASCII Art\]\s?)+/g, '[ASCII Art]'));
+                    } else {
+                        return _chatClientSaySpam.call(spamClients[i], channel, message);
+                    }
+                } else {
+                    discordManager.logBadMessage(channel, message);
+                    return _chatClientSaySpam.call(spamClients[i], channel, 'A message that was supposed to be posted here was held back');
+                }
+            };
             spamClients[i].connect();
         })
     );
