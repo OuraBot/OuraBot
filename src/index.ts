@@ -193,7 +193,7 @@ async function main(): Promise<void> {
         if (checkMessage(message)) {
             if (checkForAscii(message)) {
                 discordManager.logBadMessage(channel, message);
-                return _chatClientSay.call(chatClient, channel, '[ASCII Art]');
+                return _chatClientSay.call(chatClient, channel, message.replace(ASCII_REGEX, '[ASCII Art]').replace(/(\[ASCII Art\]\s?)+/g, '[ASCII Art]'));
             } else {
                 return _chatClientSay.call(chatClient, channel, message);
             }
