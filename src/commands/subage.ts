@@ -46,9 +46,19 @@ class suggestCommand extends Command {
         if (resp.data.subscribed) {
             let tier = resp.data.meta.tier;
             let dnr = resp.data.meta.dnr;
-            let endsAt = prettyMilliseconds(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now(), {
-                secondsDecimalDigits: 0,
-            });
+            let endsAt = resp.data.meta?.endsAt
+                ? 'in ' +
+                  prettyMilliseconds(moment(resp.data.meta?.endsAt).unix() * 1000 - Date.now(), {
+                      secondsDecimalDigits: 0,
+                  })
+                : 'never';
+
+            let renewsAt = resp.data.meta?.renewsAt
+                ? 'in ' +
+                  prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
+                      secondsDecimalDigits: 0,
+                  })
+                : 'never';
 
             let gift = resp.data.meta?.gift;
 
@@ -60,39 +70,38 @@ class suggestCommand extends Command {
                 if (resp.data.meta.type === 'paid') {
                     if (dnr) {
                         // prettier-ignore
-                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
                     } else {
-                        let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
-                            secondsDecimalDigits: 0,
-                        });
                         // prettier-ignore
-                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews in ${renewsAt}`;
+                        saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews ${renewsAt}`;
                     }
                 } else if (resp.data.meta.type === 'gift') {
                     // prettier-ignore
-                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a gifted subscription by ${gift.name} and ends in ${endsAt}`;
+                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a gifted subscription by ${gift.name} and ends ${endsAt}`;
                 } else if (resp.data.meta.type === 'prime') {
                     // prettier-ignore
-                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Prime subscription and ends in ${endsAt}`;
+                    saReturn = `${obfuscateName(resp.data.username)} has their subscription to ${obfuscateName(resp.data.channel)} hidden with a Prime subscription and ends ${endsAt}`;
                 }
             } else {
                 if (resp.data.meta.type === 'paid') {
                     if (dnr) {
+                        if (!resp.data.meta?.endsAt) {
+                            saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${
+                                resp.data.cumulative.months
+                            } month(s) with a Tier ${tier} sub ${streak}. This is a permanent sub!`;
+                        }
                         // prettier-ignore
-                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
                     } else {
-                        let renewsAt = prettyMilliseconds(moment(resp.data.meta?.renewsAt).unix() * 1000 - Date.now(), {
-                            secondsDecimalDigits: 0,
-                        });
                         // prettier-ignore
-                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak}${renewsAt ? ` and renews in ${renewsAt}` : '. This is a permanent sub!'}`;
+                        saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak}${renewsAt !== 'never' ? ` and renews ${renewsAt}` : '. This is a permanent sub!'}`;
                     }
                 } else if (resp.data.meta.type === 'gift') {
                     // prettier-ignore
-                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends in ${endsAt}`;
+                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a gifted subscription by ${gift.name} for ${resp.data.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
                 } else if (resp.data.meta.type === 'prime') {
                     // prettier-ignore
-                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends in ${endsAt}`;
+                    saReturn = `${obfuscateName(resp.data.username)} has been subscribed to ${obfuscateName(resp.data.channel)} with a Prime subscription for ${resp.data.cumulative.months} month(s) ${streak} and ends ${endsAt}`;
                 }
             }
 
