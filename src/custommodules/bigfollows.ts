@@ -14,9 +14,9 @@ class customModule extends CustomModule {
     execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient): Promise<void> => {
         if (msg.tags.get('first-msg') == '1') {
             let looseMessage = removeAccents(message.toLowerCase());
-            if (looseMessage.includes('wanna become famous?') || (looseMessage.includes('want to become famous?') && looseMessage.includes('bigfollows'))) {
-                chatClient.ban(channel, user, 'Bigfollows advertisement bot');
-                chatClient.say(config.owner, `CUSTOMMODULE bigfollows: ${user} banned in ${obfuscateName(channel)}`);
+            if (looseMessage.includes('wanna become famous?') || looseMessage.includes('want to become famous?') || looseMessage.includes('vk.cc')) {
+                chatClient.ban(channel, user, 'Follow bot advertisement bot');
+                chatClient.say(config.owner, `CUSTOMMODULE big-follows: ${user} banned in ${obfuscateName(channel)}`);
             }
         }
     };
