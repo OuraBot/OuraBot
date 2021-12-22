@@ -1193,7 +1193,11 @@ async function main(): Promise<void> {
 
                         if (
                             command.requireFastLimits &&
-                            !((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME))
+                            !(
+                                (await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) ||
+                                (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME) ||
+                                channel == '#oura_bot'
+                            )
                         ) {
                             return chatClient.say(channel, `@${user}, I need to be a VIP or a moderator to execute this command!`);
                         }
