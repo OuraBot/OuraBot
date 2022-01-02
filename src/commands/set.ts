@@ -84,7 +84,7 @@ class suggestCommand extends Command {
                 if (channels.includes(channel.replace('#', '')))
                     return {
                         success: false,
-                        message: 'The 7TV Emote Event API has been temporarily blocked, your channel is already on the list, so when the Event API is back open, the emote notifications will work again.',
+                        message: 'Your channel is already subscribed 7TV emote notifications',
                         error: null,
                     };
 
