@@ -18,7 +18,7 @@ export function checkMessage(message: string): Boolean {
     }
 
     // check for c word
-    if (sanitizedMessage.match(/crackers?/gi)) {
+    if (sanitizedMessage.match(/\bcrackers?/gi)) {
         return false;
     }
 

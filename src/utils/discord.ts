@@ -11,6 +11,7 @@ const channelIds = {
     errors: '908914129757147157',
     mirroring: '908914196543066182',
     notices: '908955253016256543',
+    failures: '908955253016256543',
     suggestions: '908913179109773363',
 };
 

@@ -1191,6 +1191,8 @@ async function main(): Promise<void> {
                             }
                         }
 
+                        if (command.disabledByDefault && !(commandProperties as ChannelCommandData).commands[command.name]?.enabled) return;
+
                         if (
                             command.requireFastLimits &&
                             !(
