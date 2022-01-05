@@ -70,7 +70,7 @@ class suggestCommand extends Command {
                 <td>${command.aliases?.length > 0 ? command.aliases.join(', ') : ''}</td>
                 <td>${command.description}</td>
                 <td>${command.extendedDescription ? command.extendedDescription : ''}</td>
-                <td>${cmdData.enabled ? (cmdData.offline ? 'Offline only' : '✔') : '✖'}</td>
+                <td>${cmd?.disabledByDefault == true ? (cmdData?.enabled ? '✔' : '✖') : cmdData.enabled ? (cmdData.offline ? 'Offline only' : '✔') : '✖'}</td>
                 </tr>
                 `;
             } else {
@@ -83,7 +83,7 @@ class suggestCommand extends Command {
                 <td>${command.aliases?.length > 0 ? command.aliases.join(', ') : ''}</td>
                 <td>${command.description}</td>
                 <td>${command.extendedDescription ? command.extendedDescription : ''}</td>
-                <td>✔</td>
+                <td>${command?.disabledByDefault == true ? '✖' : '✔'}</td>
                 </tr>
                 `;
             }
