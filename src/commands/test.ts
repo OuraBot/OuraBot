@@ -1,9 +1,11 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import dotenv from 'dotenv';
-import { config, discordManager } from '..';
+import { Block } from '../utils/blockManager';
+import { apiClient, apiClient2, config, discordManager, redis } from '..';
 import { getBttvChannelEmotes, getFfzChannelEmotes } from '../utils/channelEmotes';
 import { Command, CommandReturnClass, getPermissions, PermissionEnum } from '../utils/commandClass';
 import { Discord } from '../utils/discord';
+import { Channel } from '../models/channel.model';
 
 dotenv.config();
 
@@ -15,12 +17,37 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
-        console.log(await getBttvChannelEmotes(channel), 'bttv');
-        console.log(await getFfzChannelEmotes(channel), 'ffz');
+        let badChannels = ['tomnullbar', 'vashiiq', 'emresucuktoast_', 'sulexpagman', 'rsurius', 'imiradiofm', 'thanhschaefer'];
+
+        let i = 0;
+        // remove all bad channels from the DB
+        for (let chnl of badChannels) {
+            // find and delete but ignore case
+            await Channel.find({ channel: new RegExp(`^${chnl}$`, 'i') }).deleteMany();
+
+            const redisData = await redis.get(`ob:blockeddata:${chnl}`);
+            let blockedData: Block = null;
+
+            if (redisData) {
+                blockedData = JSON.parse(redisData);
+            } else {
+                blockedData = {
+                    user: chnl,
+                    blockedAll: true,
+                    commands: [],
+                };
+            }
+
+            blockedData.blockedAll = true;
+
+            await redis.set(`ob:blockeddata:${chnl}`, JSON.stringify(blockedData));
+
+            i++;
+        }
 
         return {
             success: true,
-            message: `PAGGING`,
+            message: `${i} channels removed and blocked`,
             error: null,
         };
     };
