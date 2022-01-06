@@ -17,7 +17,7 @@ class testComand extends Command {
     aliases = ['t'];
     hidden = true;
     execute = async (user: string, channel: string, args: string[], cmdMsg: string, msg: TwitchPrivateMessage): Promise<CommandReturnClass> => {
-        let badChannels = args.split(',');
+        let badChannels = args;
 
         let i = 0;
         // remove all bad channels from the DB
