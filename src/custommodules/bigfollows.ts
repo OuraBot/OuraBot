@@ -9,7 +9,7 @@ import { obfuscateName, removeAccents } from '../utils/stringManipulation';
 class customModule extends CustomModule {
     name = 'bigfollows';
     description = "Checks if a user's first message is a bigfollows advertisement";
-    channels = ['#auror6s', '#mmattbtw', '#demonjoefrance', '#liptongod', '#elpws', '#c3agle', '#xoosd', '#ktobaias'];
+    channels = ['#auror6s', '#mmattbtw', '#demonjoe', '#liptongod', '#elpws', '#c3agle', '#xoosd', '#ktobaias'];
     author = ['AuroR6S'];
     execute = async (channel: string, user: string, message: string, msg: TwitchPrivateMessage, chatClient: ChatClient): Promise<void> => {
         if (msg.tags.get('first-msg') == '1') {
