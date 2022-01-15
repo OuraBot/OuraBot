@@ -18,7 +18,7 @@ export function safeRestart() {
     if (!areTasksRunning()) {
         console.log(`Restarting with ${activeTasks.size} active tasks`);
 
-        exec('pm2 restart 11');
+        exec('pm2 restart 8');
         // process.exit(0);
     } else {
         console.log(`There are ${activeTasks.size} active tasks...`);
