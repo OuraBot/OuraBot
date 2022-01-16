@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 import { signIn, signOut, useSession } from 'next-auth/client';
+import { useRouter } from 'next/router';
 
 export interface INavigation {
 	name: string;
@@ -20,6 +21,7 @@ function classNames(...classes) {
 
 export default function Header(props: IHeaderProps) {
 	const [session] = useSession();
+	const router = useRouter();
 
 	const navigation: INavigation[] = props.navigation;
 
@@ -116,7 +118,10 @@ export default function Header(props: IHeaderProps) {
 																				active ? 'bg-gray-100' : '',
 																				'block px-4 py-2 text-sm text-gray-700'
 																			)}
-																			onClick={() => signOut()}
+																			onClick={() => {
+																				signOut();
+																				router.push('/');
+																			}}
 																		>
 																			Sign Out
 																		</a>
