@@ -92,7 +92,9 @@ export default function Header(props: IHeaderProps) {
 																<span className="sr-only">Open User Menu</span>
 																<img
 																	className="h-8 w-8 rounded-full"
-																	src={session.user.image}
+																	src={
+																		JSON.parse(session.user.email).profile_image_url
+																	}
 																	alt=""
 																/>
 															</Menu.Button>

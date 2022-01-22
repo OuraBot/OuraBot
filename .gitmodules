@@ -1,0 +1,3 @@
+[submodule "mongoschemas"]
+	path = mongoschemas
+	url = https://github.com/ourabot/mongoschemas

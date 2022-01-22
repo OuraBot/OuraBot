@@ -1,16 +1,25 @@
-import { signIn, signOut, useSession } from 'next-auth/client';
+import { signin, signIn, signOut, useSession } from 'next-auth/client';
 import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
 import Header, { INavigation } from '../components/Header';
 
 export default function Home() {
 	const [session, loading] = useSession();
-	const router = useRouter();
+	const [inChannel, setInChannel] = useState(false);
+	// const router = useRouter();
 
 	const navigation: INavigation[] = [
 		{ name: 'Features', href: '/#features', current: false },
 		{ name: 'Contact', href: '/#contact', current: false },
-		{ name: 'Dashboard', href: '/dashboard', current: false },
+		{ name: 'Dashboard', href: '/dashboard', current: true },
 	];
+
+	// '/api/inChannel?channelid=' + session.id
+	useEffect(() => {
+		if (session) {
+			//
+		}
+	}, [session]);
 
 	if (loading) {
 		return null;
@@ -23,15 +32,15 @@ export default function Home() {
 
 	if (session == null) {
 		signIn('twitch');
+		return null;
 	}
-
-	console.log(session);
 
 	return (
 		<>
 			<Header navigation={navigation} />
 			<div>
-				<h1 className="text-center">Welcome {session.user.name}</h1>
+				<h1 className="text-center">Welcome! Is the bot in your channel?</h1>
+				<h2 className="text-center">{inChannel ? 'Yes' : 'No'}</h2>
 			</div>
 		</>
 	);
