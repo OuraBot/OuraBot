@@ -649,7 +649,7 @@ async function main(): Promise<void> {
                             let regex = new RegExp(term.regex, 'gi');
                             if (regex.test(message)) {
                                 if (term.response.includes('{newline}')) {
-                                    if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                                    if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
                                         let msgs = term.response.split('{newline}');
                                         for (let msg of msgs) {
                                             chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
@@ -670,7 +670,7 @@ async function main(): Promise<void> {
                                 let regex = new RegExp(term.regex, 'gi');
                                 if (regex.test(message)) {
                                     if (term.response.includes('{newline}')) {
-                                        if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
                                             let msgs = term.response.split('{newline}');
                                             for (let msg of msgs) {
                                                 chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
@@ -695,7 +695,7 @@ async function main(): Promise<void> {
                                 let regex = new RegExp(term.regex, 'gi');
                                 if (regex.test(message)) {
                                     if (term.response.includes('{newline}')) {
-                                        if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
                                             let msgs = term.response.split('{newline}');
                                             for (let msg of msgs) {
                                                 chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
@@ -716,7 +716,7 @@ async function main(): Promise<void> {
                                     let regex = new RegExp(term.regex, 'gi');
                                     if (regex.test(message)) {
                                         if (term.response.includes('{newline}')) {
-                                            if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
                                                 let msgs = term.response.split('{newline}');
                                                 for (let msg of msgs) {
                                                     chatClient.say(channel, sanitizeMessage(msg.replace(/{user}/g, user)));
@@ -833,7 +833,7 @@ async function main(): Promise<void> {
                                     if (customCommand.response.match(/^REPEAT\([0-9]{1,3}\)\s/)) {
                                         let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                         let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
-                                        if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
                                             for (let i = 0; i < repeatCount && i < 150; i++) {
                                                 await new Promise((resolve) => setTimeout(resolve, 500));
                                                 chatClient.say(channel, sanitizeMessage(response));
@@ -893,8 +893,8 @@ async function main(): Promise<void> {
                                             let repeatCount = Number(customCommand.response.match(/^REPEAT\(([0-9]{1,3})\)\s/)[1]);
                                             let response = customCommand.response.replace(/^REPEAT\([0-9]{1,3}\)\s/, '');
                                             if (
-                                                (await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) ||
-                                                (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)
+                                                (await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) ||
+                                                (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)
                                             ) {
                                                 for (let i = 0; i < repeatCount && i < 150; i++) {
                                                     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -957,7 +957,7 @@ async function main(): Promise<void> {
                     }
                     let reminderArr = chunkArr(userReminders, 450);
                     if (reminderArr.length >= 2) {
-                        if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                        if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
                             for (let reminder of reminderArr) {
                                 chatClient.say(channel, `@${user}, reminders - ${reminder}`);
                             }
@@ -1005,7 +1005,7 @@ async function main(): Promise<void> {
                         }
                         let reminderArr = chunkArr(userReminders, 450);
                         if (reminderArr.length >= 2) {
-                            if ((await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                            if ((await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) || (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME)) {
                                 for (let reminder of reminderArr) {
                                     chatClient.say(channel, `@${user}, reminders - ${reminder}`);
                                 }
@@ -1196,15 +1196,15 @@ async function main(): Promise<void> {
                         if (
                             command.requireFastLimits &&
                             !(
-                                (await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) ||
-                                (await chatClient.getVips(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME) ||
+                                (await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME) ||
+                                (await chatClient.getVips(channel)).includes(process.env.CLIENT_USERNAME) ||
                                 channel == '#oura_bot'
                             )
                         ) {
                             return chatClient.say(channel, `@${user}, I need to be a VIP or a moderator to execute this command!`);
                         }
 
-                        if (command.requiresMod && !(await chatClient.getMods(channel)).map((user: string) => { user.toLowerCase() }).includes(process.env.CLIENT_USERNAME)) {
+                        if (command.requiresMod && !(await chatClient.getMods(channel)).includes(process.env.CLIENT_USERNAME)) {
                             return chatClient.say(channel, `@${user}, I need to be a moderator to execute this command!`);
                         }
 
