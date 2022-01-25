@@ -12,7 +12,7 @@ class testComand extends Command {
     permission = 39;
     userCooldown = 5;
     channelCooldown = 5;
-    requireFastLimits = true;
+    requiresMod = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0])
             return {

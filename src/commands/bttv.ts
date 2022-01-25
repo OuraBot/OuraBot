@@ -12,7 +12,7 @@ class testComand extends Command {
     usage = 'bttv';
     userCooldown = 60;
     channelCooldown = 30;
-    requireFastLimits = true;
+    requiresMod = true;
     aliases = ['bttvemotes'];
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         let bttvEmotes = await getBttvChannelEmotes(channel.replace('#', ''));

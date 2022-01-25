@@ -13,7 +13,7 @@ class pyramidCommand extends Command {
     usage = 'pyramid <width> <emote/text>';
     userCooldown = 30;
     channelCooldown = 15;
-    requireFastLimits = true;
+    requiresMod = true;
     permission = 7;
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

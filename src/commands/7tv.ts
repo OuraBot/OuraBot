@@ -12,7 +12,7 @@ class testComand extends Command {
     usage = '7tv';
     userCooldown = 60;
     channelCooldown = 30;
-    requireFastLimits = true;
+    requiresMod = true;
     aliases = ['7tvemotes'];
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

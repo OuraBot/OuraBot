@@ -11,7 +11,7 @@ class testComand extends Command {
     usage = '3rdpartyemotes';
     userCooldown = 60;
     channelCooldown = 30;
-    requireFastLimits = true;
+    requiresMod = true;
     aliases = ['allemotes'];
     allowCustomPermissions = true;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {

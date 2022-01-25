@@ -14,7 +14,7 @@ class testComand extends Command {
     usage = 'filesay <url> <formatting - use {line} to access username> <--fast?> <--silent?> <--slow?>';
     aliases = ['ob-filesay', 'ob_filesay'];
     hidden = true;
-    requireFastLimits = true;
+    requiresMod = true;
     permission = 929;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
         if (!args[0].match(FILE_URLS_REGEX))

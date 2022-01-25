@@ -10,7 +10,7 @@ class testComand extends Command {
     name = 'ffz';
     description = 'Get all FrankerfaceZ emotes for the channel';
     usage = 'ffz';
-    requireFastLimits = true;
+    requiresMod = true;
     userCooldown = 60;
     channelCooldown = 30;
     aliases = ['ffzemotes'];

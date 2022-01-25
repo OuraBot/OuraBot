@@ -12,7 +12,7 @@ class spamCommand extends Command {
     name = 'spam';
     description = 'Spam a message';
     usage = 'spam <spam count> <text>';
-    requireFastLimits = true;
+    requiresMod = true;
     permission = 419;
     allowCustomPermissions = true;
     userCooldown = 30;

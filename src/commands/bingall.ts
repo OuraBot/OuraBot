@@ -13,7 +13,7 @@ class suggestCommand extends Command {
     aliases = ['pingall', 'chaos'];
     userCooldown = 30;
     channelCooldown = 15;
-    requireFastLimits = true;
+    requiresMod = true;
     allowCustomPermissions = true;
     permission = 3;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
