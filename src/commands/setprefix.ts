@@ -26,6 +26,13 @@ class suggestCommand extends Command {
                 error: null,
             };
 
+        if (prefix === "$")
+            return {
+                success: false,
+                message: 'This prefix conflicts with other bots that have similar commands. Please choose another prefix instead.',
+                error: null
+            };
+
         redis.set(`ob:${channel}:prefix`, prefix);
         return {
             success: true,
