@@ -7,7 +7,6 @@ class randomtitleCommand extends Command {
     name = 'randomtitle';
     description = 'Get a random title based off markov chains from xQc\'s titles.';
     usage = 'randomtitle';
-    permission = 1;
     userCooldown = 5;
     channelCooldown = 2;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
