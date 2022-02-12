@@ -17,13 +17,6 @@ class testComand extends Command {
     requiresMod = true;
     permission = 929;
     execute = async (user: string, channel: string, args: string[]): Promise<CommandReturnClass> => {
-        if (!args[0].match(FILE_URLS_REGEX))
-            return {
-                success: false,
-                message: 'Missing RAW haste/pastebin/gist link',
-                error: null,
-            };
-
         let users = (await axios.get(args[0])).data.split('\n');
 
         const fast = args.includes('--fast');
