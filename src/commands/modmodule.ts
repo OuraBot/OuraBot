@@ -95,7 +95,7 @@ class testComand extends Command {
             };
         } else {
             if (timeoutLength === 0) {
-                await modules[0].remove();
+                await modules[0].deleteOne();
 
                 return {
                     success: true,
@@ -103,7 +103,7 @@ class testComand extends Command {
                     error: null,
                 };
             } else {
-                await modules[0].update({
+                await modules[0].updateOne({
                     timeout: timeoutLength,
                 });
 

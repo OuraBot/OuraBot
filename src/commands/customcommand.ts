@@ -101,7 +101,7 @@ class testComand extends Command {
             }
 
             let commandName = args[1];
-            await CustomCommand.findOneAndRemove({ command: commandName });
+            await CustomCommand.deleteOne({ command: commandName });
             redis.del(`tl:${channel}:customcommands`);
             return {
                 success: true,

@@ -21,7 +21,7 @@ class remindCommand extends Command {
                 error: null,
             };
 
-        await reminder.remove();
+        await reminder.deleteOne();
         return {
             success: true,
             message: `Reminder removed for user ${obfuscateName(`${reminder.username}`)}`,

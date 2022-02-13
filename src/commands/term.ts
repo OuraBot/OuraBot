@@ -112,7 +112,7 @@ class testComand extends Command {
 
             if (termRegex === '!{WEEB}') termRegex = WEEB_REGEX.toString().replace(/^\/|\/g$/g, '');
 
-            await Term.findOneAndRemove({ regex: termRegex });
+            await Term.deleteOne({ regex: termRegex });
 
             let newTerm = new Term({
                 channel: channel.replace('#', ''),
@@ -139,7 +139,7 @@ class testComand extends Command {
             }
 
             let termRegex = args[1];
-            await Term.findOneAndRemove({ regex: termRegex });
+            await Term.deleteOne({ regex: termRegex });
             return {
                 success: true,
                 message: `Term with a regex of "${termRegex}" removed`,
