@@ -170,8 +170,8 @@ async function main(): Promise<void> {
         })
         .map((c) => c.channel);
 
-    const initialChannels = sortedChannels.slice(0, 99);
-    const remainingChannels = sortedChannels.slice(99);
+    const initialChannels = sortedChannels.slice(0, 990);
+    const remainingChannels = sortedChannels.slice(990);
 
     chatClient = new ChatClient(
         process.env.DEBUG === 'TRUE'
