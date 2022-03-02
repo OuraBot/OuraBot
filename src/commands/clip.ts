@@ -19,7 +19,7 @@ class suggestCommand extends Command {
             discordData = clips.filter((c) => c.channel === channel.replace('#', ''))[0];
         });
 
-        if (!discordData) return {
+        if (!discordData.url) return {
             success: false,
             message: 'This channel does not have clipping to Discord enabled. Use the suggest command if you would like this feature enabled',
             error: null
