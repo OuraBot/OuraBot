@@ -31,7 +31,7 @@ class testComand extends Command {
         if (args[2] && config.admins.includes(user)) targetChannel = args[2];
 
         let timeToCallback = Math.abs(ms(args[0]));
-        if (timeToCallback > 60000 * 60 * 24 * 3)
+        if (timeToCallback > 60000 * 60 * 24 * 3 || isNaN(timeToCallback))
             return {
                 success: false,
                 message: 'I can only recall back to 3 days',
