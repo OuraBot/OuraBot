@@ -61,7 +61,7 @@ class pyramidCommand extends Command {
         for (let i = 0; i < width; i++) {
             // let color = poorColorList[i % poorColorList.length];
             // await getClient().say(channel, `/color ${color}`);
-            getClient().say(channel, '/me ' + emote.repeat(i + 1).replace(/^(\.|\/|!)/, ''));
+            getClient().say(channel, '/me ' + emote.repeat(i + 1).replace(/^(\.|\/|!)+/, ''));
             await new Promise((resolve) => setTimeout(resolve, 75));
         }
 
@@ -69,7 +69,7 @@ class pyramidCommand extends Command {
         for (let i = width; i > 0; i--) {
             // let color = poorColorList[i % poorColorList.length];
             // await getClient().say(channel, `/color ${color}`);
-            if (i != width) getClient().say(channel, '/me ' + emote.repeat(i).replace(/^(\.|\/|!)/, ''));
+            if (i != width) getClient().say(channel, '/me ' + emote.repeat(i).replace(/^(\.|\/|!)+/, ''));
             await new Promise((resolve) => setTimeout(resolve, 75));
 
             // if (i == 1) {
