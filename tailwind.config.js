@@ -1,14 +1,12 @@
 module.exports = {
-  purge: [
-    './src/pages/**/*.{js,ts,jsx,tsx}', 
-    './src/components/**/*.{js,ts,jsx,tsx}'
-  ],
-  darkMode: false,
-  theme: {
-    extend: {},
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-}
+	content: ['./app/**/*.{ts,tsx,jsx,js}'],
+	theme: {
+		colors: {
+			ob_gray: '#142850',
+			twitch_purple: '#6441A5',
+			twitch_purple_light: '#6f48b7',
+		},
+		extend: {},
+	},
+	plugins: [],
+};
