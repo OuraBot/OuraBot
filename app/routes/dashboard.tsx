@@ -15,23 +15,28 @@ import {
 	useMantineTheme,
 } from '@mantine/core';
 import { useState } from 'react';
-import { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { redirect } from '~/services/redirect.server';
+import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import { redirect } from '~/utils/redirect.server';
 import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { BellRinging, LayoutGrid, Logout, Settings, SquaresFilled } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { User } from '~/services/models/user';
+import { _model as Channel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
 
 export let loader: LoaderFunction = async ({ request }) => {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
-	const user = await User._model.findOne({ id: session.json.id });
+
+	const channel = await Channel.findOne({ id: session.json.id });
+
+	if (!channel) {
+		return redirect('/onboarding');
+	}
 
 	return {
 		session,
-		user,
+		channel,
 	};
 };
 
@@ -120,10 +125,6 @@ export default function Dashboard() {
 
 	if (!data.session) {
 		redirect('/login');
-	}
-
-	if (!data.user) {
-		throw new Error(`User not found. Try logging out and logging back in.`);
 	}
 
 	// // console.log(data);

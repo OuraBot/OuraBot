@@ -1,8 +1,9 @@
 import { Button, Container, createStyles, Group, Image, List, Text, ThemeIcon, Title } from '@mantine/core';
 import React from 'react';
-import { Form } from "@remix-run/react";
+import { Form } from '@remix-run/react';
 import { Check } from 'tabler-icons-react';
 import { OAuth2Profile } from '~/services/oauth.strategy';
+import { __interface } from '~/services/MongoSchemas/Channel';
 
 const useStyles = createStyles((theme) => ({
 	inner: {
@@ -64,10 +65,10 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface Props {
-	session: OAuth2Profile | null;
+	channel?: __interface;
 }
 
-export function HeroBullets({ session }: Props) {
+export function HeroBullets(props: Props) {
 	const { classes } = useStyles();
 	return (
 		<div>
@@ -107,7 +108,7 @@ export function HeroBullets({ session }: Props) {
 							{/* <button className="btn btn-primary bg-twitch_purple hover:bg-twitch_purple_light rounded-full text-white font-bold py-2 px-4">
 								Signin with Twitch
 							</button> */}
-							{session ? (
+							{props.channel ? (
 								<Form action="/dashboard">
 									<Button type="submit">Dashboard</Button>
 								</Form>

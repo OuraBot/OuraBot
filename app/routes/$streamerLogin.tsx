@@ -1,8 +1,8 @@
 import { Avatar, Button, Center, Container, Group, Table, Text } from '@mantine/core';
 import { fetch } from '@remix-run/node';
-import { LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { User } from '~/services/models/user';
+import { LoaderFunction } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
+import { _model as Channel } from '~/services/models/Channel';
 import dbConnect from '~/services/mongo.server';
 
 export type IvrFiUser = {
@@ -67,7 +67,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 	// The `ivrUserData` variable is only for getting the user's profile picture
 	// - or fallback data for if the user doesn't exist in the OB database.
 	let [user, ivrUserData] = await Promise.all([
-		User._model.findOne({ login: params.streamerLogin }),
+		Channel.findOne({ login: params.streamerLogin }),
 		(await fetch(`https://api.ivr.fi/twitch/resolve/${params.streamerLogin}`)).json(),
 	]);
 

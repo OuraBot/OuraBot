@@ -7,6 +7,7 @@ import { Dashboard, Logout } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
+import { __interface } from '~/services/MongoSchemas/Channel';
 
 const HEADER_HEIGHT = 60;
 
@@ -87,15 +88,15 @@ const useStyles = createStyles((theme) => ({
 
 interface HeaderResponsiveProps {
 	links: { link: string; label: string }[];
-	session: OAuth2Profile | null;
+	channel?: __interface;
 }
 
-export function HeaderResponsive({ links, session }: HeaderResponsiveProps) {
+export function HeaderResponsive(props: HeaderResponsiveProps) {
 	const [opened, toggleOpened] = useBooleanToggle(false);
-	const [active, setActive] = useState(links[0].link);
+	const [active, setActive] = useState(props.links[0].link);
 	const { classes, cx } = useStyles();
 
-	const items = links.map((link) => (
+	const items = props.links.map((link) => (
 		<a
 			key={link.label}
 			href={link.link}
@@ -116,8 +117,8 @@ export function HeaderResponsive({ links, session }: HeaderResponsiveProps) {
 				<OuraBotLogo />
 				<Group spacing={5} className={classes.links}>
 					{items}
-					{session ? (
-						<Menu control={<Avatar src={session?.json.profile_image_url} radius="xl" />}>
+					{props.channel ? (
+						<Menu control={<Avatar src={props.channel.profile_image_url} radius="xl" />}>
 							<Form method="post">
 								<a href="/dashboard">
 									<Menu.Item icon={<Dashboard size={18} />}>Dashboard</Menu.Item>

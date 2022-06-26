@@ -1,9 +1,9 @@
 import { Button, Space, Stack, Switch, Text } from '@mantine/core';
 import { useState } from 'react';
-import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData, useTransition } from "@remix-run/react";
+import { ActionFunction, LoaderFunction } from '@remix-run/node';
+import { Form, useLoaderData, useTransition } from '@remix-run/react';
 import { authenticator } from '~/services/auth.server';
-import { User } from '~/services/models/user';
+import { _model as Channel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -13,13 +13,13 @@ export let loader: LoaderFunction = async ({ request }) => {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
-	const user = await User._model.findOne({ id: session.json.id });
+	const channel = await Channel.findOne({ id: session.json.id });
 
-	const enabled = await query('QUERY', 'EmoteUpdates', user.token, session.json.id);
+	const enabled = await query('QUERY', 'EmoteUpdates', channel.token, session.json.id);
 
 	return {
 		session,
-		user,
+		channel,
 		enabled,
 	};
 };
@@ -31,9 +31,9 @@ export const action: ActionFunction = async ({ request }) => {
 		failureRedirect: '/login',
 	});
 
-	const user = await User._model.findOne({ id: session.json.id });
+	const channel = await Channel.findOne({ id: session.json.id });
 
-	const change = await query('UPDATE', 'EmoteUpdates', user.token, session.json.id, {
+	const change = await query('UPDATE', 'EmoteUpdates', channel.token, session.json.id, {
 		enabled: formData.get('enabled'),
 	});
 

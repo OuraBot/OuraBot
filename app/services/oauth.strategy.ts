@@ -2,7 +2,6 @@ import { AppLoadContext, json, redirect, SessionStorage } from '@remix-run/serve
 import createDebug from 'debug';
 import { AuthenticateOptions, Strategy, StrategyVerifyCallback } from 'remix-auth';
 import { v4 as uuid } from 'uuid';
-import { User } from './models/user';
 import { sign } from 'jsonwebtoken';
 import dbConnect from './mongo.server';
 
@@ -227,28 +226,28 @@ export class OAuth2Strategy<
 
 		let json = await response.json();
 
-		let user = await User._model.find({ id: json.data[0].id });
+		// let user = await User._model.find({ id: json.data[0].id });
 
-		if (user?.length == 0) {
-			console.log('user does not exist, creating');
-			let newUser = new User._model({
-				login: json.data[0].login,
-				id: json.data[0].id,
-				role: 0,
-				token: sign(
-					{
-						id: json.data[0].id,
-					},
-					this.clientSecret
-				),
-				managers: [],
-				readTos: false,
-			});
+		// if (user?.length == 0) {
+		// 	console.log('user does not exist, creating');
+		// 	let newUser = new User._model({
+		// 		login: json.data[0].login,
+		// 		id: json.data[0].id,
+		// 		role: 0,
+		// 		token: sign(
+		// 			{
+		// 				id: json.data[0].id,
+		// 			},
+		// 			this.clientSecret
+		// 		),
+		// 		managers: [],
+		// 		readTos: false,
+		// 	});
 
-			await newUser.save();
-		} else {
-			console.log('user exists, not creating');
-		}
+		// 	await newUser.save();
+		// } else {
+		// 	console.log('user exists, not creating');
+		// }
 
 		return { provider: 'oauth2', json: json.data[0] } as Profile;
 	}
