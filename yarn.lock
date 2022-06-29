@@ -1235,10 +1235,10 @@
   resolved "https://registry.yarnpkg.com/@mantine/modals/-/modals-4.2.10.tgz#ad555664d9244ffd09a6d16ec7c9a10103147a3b"
   integrity sha512-lIHgNkP/dAtJdco/1S1as6hw5QPQS/1Y/h7GuEdUQXXAcEQVPIqu+qwTeEzR9/K+sIciAg5IHazMr66OOf0/mw==
 
-"@mantine/notifications@^4.0.7":
-  version "4.2.10"
-  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-4.2.10.tgz#4d0c480df7d1a61f683ff0cfa24cb123b496b506"
-  integrity sha512-qGkbPoJqFAxlV5nPMiYPDU/2TqPkk1ifcNqJHZe8Vme407XPEW4dl1ZqHVlBfK2wuj3yIS/yMljjbGEgCD5yig==
+"@mantine/notifications@^4.2.11":
+  version "4.2.11"
+  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-4.2.11.tgz#0ea2f5a10facb7ae147739af80044f328a3ae6ef"
+  integrity sha512-jncNVNdGgs9+q+PgmDB6iTJU3D/4XgC2Thh/SVg8OIqpenwYS7LhyWHW8CoUUQj9xsK5Q13CWd5AE7q62ZNaSQ==
   dependencies:
     react-transition-group "^4.4.2"
 

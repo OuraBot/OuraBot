@@ -10,6 +10,7 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, 
 
 import dbConnect from './services/mongo.server';
 import styles from './tailwind.css';
+import { NotificationsProvider } from '@mantine/notifications';
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 export const meta: MetaFunction = () => ({
@@ -56,7 +57,9 @@ function MantineTheme({ children }: { children: React.ReactNode }) {
 				withNormalizeCSS
 				emotionOptions={{ key: 'mantine', prepend: false }}
 			>
-				<ModalsProvider>{children}</ModalsProvider>
+				<NotificationsProvider>
+					<ModalsProvider>{children}</ModalsProvider>
+				</NotificationsProvider>
 			</MantineProvider>
 		</ColorSchemeProvider>
 	);

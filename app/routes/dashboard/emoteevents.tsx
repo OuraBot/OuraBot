@@ -1,10 +1,11 @@
 import { Button, Space, Stack, Switch, Text } from '@mantine/core';
 import { useState } from 'react';
 import { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { Form, useLoaderData, useTransition } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
-import { query } from '~/services/redis.server';
+import { showNotification } from '@mantine/notifications';
+import { Event, query } from '~/services/redis.server';
 
 export let loader: LoaderFunction = async ({ request }) => {
 	// used to simulate a slow loading process
@@ -33,8 +34,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 	const channel = await Channel.findOne({ id: session.json.id });
 
+	const enabled = formData.get('enabled') === 'on' ? true : false;
+
 	const change = await query('UPDATE', 'EmoteUpdates', channel.token, session.json.id, {
-		enabled: formData.get('enabled'),
+		enabled: enabled,
 	});
 
 	return change;
@@ -44,6 +47,30 @@ export default function EmoteEvents() {
 	const data = useLoaderData();
 	const transition = useTransition();
 	const [checked, setChecked] = useState(data.enabled.data['enabled']);
+	const [showedNotification, setShowedNotification] = useState(false);
+	const response: Event | undefined = useActionData();
+
+	console.log(response, 'Reponse');
+
+	if (response && response.status !== 200 && !showedNotification) {
+		setShowedNotification(true);
+		showNotification({
+			id: 'error',
+			color: 'red',
+			title: 'Error',
+			message: `Error while saving: ${response?.data?.message || 'Unknown error'}`,
+		});
+	}
+
+	if (response && response.status == 200 && !showedNotification) {
+		setShowedNotification(true);
+		showNotification({
+			id: 'success',
+			color: 'green',
+			title: 'Success',
+			message: `${response.data?.message?.charAt(0).toUpperCase() + response.data?.message?.slice(1) || ''}`,
+		});
+	}
 
 	return (
 		<>
@@ -59,6 +86,7 @@ export default function EmoteEvents() {
 					<Switch
 						label="Emote Events"
 						name="enabled"
+						id="enabled"
 						checked={checked}
 						onChange={(event) => {
 							setChecked(event.currentTarget.checked);
