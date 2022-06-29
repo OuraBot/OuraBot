@@ -117,19 +117,22 @@ export async function query(
 
 	pub.publish(channel, JSON.stringify(message));
 	return new Promise((resolve, reject) => {
-		sub.subscribe(channel);
-		sub.on('message', (channel, message) => {
+		function handleMessage(channel: string, message: string) {
 			try {
 				const event = JSON.parse(message) as Event;
 
 				if (event.sender !== 'SERVER' || event.uuid !== uuid) return;
 
 				sub.unsubscribe(channel);
+				sub.removeListener('message', handleMessage);
 				resolve(event);
 			} catch (e) {
 				console.error(e);
 				reject(message);
 			}
-		});
+		}
+
+		sub.subscribe(channel);
+		sub.on('message', handleMessage);
 	});
 }
