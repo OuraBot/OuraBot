@@ -76,10 +76,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
 				<MantineTheme>
 					<h1>App Error</h1>
 					<pre>{error.message}</pre>
+					<pre>{error.stack}</pre>
 					<Link to="/">
 						<Button>Go Home</Button>
 					</Link>
-					<p>Replace this UI with what you want users to see when your app throws uncaught errors.</p>
 				</MantineTheme>
 				<ScrollRestoration />
 				<Scripts />
