@@ -25,8 +25,7 @@ const useStyles = createStyles((theme) => ({
 
 interface RowData {
 	name: string;
-	email: string;
-	company: string;
+	description: string;
 }
 
 interface TableSortProps {
@@ -106,8 +105,7 @@ export function TableSort({ data }: TableSortProps) {
 	const rows = sortedData.map((row) => (
 		<tr key={row.name}>
 			<td>{row.name}</td>
-			<td>{row.email}</td>
-			<td>{row.company}</td>
+			<td>{row.description}</td>
 		</tr>
 	));
 
@@ -131,18 +129,11 @@ export function TableSort({ data }: TableSortProps) {
 							Name
 						</Th>
 						<Th
-							sorted={sortBy === 'email'}
+							sorted={sortBy === 'description'}
 							reversed={reverseSortDirection}
-							onSort={() => setSorting('email')}
+							onSort={() => setSorting('description')}
 						>
-							Email
-						</Th>
-						<Th
-							sorted={sortBy === 'company'}
-							reversed={reverseSortDirection}
-							onSort={() => setSorting('company')}
-						>
-							Company
+							Description
 						</Th>
 					</tr>
 				</thead>

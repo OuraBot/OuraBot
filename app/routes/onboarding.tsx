@@ -8,6 +8,7 @@ import { useModals } from '@mantine/modals';
 import type { TwitchSession } from '~/services/oauth.strategy';
 import { useState } from 'react';
 import { sign } from '~/utils/jsonwebtoken.server';
+import { query } from '~/services/redis.server';
 
 export const loader: LoaderFunction = async ({ request }) => {
 	const session = await authenticator.isAuthenticated(request, {
@@ -40,6 +41,10 @@ export const action: ActionFunction = async ({ request }) => {
 		id: session.id,
 		token: token,
 		profile_image_url: session.profile_image_url,
+	});
+
+	await query('UPDATE', 'Join', token, session.id, {
+		login: session.login,
 	});
 
 	return redirect(`/dashboard`);

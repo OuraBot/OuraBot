@@ -19,6 +19,7 @@
 		"@mantine/hooks": "^4.0.7",
 		"@mantine/modals": "^4.1.2",
 		"@mantine/notifications": "^4.2.11",
+		"@mantine/prism": "^4.2.12",
 		"@mantine/ssr": "^4.0.7",
 		"@remix-run/node": "^1.6.1",
 		"@remix-run/react": "^1.6.1",

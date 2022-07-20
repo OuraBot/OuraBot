@@ -50,8 +50,6 @@ export default function EmoteEvents() {
 	const [showedNotification, setShowedNotification] = useState(false);
 	const response: Event | undefined = useActionData();
 
-	console.log(response, 'Reponse');
-
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
 		showNotification({
