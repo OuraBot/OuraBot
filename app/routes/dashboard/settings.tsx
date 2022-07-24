@@ -3,7 +3,7 @@ import { _model as Channel } from '~/services/models/Channel';
 import { authenticator } from '~/services/auth.server';
 import { Event, query } from '~/services/redis.server';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
-import { Stack, Title, Text, TextInput, Divider, createStyles, Code, Button } from '@mantine/core';
+import { Stack, Title, Text, TextInput, Divider, createStyles, Code, Button, PasswordInput } from '@mantine/core';
 import { InfoCircle, Link } from 'tabler-icons-react';
 import { useState } from 'react';
 import { showNotification } from '@mantine/notifications';
@@ -160,7 +160,7 @@ export default function Settings() {
 						Manage the Discord Webhook for the <Code>clip</Code> command
 					</Text>
 					<div className={classes.clip}>
-						<TextInput
+						<PasswordInput
 							value={clip}
 							name="clipurl"
 							id="clipurl"
