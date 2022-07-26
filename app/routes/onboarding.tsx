@@ -1,6 +1,7 @@
 import { Avatar, Button, Center, Checkbox, Container, Divider, Group, Image, Paper, Text, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 import { authenticator } from '~/services/auth.server';
@@ -10,7 +11,7 @@ import { query } from '~/services/redis.server';
 import { sign } from '~/utils/jsonwebtoken.server';
 import { redirect } from '~/utils/redirect.server';
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
@@ -22,12 +23,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 	console.log(channel, 'chnl fnd');
 
 	if (channel) return redirect('/dashboard');
-	return {
+	return json({
 		session: session.json,
-	};
-};
+	});
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	const session: TwitchSession = (
 		await authenticator.isAuthenticated(request, {
 			failureRedirect: '/login',
@@ -48,10 +49,10 @@ export const action: ActionFunction = async ({ request }) => {
 	});
 
 	return redirect(`/dashboard`);
-};
+}
 
 export default function Onboarding() {
-	const loaderData: { session: TwitchSession } = useLoaderData();
+	const loaderData: { session: TwitchSession } = useLoaderData<typeof loader>();
 	const [openedTos, setOpenedTos] = useState(false);
 	const [agreed, setAgreed] = useState(false);
 	const [kappad, setKappad] = useState(false);

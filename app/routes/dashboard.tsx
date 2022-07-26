@@ -14,16 +14,17 @@ import {
 	Title,
 	useMantineTheme,
 } from '@mantine/core';
-import { useState } from 'react';
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { redirect } from '~/utils/redirect.server';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
+import { useState } from 'react';
 import { BellRinging, LayoutGrid, Logout, Settings, SquaresFilled } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
+import { redirect } from '~/utils/redirect.server';
 
-export let loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
@@ -34,15 +35,15 @@ export let loader: LoaderFunction = async ({ request }) => {
 		return redirect('/onboarding');
 	}
 
-	return {
+	return json({
 		session,
 		channel,
-	};
-};
+	});
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	await authenticator.logout(request, { redirectTo: '/' });
-};
+}
 
 const useStyles = createStyles((theme, _params, getRef) => {
 	const icon = getRef('icon');
@@ -114,7 +115,7 @@ const _data = [
 ];
 
 export default function Dashboard() {
-	let data = useLoaderData();
+	let data = useLoaderData<typeof loader>();
 	const { classes, cx } = useStyles();
 	const location = useLocation();
 	const [active, setActive] = useState(_data[_data.findIndex(({ link }) => link === location.pathname)].label);
@@ -126,8 +127,6 @@ export default function Dashboard() {
 	if (!data.session) {
 		redirect('/login');
 	}
-
-	// // console.log(data);
 
 	const links = _data.map((item) => (
 		<Link

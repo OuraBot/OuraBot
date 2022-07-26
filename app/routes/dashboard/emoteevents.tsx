@@ -1,13 +1,14 @@
 import { Button, Space, Stack, Switch, Text } from '@mantine/core';
-import { useState } from 'react';
-import { ActionFunction, LoaderFunction } from '@remix-run/node';
+import { showNotification } from '@mantine/notifications';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
+import { useState } from 'react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
-import { showNotification } from '@mantine/notifications';
-import { Event, query } from '~/services/redis.server';
+import { query } from '~/services/redis.server';
 
-export let loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	// used to simulate a slow loading process
 	// await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -18,14 +19,14 @@ export let loader: LoaderFunction = async ({ request }) => {
 
 	const enabled = await query('QUERY', 'EmoteUpdates', channel.token, session.json.id);
 
-	return {
+	return json({
 		session,
 		channel,
 		enabled,
-	};
-};
+	});
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
 
 	const session = await authenticator.isAuthenticated(request, {
@@ -41,14 +42,14 @@ export const action: ActionFunction = async ({ request }) => {
 	});
 
 	return change;
-};
+}
 
 export default function EmoteEvents() {
-	const data = useLoaderData();
+	const data = useLoaderData<typeof loader>();
 	const transition = useTransition();
-	const [checked, setChecked] = useState(data.enabled.data['enabled']);
+	const [checked, setChecked] = useState(data.enabled.data?.enabled ?? false);
 	const [showedNotification, setShowedNotification] = useState(false);
-	const response: Event | undefined = useActionData();
+	const response = useActionData<typeof action>();
 
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
@@ -93,7 +94,7 @@ export default function EmoteEvents() {
 					<Space h="xs" />
 					<Button
 						type="submit"
-						disabled={checked === data.enabled.data['enabled']}
+						disabled={checked === data.enabled.data?.enabled ?? false}
 						loading={transition.state == 'submitting'}
 					>
 						Save

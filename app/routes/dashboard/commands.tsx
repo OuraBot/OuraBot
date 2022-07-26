@@ -1,38 +1,30 @@
 import {
 	Box,
-	ScrollArea,
-	Tabs,
-	TextInput,
-	Table,
-	useMantineTheme,
-	Switch,
-	UnstyledButton,
-	Text,
-	Group,
-	Image,
-	Title,
-	Center,
-	Stack,
-	Space,
 	Button,
+	Center,
 	Divider,
-	Code,
-	NumberInput,
-	MultiSelect,
-	SegmentedControl,
 	InputWrapper,
+	MultiSelect,
+	NumberInput,
+	SegmentedControl,
+	Switch,
+	Table,
+	Tabs,
+	Text,
+	TextInput,
+	Title,
+	useMantineTheme,
 } from '@mantine/core';
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { Selector, ChevronDown, ChevronUp, Search, Edit } from 'tabler-icons-react';
-import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
-import { TableSort } from '~/components/Table';
-import { authenticator } from '~/services/auth.server';
-import { useState } from 'react';
-import { _model as Channel } from '~/services/models/Channel';
-import { Event, query } from '~/services/redis.server';
 import { ModalsProvider, useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { Prism } from '@mantine/prism';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import { useState } from 'react';
+import { Edit, Search } from 'tabler-icons-react';
+import { authenticator } from '~/services/auth.server';
+import { _model as Channel } from '~/services/models/Channel';
+import { query } from '~/services/redis.server';
 
 export enum Permission {
 	Owner,
@@ -48,7 +40,7 @@ PERMISSIONS = PERMISSIONS.slice(PERMISSIONS.length / 2);
 
 const MAX_COOLDOWN_TIME = 3600; // 1 hour
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
@@ -56,14 +48,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	const commands = await query('QUERY', 'Commands', channel.token, session.json.id);
 
-	return {
+	return json({
 		session,
 		channel,
 		commands,
-	};
-};
+	});
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
@@ -84,12 +76,12 @@ export const action: ActionFunction = async ({ request }) => {
 	// For some reason the switch values are undefined/null when they are not checked
 	// so we do not check if they are present below
 	if (!name || !minimumUserCooldown || !minimumChannelCooldown) {
-		return {
+		return json({
 			status: 400,
 			title: 'Error',
 			body: 'Missing fields',
 			color: 'danger',
-		};
+		});
 	}
 
 	minimumUserCooldown = parseInt(minimumUserCooldown as string) || 0;
@@ -99,21 +91,21 @@ export const action: ActionFunction = async ({ request }) => {
 	permissions = permissions?.split(',') ?? [];
 
 	if (!inBounds(minimumUserCooldown as number, MAX_COOLDOWN_TIME, userCooldown)) {
-		return {
+		return json({
 			status: 400,
 			title: 'Error',
 			body: 'User cooldown is out of bounds',
 			color: 'danger',
-		};
+		});
 	}
 
 	if (!inBounds(minimumChannelCooldown as number, MAX_COOLDOWN_TIME, channelCooldown)) {
-		return {
+		return json({
 			status: 400,
 			title: 'Error',
 			body: 'Channel cooldown is out of bounds',
 			color: 'danger',
-		};
+		});
 	}
 
 	const response = await query('UPDATE', 'Commands', channel.token, session.json.id, {
@@ -130,7 +122,7 @@ export const action: ActionFunction = async ({ request }) => {
 	});
 
 	return response;
-};
+}
 
 type Command = {
 	name: string;
@@ -147,10 +139,10 @@ type Command = {
 };
 
 export default function Commands() {
-	const data = useLoaderData();
+	const data = useLoaderData<typeof loader>();
 	const submit = useSubmit();
 	const [showedNotification, setShowedNotification] = useState(false);
-	const response: Event | undefined = useActionData();
+	const response = useActionData();
 
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
@@ -175,9 +167,9 @@ export default function Commands() {
 		});
 	}
 
-	const moderationCommands: Command[] = data.commands.data.defaultCommands['Moderation'] || [];
-	const utilityCommands: Command[] = data.commands.data.defaultCommands['Utility'] || [];
-	const funCommands: Command[] = data.commands.data.defaultCommands['Fun'] || [];
+	const moderationCommands: Command[] = data.commands.data?.defaultCommands['Moderation'] || [];
+	const utilityCommands: Command[] = data.commands.data?.defaultCommands['Utility'] || [];
+	const funCommands: Command[] = data.commands.data?.defaultCommands['Fun'] || [];
 	// const customCommands: any[] = data.commands.data.customCommands || [];
 
 	return (

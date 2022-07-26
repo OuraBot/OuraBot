@@ -1,19 +1,20 @@
-import { ActionFunction, json, LoaderFunction } from '@remix-run/node';
-import { Form, useLoaderData } from '@remix-run/react';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { LoginMenu } from '~/components/Login';
 import { authenticator } from '~/services/auth.server';
 import { sessionStorage } from '~/services/session.server';
 
-export const action: ActionFunction = async ({ request, context }) => {
+export async function action({ request, context }: ActionArgs) {
 	await authenticator.authenticate('oauth2', request, {
 		successRedirect: '/onboarding',
 		failureRedirect: '/login',
 		throwOnError: true,
 		context,
 	});
-};
+}
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	await authenticator.isAuthenticated(request, {
 		successRedirect: '/onboarding',
 	});
@@ -22,7 +23,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	const error = session.get('sessionErrorKey');
 	return json<any>({ error });
-};
+}
 
 export default function Login() {
 	const loaderData = useLoaderData();

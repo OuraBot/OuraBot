@@ -1,19 +1,19 @@
 import { Button, Code, createStyles, Divider, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime';
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime';
+import { json } from '@remix-run/server-runtime';
 import { useState } from 'react';
 import { InfoCircle, Link, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
-import type { Event } from '~/services/redis.server';
 import { query } from '~/services/redis.server';
 
 const PREFIX_REGEX = /^[a-zA-Z0-9!@#%^&*()-=_+;:'"<>,./?`~]{1,5}$/;
 const DISCORD_WEBHOOK_REGEX = /(^https:\/\/discord.com\/api\/webhooks\/[0-9]+\/.+$|^$)/;
 const LASTFM_USERNAME_REGEX = /(^[a-zA-Z0-9_\-]{2,15}$|^$)/;
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
@@ -21,14 +21,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	const settings = await query('QUERY', 'Settings', channel.token, session.json.id);
 
-	return {
+	return json({
 		session,
 		channel,
 		settings,
-	};
-};
+	});
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
 
 	const session = await authenticator.isAuthenticated(request, {
@@ -78,7 +78,7 @@ export const action: ActionFunction = async ({ request }) => {
 	});
 
 	return change;
-};
+}
 const useStyles = createStyles((theme) => ({
 	prefix: {
 		width: '15em',
@@ -108,19 +108,19 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Settings() {
-	const data = useLoaderData();
+	const data = useLoaderData<typeof loader>();
 	const transition = useTransition();
 	const { classes } = useStyles();
 	const [showedNotification, setShowedNotification] = useState(false);
-	const response: Event | undefined = useActionData();
+	const response = useActionData<typeof action>();
 
-	const [prefix, setPrefix] = useState(data.settings.data['prefix']);
+	const [prefix, setPrefix] = useState(data.settings.data?.prefix ?? '');
 	const [prefixError, setPrefixError] = useState('');
 
-	const [clip, setClip] = useState(data.settings.data['clipUrl']);
+	const [clip, setClip] = useState(data.settings.data?.clipUrl ?? '');
 	const [clipError, setClipError] = useState('');
 
-	const [lastfmusername, setLastfmusername] = useState(data.settings.data['lastfmUsername']);
+	const [lastfmusername, setLastfmusername] = useState(data.settings.data?.lastfmUsername ?? '');
 	const [lastfmusernameError, setLastfmusernameError] = useState('');
 
 	if (response && response.status !== 200 && !showedNotification) {
@@ -237,9 +237,9 @@ export default function Settings() {
 							prefixError !== '' ||
 							clipError !== '' ||
 							lastfmusernameError !== '' ||
-							(prefix === data.settings.data['prefix'] &&
-								clip === data.settings.data['clipUrl'] &&
-								lastfmusername === data.settings.data['lastfmUsername'])
+							(prefix === (data.settings.data?.prefix ?? '') &&
+								clip === (data.settings.data?.clipUrl ?? '') &&
+								lastfmusername === (data.settings.data?.lastfmUsername ?? ''))
 						}
 						loading={transition.state == 'submitting'}
 					>

@@ -1,5 +1,5 @@
 import { Switch } from '@mantine/core';
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { Activity } from 'tabler-icons-react';
 import { FeaturesGrid } from '~/components/Features';
@@ -10,7 +10,7 @@ import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
 import type { TwitchSession } from '~/services/oauth.strategy';
 
-export let loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
 	if (session) {
 		const channel = await Channel.findOne({ id: session.id });
@@ -18,14 +18,14 @@ export let loader: LoaderFunction = async ({ request }) => {
 	} else {
 		return null;
 	}
-};
+}
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
 	await authenticator.logout(request, { redirectTo: '/' });
-};
+}
 
 export default function Index() {
-	let data = useLoaderData();
+	let data = useLoaderData<typeof loader>();
 
 	return (
 		<>

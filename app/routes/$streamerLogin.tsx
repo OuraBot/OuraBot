@@ -1,9 +1,8 @@
 import { Avatar, Button, Center, Container, Group, Table, Text } from '@mantine/core';
-import { fetch } from '@remix-run/node';
-import { LoaderFunction } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
+import { fetch, json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { _model as Channel } from '~/services/models/Channel';
-import dbConnect from '~/services/mongo.server';
 
 export type IvrFiUser = {
 	status: number;
@@ -60,7 +59,7 @@ type UserType = {
 	ivrUserData: IvrFiUser;
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export async function loader({ params }: LoaderArgs) {
 	// The `user` variable is used for getting the user's data from the Oura Bot database
 	// - to get commands and such.
 
@@ -75,14 +74,14 @@ export const loader: LoaderFunction = async ({ params }) => {
 		return { user: null, ivrUserData };
 	}
 
-	return {
+	return json({
 		user,
 		ivrUserData,
-	} as unknown as UserType;
-};
+	}) as unknown as UserType;
+}
 
 export default function StreamerPage() {
-	const { user, ivrUserData } = useLoaderData() as UserType;
+	const { user, ivrUserData } = useLoaderData<typeof loader>();
 
 	return (
 		<Container mb="xl">
