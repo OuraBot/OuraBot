@@ -1,12 +1,13 @@
-import { ActionFunction, LoaderFunction } from '@remix-run/server-runtime';
-import { _model as Channel } from '~/services/models/Channel';
-import { authenticator } from '~/services/auth.server';
-import { Event, query } from '~/services/redis.server';
-import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
-import { Stack, Title, Text, TextInput, Divider, createStyles, Code, Button, PasswordInput } from '@mantine/core';
-import { InfoCircle, Link } from 'tabler-icons-react';
-import { useState } from 'react';
+import { Button, Code, createStyles, Divider, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
+import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
+import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime';
+import { useState } from 'react';
+import { InfoCircle, Link } from 'tabler-icons-react';
+import { authenticator } from '~/services/auth.server';
+import { _model as Channel } from '~/services/models/Channel';
+import type { Event } from '~/services/redis.server';
+import { query } from '~/services/redis.server';
 
 const PREFIX_REGEX = /^[a-zA-Z0-9!@#%^&*()-=_+;:'"<>,./?`~]{1,5}$/;
 const DISCORD_WEBHOOK_REGEX = /(^https:\/\/discord.com\/api\/webhooks\/[0-9]+\/.+$|^$)/;
@@ -56,9 +57,12 @@ export const action: ActionFunction = async ({ request }) => {
 
 	DISCORD_WEBHOOK_REGEX.lastIndex = 0;
 
+	const lastfmUsername = formData.get('lastfmusername')?.toString() || '';
+
 	const change = await query('UPDATE', 'Settings', channel.token, session.json.id, {
 		prefix: prefix,
 		clipUrl: clipUrl,
+		lastfmUsername: lastfmUsername,
 	});
 
 	return change;
@@ -104,6 +108,8 @@ export default function Settings() {
 
 	const [clip, setClip] = useState(data.settings.data['clipUrl']);
 	const [clipError, setClipError] = useState('');
+
+	const [lastfmusername, setLastfmusername] = useState(data.settings.data['lastfmUsername']);
 
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
@@ -177,8 +183,30 @@ export default function Settings() {
 							error={clipError}
 							autoComplete="off"
 							autoCapitalize="off"
-							description="Letters, numbers, symbols, 1-5 chars"
+							description="URL"
+							// the yellow squiggles was annoying me sorry
+							// eslint-disable-next-line jsx-a11y/anchor-has-content
 							icon={<Link size={16} />}
+							my={0}
+						/>
+					</div>
+					<Divider my="xs" />
+					<Title order={3}>Last.fm Username</Title>
+					<Text my={0}>
+						Manage the Last.fm username for the <Code>nowplaying</Code> command
+					</Text>
+					<div className={classes.prefix}>
+						<TextInput
+							value={lastfmusername}
+							name="lastfmusername"
+							id="lastfmusername"
+							onChange={(event) => {
+								setLastfmusername(event.target.value);
+							}}
+							autoComplete="off"
+							autoCapitalize="off"
+							description="Username"
+							icon={<InfoCircle size={16} />}
 							my={0}
 						/>
 					</div>
@@ -189,7 +217,9 @@ export default function Settings() {
 						disabled={
 							prefixError !== '' ||
 							clipError !== '' ||
-							(prefix === data.settings.data['prefix'] && clip === data.settings.data['clipUrl'])
+							(prefix === data.settings.data['prefix'] &&
+								clip === data.settings.data['clipUrl'] &&
+								lastfmusername === data.settings.data['lastfmUsername'])
 						}
 						loading={transition.state == 'submitting'}
 					>

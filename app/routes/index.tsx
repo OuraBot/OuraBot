@@ -1,14 +1,14 @@
 import { Switch } from '@mantine/core';
-import { ActionFunction, LoaderFunction } from '@remix-run/node';
+import type { ActionFunction, LoaderFunction } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { Activity } from 'tabler-icons-react';
 import { FeaturesGrid } from '~/components/Features';
-import { FooterSimple } from '~/components/Footer';
-import { _model as Channel } from '~/services/models/Channel';
+import { FooterSimple } from '~/components/footer';
 import { HeaderResponsive } from '~/components/Header';
 import { HeroBullets } from '~/components/Hero';
 import { authenticator } from '~/services/auth.server';
-import { TwitchSession } from '~/services/oauth.strategy';
+import { _model as Channel } from '~/services/models/Channel';
+import type { TwitchSession } from '~/services/oauth.strategy';
 
 export let loader: LoaderFunction = async ({ request }) => {
 	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;

@@ -1,14 +1,14 @@
-import { Paper, Button, Container, Title, Group, Avatar, Text, Divider, Checkbox, Center, Image } from '@mantine/core';
+import { Avatar, Button, Center, Checkbox, Container, Divider, Group, Image, Paper, Text, Title } from '@mantine/core';
+import { useModals } from '@mantine/modals';
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { redirect } from '~/utils/redirect.server';
 import { Form, useLoaderData } from '@remix-run/react';
+import { useState } from 'react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
-import { useModals } from '@mantine/modals';
 import type { TwitchSession } from '~/services/oauth.strategy';
-import { useState } from 'react';
-import { sign } from '~/utils/jsonwebtoken.server';
 import { query } from '~/services/redis.server';
+import { sign } from '~/utils/jsonwebtoken.server';
+import { redirect } from '~/utils/redirect.server';
 
 export const loader: LoaderFunction = async ({ request }) => {
 	const session = await authenticator.isAuthenticated(request, {
@@ -41,6 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
 		id: session.id,
 		token: token,
 		profile_image_url: session.profile_image_url,
+		clipUrl: 'fuck',
 	});
 
 	await query('UPDATE', 'Join', token, session.id, {
