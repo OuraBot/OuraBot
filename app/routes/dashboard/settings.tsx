@@ -183,9 +183,7 @@ export default function Settings() {
 							error={clipError}
 							autoComplete="off"
 							autoCapitalize="off"
-							description="URL"
-							// the yellow squiggles was annoying me sorry
-							// eslint-disable-next-line jsx-a11y/anchor-has-content
+							description="Discord Webhook URL"
 							icon={<Link size={16} />}
 							my={0}
 						/>
