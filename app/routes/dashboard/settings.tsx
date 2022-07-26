@@ -11,6 +11,7 @@ import { query } from '~/services/redis.server';
 
 const PREFIX_REGEX = /^[a-zA-Z0-9!@#%^&*()-=_+;:'"<>,./?`~]{1,5}$/;
 const DISCORD_WEBHOOK_REGEX = /(^https:\/\/discord.com\/api\/webhooks\/[0-9]+\/.+$|^$)/;
+const LASTFM_USERNAME_REGEX = /^[a-zA-Z0-9_\-]{2,15}$/;
 
 export const loader: LoaderFunction = async ({ request }) => {
 	const session = await authenticator.isAuthenticated(request, {
@@ -58,6 +59,17 @@ export const action: ActionFunction = async ({ request }) => {
 	DISCORD_WEBHOOK_REGEX.lastIndex = 0;
 
 	const lastfmUsername = formData.get('lastfmusername')?.toString() || '';
+
+	if (!LASTFM_USERNAME_REGEX.test(lastfmUsername)) {
+		return {
+			status: 400,
+			data: {
+				message: 'invalid lastfm username',
+			},
+		};
+	}
+
+	LASTFM_USERNAME_REGEX.lastIndex = 0;
 
 	const change = await query('UPDATE', 'Settings', channel.token, session.json.id, {
 		prefix: prefix,
@@ -109,6 +121,7 @@ export default function Settings() {
 	const [clipError, setClipError] = useState('');
 
 	const [lastfmusername, setLastfmusername] = useState(data.settings.data['lastfmUsername']);
+	const [lastfmusernameError, setLastfmusernameError] = useState('');
 
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
@@ -199,8 +212,16 @@ export default function Settings() {
 							name="lastfmusername"
 							id="lastfmusername"
 							onChange={(event) => {
-								setLastfmusername(event.target.value);
+								if (!LASTFM_USERNAME_REGEX.test(event.target.value)) {
+									setLastfmusernameError('Invalid Last.fm Username');
+									setLastfmusername(event.target.value);
+								} else {
+									setLastfmusernameError('');
+									setLastfmusername(event.target.value);
+								}
+								LASTFM_USERNAME_REGEX.lastIndex = 0;
 							}}
+							error={lastfmusernameError}
 							autoComplete="off"
 							autoCapitalize="off"
 							description="Username"
@@ -215,6 +236,7 @@ export default function Settings() {
 						disabled={
 							prefixError !== '' ||
 							clipError !== '' ||
+							lastfmusernameError !== '' ||
 							(prefix === data.settings.data['prefix'] &&
 								clip === data.settings.data['clipUrl'] &&
 								lastfmusername === data.settings.data['lastfmUsername'])
