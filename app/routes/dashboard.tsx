@@ -12,6 +12,7 @@ import {
 	Navbar,
 	Space,
 	Title,
+	UnstyledButton,
 	useMantineTheme,
 } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
@@ -177,12 +178,20 @@ export default function Dashboard() {
 						<Group>
 							<>
 								{data ? (
-									<Menu control={<Avatar src={data.session?.json.profile_image_url} radius="xl" />}>
-										<Form method="post">
-											<Menu.Item icon={<Logout size={18} />} type="submit">
-												Logout
-											</Menu.Item>
-										</Form>
+									<Menu position="bottom-end">
+										<Menu.Target>
+											<UnstyledButton>
+												<Avatar src={data.session?.json.profile_image_url} radius="xl" />
+											</UnstyledButton>
+										</Menu.Target>
+
+										<Menu.Dropdown>
+											<Form method="post">
+												<Menu.Item icon={<Logout size={18} />} component={Link} to="/logout">
+													Logout
+												</Menu.Item>
+											</Form>
+										</Menu.Dropdown>
 									</Menu>
 								) : (
 									<></>

@@ -114,7 +114,15 @@ export function HeroBullets(props: Props) {
 								</Form>
 							) : (
 								<Form action="/login">
-									<Button type="submit" className={classes.control}>
+									<Button
+										type="submit"
+										color="twitch"
+										sx={{
+											backgroundColor: '#6441a5',
+											color: 'white',
+											':hover': { backgroundColor: '#593A93' },
+										}}
+									>
 										Sign in with Twitch
 									</Button>
 								</Form>

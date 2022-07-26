@@ -39,11 +39,6 @@ export default function Index() {
 					{ title: 'Feature', description: 'Description', icon: Activity },
 				]}
 			/>
-			<Form method="post">
-				<button>Logout</button>
-			</Form>
-			<p>{JSON.stringify(data)}</p>
-			<Switch>Switch</Switch>
 			<FooterSimple links={[{ label: 'Twitter', link: 'https://twitter.com/auror6s' }]} />
 		</>
 	);

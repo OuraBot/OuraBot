@@ -1,5 +1,16 @@
-import { Avatar, Burger, Container, createStyles, Group, Header, Menu, Paper, Transition } from '@mantine/core';
-import { useBooleanToggle } from '@mantine/hooks';
+import {
+	Avatar,
+	Burger,
+	Container,
+	createStyles,
+	Group,
+	Header,
+	Menu,
+	Paper,
+	Transition,
+	UnstyledButton,
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
 import type { ActionFunction } from '@remix-run/node';
 import { Form } from '@remix-run/react';
@@ -8,12 +19,10 @@ import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
 import { __interface } from '~/services/MongoSchemas/Channel';
+import { Link } from 'react-router-dom';
 
 const HEADER_HEIGHT = 60;
 
-export const action: ActionFunction = async ({ request }) => {
-	await authenticator.logout(request, { redirectTo: '/login' });
-};
 const useStyles = createStyles((theme) => ({
 	root: {
 		position: 'relative',
@@ -92,7 +101,7 @@ interface HeaderResponsiveProps {
 }
 
 export function HeaderResponsive(props: HeaderResponsiveProps) {
-	const [opened, toggleOpened] = useBooleanToggle(false);
+	const [opened, { toggle }] = useDisclosure(false);
 	const [active, setActive] = useState(props.links[0].link);
 	const { classes, cx } = useStyles();
 
@@ -104,7 +113,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 			onClick={(event) => {
 				event.preventDefault();
 				setActive(link.link);
-				toggleOpened(false);
+				toggle();
 			}}
 		>
 			{link.label}
@@ -117,23 +126,50 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 				<OuraBotLogo />
 				<Group spacing={5} className={classes.links}>
 					{items}
-					{props.channel ? (
-						<Menu control={<Avatar src={props.channel.profile_image_url} radius="xl" />}>
-							<Form method="post">
-								<a href="/dashboard">
-									<Menu.Item icon={<Dashboard size={18} />}>Dashboard</Menu.Item>
-								</a>
-								<Menu.Item icon={<Logout size={18} />} type="submit">
-									Logout
-								</Menu.Item>
-							</Form>
+					{props.channel && (
+						<Menu>
+							<Menu.Target>
+								<UnstyledButton>
+									<Avatar src={props.channel.profile_image_url} radius="xl" />
+								</UnstyledButton>
+							</Menu.Target>
+							<Menu.Dropdown>
+								<Form method="post">
+									<Menu.Item icon={<Dashboard size={18} />} component={Link} to="/dashboard">
+										Dashboard
+									</Menu.Item>
+									<Menu.Item icon={<Logout size={18} />} component={Link} to="/logout">
+										Logout
+									</Menu.Item>
+								</Form>
+							</Menu.Dropdown>
 						</Menu>
-					) : (
-						<></>
 					)}
 				</Group>
 
-				<Burger opened={opened} onClick={() => toggleOpened()} className={classes.burger} size="sm" />
+				<Group spacing={5} className={classes.burger}>
+					<Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
+
+					{props.channel && (
+						<Menu position="bottom-end">
+							<Menu.Target>
+								<UnstyledButton>
+									<Avatar src={props.channel.profile_image_url} radius="xl" />
+								</UnstyledButton>
+							</Menu.Target>
+							<Menu.Dropdown>
+								<Form method="post">
+									<Menu.Item icon={<Dashboard size={18} />} component={Link} to="/dashboard">
+										Dashboard
+									</Menu.Item>
+									<Menu.Item icon={<Logout size={18} />} component={Link} to="/logout">
+										Logout
+									</Menu.Item>
+								</Form>
+							</Menu.Dropdown>
+						</Menu>
+					)}
+				</Group>
 
 				<Transition transition="pop-top-right" duration={200} mounted={opened}>
 					{(styles) => (

@@ -203,8 +203,11 @@ export default function Settings() {
 					<Divider my="xs" />
 					<Title order={3}>Last.fm Username</Title>
 					<Text my={0}>
-						Manage the <a href="https://last.fm">Last.fm</a> username for the <Code>nowplaying</Code>{' '}
-						command
+						Manage the{' '}
+						<Text variant="link" component="a" href="https://last.fm" target="_blank">
+							Last.fm
+						</Text>{' '}
+						username for the <Code>nowplaying</Code> command
 					</Text>
 					<div className={classes.prefix}>
 						<TextInput

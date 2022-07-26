@@ -3,7 +3,7 @@ import {
 	Button,
 	Center,
 	Divider,
-	InputWrapper,
+	Input,
 	MultiSelect,
 	NumberInput,
 	SegmentedControl,
@@ -174,19 +174,24 @@ export default function Commands() {
 
 	return (
 		<ModalsProvider>
-			<Tabs grow>
-				<Tabs.Tab label="Moderation">
+			<Tabs defaultValue="moderation">
+				<Tabs.List grow>
+					<Tabs.Tab value="moderation">Moderation</Tabs.Tab>
+					<Tabs.Tab value="utility">Utility</Tabs.Tab>
+					<Tabs.Tab value="fun">Fun</Tabs.Tab>
+				</Tabs.List>
+
+				<Tabs.Panel pt="sm" value="moderation">
 					<SearchTable commands={moderationCommands} />
-				</Tabs.Tab>
-				<Tabs.Tab label="Utility">
+				</Tabs.Panel>
+
+				<Tabs.Panel pt="sm" value="utility">
 					<SearchTable commands={utilityCommands} />
-				</Tabs.Tab>
-				<Tabs.Tab label="Fun">
+				</Tabs.Panel>
+
+				<Tabs.Panel pt="sm" value="fun">
 					<SearchTable commands={funCommands} />
-				</Tabs.Tab>
-				{/* <Tabs.Tab label="Custom">
-				<SearchTable commands={customCommands} />
-			</Tabs.Tab> */}
+				</Tabs.Panel>
 			</Tabs>
 		</ModalsProvider>
 	);
@@ -264,10 +269,11 @@ function SearchTable({ commands }: { commands: Command[] }) {
 							defaultValue={command.channelCooldown}
 							label="Channel Cooldown (seconds)"
 						/>
-						<InputWrapper mb="sm" label="Chat Modes" description="When should the command be available?">
+						<Input.Wrapper mb="sm" label="Chat Modes" description="When should the command be available?">
 							<SegmentedControl
 								name="chatmode"
 								id="chatmode"
+								mt="xs"
 								defaultValue={command.chatMode}
 								color="blue"
 								data={[
@@ -276,7 +282,7 @@ function SearchTable({ commands }: { commands: Command[] }) {
 									{ label: 'Offline', value: 'offline' },
 								]}
 							/>
-						</InputWrapper>
+						</Input.Wrapper>
 						<MultiSelect
 							label="Permissions"
 							description="Manage who can use this command"
