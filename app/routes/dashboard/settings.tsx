@@ -3,7 +3,7 @@ import { showNotification } from '@mantine/notifications';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
 import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime';
 import { useState } from 'react';
-import { InfoCircle, Link } from 'tabler-icons-react';
+import { InfoCircle, Link, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
 import type { Event } from '~/services/redis.server';
@@ -67,7 +67,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 	return change;
 };
-
 const useStyles = createStyles((theme) => ({
 	prefix: {
 		width: '15em',
@@ -191,7 +190,8 @@ export default function Settings() {
 					<Divider my="xs" />
 					<Title order={3}>Last.fm Username</Title>
 					<Text my={0}>
-						Manage the Last.fm username for the <Code>nowplaying</Code> command
+						Manage the <a href="https://last.fm">Last.fm</a> username for the <Code>nowplaying</Code>{' '}
+						command
 					</Text>
 					<div className={classes.prefix}>
 						<TextInput
@@ -204,7 +204,7 @@ export default function Settings() {
 							autoComplete="off"
 							autoCapitalize="off"
 							description="Username"
-							icon={<InfoCircle size={16} />}
+							icon={<UserCircle size={16} />}
 							my={0}
 						/>
 					</div>
