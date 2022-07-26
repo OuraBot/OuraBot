@@ -1,12 +1,16 @@
 logs.txt
-
+oldtokens.json
 TMItokens.json
+
+*.sqlite
+*.db
 
 # Ignores my (mmatt) config
 mmatt-config.json
 config.json
 
 
+old.env
 # Logs
 logs
 *.log

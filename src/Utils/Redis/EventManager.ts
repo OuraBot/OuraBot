@@ -1,0 +1,264 @@
+import EventEmitter from 'events';
+import { verify } from 'jsonwebtoken';
+import { promises as fs } from 'fs-extra';
+import ob from '../..';
+import { TwitchUserId } from '../../Typings/Twitch';
+import { EnvironmentVariables } from '../env';
+
+export enum StatusCodes {
+	OK = 200,
+	BadRequest = 400,
+	Unauthorized = 401,
+	Forbidden = 403,
+	TooManyRequests = 429,
+	InternalServerError = 500,
+}
+
+export type UUID = string;
+export type JwtToken = string;
+
+const topics = ['EmoteUpdates', 'Commands', 'Settings', 'Join'] as const;
+
+type Topic = typeof topics[number];
+type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
+
+export interface Event {
+	operation?: Operation;
+	topic: Topic;
+	uuid: UUID;
+	auth?: JwtToken;
+	userId: TwitchUserId;
+	status?: StatusCodes;
+	sender?: 'SERVER' | 'CLIENT';
+	data?: {
+		[key: string]: any;
+	};
+}
+
+export class EventManager {
+	private redisChannel: string;
+	private emitter = new EventEmitter();
+
+	init() {
+		this.redisChannel = ob.config.redisPrefix + ':events';
+
+		ob.subRedis.subscribe(this.redisChannel);
+
+		this.registerEvents();
+
+		ob.subRedis.on('message', (channel, message) => {
+			if (channel !== this.redisChannel) return;
+
+			const event = this.parseEvent(message);
+
+			// Check if we have a valid event, if not, silently drop it
+			// There is no point in sending a message back if we aren't sure
+			// that it has a UUID to listen for
+			if (!event) {
+				console.warn('invalid event recieved', message);
+				return;
+			}
+
+			// If the event was sent by the server, this app, don't do anything
+			if (event.sender == 'SERVER') return;
+
+			console.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`);
+
+			switch (event.operation) {
+				case 'QUERY':
+					this.emitter.emit('QUERY', event);
+					break;
+
+				case 'UPDATE':
+					this.emitter.emit('UPDATE', event);
+					break;
+
+				case 'RESPONSE':
+					this.emitter.emit('RESPONSE', event);
+					break;
+
+				default:
+					console.warn('invalid event operation', event.operation);
+					this.sendEvent({
+						status: StatusCodes.BadRequest,
+						...event,
+					});
+					break;
+			}
+		});
+	}
+
+	on(event: string, listener: (event: Event) => void) {
+		this.emitter.on(event, listener);
+	}
+
+	registerEvents() {
+		let QUERYHandlers = new Map<Topic, (event: Event) => Promise<Event>>();
+		let UPDATEHandlers = new Map<Topic, (event: Event) => Promise<Event>>();
+
+		(async () => {
+			QUERYHandlers = new Map(
+				(await fs.readdir('./src/Utils/Redis/Events/QUERY')).map((file) => {
+					delete require.cache[require.resolve(`./Events/QUERY/${file.replace('.ts', '')}`)];
+					const event = require(`./Events/QUERY/${file.replace('.ts', '')}`);
+					return [file.replace('.ts', '') as Topic, event.default];
+				})
+			);
+		})();
+
+		(async () => {
+			UPDATEHandlers = new Map(
+				(await fs.readdir('./src/Utils/Redis/Events/UPDATE')).map((file) => {
+					delete require.cache[require.resolve(`./Events/UPDATE/${file.replace('.ts', '')}`)];
+					const event = require(`./Events/UPDATE/${file.replace('.ts', '')}`);
+					return [file.replace('.ts', '') as Topic, event.default];
+				})
+			);
+		})();
+
+		this.emitter.on('QUERY', async (event: Event) => {
+			if (!QUERYHandlers.has(event.topic)) return;
+
+			const handler = QUERYHandlers.get(event.topic);
+
+			// A handler should be present, but just in case
+			if (!handler) {
+				console.error('missing handler for event', event);
+				return this.sendEvent({
+					status: StatusCodes.InternalServerError,
+					...event,
+				});
+			}
+
+			let decodedId: TwitchUserId;
+
+			try {
+				const decoded = verify(event.auth, EnvironmentVariables.JWT_SECRET) as {
+					id: TwitchUserId;
+					iat: number;
+				};
+
+				decodedId = decoded.id;
+			} catch (e) {
+				return this.sendEvent({
+					status: StatusCodes.Forbidden,
+					...event,
+				});
+			}
+
+			if (decodedId !== event.userId) {
+				return this.sendEvent({
+					status: StatusCodes.Forbidden,
+					...event,
+				});
+			}
+
+			try {
+				handler(event).then((response) => {
+					this.sendEvent(response);
+				});
+			} catch (e) {
+				this.sendEvent({
+					status: StatusCodes.InternalServerError,
+					...event,
+				});
+			}
+		});
+
+		this.emitter.on('UPDATE', async (event: Event) => {
+			if (!UPDATEHandlers.has(event.topic)) return;
+
+			const handler = UPDATEHandlers.get(event.topic);
+
+			// A handler should be present, but just in case
+			if (!handler) {
+				console.error('missing handler for event', event);
+				return this.sendEvent({
+					status: StatusCodes.InternalServerError,
+					...event,
+				});
+			}
+
+			let decodedId: TwitchUserId;
+
+			try {
+				const decoded = verify(event.auth, EnvironmentVariables.JWT_SECRET) as {
+					id: TwitchUserId;
+					iat: number;
+				};
+
+				decodedId = decoded.id;
+			} catch (e) {
+				return this.sendEvent({
+					status: StatusCodes.Forbidden,
+					...event,
+				});
+			}
+
+			if (decodedId !== event.userId) {
+				return this.sendEvent({
+					status: StatusCodes.Forbidden,
+					...event,
+				});
+			}
+
+			try {
+				handler(event).then((response) => {
+					this.sendEvent(response);
+				});
+			} catch (e) {
+				this.sendEvent({
+					status: StatusCodes.InternalServerError,
+					...event,
+				});
+			}
+		});
+
+		this.emitter.on('RESPONSE', async (event: Event) => {
+			console.warn('RESPONE handling is not implemented yet');
+		});
+	}
+
+	sendEvent(event: Event) {
+		const json = { ...event, sender: 'SERVER', operation: 'RESPONSE', auth: null } as Event;
+		ob.pubRedis.publish(this.redisChannel, JSON.stringify(json));
+	}
+
+	private parseEvent(event: string): Event {
+		let json = null;
+
+		try {
+			json = JSON.parse(event);
+		} catch (e) {
+			return null;
+		}
+
+		if (!json) return null;
+		if (Object.keys(json).length === 0) return null;
+
+		if (!this.isValidEvent(json)) return null;
+
+		if (!this.isTopic(json.topic)) return null;
+
+		return json as Event;
+	}
+
+	private isValidEvent(json: Object): boolean {
+		// Since types aren't available in the runtime, we'll just check if the object has the correct keys
+		if (
+			!json.hasOwnProperty('operation') ||
+			!json.hasOwnProperty('topic') ||
+			!json.hasOwnProperty('uuid') ||
+			!json.hasOwnProperty('auth') ||
+			!json.hasOwnProperty('userId')
+		) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private isTopic(topic: string): topic is Topic {
+		return topics.includes(topic as Topic);
+	}
+}
