@@ -41,7 +41,6 @@ export const action: ActionFunction = async ({ request }) => {
 		id: session.id,
 		token: token,
 		profile_image_url: session.profile_image_url,
-		clipUrl: 'fuck',
 	});
 
 	await query('UPDATE', 'Join', token, session.id, {
