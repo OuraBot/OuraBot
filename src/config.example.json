@@ -1,0 +1,19 @@
+{
+    "owner": "auror6s",
+    "channels": [
+        {
+            "login": "auror6s",
+            "id": "94568374"
+        }
+    ],
+    "prefix": ";",
+    "admins": [
+        "94568374"
+    ],
+    "twitch_id": "652867592",
+    "login": "oura_bot",
+    "display_name": "Oura_Bot",
+    "redisPrefix": "obv3",
+    "sqlitePath": "sqlite.db",
+    "spamClients": 10
+}
