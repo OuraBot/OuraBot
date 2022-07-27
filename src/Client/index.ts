@@ -70,9 +70,20 @@ class OuraBot {
 			channelCooldowns: new Map(),
 		};
 		this.db = new Database();
-		this.redis = new Redis();
-		this.subRedis = new Redis();
-		this.pubRedis = new Redis();
+
+		const redisOpts = {
+			keyPrefix: config.redisPrefix,
+			showFriendlyErrorStack: true,
+			maxRetriesPerRequest: 10,
+			retryStrategy: (times: number) => {
+				return times * 10 * 1000;
+			},
+			lazyConnect: true,
+		};
+
+		this.redis = new Redis(redisOpts);
+		this.subRedis = new Redis(redisOpts);
+		this.pubRedis = new Redis(redisOpts);
 		this.api = new API();
 		this.sqlite = new SQLite(`./${this.config.sqlitePath}`);
 		this.SevenTVEvents = new SevenTVEvents();
@@ -94,6 +105,55 @@ class OuraBot {
 		this.utils.startNanoStopwatch('startup.connect_to_mongo');
 		await this.db.init();
 		this.utils.stopNanoStopwatchAndLog('startup.connect_to_mongo');
+		// #endregion
+
+		// #region Redis
+		this.utils.startNanoStopwatch('startup.connect_to_redis_cache');
+		this.redis.connect().catch((err) => {
+			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (CACHE): ${err}`);
+			this.redis.disconnect();
+			process.exit(1);
+		});
+		this.redis.on('ready', () => {
+			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (CACHE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_cache')}ms)`);
+		});
+
+		this.redis.on('error', (err) => {
+			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_cache');
+			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (CACHE) error: ${err}`);
+		});
+
+		this.utils.startNanoStopwatch('startup.connect_to_redis_sub');
+		this.subRedis.connect().catch((err) => {
+			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (SUBSCRIBE): ${err}`);
+			this.subRedis.disconnect();
+			process.exit(1);
+		});
+
+		this.subRedis.on('ready', () => {
+			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (SUBSCRIBE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_sub')}ms)`);
+		});
+
+		this.subRedis.on('error', (err) => {
+			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_sub');
+			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (SUBSCRIBE) error: ${err}`);
+		});
+
+		this.utils.startNanoStopwatch('startup.connect_to_redis_pub');
+		this.pubRedis.connect().catch((err) => {
+			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (PUBLISH): ${err}`);
+			this.pubRedis.disconnect();
+			process.exit(1);
+		});
+
+		this.pubRedis.on('ready', () => {
+			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (PUBLISH) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_pub')}ms)`);
+		});
+
+		this.pubRedis.on('error', (err) => {
+			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_pub');
+			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (PUBLISH) error: ${err}`);
+		});
 		// #endregion
 
 		if (!this.debug) this.SevenTVEvents.init();

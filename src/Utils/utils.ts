@@ -126,6 +126,14 @@ export default class Utils {
 		console.log(`${chalk.bold('[⏱ ]')} ${chalk.bold(`${name}:`)} ${Number(process.hrtime.bigint() - start) / 1000000}ms`);
 	}
 
+	attemptStopNanoStopwatch(name: string): void {
+		const start = this.nanoStopwatches.get(name);
+		if (!start) {
+			return;
+		}
+		this.nanoStopwatches.delete(name);
+	}
+
 	sanitizeName(user: string): string {
 		return user.replace(/^(@|#)|,?$/, '');
 	}
