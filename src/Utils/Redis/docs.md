@@ -7,7 +7,7 @@ Each message is a stringified JSON object with the following properties:
 ```jsonc
 {
 	"operation": "QUERY", // The operation to perform
-	"topic": "EmoteUpdates", // The topic of the event
+	"topic": "Settings", // The topic of the event
 	"uuid": "", // A random UUID generated to differentiate between events
 	"auth": "", // JWT signed auth token. Must match userId
 	"userId": "", // The userId of the user that sent the event. Must match auth
@@ -31,9 +31,11 @@ All responses will omit the auth property for security as they are not needed.
 
 ## Topics
 
-| Topic        | Description       |
-| ------------ | ----------------- |
-| EmoteUpdates | Manage 7TV Events |
+| Topic    | Description       |
+| -------- | ----------------- |
+| Settings | Channel Settings  |
+| Commands | Channel Commands  |
+| Join     | Bot Joins Channel |
 
 ## Status Codes
 

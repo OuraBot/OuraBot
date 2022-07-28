@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import { verify } from 'jsonwebtoken';
 import { promises as fs } from 'fs-extra';
+import { verify } from 'jsonwebtoken';
 import ob from '../..';
 import { TwitchUserId } from '../../Typings/Twitch';
 import { EnvironmentVariables } from '../env';
@@ -17,7 +17,7 @@ export enum StatusCodes {
 export type UUID = string;
 export type JwtToken = string;
 
-const topics = ['EmoteUpdates', 'Commands', 'Settings', 'Join'] as const;
+const topics = ['Commands', 'Settings', 'Join'] as const;
 
 type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';

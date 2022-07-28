@@ -67,6 +67,30 @@ export default function handler(Event: Event): Promise<Event> {
 			channel.lastfmUsername = newLastfmUsername;
 		}
 
+		if (typeof Event.data.emoteEventsEnabled !== 'boolean') {
+			return resolve({
+				...Event,
+				status: StatusCodes.BadRequest,
+				data: {
+					error: 'malformed emoteEventsEnabled value',
+				},
+			});
+		}
+
+		if (ob.SevenTVEvents.isListenedChannel(channel.login) && !Event.data.emoteEventsEnabled) {
+			await ob.SevenTVEvents.removeChannel(channel.login);
+		} else if (!ob.SevenTVEvents.isListenedChannel(channel.login) && Event.data.emoteEventsEnabled) {
+			await ob.SevenTVEvents.addChannel(channel.login);
+		} else {
+			resolve({
+				...Event,
+				status: StatusCodes.BadRequest,
+				data: {
+					error: 'emoteEventsEnabled value is unmodified',
+				},
+			});
+		}
+
 		await channel.save();
 
 		if (shouldAnnouncePrefix) ob.twitch.say(channel.login, `Prefix has been changed to ${newPrefix}`);
@@ -79,6 +103,7 @@ export default function handler(Event: Event): Promise<Event> {
 				prefix: channel.prefix,
 				clipUrl: channel.clipUrl,
 				lastfmUsername: channel.lastfmUsername,
+				emoteEventsEnabled: ob.SevenTVEvents.isListenedChannel(channel.login),
 			},
 		});
 	});
