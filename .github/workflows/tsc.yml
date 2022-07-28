@@ -14,10 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: install node v12
+    - uses: c-hive/gha-yarn-cache@v2
+    - name: install node v16
       uses: actions/setup-node@v1
       with:
         node-version: 16
+        submodules: recursive
     - name: yarn install
       run: yarn install
     - name: tsc
