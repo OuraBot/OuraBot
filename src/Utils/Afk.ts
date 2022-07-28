@@ -10,6 +10,13 @@ export class AfkManager {
 		});
 	}
 
+	async getAllAfks(): Promise<Afk[]> {
+		let afks = await ob.sqlite.query(`SELECT * FROM "afks"`);
+		return afks.map((afk: SQLAfk) => {
+			return new Afk(afk);
+		});
+	}
+
 	async createAfk(userId: TwitchUserId, status: AfkStatuses, message: string): Promise<Afk> {
 		let existingAfks = await this.getAfks(userId);
 		existingAfks?.forEach((afk) => {

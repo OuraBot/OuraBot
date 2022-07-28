@@ -10,6 +10,11 @@ export class ReminderManager {
 		});
 	}
 
+	async getReminderCount(): Promise<number> {
+		const reminders = await ob.sqlite.query(`SELECT * FROM "reminders"`);
+		return reminders.length;
+	}
+
 	async createReminder(authorId: TwitchUserId, recepientId: TwitchUserId, message: string, user: string): Promise<Reminder> {
 		const date = new Date().toISOString();
 

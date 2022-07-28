@@ -36,6 +36,7 @@ All responses will omit the auth property for security as they are not needed.
 | Settings | Channel Settings  |
 | Commands | Channel Commands  |
 | Join     | Bot Joins Channel |
+| Admin    | Admin Info        |
 
 ## Status Codes
 
@@ -67,7 +68,7 @@ documentation above the handler function. Be sure to spread the Event object bef
 import { Event, StatusCodes } from '../../EventManager';
 
 export default function handler(Event: Event): Promise<Event> {
-	return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		resolve({
 			...Event,
 			status: StatusCodes.OK,

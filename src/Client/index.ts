@@ -8,7 +8,20 @@ import { EventEmitter } from 'events';
 import { promises as fs } from 'fs-extra';
 import Redis from 'ioredis';
 import path from 'path';
-import { Command, Module, Events, getCommands, OuraBotConfig, SimplifiedChannel, TwitchController, getModules, NukeMessage, Channel } from '../Typings/Twitch';
+import {
+	Command,
+	Module,
+	Events,
+	getCommands,
+	OuraBotConfig,
+	SimplifiedChannel,
+	TwitchController,
+	getModules,
+	NukeMessage,
+	Channel,
+	SelfRecentMessage,
+	ChannelRecentMessage,
+} from '../Typings/Twitch';
 import { API } from '../Utils/API';
 import { EnvironmentVariables } from '../Utils/env';
 import { eventBinder } from '../Utils/eventBinder';
@@ -17,7 +30,7 @@ import { EventManager } from '../Utils/Redis/EventManager';
 import { SevenTVEvents } from '../Utils/SevenTVEvents';
 import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { CacheManager } from '../Utils/Redis/CacheManager';
 import ob from '..';
 import { AfkManager } from '../Utils/Afk';
@@ -57,7 +70,14 @@ class OuraBot {
 	cancels: Set<string>;
 	blockedUsers: SQLBlockUser[];
 	MessageHeight: MessageHeight;
+	recentMessages: {
+		self: SelfRecentMessage[];
+		channels: {
+			[channel: string]: ChannelRecentMessage[];
+		};
+	};
 	exec = exec;
+	execSync = execSync;
 
 	constructor() {
 		let config = new OuraBotConfig(JSON.parse(_fs.readFileSync('./src/config.json', 'utf8')));
@@ -70,6 +90,10 @@ class OuraBot {
 			channelCooldowns: new Map(),
 		};
 		this.db = new Database();
+		this.recentMessages = {
+			self: [],
+			channels: {},
+		};
 
 		const redisOpts = {
 			keyPrefix: config.redisPrefix,

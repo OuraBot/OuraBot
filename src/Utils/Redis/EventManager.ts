@@ -17,7 +17,7 @@ export enum StatusCodes {
 export type UUID = string;
 export type JwtToken = string;
 
-const topics = ['Commands', 'Settings', 'Join'] as const;
+const topics = ['Commands', 'Settings', 'Join', 'Admin'] as const;
 
 type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';

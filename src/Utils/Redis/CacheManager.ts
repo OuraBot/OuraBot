@@ -32,4 +32,9 @@ export class CacheManager {
 		}
 		console.log(`${ChalkConstants.LOG('[CACHE]')} Cleared ${keys.length} keys`);
 	}
+
+	public async size(): Promise<number> {
+		const keys = await ob.redis.keys(ob.config.redisPrefix + ':' + 'cache:*');
+		return keys.length;
+	}
 }

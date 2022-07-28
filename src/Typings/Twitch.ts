@@ -269,3 +269,15 @@ export class SimplifiedChannel {
 }
 
 export type TwitchUserId = string;
+
+export interface SelfRecentMessage {
+	channel: string;
+	message: string;
+	time: number;
+}
+
+export interface ChannelRecentMessage {
+	user: string;
+	message: string;
+	timestamp: number;
+}
