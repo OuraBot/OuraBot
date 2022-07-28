@@ -15,36 +15,16 @@ import {
 	UnstyledButton,
 	useMantineTheme,
 } from '@mantine/core';
-import type { ActionArgs, LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, LoaderFunction } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
-import { LayoutGrid, Logout, Settings, Shield, SquaresFilled } from 'tabler-icons-react';
+import { forbidden, unauthorized } from 'remix-utils';
+import { BellRinging, Gauge, LayoutGrid, Logout, News, Settings, SquaresFilled, Users } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { _model as Channel, __interface } from '~/services/models/Channel';
+import { TwitchSession } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '~/shared/Logo';
 import { redirect } from '~/utils/redirect.server';
-
-export async function loader({ request }: LoaderArgs) {
-	const session = await authenticator.isAuthenticated(request, {
-		failureRedirect: '/login',
-	});
-
-	const channel = await Channel.findOne({ id: session.json.id });
-
-	if (!channel) {
-		return redirect('/onboarding');
-	}
-
-	return json({
-		session,
-		channel,
-	});
-}
-
-export async function action({ request }: ActionArgs) {
-	await authenticator.logout(request, { redirectTo: '/' });
-}
 
 const useStyles = createStyles((theme, _params, getRef) => {
 	const icon = getRef('icon');
@@ -101,37 +81,33 @@ const useStyles = createStyles((theme, _params, getRef) => {
 				},
 			},
 		},
-
-		admin: {
-			color: theme.colors.blue[6],
-
-			'&:hover': {
-				color: theme.colors.blue[3],
-
-				[`& .${icon}`]: {
-					color: theme.colors.blue[3],
-				},
-			},
-		},
-
-		adminIcon: {
-			ref: icon,
-			color: theme.colors.blue[6],
-			marginRight: theme.spacing.sm,
-		},
 	};
 });
 
+export const loader: LoaderFunction = async ({ params, request }) => {
+	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
+
+	if (!session)
+		throw json(null, {
+			status: 401,
+		});
+
+	const channel: __interface | null = await Channel.findOne({ id: session.id });
+
+	if (!channel) throw unauthorized('Channel not found');
+
+	if (channel.role !== 1) throw forbidden('Missing permissions');
+
+	return json({
+		session,
+		channel,
+	});
+};
+
 const _data = [
-	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
-	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
-	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
-	{
-		link: '/admin',
-		label: 'Admin Dashboard',
-		icon: Shield,
-		admin: true,
-	},
+	{ link: '/admin', label: 'Overview', icon: Gauge },
+	{ link: '/admin/logs', label: 'Logs', icon: News },
+	{ link: '/admin/channels', label: 'Channels', icon: Users },
 ];
 
 export default function Dashboard() {
@@ -148,48 +124,21 @@ export default function Dashboard() {
 		redirect('/login');
 	}
 
-	const links: React.ReactNode[] = [];
-
-	_data.forEach((item) => {
-		console.log(item?.admin, data.channel.role == 1);
-
-		if (!item?.admin) item.admin = false;
-
-		if (item.admin && data.channel.role == 1) {
-			links.push(
-				<Link
-					className={cx(classes.link, {
-						[classes.linkActive]: item.label === active,
-						[classes.admin]: item.admin,
-					})}
-					to={item.link}
-					key={item.label}
-					onClick={(event) => {
-						setActive(item.label);
-					}}
-				>
-					<item.icon className={classes.adminIcon} />
-					<span>{item.label}</span>
-				</Link>
-			);
-		} else if (!item.admin) {
-			links.push(
-				<Link
-					className={cx(classes.link, {
-						[classes.linkActive]: item.label === active,
-					})}
-					to={item.link}
-					key={item.label}
-					onClick={(event) => {
-						setActive(item.label);
-					}}
-				>
-					<item.icon className={classes.linkIcon} />
-					<span>{item.label}</span>
-				</Link>
-			);
-		}
-	});
+	const links = _data.map((item) => (
+		<Link
+			className={cx(classes.link, {
+				[classes.linkActive]: item.label === active,
+			})}
+			to={item.link}
+			key={item.label}
+			onClick={(event) => {
+				setActive(item.label);
+			}}
+		>
+			<item.icon className={classes.linkIcon} />
+			<span>{item.label}</span>
+		</Link>
+	));
 
 	return (
 		<>
@@ -221,13 +170,16 @@ export default function Dashboard() {
 							/>
 						</MediaQuery>
 						<OuraBotLogo />
+						<MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
+							<Title order={2}>Admin Dashboard</Title>
+						</MediaQuery>
 						<Group>
 							<>
 								{data ? (
 									<Menu position="bottom-end">
 										<Menu.Target>
 											<UnstyledButton>
-												<Avatar src={data.session?.json.profile_image_url} radius="xl" />
+												<Avatar src={data.session.profile_image_url} radius="xl" />
 											</UnstyledButton>
 										</Menu.Target>
 

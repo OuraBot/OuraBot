@@ -14,7 +14,7 @@ import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
 import type { ActionFunction } from '@remix-run/node';
 import { Form } from '@remix-run/react';
-import { Dashboard, Logout } from 'tabler-icons-react';
+import { Dashboard, Logout, Shield } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
@@ -135,6 +135,11 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 							</Menu.Target>
 							<Menu.Dropdown>
 								<Form method="post">
+									{props.channel.role == 1 ? (
+										<Menu.Item icon={<Shield size={18} />} component={Link} to="/admin">
+											Admin
+										</Menu.Item>
+									) : null}
 									<Menu.Item icon={<Dashboard size={18} />} component={Link} to="/dashboard">
 										Dashboard
 									</Menu.Item>
@@ -159,6 +164,11 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 							</Menu.Target>
 							<Menu.Dropdown>
 								<Form method="post">
+									{props.channel.role == 1 ? (
+										<Menu.Item icon={<Shield size={18} />} component={Link} to="/admin">
+											Admin
+										</Menu.Item>
+									) : null}
 									<Menu.Item icon={<Dashboard size={18} />} component={Link} to="/dashboard">
 										Dashboard
 									</Menu.Item>
