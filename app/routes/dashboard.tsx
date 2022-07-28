@@ -19,7 +19,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
-import { BellRinging, LayoutGrid, Logout, Settings, SquaresFilled } from 'tabler-icons-react';
+import { LayoutGrid, Logout, Settings, SquaresFilled } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { _model as Channel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
@@ -108,11 +108,6 @@ const _data = [
 	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
-	{
-		link: '/dashboard/emoteevents',
-		label: 'Emote Events',
-		icon: BellRinging,
-	},
 ];
 
 export default function Dashboard() {

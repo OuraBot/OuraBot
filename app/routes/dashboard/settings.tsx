@@ -1,4 +1,15 @@
-import { Button, Code, createStyles, Divider, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import {
+	Button,
+	Code,
+	createStyles,
+	Divider,
+	PasswordInput,
+	Stack,
+	Switch,
+	Text,
+	TextInput,
+	Title,
+} from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
 import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime';
@@ -71,10 +82,13 @@ export async function action({ request }: ActionArgs) {
 
 	LASTFM_USERNAME_REGEX.lastIndex = 0;
 
+	const emoteEventsEnabled = formData.get('enabledemoteevents') === 'on' ? true : false;
+
 	const change = await query('UPDATE', 'Settings', channel.token, session.json.id, {
 		prefix: prefix,
 		clipUrl: clipUrl,
 		lastfmUsername: lastfmUsername,
+		emoteEventsEnabled: emoteEventsEnabled,
 	});
 
 	return change;
@@ -122,6 +136,8 @@ export default function Settings() {
 
 	const [lastfmusername, setLastfmusername] = useState(data.settings.data?.lastfmUsername ?? '');
 	const [lastfmusernameError, setLastfmusernameError] = useState('');
+
+	const [emoteUpdatesChecked, setEmoteUpdatesChecked] = useState(data.settings.data?.emoteEventsEnabled ?? false);
 
 	if (response && response.status !== 200 && !showedNotification) {
 		setShowedNotification(true);
@@ -233,6 +249,26 @@ export default function Settings() {
 						/>
 					</div>
 					<Divider my="xs" />
+					<Title order={3}>Emote Events</Title>
+					<Text my={0}>
+						When Emote Updates are enabled, anytime a{' '}
+						<Text variant="link" component="a" href="https://7tv.app" target="_blank">
+							SevenTV
+						</Text>{' '}
+						emote is modified for the channel, it will be posted to chat.{' '}
+					</Text>
+					<div className={classes.prefix}>
+						<Switch
+							checked={emoteUpdatesChecked}
+							name="enabledemoteevents"
+							id="enabledemoteevents"
+							label="Emote Events"
+							onChange={(event) => {
+								setEmoteUpdatesChecked(event.currentTarget.checked);
+							}}
+						/>
+					</div>
+					<Divider my="xs" />
 					<Button
 						className={classes.button}
 						type="submit"
@@ -242,7 +278,8 @@ export default function Settings() {
 							lastfmusernameError !== '' ||
 							(prefix === (data.settings.data?.prefix ?? '') &&
 								clip === (data.settings.data?.clipUrl ?? '') &&
-								lastfmusername === (data.settings.data?.lastfmUsername ?? ''))
+								lastfmusername === (data.settings.data?.lastfmUsername ?? '') &&
+								emoteUpdatesChecked === (data.settings.data?.emoteEventsEnabled ?? false))
 						}
 						loading={transition.state == 'submitting'}
 					>
