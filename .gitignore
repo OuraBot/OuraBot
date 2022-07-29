@@ -1,0 +1,15 @@
+node_modules
+.env
+tokens.json
+config.json
+
+/.cache
+/build
+/public/build
+.env
+
+/app/tailwind.css
+
+.DS_Store
+
+*.db
