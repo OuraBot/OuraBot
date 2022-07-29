@@ -95,13 +95,7 @@ async function redisConnect(): Promise<{ pub: redis; sub: redis }> {
 // 	});
 // }
 
-export async function query(
-	operation: Operation,
-	topic: Topic,
-	auth: JwtToken,
-	userId: TwitchUserId,
-	data?: any
-): Promise<Event> {
+export async function query(operation: Operation, topic: Topic, auth: JwtToken, userId: TwitchUserId, data?: any): Promise<Event> {
 	const { pub, sub } = await redisConnect();
 	// uuid is used to differentiate between multiple requests
 	const uuid = uuidv4();

@@ -32,10 +32,7 @@ export interface OAuth2StrategyOptions {
 	callbackURL: string;
 }
 
-export interface OAuth2StrategyVerifyParams<
-	Profile extends OAuth2Profile,
-	ExtraParams extends Record<string, unknown> = Record<string, never>
-> {
+export interface OAuth2StrategyVerifyParams<Profile extends OAuth2Profile, ExtraParams extends Record<string, unknown> = Record<string, never>> {
 	accessToken: string;
 	refreshToken: string;
 	extraParams: ExtraParams;
@@ -85,11 +82,10 @@ export interface OAuth2StrategyVerifyParams<
  *   }
  * ));
  */
-export class OAuth2Strategy<
+export class OAuth2Strategy<User, Profile extends OAuth2Profile, ExtraParams extends Record<string, unknown> = Record<string, never>> extends Strategy<
 	User,
-	Profile extends OAuth2Profile,
-	ExtraParams extends Record<string, unknown> = Record<string, never>
-> extends Strategy<User, OAuth2StrategyVerifyParams<Profile, ExtraParams>> {
+	OAuth2StrategyVerifyParams<Profile, ExtraParams>
+> {
 	name = 'oauth2';
 
 	protected authorizationURL: string;
@@ -100,10 +96,7 @@ export class OAuth2Strategy<
 
 	private sessionStateKey = 'oauth2:state';
 
-	constructor(
-		options: OAuth2StrategyOptions,
-		verify: StrategyVerifyCallback<User, OAuth2StrategyVerifyParams<Profile, ExtraParams>>
-	) {
+	constructor(options: OAuth2StrategyOptions, verify: StrategyVerifyCallback<User, OAuth2StrategyVerifyParams<Profile, ExtraParams>>) {
 		super(verify);
 		this.authorizationURL = options.authorizationURL;
 		this.tokenURL = options.tokenURL;
