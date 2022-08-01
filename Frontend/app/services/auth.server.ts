@@ -9,15 +9,19 @@ export let authenticator = new Authenticator<any>(sessionStorage, {
 	sessionErrorKey: 'sessionErrorKey',
 });
 
+if (!process.env.TWITCH_CALLBACK_URL) console.warn('TWITCH_CALLBACK_URL is not set, using http://localhost:3000/auth/twitch/callback');
+if (!process.env.TWITCH_CLIENT_ID) console.error('TWITCH_CLIENT_ID is not set');
+if (!process.env.TWITCH_CLIENT_SECRET) console.error('TWITCH_CLIENT_SECRET is not set');
+
 // Twitch
 authenticator.use(
 	new OAuth2Strategy(
 		{
 			authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
 			tokenURL: 'https://id.twitch.tv/oauth2/token',
-			callbackURL: process.env.CALLBACK_URL || 'http://localhost:3000/auth/twitch/callback',
-			clientID: process.env.CLIENT_ID || '',
-			clientSecret: process.env.CLIENT_SECRET || 'secret',
+			callbackURL: process.env.TWITCH_CALLBACK_URL || 'http://localhost:3000/auth/twitch/callback',
+			clientID: process.env.TWITCH_CLIENT_ID || '',
+			clientSecret: process.env.TWITCH_CLIENT_SECRET || 'secret',
 		},
 		async ({ accessToken, refreshToken, extraParams, profile, context }) => {
 			return await Promise.resolve({ ...profile });

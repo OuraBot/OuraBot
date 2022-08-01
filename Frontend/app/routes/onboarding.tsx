@@ -35,7 +35,11 @@ export async function action({ request }: ActionArgs) {
 		})
 	).json;
 
-	const token = sign({ id: session.id }, process.env.SECRET || 'secret');
+	if (!process.env.JWT_SECRET) {
+		console.warn('JWT_SECRET is not set, falling back to "secret"');
+	}
+
+	const token = sign({ id: session.id }, process.env.JWT_SECRET || 'secret');
 
 	await ChannelModel.create({
 		login: session.login,

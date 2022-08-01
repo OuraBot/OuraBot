@@ -13,6 +13,9 @@
 	],
 	"scripts": {
 		"bot": "yarn workspace bot",
-		"frontend": "yarn workspace frontend"
+		"frontend": "dotenv -e ./.env yarn workspace frontend"
+	},
+	"dependencies": {
+		"dotenv-cli": "^6.0.0"
 	}
 }
