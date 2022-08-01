@@ -21,7 +21,7 @@ import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@
 import { useState } from 'react';
 import { LayoutGrid, Logout, Settings, Shield, SquaresFilled } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
 import { redirect } from '~/utils/redirect.server';
 
@@ -30,7 +30,7 @@ export async function loader({ request }: LoaderArgs) {
 		failureRedirect: '/login',
 	});
 
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	if (!channel) {
 		return redirect('/onboarding');
@@ -91,10 +91,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 		linkActive: {
 			'&, &:hover': {
-				backgroundColor:
-					theme.colorScheme === 'dark'
-						? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25)
-						: theme.colors[theme.primaryColor][0],
+				backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25) : theme.colors[theme.primaryColor][0],
 				color: theme.colorScheme === 'dark' ? theme.white : theme.colors[theme.primaryColor][7],
 				[`& .${icon}`]: {
 					color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 5 : 7],
@@ -212,13 +209,7 @@ export default function Dashboard() {
 				header={
 					<Header className={classes.header} height={60} p="md">
 						<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-							<Burger
-								opened={opened}
-								onClick={() => setOpened((o) => !o)}
-								size="sm"
-								color={theme.colors.gray[6]}
-								mr="xl"
-							/>
+							<Burger opened={opened} onClick={() => setOpened((o) => !o)} size="sm" color={theme.colors.gray[6]} mr="xl" />
 						</MediaQuery>
 						<OuraBotLogo />
 						<Group>

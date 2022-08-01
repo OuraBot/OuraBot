@@ -1,15 +1,4 @@
-import {
-	Button,
-	Code,
-	createStyles,
-	Divider,
-	PasswordInput,
-	Stack,
-	Switch,
-	Text,
-	TextInput,
-	Title,
-} from '@mantine/core';
+import { Button, Code, createStyles, Divider, PasswordInput, Stack, Switch, Text, TextInput, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
 import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime';
@@ -17,7 +6,7 @@ import { json } from '@remix-run/server-runtime';
 import { useState } from 'react';
 import { InfoCircle, Link, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
 
 const PREFIX_REGEX = /^[a-zA-Z0-9!@#%^&*()-=_+;:'"<>,./?`~]{1,5}$/;
@@ -28,7 +17,7 @@ export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	const settings = await query('QUERY', 'Settings', channel.token, session.json.id);
 
@@ -46,7 +35,7 @@ export async function action({ request }: ActionArgs) {
 		failureRedirect: '/login',
 	});
 
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	const prefix = formData.get('prefix')?.toString() || '';
 

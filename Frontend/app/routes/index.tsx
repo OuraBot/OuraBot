@@ -7,13 +7,13 @@ import { FooterSimple } from '~/components/footer';
 import { HeaderResponsive } from '~/components/Header';
 import { HeroBullets } from '~/components/Hero';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import type { TwitchSession } from '~/services/oauth.strategy';
 
 export async function loader({ request }: LoaderArgs) {
 	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
 	if (session) {
-		const channel = await Channel.findOne({ id: session.id });
+		const channel = await ChannelModel.findOne({ id: session.id });
 		return channel;
 	} else {
 		return null;

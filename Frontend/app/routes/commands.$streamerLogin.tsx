@@ -2,7 +2,7 @@ import { Avatar, Button, Center, Container, Group, Table, Text } from '@mantine/
 import type { LoaderArgs } from '@remix-run/node';
 import { fetch, json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 
 export type IvrFiUser = {
 	status: number;
@@ -66,7 +66,7 @@ export async function loader({ params }: LoaderArgs) {
 	// The `ivrUserData` variable is only for getting the user's profile picture
 	// - or fallback data for if the user doesn't exist in the OB database.
 	let [user, ivrUserData] = await Promise.all([
-		Channel.findOne({ login: params.streamerLogin }),
+		ChannelModel.findOne({ login: params.streamerLogin }),
 		(await fetch(`https://api.ivr.fi/twitch/resolve/${params.streamerLogin}`)).json(),
 	]);
 
@@ -132,12 +132,7 @@ export default function StreamerPage() {
 					}}
 				>
 					<Group>
-						<Avatar
-							src={ivrUserData.logo}
-							alt={ivrUserData.login + "'s profile image."}
-							size="lg"
-							radius="xl"
-						/>
+						<Avatar src={ivrUserData.logo} alt={ivrUserData.login + "'s profile image."} size="lg" radius="xl" />
 						<h1>{ivrUserData.login}'s data could not be found</h1>
 					</Group>
 

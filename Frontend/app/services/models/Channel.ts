@@ -1,1 +1,2 @@
-export * from 'common/mongoschemas/Channel';
+export { ChannelModel, ISusUser } from 'common';
+export type { DefaultCommandOption, _IChannel } from 'common';

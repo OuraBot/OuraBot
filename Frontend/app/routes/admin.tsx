@@ -21,7 +21,8 @@ import { useState } from 'react';
 import { forbidden, unauthorized } from 'remix-utils';
 import { BellRinging, Gauge, LayoutGrid, Logout, News, Settings, SquaresFilled, Users } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel, __interface } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
+import type { _IChannel } from '~/services/models/Channel';
 import { TwitchSession } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '~/shared/Logo';
 import { redirect } from '~/utils/redirect.server';
@@ -71,10 +72,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 		linkActive: {
 			'&, &:hover': {
-				backgroundColor:
-					theme.colorScheme === 'dark'
-						? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25)
-						: theme.colors[theme.primaryColor][0],
+				backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25) : theme.colors[theme.primaryColor][0],
 				color: theme.colorScheme === 'dark' ? theme.white : theme.colors[theme.primaryColor][7],
 				[`& .${icon}`]: {
 					color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 5 : 7],
@@ -92,7 +90,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 			status: 401,
 		});
 
-	const channel: __interface | null = await Channel.findOne({ id: session.id });
+	const channel: _IChannel | null = await ChannelModel.findOne({ id: session.id });
 
 	if (!channel) throw unauthorized('Channel not found');
 
@@ -161,13 +159,7 @@ export default function Dashboard() {
 				header={
 					<Header className={classes.header} height={60} p="md">
 						<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-							<Burger
-								opened={opened}
-								onClick={() => setOpened((o) => !o)}
-								size="sm"
-								color={theme.colors.gray[6]}
-								mr="xl"
-							/>
+							<Burger opened={opened} onClick={() => setOpened((o) => !o)} size="sm" color={theme.colors.gray[6]} mr="xl" />
 						</MediaQuery>
 						<OuraBotLogo />
 						<MediaQuery smallerThan="sm" styles={{ display: 'none' }}>

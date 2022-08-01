@@ -5,7 +5,7 @@ import { json } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import type { TwitchSession } from '~/services/oauth.strategy';
 import { query } from '~/services/redis.server';
 import { sign } from '~/utils/jsonwebtoken.server';
@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderArgs) {
 
 	console.log(session.json);
 
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	console.log(channel, 'chnl fnd');
 
@@ -37,7 +37,7 @@ export async function action({ request }: ActionArgs) {
 
 	const token = sign({ id: session.id }, process.env.SECRET || 'secret');
 
-	await Channel.create({
+	await ChannelModel.create({
 		login: session.login,
 		id: session.id,
 		token: token,
@@ -52,16 +52,14 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Onboarding() {
-	const loaderData: { session: TwitchSession } = useLoaderData<typeof loader>();
+	const loaderData: { session?: TwitchSession } = useLoaderData<typeof loader>();
 	const [openedTos, setOpenedTos] = useState(false);
 	const [agreed, setAgreed] = useState(false);
 	const [kappad, setKappad] = useState(false);
 	const modals = useModals();
 	const openContentModal = () => {
 		const id = modals.openModal({
-			title: kappad
-				? 'Can you just read the Terms of Service please...'
-				: 'Did you really read the Terms of Service?',
+			title: kappad ? 'Can you just read the Terms of Service please...' : 'Did you really read the Terms of Service?',
 			children: (
 				<>
 					{kappad ? (
@@ -96,13 +94,7 @@ export default function Onboarding() {
 								>
 									Yes
 								</Button>
-								<Button
-									variant="light"
-									color="red"
-									fullWidth
-									onClick={() => modals.closeModal(id)}
-									mt="md"
-								>
+								<Button variant="light" color="red" fullWidth onClick={() => modals.closeModal(id)} mt="md">
 									No
 								</Button>
 							</Group>
@@ -143,20 +135,14 @@ export default function Onboarding() {
 				<Form method="post">
 					<Title order={2}>
 						<Group noWrap>
-							Hello {loaderData.session.display_name}
-							<Avatar size="md" radius="xl" src={loaderData.session.profile_image_url} />
+							Hello {loaderData?.session?.display_name ?? ''}
+							<Avatar size="md" radius="xl" src={loaderData?.session?.profile_image_url ?? ''} />
 						</Group>
 					</Title>
 					<Divider my="sm" />
 					<Text>
 						Before you can use OuraBot, you need to agree to our{' '}
-						<Text
-							variant="link"
-							component="a"
-							target="_blank"
-							href="/tos"
-							onClick={() => setOpenedTos(true)}
-						>
+						<Text variant="link" component="a" target="_blank" href="/tos" onClick={() => setOpenedTos(true)}>
 							Terms of Service.
 						</Text>
 					</Text>

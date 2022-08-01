@@ -3,7 +3,8 @@ import { LoaderFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { forbidden, unauthorized } from 'remix-utils';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel, __interface } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
+import type { _IChannel } from '~/services/models/Channel';
 import { TwitchSession } from '~/services/oauth.strategy';
 import { query } from '~/services/redis.server';
 
@@ -14,7 +15,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 		})
 	).json;
 
-	const channel: __interface | null = await Channel.findOne({ id: session.id });
+	const channel: _IChannel | null = await ChannelModel.findOne({ id: session.id });
 
 	if (!channel) throw unauthorized('Channel not found');
 

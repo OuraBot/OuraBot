@@ -23,7 +23,7 @@ import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 import { useState } from 'react';
 import { Edit, Search } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { _model as Channel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
 
 export enum Permission {
@@ -44,7 +44,7 @@ export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	const commands = await query('QUERY', 'Commands', channel.token, session.json.id);
 
@@ -60,7 +60,7 @@ export async function action({ request }: ActionArgs) {
 		failureRedirect: '/login',
 	});
 
-	const channel = await Channel.findOne({ id: session.json.id });
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	const formData = await request.formData();
 
@@ -160,10 +160,7 @@ export default function Commands() {
 			id: 'success',
 			color: 'green',
 			title: 'Success',
-			message: `${
-				response.data?.message?.charAt(0).toUpperCase() + response.data?.message?.slice(1) ||
-				'Your modifications have been saved'
-			}`,
+			message: `${response.data?.message?.charAt(0).toUpperCase() + response.data?.message?.slice(1) || 'Your modifications have been saved'}`,
 		});
 	}
 
@@ -228,25 +225,9 @@ function SearchTable({ commands }: { commands: Command[] }) {
 						</Prism> */}
 						<Divider my="md" label="" labelPosition="left" />
 						<input type="hidden" id="name" name="name" value={command.name} />
-						<input
-							type="hidden"
-							id="minimumusercooldown"
-							name="minimumusercooldown"
-							value={command.minimumUserCooldown}
-						/>{' '}
-						<input
-							type="hidden"
-							id="minimumchannelcooldown"
-							name="minimumchannelcooldown"
-							value={command.minimumChannelCooldown}
-						/>
-						<Switch
-							name="enabled"
-							id="enabled"
-							my="md"
-							defaultChecked={command.enabled}
-							label="Command Enabled"
-						/>
+						<input type="hidden" id="minimumusercooldown" name="minimumusercooldown" value={command.minimumUserCooldown} />{' '}
+						<input type="hidden" id="minimumchannelcooldown" name="minimumchannelcooldown" value={command.minimumChannelCooldown} />
+						<Switch name="enabled" id="enabled" my="md" defaultChecked={command.enabled} label="Command Enabled" />
 						<NumberInput
 							placeholder={`${command.minimumUserCooldown}`}
 							description={`Must be between ${command.minimumUserCooldown}s and ${MAX_COOLDOWN_TIME}s`}
@@ -310,8 +291,7 @@ function SearchTable({ commands }: { commands: Command[] }) {
 		setSearchResults(
 			commands.filter(
 				(command) =>
-					command.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-					command.description.toLowerCase().includes(event.target.value.toLowerCase())
+					command.name.toLowerCase().includes(event.target.value.toLowerCase()) || command.description.toLowerCase().includes(event.target.value.toLowerCase())
 			)
 		);
 	};
@@ -319,12 +299,7 @@ function SearchTable({ commands }: { commands: Command[] }) {
 	return (
 		<>
 			<Box>
-				<TextInput
-					icon={<Search size={14} />}
-					placeholder="Search by name or description"
-					onChange={handleSearchChange}
-					value={search}
-				/>
+				<TextInput icon={<Search size={14} />} placeholder="Search by name or description" onChange={handleSearchChange} value={search} />
 				<Table
 					my="md"
 					horizontalSpacing="md"
