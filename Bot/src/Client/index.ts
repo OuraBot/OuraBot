@@ -111,7 +111,7 @@ class OuraBot {
 		this.subRedis = new Redis(redisOpts);
 		this.pubRedis = new Redis(redisOpts);
 		this.api = new API();
-		this.sqlite = new SQLite(`./${this.config.sqlitePath}`);
+		this.sqlite = new SQLite(`../${this.config.sqlitePath}`);
 		this.SevenTVEvents = new SevenTVEvents();
 		this.EventManager = new EventManager();
 
