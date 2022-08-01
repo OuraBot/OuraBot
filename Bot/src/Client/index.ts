@@ -210,7 +210,7 @@ class OuraBot {
 				clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
 				clientSecret: EnvironmentVariables.TWITCH_CLIENT_SECRET,
 				onRefresh: async (newTokenData) => {
-					await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), 'utf8');
+					await fs.writeFile('../tokens.json', JSON.stringify(newTokenData, null, 4), 'utf8');
 				},
 			},
 			tokenData
