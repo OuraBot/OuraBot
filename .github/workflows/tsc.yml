@@ -19,8 +19,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16
-    - name: Checkout submodules
-      run: git submodule update --init --recursive
     - name: yarn install
       run: yarn install
     - name: tsc
