@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+dotenv.config({
+	path: path.join(__dirname, '..', '..', '..', '.env'),
+});
 
 export class EnvironmentVariables {
 	public static readonly TWITCH_CLIENT_ID: string = process.env.TWITCH_CLIENT_ID;

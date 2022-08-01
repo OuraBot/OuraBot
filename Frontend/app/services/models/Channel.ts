@@ -1,1 +1,1 @@
-export * from '../MongoSchemas/Channel';
+export * from 'common/mongoschemas/Channel';

@@ -1,15 +1,4 @@
-import {
-	Avatar,
-	Burger,
-	Container,
-	createStyles,
-	Group,
-	Header,
-	Menu,
-	Paper,
-	Transition,
-	UnstyledButton,
-} from '@mantine/core';
+import { Avatar, Burger, Container, createStyles, Group, Header, Menu, Paper, Transition, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
 import type { ActionFunction } from '@remix-run/node';
@@ -18,7 +7,7 @@ import { Dashboard, Logout, Shield } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
-import { __interface } from '~/services/MongoSchemas/Channel';
+import { __interface } from 'common/mongoschemas/Channel';
 import { Link } from 'react-router-dom';
 
 const HEADER_HEIGHT = 60;
@@ -86,10 +75,7 @@ const useStyles = createStyles((theme) => ({
 
 	linkActive: {
 		'&, &:hover': {
-			backgroundColor:
-				theme.colorScheme === 'dark'
-					? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25)
-					: theme.colors[theme.primaryColor][0],
+			backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25) : theme.colors[theme.primaryColor][0],
 			color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 3 : 7],
 		},
 	},

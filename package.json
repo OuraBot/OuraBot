@@ -1,0 +1,18 @@
+{
+	"name": "ourabot",
+	"private": true,
+	"version": "1.0.0",
+	"main": "index.js",
+	"repository": "https://github.com/ourabot/ourabot.git",
+	"author": "Auro <35087590+MrAuro@users.noreply.github.com>",
+	"license": "MIT",
+	"workspaces": [
+		"bot",
+		"frontend",
+		"common"
+	],
+	"scripts": {
+		"bot": "yarn workspace bot",
+		"frontend": "yarn workspace frontend"
+	}
+}

@@ -1,3 +1,0 @@
-[submodule "src/Utils/Mongo/mongoschemas"]
-	path = Bot/src/Utils/Mongo/mongoschemas
-	url = https://github.com/ourabot/mongoschemas

@@ -1,7 +1,5 @@
-import { Model } from 'mongoose';
 import ob from '../../../..';
-import { CategoryEnum, Permission } from '../../../../Typings/Twitch';
-import { __interface } from '../../../Mongo/mongoschemas/Channel';
+import { CategoryEnum } from '../../../../Typings/Twitch';
 import { Event, StatusCodes } from '../../EventManager';
 
 export default function handler(Event: Event): Promise<Event> {

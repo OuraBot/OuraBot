@@ -3,7 +3,7 @@ import React from 'react';
 import { Form } from '@remix-run/react';
 import { Check } from 'tabler-icons-react';
 import { OAuth2Profile } from '~/services/oauth.strategy';
-import { __interface } from '~/services/MongoSchemas/Channel';
+import { __interface } from 'common/mongoschemas/Channel';
 
 const useStyles = createStyles((theme) => ({
 	inner: {
@@ -55,10 +55,7 @@ const useStyles = createStyles((theme) => ({
 
 	highlight: {
 		position: 'relative',
-		backgroundColor:
-			theme.colorScheme === 'dark'
-				? theme.fn.rgba(theme.colors[theme.primaryColor][6], 0.55)
-				: theme.colors[theme.primaryColor][0],
+		backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][6], 0.55) : theme.colors[theme.primaryColor][0],
 		borderRadius: theme.radius.sm,
 		padding: '4px 12px',
 	},
@@ -91,16 +88,13 @@ export function HeroBullets(props: Props) {
 							}
 						>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-								nisi ut aliquip ex ea commodo consequat.
+								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 							</List.Item>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-								nisi ut aliquip ex ea commodo consequat.
+								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 							</List.Item>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-								nisi ut aliquip ex ea commodo consequat.
+								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 							</List.Item>
 						</List>
 
@@ -129,10 +123,7 @@ export function HeroBullets(props: Props) {
 							)}
 						</Group>
 					</div>
-					<Image
-						src="https://static-cdn.jtvnw.net/emoticons/v2/28/default/dark/3.0"
-						className={classes.image}
-					/>
+					<Image src="https://static-cdn.jtvnw.net/emoticons/v2/28/default/dark/3.0" className={classes.image} />
 				</div>
 			</Container>
 		</div>

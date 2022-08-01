@@ -7,7 +7,7 @@ import ob from '..';
 import OuraBot from '../Client';
 import { CacheTimes } from '../Utils/API/constants';
 import { ChatClientEvents } from '../Utils/eventBinder';
-import { DefaultCommandOption } from '../Utils/Mongo/mongoschemas/Channel';
+import { DefaultCommandOption } from 'common';
 import { RateLimiter } from '../Utils/RateLimiter';
 import { TMIChatters } from './API';
 

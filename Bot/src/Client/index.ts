@@ -38,7 +38,9 @@ import { ReminderManager } from '../Utils/Reminders';
 import { ChalkConstants } from '../Utils/ChalkConstants';
 import { MessageHeight } from '../Utils/MessageHeight';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-dotenv.config();
+dotenv.config({
+	path: path.join(__dirname, '..', '..', '..', '.env'),
+});
 
 class OuraBot {
 	twitch: TwitchController;
@@ -80,7 +82,7 @@ class OuraBot {
 	execSync = execSync;
 
 	constructor() {
-		let config = new OuraBotConfig(JSON.parse(_fs.readFileSync('./src/config.json', 'utf8')));
+		let config = new OuraBotConfig(JSON.parse(_fs.readFileSync('../config.json', 'utf8')));
 
 		this.config = config;
 		this.channels = config.channels;
@@ -202,7 +204,7 @@ class OuraBot {
 		}
 
 		// #region Twitch
-		const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'utf8'));
+		const tokenData = JSON.parse(await fs.readFile('../tokens.json', 'utf8'));
 		const authProvider = new RefreshingAuthProvider(
 			{
 				clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
