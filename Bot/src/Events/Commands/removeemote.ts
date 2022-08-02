@@ -12,8 +12,9 @@ export const cmd = new (class command implements Command {
 	usage = 'removeemote <Emote>';
 	userCooldown = 10;
 	channelCooldown = 5;
-	modifiablePermissions = true;
-	permissions = [Permission.Broadcaster];
+	// modifiablePermissions = true;
+	permissions = [Permission.Admin];
+	hidden = true;
 	category = CategoryEnum.Utility;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let userData = await ob.api.gql<SevenTVGQLQueryUser>(SevenTVGQLUrl, 10, SevenTVGQLQueries.getUser, { id: user });
