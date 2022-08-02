@@ -7,14 +7,14 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 export const cmd = new (class command implements Command {
 	name = 'yoinkbans';
 	description = 'Yoink any bans from a channel';
-	usage = 'yoinkbans <channel> <logs YYYY/Y/D?>';
+	usage = 'yoinkbans <channel> <logs YYYY/M/D?>';
 	userCooldown = 0;
 	channelCooldown = 0;
 	permissions = [Permission.Owner, Permission.Admin];
 	category = CategoryEnum.Utility;
 	hidden = true;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
-		let channel = args[0] || Channel.channel;
+		let channel = ob.utils.sanitizeName(args[0]) || Channel.channel;
 		let specificDate = args[1] ?? '';
 
 		let users: string[] = [];
@@ -27,17 +27,12 @@ export const cmd = new (class command implements Command {
 			// [2022-02-11 00:45:22] #auror6s forsen has been banned
 			const bannedRegex = /\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] #.+ (.+) has been banned/g;
 
-			let resp = await ob.api.get<string>(`https://logs.ivr.fi/channel/${channel}/${specificDate}`, 0);
+			let resp = await ob.api.get<any>(`https://logs.ivr.fi/channel/${channel}/${specificDate}?json`, 0);
 			if (resp.error) throw resp.error;
 
-			let messages = resp.data.response.data.split('\n').filter((line) => line.length > 0);
+			let messages = resp.data.response.data.messages.filter((msg: any) => msg.type == 2 && msg.text.includes('has been banned'));
 
-			users = messages
-				.filter((line) => bannedRegex.test(line))
-				.map((line) => {
-					let match = bannedRegex.exec(line);
-					return match[1];
-				});
+			users = messages.map((msg: any) => msg.username);
 		} else {
 			method = 'recent-messages';
 
@@ -56,6 +51,8 @@ export const cmd = new (class command implements Command {
 					return match[1];
 				});
 		}
+
+		users = [...new Set(users)];
 
 		let url = await ob.utils.upload(users.join('\n'));
 
