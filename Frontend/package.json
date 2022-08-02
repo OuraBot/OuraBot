@@ -28,7 +28,6 @@
 		"@types/ioredis": "^4.28.10",
 		"@types/jsonwebtoken": "^8.5.8",
 		"@types/mongoose": "^5.11.97",
-		"common": "1.0.0",
 		"debug": "^4.3.4",
 		"ioredis": "^5.0.4",
 		"jsonwebtoken": "^8.5.1",
