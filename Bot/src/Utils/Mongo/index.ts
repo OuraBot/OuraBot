@@ -18,7 +18,6 @@ export class Database {
 	};
 
 	async init() {
-		console.log(EnvironmentVariables.MONGO_URI);
 		this.connection = await connect(EnvironmentVariables.MONGO_URI);
 		this.connection.connection.on('error', (err) => {
 			console.error(err);
@@ -28,6 +27,10 @@ export class Database {
 		this.connection.connection.on('disconnected', () => {
 			console.error('MongoDB disconnected');
 			this.connection.connect(EnvironmentVariables.MONGO_URI);
+		});
+
+		this.connection.connection.on('connected', () => {
+			console.log('MongoDB connected');
 		});
 
 		this.models = {
