@@ -21,6 +21,7 @@ import {
 	Channel,
 	SelfRecentMessage,
 	ChannelRecentMessage,
+	ChatroomMessage,
 } from '../Typings/Twitch';
 import { API } from '../Utils/API';
 import { EnvironmentVariables } from '../Utils/env';
@@ -38,6 +39,8 @@ import { ReminderManager } from '../Utils/Reminders';
 import { ChalkConstants } from '../Utils/ChalkConstants';
 import { MessageHeight } from '../Utils/MessageHeight';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
+import { PubSubClient } from '@twurple/pubsub';
+import { _IChannel } from 'common';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -250,7 +253,10 @@ class OuraBot {
 			authProvider,
 		});
 
-		this.twitch = new TwitchController(chatClient, apiClient, clients);
+		const pubSubClient = new PubSubClient();
+		await pubSubClient.registerUserListener(authProvider);
+
+		this.twitch = new TwitchController(chatClient, apiClient, pubSubClient, clients);
 
 		this.clientEvent = eventBinder(this.twitch.chatClient);
 

@@ -10,6 +10,7 @@ import { ChatClientEvents } from '../Utils/eventBinder';
 import { DefaultCommandOption } from 'common';
 import { RateLimiter } from '../Utils/RateLimiter';
 import { TMIChatters } from './API';
+import { PubSubClient } from '@twurple/pubsub/lib';
 
 const CHUNK_SIZE = 3000;
 
@@ -44,17 +45,34 @@ export class OuraBotConfig {
 export class TwitchController {
 	chatClient: ChatClient;
 	apiClient: ApiClient;
+	pubsubClient: PubSubClient;
 	clients: ChatClient[];
 	rateLimiter: RateLimiter;
 	joinRateLimiter: RateLimiter;
 	private lastIndex: number = 0;
 
-	constructor(chatClient: ChatClient, apiClient: ApiClient, clients: ChatClient[]) {
+	constructor(chatClient: ChatClient, apiClient: ApiClient, pubSubClient: PubSubClient, clients: ChatClient[]) {
 		this.chatClient = chatClient;
 		this.apiClient = apiClient;
+		this.pubsubClient = pubSubClient;
 		this.clients = clients;
 		this.rateLimiter = new RateLimiter();
 		this.joinRateLimiter = new RateLimiter();
+
+		pubSubClient.onCustomTopic(ob.config.twitch_id, 'chatrooms-user-v1', async (msg) => {
+			const data: ChatroomMessage = msg.data as ChatroomMessage;
+
+			if (data.type === 'channel_banned_alias_restriction_update') {
+				if (!data.data.user_is_restricted) {
+					const channel = await ob.db.models.Channel.model.findOne({ id: data.data.ChannelID });
+
+					if (channel) {
+						ob.twitch.chatClient.join(channel.login);
+						ob.twitch.say(channel.login, `MrDestructoid Reconnected to channel`);
+					}
+				}
+			}
+		});
 	}
 
 	async say(
@@ -281,3 +299,23 @@ export interface ChannelRecentMessage {
 	message: string;
 	timestamp: number;
 }
+
+export type ChatroomMessage =
+	| {
+			type: 'user_moderation_action';
+			data: {
+				action: string;
+				channel_id: string;
+				target_id: string;
+				expires_at?: string;
+				expires_in_ms?: number;
+				reason?: string;
+			};
+	  }
+	| {
+			type: 'channel_banned_alias_restriction_update';
+			data: {
+				user_is_restricted: boolean;
+				ChannelID: string;
+			};
+	  };
