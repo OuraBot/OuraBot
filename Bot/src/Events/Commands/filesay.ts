@@ -7,7 +7,7 @@ const MAXIMUM_FILE_LENGTH = 5000;
 export const cmd = new (class command implements Command {
 	name = 'filesay';
 	description = 'Read a file (useful for banning bots). The formatting string can be used to add /ban before the message or any other text';
-	usage = 'filesay <url> [formatting string; use %line% for the message and %idx% for the line number - ?]';
+	usage = 'filesay <url> <--silent?> [formatting string; use %line% for the message and %idx% for the line number - ?]';
 	userCooldown = 10;
 	channelCooldown = 5;
 	permissions = [Permission.Broadcaster, Permission.Moderator];
@@ -25,6 +25,8 @@ export const cmd = new (class command implements Command {
 				success: false,
 				message: 'Invalid URL',
 			};
+
+		const silent = args[1] === '--silent';
 
 		url.replace(/^(https?:\/\/)?(www\.)?/, '');
 
@@ -71,6 +73,7 @@ export const cmd = new (class command implements Command {
 			return formattedLine;
 		});
 
+		if (!silent) ob.twitch.say(Channel, `${lines.length} lines...`);
 		ob.twitch.say(Channel, lines, 0.05, 'filesay');
 
 		return {
