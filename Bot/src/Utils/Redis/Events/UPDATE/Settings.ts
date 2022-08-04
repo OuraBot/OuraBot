@@ -81,14 +81,6 @@ export default function handler(Event: Event): Promise<Event> {
 			await ob.SevenTVEvents.removeChannel(channel.login);
 		} else if (!ob.SevenTVEvents.isListenedChannel(channel.login) && Event.data.emoteEventsEnabled) {
 			await ob.SevenTVEvents.addChannel(channel.login);
-		} else {
-			resolve({
-				...Event,
-				status: StatusCodes.BadRequest,
-				data: {
-					error: 'emoteEventsEnabled value is unmodified',
-				},
-			});
 		}
 
 		await channel.save();
