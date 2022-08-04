@@ -458,6 +458,7 @@ export default class Utils {
 		let resp = await ob.api.get<SevenTVEmote[]>(`https://api.7tv.app/v2/users/${channel}/emotes`, 3600);
 
 		if (resp.error) {
+			if (resp.error.code === '404') return [];
 			console.warn(`Error getting 7tv emotes for ${channel}: ${resp.error}`);
 			return [];
 		}
@@ -505,6 +506,7 @@ export default class Utils {
 		let resp = await ob.api.get<any>(`https://api.frankerfacez.com/v1/room/${channel}`, 3600);
 
 		if (resp.error) {
+			if (resp.error.code === '404') return [];
 			console.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`);
 			return [];
 		}
@@ -549,6 +551,7 @@ export default class Utils {
 		let resp = await ob.api.get<any>(`https://api.betterttv.net/3/cached/users/twitch/${channelId}`, 3600);
 
 		if (resp.error) {
+			if (resp.error.code === '404') return [];
 			console.warn(`Error getting bttv emotes for ${channelId}: ${resp.error}`);
 			return [];
 		}

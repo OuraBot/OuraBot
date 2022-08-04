@@ -6,6 +6,8 @@ import { Channel, Command, Events, Permission } from '../Typings/Twitch';
 export const event: Events = {
 	name: 'message',
 	run: async (client, _channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
+		if (user === ob.config.login) return;
+
 		console.log(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`);
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
 
