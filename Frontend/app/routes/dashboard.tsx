@@ -148,8 +148,6 @@ export default function Dashboard() {
 	const links: React.ReactNode[] = [];
 
 	_data.forEach((item) => {
-		console.log(item?.admin, data.channel.role == 1);
-
 		if (!item?.admin) item.admin = false;
 
 		if (item.admin && data.channel.role == 1) {
