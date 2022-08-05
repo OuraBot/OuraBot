@@ -581,6 +581,10 @@ export default class Utils {
 		}));
 	}
 
+	keyInObject(key: string, obj: any): boolean {
+		return Object.keys(obj).includes(key);
+	}
+
 	enumToArray(enumType: any): string[] {
 		let arr = Object.keys(enumType).map((key) => key.toString());
 		return arr.slice(arr.length / 2);

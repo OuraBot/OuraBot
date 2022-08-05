@@ -2,6 +2,7 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import chalk from 'chalk';
 import ob from '..';
 import { Channel, Command, Events, Permission } from '../Typings/Twitch';
+import { Metric } from '../Utils/Metrics';
 
 export const event: Events = {
 	name: 'message',
@@ -10,6 +11,12 @@ export const event: Events = {
 
 		console.log(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`);
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
+
+		if (ob.utils.keyInObject(_channel, ob.metrics.messages.managers)) {
+			ob.metrics.messages.managers[_channel].trigger();
+		} else {
+			ob.metrics.messages.managers[_channel] = new Metric();
+		}
 
 		const channel = new Channel(_channel, msg);
 		await channel.fetchDatabaseData();
