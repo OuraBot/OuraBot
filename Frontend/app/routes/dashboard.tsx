@@ -19,7 +19,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
-import { LayoutGrid, Logout, Settings, Shield, SquaresFilled } from 'tabler-icons-react';
+import { LayoutGrid, Logout, Settings, Shield, SquaresFilled, Sword } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
@@ -123,6 +123,7 @@ const _data = [
 	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
+	{ link: '/dashboard/modules', label: 'Modules', icon: Sword },
 	{
 		link: '/admin',
 		label: 'Admin Dashboard',

@@ -37,6 +37,7 @@ All responses will omit the auth property for security as they are not needed.
 | Commands | Channel Commands  |
 | Join     | Bot Joins Channel |
 | Admin    | Admin Info        |
+| Modules  | Channel Modules   |
 
 ## Status Codes
 

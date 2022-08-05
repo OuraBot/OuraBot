@@ -16,6 +16,15 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
+export interface ModuleOption {
+	// Name of the module
+	name: string;
+	// Enabled or disabled
+	enabled: boolean;
+	// Other data
+	data: Map<string, any>;
+}
+
 export interface _IChannel extends Schema {
 	// Twitch Login
 	login: string;
@@ -38,8 +47,7 @@ export interface _IChannel extends Schema {
 	// Clip Discord webhook
 	clipUrl: string;
 	// Moderation modules
-	// TODO: allow for module customization (different timeout lengths, etc.)
-	modules: string[];
+	modules: ModuleOption[];
 	// Default command options
 	defaultCommandOptions: DefaultCommandOption[];
 	// Lastfm username
@@ -60,7 +68,6 @@ const ChannelSchema = new Schema<typeof IChannel>(
 		profile_image_url: { type: String, required: true },
 		emoteEvents: { type: Boolean, required: true, default: false },
 		clipUrl: { type: String, required: true, default: '' },
-		modules: { type: [String], required: true, default: [] },
 		lastfmUsername: { type: String, required: false, default: '' },
 		defaultCommandOptions: {
 			type: [
@@ -71,6 +78,17 @@ const ChannelSchema = new Schema<typeof IChannel>(
 					modifiedPermissions: { type: [String], required: true },
 					enabled: { type: Boolean, required: true },
 					chatMode: { type: String, required: true },
+				},
+			],
+			required: true,
+			default: [],
+		},
+		modules: {
+			type: [
+				{
+					name: { type: String, required: true },
+					enabled: { type: Boolean, required: true },
+					data: { type: Map, required: true },
 				},
 			],
 			required: true,
