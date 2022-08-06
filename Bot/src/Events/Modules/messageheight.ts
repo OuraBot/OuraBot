@@ -41,8 +41,6 @@ export const module = new (class module implements Module {
 		);
 		console.log(messageHeight);
 
-		ob.twitch.say(Channel.channel, `${messageHeight}`);
-
 		// TODO: handle messageHeight number based on channel configured setting
 	};
 })();
