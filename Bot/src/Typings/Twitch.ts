@@ -252,7 +252,7 @@ export class Channel {
 		return allChatters;
 	}
 
-	async fetchDatabaseData(): Promise<void> {
+	async fetchDatabaseData(): Promise<boolean> {
 		const channelData = await ob.CacheManager.cache(
 			async () => {
 				const data = await ob.db.models.Channel.model.findOne({ id: this.id });
@@ -262,7 +262,7 @@ export class Channel {
 			CacheTimes.ChannelInfo
 		);
 
-		if (!channelData) return console.warn(chalk.yellow(`Channel ${this.channel} not found in database.`));
+		if (!channelData) return false;
 
 		this.prefix = channelData.prefix;
 		this.mongoId = channelData._id;
@@ -271,6 +271,8 @@ export class Channel {
 		this.defaultCommandOptions = channelData.defaultCommandOptions;
 		this.clipUrl = channelData.clipUrl;
 		this.lastfmUsername = channelData.lastfmUsername;
+
+		return true;
 	}
 }
 

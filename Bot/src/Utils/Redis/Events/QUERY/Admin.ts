@@ -53,6 +53,11 @@ type Data = {
 				[channel: string]: ChannelRecentMessage[];
 			};
 		};
+		metrics: {
+			messages: {
+				history: { [key: string]: { timestamp: number; rate: number }[] };
+			};
+		};
 	};
 };
 
@@ -147,6 +152,11 @@ export default function handler(Event: Event): Promise<Event> {
 				recentMessages: {
 					self: ob.recentMessages.self,
 					channels: ob.recentMessages.channels,
+				},
+				metrics: {
+					messages: {
+						history: ob.metrics.messages.history,
+					},
 				},
 			},
 		};

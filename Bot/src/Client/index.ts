@@ -41,6 +41,7 @@ import { MessageHeight } from '../Utils/MessageHeight';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { PubSubClient } from '@twurple/pubsub';
 import { _IChannel } from 'common';
+import { Metric } from '../Utils/Metric';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -75,6 +76,18 @@ class OuraBot {
 	cancels: Set<string>;
 	blockedUsers: SQLBlockUser[];
 	MessageHeight: MessageHeight;
+	metrics: {
+		messages: {
+			managers: {
+				[key: string]: Metric;
+			};
+			history: {
+				[key: string]: { timestamp: number; to?: number; rate: number }[];
+			};
+			log: () => void;
+			timer: NodeJS.Timeout;
+		};
+	};
 	recentMessages: {
 		self: SelfRecentMessage[];
 		channels: {
@@ -123,6 +136,43 @@ class OuraBot {
 		this.ReminderManager = new ReminderManager();
 		this.cancels = new Set();
 		this.MessageHeight = new MessageHeight();
+		this.metrics = {
+			messages: {
+				managers: {},
+				history: {},
+				log: () => {
+					// FIFO for history
+					for (const [key, value] of Object.entries(this.metrics.messages.managers)) {
+						if (this.metrics.messages.history[key] === undefined) {
+							this.metrics.messages.history[key] = [];
+						}
+
+						this.metrics.messages.history[key].push({
+							timestamp: Date.now(),
+							rate: value.getRate(),
+						});
+
+						if (this.metrics.messages.history[key].length > 60 * 60 * 24) {
+							this.metrics.messages.history[key].shift();
+						}
+
+						// to optimize memory usage, any time the rate is the same as the last one, we use the "to" value to the current timestamp
+						// this way, we can avoid storing the same value multiple times
+						if (this.metrics.messages.history[key].length > 1) {
+							const last = this.metrics.messages.history[key][this.metrics.messages.history[key].length - 2];
+							if (last.rate === value.getRate()) {
+								last.to = Date.now();
+								this.metrics.messages.history[key].pop();
+							}
+						}
+					}
+				},
+				timer: setInterval(() => {
+					this.metrics.messages.log();
+					console.log(this.metrics.messages.history, 'History');
+				}, 1000),
+			},
+		};
 	}
 
 	public async init() {

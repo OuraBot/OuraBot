@@ -586,6 +586,10 @@ export default class Utils {
 		return arr.slice(arr.length / 2);
 	}
 
+	keyInObject(key: string, obj: any): boolean {
+		return Object.keys(obj).includes(key);
+	}
+
 	generateUUID(): string {
 		return randomUUID();
 	}
