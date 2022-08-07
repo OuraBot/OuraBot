@@ -22,7 +22,7 @@ import { forbidden, unauthorized } from 'remix-utils';
 import { BellRinging, Gauge, LayoutGrid, Logout, News, Settings, SquaresFilled, Users } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
-import type { _IChannel } from '~/services/models/Channel';
+import type { IChannel } from '~/services/models/Channel';
 import { TwitchSession } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '~/shared/Logo';
 import { redirect } from '~/utils/redirect.server';
@@ -90,7 +90,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 			status: 401,
 		});
 
-	const channel: _IChannel | null = await ChannelModel.findOne({ id: session.id });
+	const channel: IChannel | null = await ChannelModel.findOne({ id: session.id });
 
 	if (!channel) throw unauthorized('Channel not found');
 

@@ -12,14 +12,15 @@ export const module = new (class module implements Module {
 			let sanitizedMessage = ob.utils.removeBypassCharacters(ob.utils.removeAccents(message.toLowerCase()));
 
 			if (sanitizedMessage.includes('buy followers') || sanitizedMessage.includes('buy primes') || sanitizedMessage.includes('buy viewers')) {
-				new ob.db.models.SuspiciousUser.model({
-					login: user,
-					id: msg.userInfo.userId,
-					message: message,
-					reason: 'Follows ad',
-					spottedAt: new Date(),
-					spottedIn: Channel.channel,
-				}).save();
+				// TODO
+				// new ob.db.models.SuspiciousUser.model({
+				// 	login: user,
+				// 	id: msg.userInfo.userId,
+				// 	message: message,
+				// 	reason: 'Follows ad',
+				// 	spottedAt: new Date(),
+				// 	spottedIn: Channel.channel,
+				// }).save();
 			} else {
 				let urls = ob.utils.urlsFromString(message);
 				if (urls.length > 0) {
@@ -27,14 +28,15 @@ export const module = new (class module implements Module {
 
 					let unshortendUrl = await ob.utils.unshortenURL(url);
 					if (unshortendUrl.includes('bigfollows')) {
-						new ob.db.models.SuspiciousUser.model({
-							login: user,
-							id: msg.userInfo.userId,
-							message: message,
-							reason: 'Follows ad',
-							spottedAt: new Date(),
-							spottedIn: Channel.channel,
-						}).save();
+						// TODO
+						// new ob.db.models.SuspiciousUser.model({
+						// 	login: user,
+						// 	id: msg.userInfo.userId,
+						// 	message: message,
+						// 	reason: 'Follows ad',
+						// 	spottedAt: new Date(),
+						// 	spottedIn: Channel.channel,
+						// }).save();
 					}
 				}
 			}

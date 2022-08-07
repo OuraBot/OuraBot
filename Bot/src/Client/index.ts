@@ -40,7 +40,7 @@ import { ChalkConstants } from '../Utils/ChalkConstants';
 import { MessageHeight } from '../Utils/MessageHeight';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { PubSubClient } from '@twurple/pubsub';
-import { _IChannel } from 'common';
+import { IChannel } from 'common';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });

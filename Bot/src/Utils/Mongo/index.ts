@@ -1,19 +1,14 @@
-import { connect, Mongoose, Schema, model, Model } from 'mongoose';
+import { connect, Mongoose, Schema, model, Model, models } from 'mongoose';
 import { promises as fs } from 'fs-extra';
 import { EnvironmentVariables } from '../env';
 
-import { ChannelModel, IChannel, ISusUser, SusUserModel } from 'common';
+import { IChannel, ChannelSchema } from 'common';
 
 export class Database {
 	connection: Mongoose;
 	models: {
 		Channel: {
-			interface: typeof IChannel;
-			model: Model<typeof IChannel>;
-		};
-		SuspiciousUser: {
-			interface: typeof ISusUser;
-			model: Model<typeof ISusUser>;
+			model: Model<IChannel>;
 		};
 	};
 
@@ -33,14 +28,12 @@ export class Database {
 			console.log('MongoDB connected');
 		});
 
+		const Str = Schema.Types.String as any;
+		Str.checkRequired((v: string) => v != null);
+
 		this.models = {
 			Channel: {
-				interface: IChannel,
-				model: ChannelModel,
-			},
-			SuspiciousUser: {
-				interface: ISusUser,
-				model: SusUserModel,
+				model: models['Channel'] || model<IChannel>('Channel', ChannelSchema),
 			},
 		};
 	}

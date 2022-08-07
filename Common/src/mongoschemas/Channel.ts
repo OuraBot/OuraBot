@@ -16,7 +16,7 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
-export interface _IChannel extends Schema {
+export interface IChannel extends Schema {
 	// Twitch Login
 	login: string;
 	// Twitch Id
@@ -46,9 +46,7 @@ export interface _IChannel extends Schema {
 	lastfmUsername: string;
 }
 
-export let IChannel: _IChannel;
-
-const ChannelSchema = new Schema<typeof IChannel>(
+export const ChannelSchema = new Schema<IChannel>(
 	{
 		login: { type: String, required: true },
 		id: { type: String, required: true },
@@ -82,7 +80,5 @@ const ChannelSchema = new Schema<typeof IChannel>(
 	}
 );
 
-const Str = Schema.Types.String as any;
-Str.checkRequired((v: string) => v != null);
-
-export const ChannelModel = models[ModelName] || model<typeof IChannel>(ModelName, ChannelSchema);
+// Models are instantiated per package instead of in this common package
+// export const ChannelModel = models[ModelName] || model<IChannel>(ModelName, ChannelSchema);

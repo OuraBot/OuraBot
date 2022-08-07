@@ -1,11 +1,11 @@
 import { Prism } from '@mantine/prism';
-import { LoaderFunction } from '@remix-run/node';
+import type { LoaderFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { forbidden, unauthorized } from 'remix-utils';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
-import type { _IChannel } from '~/services/models/Channel';
-import { TwitchSession } from '~/services/oauth.strategy';
+import type { IChannel } from '~/services/models/Channel';
+import type { TwitchSession } from '~/services/oauth.strategy';
 import { query } from '~/services/redis.server';
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -15,7 +15,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 		})
 	).json;
 
-	const channel: _IChannel | null = await ChannelModel.findOne({ id: session.id });
+	const channel: IChannel | null = await ChannelModel.findOne({ id: session.id });
 
 	if (!channel) throw unauthorized('Channel not found');
 
