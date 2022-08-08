@@ -318,23 +318,27 @@ class OuraBot {
 
 	public async saveState() {
 		console.log(`${ChalkConstants.LOG('[STATE]')} Saving state in Redis...`);
-		await this.redis.set(ob.config.redisPrefix + ':' + 'state:' + 'nuke_messages', JSON.stringify(ob.nukeMessages ?? []));
+		await this.redis.set('state:' + 'nuke_messages', JSON.stringify(ob.nukeMessages ?? []));
 
 		const cooldowns: { userCooldowns: { key: string; expiry: number }[]; channelCooldowns: { key: string; expiry: number }[] } = {
 			userCooldowns: Array.from(ob.cooldowns.userCooldowns).map(([key, expiry]) => ({ key, expiry })) ?? [],
 			channelCooldowns: Array.from(ob.cooldowns.channelCooldowns).map(([key, expiry]) => ({ key, expiry })) ?? [],
 		};
 
-		await this.redis.set(ob.config.redisPrefix + ':' + 'state:' + 'cooldowns', JSON.stringify(cooldowns));
+		await this.redis.set('state:' + 'cooldowns', JSON.stringify(cooldowns));
+
+		await this.redis.set('state:' + 'metrics.messages.history', JSON.stringify(ob.metrics.messages.history));
+
 		console.log(`${ChalkConstants.LOG('[STATE]')} State saved in Redis`);
 	}
 
 	public async restoreState() {
 		console.log(`${ChalkConstants.LOG('[STATE]')} Restoring state from Redis...`);
-		const nukeMessages = JSON.parse(await this.redis.get(ob.config.redisPrefix + ':' + 'state:' + 'nuke_messages'));
+		const nukeMessages = JSON.parse(await this.redis.get('state:' + 'nuke_messages'));
 		const cooldowns: { userCooldowns: { key: string; expiry: number }[]; channelCooldowns: { key: string; expiry: number }[] } = JSON.parse(
-			await this.redis.get(ob.config.redisPrefix + ':' + 'state:' + 'cooldowns')
+			await this.redis.get('state:' + 'cooldowns')
 		);
+		const metricsMessagesHistory = JSON.parse(await this.redis.get('state:' + 'metrics.messages.history'));
 
 		if (!nukeMessages && !cooldowns) return console.log(`${ChalkConstants.LOG('[STATE]')} No state found in Redis`);
 		if (!cooldowns?.channelCooldowns) return console.log(`${ChalkConstants.LOG('[STATE]')} No channel cooldowns found in Redis`);
@@ -362,6 +366,10 @@ class OuraBot {
 					}, channelCooldown.expiry - Date.now());
 				}
 			}
+		}
+
+		if (metricsMessagesHistory) {
+			ob.metrics.messages.history = metricsMessagesHistory;
 		}
 
 		console.log(
