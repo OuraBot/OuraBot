@@ -152,7 +152,7 @@ class OuraBot {
 							rate: value.getRate(),
 						});
 
-						if (this.metrics.messages.history[key].length > 60 * 60 * 24) {
+						if (this.metrics.messages.history[key].length > 60 * 24) {
 							this.metrics.messages.history[key].shift();
 						}
 
@@ -169,8 +169,7 @@ class OuraBot {
 				},
 				timer: setInterval(() => {
 					this.metrics.messages.log();
-					console.log(this.metrics.messages.history, 'History');
-				}, 1000),
+				}, 6e4),
 			},
 		};
 	}

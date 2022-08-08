@@ -2,7 +2,7 @@ export class Metric {
 	public count = 0;
 	public ms: number;
 
-	constructor(ms: number = 1000) {
+	constructor(ms: number = 6e4) {
 		this.ms = ms;
 	}
 
@@ -14,6 +14,6 @@ export class Metric {
 	}
 
 	public getRate(): number {
-		return this.count / (this.ms / 1000);
+		return this.count / (this.ms / 6e4);
 	}
 }
