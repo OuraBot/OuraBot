@@ -82,7 +82,7 @@ class OuraBot {
 				[key: string]: Metric;
 			};
 			history: {
-				[key: string]: { timestamp: number; to?: number; rate: number }[];
+				[key: string]: { timestamp: number; rate: number }[];
 			};
 			log: () => void;
 			timer: NodeJS.Timeout;
@@ -154,16 +154,6 @@ class OuraBot {
 
 						if (this.metrics.messages.history[key].length > 60 * 24) {
 							this.metrics.messages.history[key].shift();
-						}
-
-						// to optimize memory usage, any time the rate is the same as the last one, we use the "to" value to the current timestamp
-						// this way, we can avoid storing the same value multiple times
-						if (this.metrics.messages.history[key].length > 1) {
-							const last = this.metrics.messages.history[key][this.metrics.messages.history[key].length - 2];
-							if (last.rate === value.getRate()) {
-								last.to = Date.now();
-								this.metrics.messages.history[key].pop();
-							}
 						}
 					}
 				},

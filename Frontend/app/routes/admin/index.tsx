@@ -62,28 +62,10 @@ export default function Index() {
 		timestamp: number;
 		// the amount of messages per second
 		rate: number;
-		// if the rate is the same as the previous one, through to this timestamp
-		to?: number;
 	};
 
 	for (const [key, value] of Object.entries(data.admin.data.ob.metrics.messages.history)) {
 		let metrics = value as Metric[];
-
-		while (metrics.some((metric) => metric.to)) {
-			console.log('AAAAAAAAAAAAAA');
-			const metric = metrics.find((metric) => metric.to);
-
-			const skips = Math.floor((metric!.to! - metric!.timestamp) / 6e4);
-			console.log(skips);
-			for (let i = 1; i < skips; i++) {
-				metrics.splice(metrics.indexOf(metric!) + i, 0, {
-					timestamp: metric!.timestamp + i * 6e4,
-					rate: metric!.rate,
-				});
-			}
-
-			metric!.to = undefined;
-		}
 
 		const data = metrics.map((metric: Metric) => {
 			return {
@@ -96,7 +78,7 @@ export default function Index() {
 			label: key,
 			data: data,
 			borderColor: stringToColor(key),
-			backgroundColor: stringToColor(key),
+			backgroundColor: adjust(stringToColor(key), -30),
 		});
 	}
 
@@ -130,3 +112,8 @@ let stringToColor = function (str: string) {
 	}
 	return color;
 };
+
+// https://stackoverflow.com/a/57401891
+function adjust(color: string, amount: number) {
+	return '#' + color.replace(/^#/, '').replace(/../g, (color) => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+}
