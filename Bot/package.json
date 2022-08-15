@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"dependencies": {
+		"@swc/cli": "^0.1.57",
 		"@twurple/api": "^5.1.8",
 		"@twurple/auth": "^5.1.8",
 		"@twurple/chat": "^5.1.8",
@@ -32,16 +33,21 @@
 		"puppeteer": "^13.5.1",
 		"sqlite": "^4.0.23",
 		"sqlite3": "^5.0.2",
+		"ts-node": "^10.9.1",
 		"url-regex-safe": "^3.0.0"
 	},
 	"devDependencies": {
+		"@swc/core": "^1.2.233",
+		"@swc/helpers": "^0.4.6",
 		"@types/fs-extra": "^9.0.13",
 		"nodemon": "^2.0.15",
+		"regenerator-runtime": "^0.13.9",
 		"typescript": "^4.5.5"
 	},
 	"scripts": {
 		"start": "yarn build && node dist/index.js",
-		"build": "tsc --build"
+		"build": "tsc --build",
+		"dev": "swc src --out-dir dist && node dist/index.js"
 	},
 	"repository": {
 		"type": "git",

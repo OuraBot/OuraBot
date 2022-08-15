@@ -3,7 +3,7 @@ import OuraBot from '../../Client';
 import { Emote } from '../../Typings/ThirdPartyEmotes';
 import { Channel, Module } from '../../Typings/Twitch';
 
-export const module = new (class module implements Module {
+export const _module = new (class module implements Module {
 	name = 'messageheight';
 	description = 'Timeout a user if their message is too tall';
 	requiresMod: true;

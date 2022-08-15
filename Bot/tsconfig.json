@@ -13,5 +13,8 @@
 	},
 	"include": ["src"],
 	"exclude": ["node_modules"],
-	"references": [{ "path": "../Common" }]
+	"references": [{ "path": "../Common" }],
+	"ts-node": {
+		"swc": true
+	}
 }

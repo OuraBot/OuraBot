@@ -215,8 +215,8 @@ export async function getModules(): Promise<Map<string, Module>> {
 		(await fs.readdir('./src/Events/Modules')).map((file) => {
 			delete require.cache[require.resolve(`../Events/Modules/${file.replace('.ts', '')}`)];
 			const module = require(`../Events/Modules/${file.replace('.ts', '')}`);
-			console.log(chalk.green(`Loaded module: ${module.module.name}`));
-			return [module.module.name, module.module];
+			console.log(chalk.green(`Loaded module: ${module._module.name}`));
+			return [module._module.name, module._module];
 		})
 	);
 }

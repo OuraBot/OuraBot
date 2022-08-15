@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import OuraBot from '../../Client';
 import { Module, CommandReturn, Channel } from '../../Typings/Twitch';
 
-export const module = new (class module implements Module {
+export const _module = new (class module implements Module {
 	name = 'template';
 	description = 'template module';
 	hidden = true;
