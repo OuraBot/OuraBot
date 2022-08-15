@@ -40,7 +40,7 @@ export class EventManager {
 	private emitter = new EventEmitter();
 
 	init() {
-		this.redisChannel = ob.config.redisPrefix + ':events';
+		this.redisChannel = ob.config.redisPrefix + 'events';
 
 		ob.subRedis.subscribe(this.redisChannel);
 

@@ -11,7 +11,6 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, 
 import dbConnect from './services/mongo.server';
 import { NotificationsProvider } from '@mantine/notifications';
 import { StylesPlaceholder } from '@mantine/remix';
-import { StatusCodes } from './services/redis.server';
 
 export const meta: MetaFunction = () => ({
 	charset: 'utf-8',
