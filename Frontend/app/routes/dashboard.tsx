@@ -17,7 +17,7 @@ import {
 } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, Link, Outlet, useLoaderData, useLocation, useTransition } from '@remix-run/react';
+import { Form, Link, Outlet, PrefetchPageLinks, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
 import { LayoutGrid, Logout, Settings, Shield, SquaresFilled } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
@@ -146,6 +146,7 @@ export default function Dashboard() {
 	}
 
 	const links: React.ReactNode[] = [];
+	const prefetchLinks: string[] = [];
 
 	_data.forEach((item) => {
 		if (!item?.admin) item.admin = false;
@@ -168,6 +169,7 @@ export default function Dashboard() {
 				</Link>
 			);
 		} else if (!item.admin) {
+			if (item.label !== active) prefetchLinks.push(item.link);
 			links.push(
 				<Link
 					className={cx(classes.link, {
@@ -188,6 +190,10 @@ export default function Dashboard() {
 
 	return (
 		<>
+			{prefetchLinks.map((link) => (
+				<PrefetchPageLinks page={link} key={link} />
+			))}
+
 			<AppShell
 				navbarOffsetBreakpoint="sm"
 				asideOffsetBreakpoint="sm"
