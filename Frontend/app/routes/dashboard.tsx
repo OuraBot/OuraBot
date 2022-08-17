@@ -19,7 +19,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, PrefetchPageLinks, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
-import { LayoutGrid, Logout, Settings, Shield, SquaresFilled } from 'tabler-icons-react';
+import { LayoutGrid, Logout, Settings, Shield, SquaresFilled, Star } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
@@ -116,6 +116,30 @@ const useStyles = createStyles((theme, _params, getRef) => {
 			color: theme.colors.blue[6],
 			marginRight: theme.spacing.sm,
 		},
+
+		subscribe: {
+			color: theme.colors.yellow[6],
+
+			'&:hover': {
+				color: theme.colors.yellow[3],
+			},
+		},
+
+		subscribeIcon: {
+			ref: icon,
+			color: theme.colors.yellow[6],
+			marginRight: theme.spacing.sm,
+		},
+
+		subscribeActive: {
+			'&, &:hover': {
+				backgroundColor: theme.fn.rgba(theme.colors.yellow[8], 0.2),
+				color: theme.colors.yellow[7],
+				[`& .${icon}`]: {
+					color: theme.colors.yellow[5],
+				},
+			},
+		},
 	};
 });
 
@@ -123,6 +147,12 @@ const _data = [
 	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
+	{
+		link: '/dashboard/subscribe',
+		label: 'Subscribe',
+		icon: Star,
+		special: true,
+	},
 	{
 		link: '/admin',
 		label: 'Admin Dashboard',
@@ -174,6 +204,8 @@ export default function Dashboard() {
 				<Link
 					className={cx(classes.link, {
 						[classes.linkActive]: item.label === active,
+						[classes.subscribe]: item.special,
+						[classes.subscribeActive]: item.special && item.label === active,
 					})}
 					to={item.link}
 					key={item.label}
@@ -181,7 +213,11 @@ export default function Dashboard() {
 						setActive(item.label);
 					}}
 				>
-					<item.icon className={classes.linkIcon} />
+					<item.icon
+						className={cx(classes.linkIcon, {
+							[classes.subscribeIcon]: item.special,
+						})}
+					/>
 					<span>{item.label}</span>
 				</Link>
 			);
