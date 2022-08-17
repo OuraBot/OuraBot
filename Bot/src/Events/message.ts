@@ -196,17 +196,23 @@ export const event: Events = {
 						if (targetCmd.chatMode == 'offline' && isOnline) return;
 					}
 
-					targetCmd.execute(ob, user, channel, args, message, msg, targetAlias).then((result) => {
-						ob.sqlite.logUsage(msg.userInfo.userId, channel.id, targetCmd.name, message, result.success, result.message ?? '<null>');
+					targetCmd
+						.execute(ob, user, channel, args, message, msg, targetAlias)
+						.then((result) => {
+							ob.sqlite.logUsage(msg.userInfo.userId, channel.id, targetCmd.name, message, result.success, result.message ?? '<null>');
 
-						if (result.success) {
-							// TODO: banphrase checking
-							if (result.message) ob.twitch.say(channel.channel, `${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
-						} else {
-							// TODO: banphrase checking
-							ob.twitch.say(channel.channel, `command unsuccessful: ${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
-						}
-					});
+							if (result.success) {
+								// TODO: banphrase checking
+								if (result.message) ob.twitch.say(channel.channel, `${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
+							} else {
+								// TODO: banphrase checking
+								ob.twitch.say(channel.channel, `command unsuccessful: ${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
+							}
+						})
+						.catch((err) => {
+							// TODO: add logger
+							ob.twitch.say(channel.channel, `there was an unknown error while executing the command`, undefined, undefined, msg.id);
+						});
 				}
 			}
 		}
