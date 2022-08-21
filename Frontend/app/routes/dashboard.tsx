@@ -148,8 +148,8 @@ const _data = [
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
 	{
-		link: '/dashboard/subscribe',
-		label: 'Subscribe',
+		link: '/dashboard/premium',
+		label: 'Premium',
 		icon: Star,
 		special: true,
 	},
