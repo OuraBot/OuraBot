@@ -164,38 +164,46 @@ const ButtonWrapper = ({ amount, currency, showSpinner }: any) => {
 		<>
 			{showSpinner && isPending && <Loader />}
 			{showSpinner && isRejected && <Text>There was an error with PayPal. Please refresh the page and try again.</Text>}
-			<PayPalButtons
-				style={{
-					layout: 'vertical',
-					color: 'gold',
-				}}
-				disabled={false}
-				forceReRender={[amount, currency, style]}
-				fundingSource={'paypal'}
-				createOrder={(data, actions) => {
-					return actions.order
-						.create({
-							purchase_units: [
-								{
-									amount: {
-										currency_code: currency,
-										value: amount,
+			<div>
+				<PayPalButtons
+					style={{
+						layout: 'vertical',
+						color: 'blue',
+						shape: 'pill',
+						label: 'pay',
+					}}
+					disabled={false}
+					forceReRender={[amount, currency, style]}
+					fundingSource={'paypal'}
+					createOrder={(data, actions) => {
+						return actions.order
+							.create({
+								purchase_units: [
+									{
+										amount: {
+											currency_code: currency,
+											value: amount,
+										},
 									},
+								],
+								application_context: {
+									shipping_preference: 'NO_SHIPPING',
+									brand_name: 'OuraBot',
 								},
-							],
-						})
-						.then((orderId) => {
-							// Your code here after create the order
-							return orderId;
+							})
+							.then((orderId) => {
+								// Your code here after create the order
+								return orderId;
+							});
+					}}
+					onApprove={function (data, actions) {
+						if (!actions.order) throw new Error('order is undefined');
+						return actions.order.capture().then(function () {
+							console.log('Payment Complete!');
 						});
-				}}
-				onApprove={function (data, actions) {
-					if (!actions.order) throw new Error('order is undefined');
-					return actions.order.capture().then(function () {
-						console.log('Payment Complete!');
-					});
-				}}
-			/>
+					}}
+				/>
+			</div>
 		</>
 	);
 };
