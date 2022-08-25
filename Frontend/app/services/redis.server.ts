@@ -42,7 +42,7 @@ if (!cached) {
 	cached = globalAny.redis = { pub: { conn: null, promise: null }, sub: { conn: null, promise: null } };
 }
 
-async function redisConnect(): Promise<{ pub: redis; sub: redis }> {
+export async function redisConnect(): Promise<{ pub: redis; sub: redis }> {
 	if (cached.pub.conn && cached.sub.conn) {
 		return { pub: cached.pub.conn, sub: cached.sub.conn };
 	}
