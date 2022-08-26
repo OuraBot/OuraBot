@@ -13,4 +13,5 @@ export class EnvironmentVariables {
 	public static readonly HASTE_KEY: string = process.env.HASTE_KEY;
 	public static readonly HASTE_URL: string = process.env.HASTE_URL;
 	public static readonly JWT_SECRET: string = process.env.JWT_SECRET;
+	public static readonly LAST_FM_TOKEN: string = process.env.LAST_FM_TOKEN;
 }

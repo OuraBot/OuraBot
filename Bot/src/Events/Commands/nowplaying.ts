@@ -1,6 +1,7 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
+import { EnvironmentVariables } from '../../Utils/env';
 import { LASTFM_USERNAME_REGEX } from '../../Utils/Redis/Events/UPDATE/Settings';
 
 type LastfmTrack = {
@@ -45,6 +46,8 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 15;
 	category = CategoryEnum.Utility;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
+		if (EnvironmentVariables.LAST_FM_TOKEN === undefined) return { success: false, message: 'Last.fm API key is unavailable.' };
+
 		if (Channel.lastfmUsername === '' && args.length === 0) {
 			return {
 				message: 'This streamer has not set a Last.fm username for this command.',
@@ -63,7 +66,7 @@ export const cmd = new (class command implements Command {
 
 		const resp = await ob.api.get<NowPlayingResponse>(
 			`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${args[0] || Channel.lastfmUsername}&api_key=${
-				process.env.LAST_FM_TOKEN
+				EnvironmentVariables.LAST_FM_TOKEN
 			}&format=json&limit=1`,
 			30
 		);

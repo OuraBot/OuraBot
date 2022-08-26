@@ -1,16 +1,16 @@
 import { ApiClient } from '@twurple/api';
 import { ChatClient } from '@twurple/chat';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
+import { PubSubClient } from '@twurple/pubsub/lib';
 import chalk from 'chalk';
+import { DefaultCommandOption } from 'common';
 import { promises as fs } from 'fs-extra';
 import ob from '..';
 import OuraBot from '../Client';
 import { CacheTimes } from '../Utils/API/constants';
 import { ChatClientEvents } from '../Utils/eventBinder';
-import { DefaultCommandOption } from 'common';
 import { RateLimiter } from '../Utils/RateLimiter';
 import { TMIChatters } from './API';
-import { PubSubClient } from '@twurple/pubsub/lib';
 
 const CHUNK_SIZE = 3000;
 
