@@ -1,18 +1,34 @@
-import { Badge, Button, Center, Checkbox, Collapse, Divider, Loader, Slider, Stack, Text, TextInput, Title, UnstyledButton, useMantineTheme } from '@mantine/core';
-import { useRef, useState } from 'react';
-import { useEffect } from 'react';
-import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import { useLoaderData, useActionData, useSubmit, Form } from '@remix-run/react';
+import {
+	Badge,
+	Box,
+	Button,
+	Card,
+	Center,
+	Checkbox,
+	Collapse,
+	Divider,
+	Grid,
+	Loader,
+	Paper,
+	Slider,
+	Stack,
+	Text,
+	TextInput,
+	Title,
+	UnstyledButton,
+	useMantineTheme,
+} from '@mantine/core';
+import { useModals } from '@mantine/modals';
+import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import { useEffect, useRef, useState } from 'react';
+import { badRequest } from 'remix-utils';
 import { ArrowBackUp } from 'tabler-icons-react';
-import { generateKeyPairSync, publicEncrypt, privateDecrypt } from 'crypto';
-import { query, redisConnect } from '~/services/redis.server';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
-import { badRequest } from 'remix-utils';
 import { getOrderDetails } from '~/utils/paypal.server';
 import { UserResponse } from '../api/v3/user.$login';
-import { useModals } from '@mantine/modals';
 
 const pricePoints = [
 	0, // 0 month
@@ -208,6 +224,48 @@ export default function Premium() {
 				<Text>
 					Hosting and maintaining this bot is unfortunately not free. You can support the developer by purchasing a <strong>non-recurring</strong> payment.
 				</Text>
+				<Box>
+					<Paper
+						m="sm"
+						style={{
+							backgroundColor: 'transparent',
+						}}
+					>
+						<Card.Section>
+							<Text mb="xs" weight={500}>
+								Premium Features:
+							</Text>
+							<Grid grow>
+								<Grid.Col md={6} lg={3}>
+									<Card>
+										<Title order={4}>Feature Title</Title>
+										<Text>Feature description will go here, describing what the feature does.</Text>
+									</Card>
+								</Grid.Col>
+								<Grid.Col md={6} lg={3}>
+									<Card>
+										<Title order={4}>Feature Title</Title>
+										<Text>Feature description will go here, describing what the feature does.</Text>
+									</Card>
+								</Grid.Col>
+								<Grid.Col md={6} lg={3}>
+									<Card>
+										<Title order={4}>Feature Title</Title>
+										<Text>Feature description will go here, describing what the feature does.</Text>
+									</Card>
+								</Grid.Col>
+								<Grid.Col md={6} lg={3}>
+									<Card>
+										<Title order={4}>Feature Title</Title>
+										<Text>Feature description will go here, describing what the feature does.</Text>
+									</Card>
+								</Grid.Col>
+							</Grid>
+						</Card.Section>
+					</Paper>
+				</Box>
+
+				<Divider variant="solid" my="md" />
 				<Slider
 					my="lg"
 					value={months}
