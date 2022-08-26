@@ -8,7 +8,6 @@ import { promises as fs } from 'fs-extra';
 import ob from '..';
 import OuraBot from '../Client';
 import { CacheTimes } from '../Utils/API/constants';
-import { EnvironmentVariables } from '../Utils/env';
 import { ChatClientEvents } from '../Utils/eventBinder';
 import { RateLimiter } from '../Utils/RateLimiter';
 import { TMIChatters } from './API';
@@ -205,12 +204,6 @@ export async function getCommands(): Promise<Map<string, Command>> {
 		(await fs.readdir('./src/Events/Commands')).map((file) => {
 			delete require.cache[require.resolve(`../Events/Commands/${file.replace('.ts', '')}`)];
 			const cmd = require(`../Events/Commands/${file.replace('.ts', '')}`);
-			if (cmd.cmd.name === 'nowplaying') {
-				if (EnvironmentVariables.LAST_FM_TOKEN === undefined) {
-					console.log(chalk.yellow('Last.fm token not found. Skipping nowplaying command.'));
-					return [null, null];
-				}
-			}
 			console.log(chalk.green(`Loaded command: ${cmd.cmd.name}`));
 			return [cmd.cmd.name, cmd.cmd];
 		})

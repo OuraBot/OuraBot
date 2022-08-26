@@ -46,6 +46,8 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 15;
 	category = CategoryEnum.Utility;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
+		if (EnvironmentVariables.LAST_FM_TOKEN === undefined) return { success: false, message: 'Last.fm API key is unavailable.' };
+
 		if (Channel.lastfmUsername === '' && args.length === 0) {
 			return {
 				message: 'This streamer has not set a Last.fm username for this command.',
