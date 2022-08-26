@@ -105,6 +105,7 @@ export const event: Events = {
 			let targetAlias: string;
 
 			ob.commands.forEach((cmd) => {
+				if (cmd === null) return;
 				if (cmd.name == commandName) {
 					targetAlias = cmd.name;
 					targetCmd = cmd;

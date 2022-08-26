@@ -1,6 +1,7 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
+import { EnvironmentVariables } from '../../Utils/env';
 import { LASTFM_USERNAME_REGEX } from '../../Utils/Redis/Events/UPDATE/Settings';
 
 type LastfmTrack = {
@@ -63,7 +64,7 @@ export const cmd = new (class command implements Command {
 
 		const resp = await ob.api.get<NowPlayingResponse>(
 			`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${args[0] || Channel.lastfmUsername}&api_key=${
-				process.env.LAST_FM_TOKEN
+				EnvironmentVariables.LAST_FM_TOKEN
 			}&format=json&limit=1`,
 			30
 		);
