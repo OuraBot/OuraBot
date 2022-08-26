@@ -44,6 +44,17 @@ export interface IChannel extends Schema {
 	defaultCommandOptions: DefaultCommandOption[];
 	// Lastfm username
 	lastfmUsername: string;
+	// Premium information
+	premium: {
+		orders: {
+			id: string;
+			createdAt: Date;
+			expiresAt: Date;
+			duration: number;
+			email: string;
+			status: 'PENDING' | 'PAID';
+		}[];
+	};
 }
 
 export const ChannelSchema = new Schema<IChannel>(
@@ -73,6 +84,24 @@ export const ChannelSchema = new Schema<IChannel>(
 			],
 			required: true,
 			default: [],
+		},
+		premium: {
+			type: {
+				orders: {
+					type: [
+						{
+							id: { type: String, required: true },
+							createdAt: { type: Date, required: true },
+							expiresAt: { type: Date, required: true },
+							duration: { type: Number, required: true },
+							email: { type: String, required: true },
+							status: { type: String, required: true },
+						},
+					],
+				},
+			},
+			required: true,
+			default: { orders: [] },
 		},
 	},
 	{
