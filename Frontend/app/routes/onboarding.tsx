@@ -146,7 +146,7 @@ export default function Onboarding() {
 					<Divider my="sm" />
 					<Text>
 						Before you can use OuraBot, you need to agree to our{' '}
-						<Text variant="link" component="a" target="_blank" href="/tos" onClick={() => setOpenedTos(true)}>
+						<Text variant="link" component="a" target="_blank" href="/tos" onClick={() => setOpenedTos(true)} onAuxClick={() => setOpenedTos(true)}>
 							Terms of Service.
 						</Text>
 					</Text>
