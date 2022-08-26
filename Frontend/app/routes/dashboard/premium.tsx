@@ -113,7 +113,6 @@ export default function Premium() {
 	const actionData = useActionData();
 	const [error, setError] = useState('');
 	const [gifting, setGifting] = useState(subscribed);
-	const [pastError, setPastError] = useState('');
 	const [queriedLogin, setQueriedLogin] = useState('');
 	const theme = useMantineTheme();
 	const modals = useModals();
@@ -264,7 +263,6 @@ export default function Premium() {
 						value={recepient}
 						onChange={(event) => {
 							setRecepient(event.target.value);
-							setPastError(error);
 							setError('');
 						}}
 					/>
