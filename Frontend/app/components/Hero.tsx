@@ -3,7 +3,7 @@ import React from 'react';
 import { Form } from '@remix-run/react';
 import { Check } from 'tabler-icons-react';
 import { OAuth2Profile } from '~/services/oauth.strategy';
-import { __interface } from 'common/mongoschemas/Channel';
+import { IChannel } from 'common';
 
 const useStyles = createStyles((theme) => ({
 	inner: {
@@ -62,7 +62,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface Props {
-	channel?: __interface;
+	channel?: IChannel;
 }
 
 export function HeroBullets(props: Props) {

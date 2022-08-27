@@ -7,8 +7,8 @@ import { Dashboard, Logout, Shield } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
-import { __interface } from 'common/mongoschemas/Channel';
 import { Link } from 'react-router-dom';
+import { IChannel } from 'common';
 
 const HEADER_HEIGHT = 60;
 
@@ -83,7 +83,7 @@ const useStyles = createStyles((theme) => ({
 
 interface HeaderResponsiveProps {
 	links: { link: string; label: string }[];
-	channel?: __interface;
+	channel?: IChannel;
 }
 
 export function HeaderResponsive(props: HeaderResponsiveProps) {
