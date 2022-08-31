@@ -8,6 +8,6 @@ export const _module = new (class module implements Module {
 	description = 'template module';
 	hidden = true;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, message: string, msg: TwitchPrivateMessage): Promise<void> => {
-		ob.logger.debug('Template module executed!', 'ob.twitch.events.message.modules.template');
+		ob.logger.debug('Template module executed!', 'ob.modules.template');
 	};
 })();
