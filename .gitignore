@@ -19,3 +19,4 @@ dist
 .cache
 build
 tsconfig.tsbuildinfo
+logs

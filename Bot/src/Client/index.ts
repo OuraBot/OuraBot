@@ -1,48 +1,44 @@
 import { ApiClient } from '@twurple/api';
 import { AuthProvider, RefreshingAuthProvider } from '@twurple/auth';
 import { ChatClient, ChatSayMessageAttributes } from '@twurple/chat';
+import { PubSubClient } from '@twurple/pubsub';
 import chalk from 'chalk';
+import { exec, execSync } from 'child_process';
 import * as dotenv from 'dotenv';
-import * as _fs from 'fs';
 import { EventEmitter } from 'events';
+import * as _fs from 'fs';
 import { promises as fs } from 'fs-extra';
 import Redis from 'ioredis';
 import path from 'path';
 import * as winston from 'winston';
+import ob from '..';
 import {
+	ChannelRecentMessage,
 	Command,
-	Module,
 	Events,
 	getCommands,
+	getModules,
+	Module,
+	NukeMessage,
 	OuraBotConfig,
+	SelfRecentMessage,
 	SimplifiedChannel,
 	TwitchController,
-	getModules,
-	NukeMessage,
-	Channel,
-	SelfRecentMessage,
-	ChannelRecentMessage,
-	ChatroomMessage,
 } from '../Typings/Twitch';
+import { AfkManager } from '../Utils/Afk';
 import { API } from '../Utils/API';
 import { EnvironmentVariables } from '../Utils/env';
 import { eventBinder } from '../Utils/eventBinder';
+import { MessageHeight } from '../Utils/MessageHeight';
+import { Metric } from '../Utils/Metric';
 import { Database } from '../Utils/Mongo';
+import { CacheManager } from '../Utils/Redis/CacheManager';
 import { EventManager } from '../Utils/Redis/EventManager';
+import { ReminderManager } from '../Utils/Reminders';
 import { SevenTVEvents } from '../Utils/SevenTVEvents';
 import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
-import { exec, execSync } from 'child_process';
-import { CacheManager } from '../Utils/Redis/CacheManager';
-import ob from '..';
-import { AfkManager } from '../Utils/Afk';
-import { ReminderManager } from '../Utils/Reminders';
-import { MessageHeight } from '../Utils/MessageHeight';
-import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-import { PubSubClient } from '@twurple/pubsub';
-import { IChannel } from 'common';
-import { Metric } from '../Utils/Metric';
-import { isFunctionLike } from 'typescript';
+import DailyRotateFile from 'winston-daily-rotate-file';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -189,6 +185,20 @@ class OuraBot {
 		};
 		winston.addColors(colors);
 
+		const transport = new DailyRotateFile({
+			filename: '../logs/bot-%DATE%.log',
+			datePattern: 'YYYY-MM-DD',
+			zippedArchive: true,
+			maxSize: '20m',
+			maxFiles: '30d',
+			format: winston.format.combine(
+				winston.format.timestamp(),
+				winston.format.printf((info) => {
+					return JSON.stringify(info);
+				})
+			),
+		});
+
 		this._logger = winston.createLogger({
 			level: 'debug',
 			levels: {
@@ -222,28 +232,9 @@ class OuraBot {
 						})
 					),
 				}),
+				transport,
 			],
 		});
-
-		// this.logger.debug = (message, label) => {
-		// 	this._logger.log('debug', message, label);
-		// };
-
-		// this.logger.info = (message, label) => {
-		// 	this._logger.log('info', message, label);
-		// };
-
-		// this.logger.warn = (message, label) => {
-		// 	this._logger.log('warn', message, label);
-		// };
-
-		// this.logger.error = (message, label) => {
-		// 	this._logger.log('error', message, label);
-		// };
-
-		// this.logger.fatal = (message, label) => {
-		// 	this._logger.log('fatal', message, label);
-		// };
 
 		this.logger = {
 			debug: (message, label) => {

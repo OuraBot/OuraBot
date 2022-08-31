@@ -35,7 +35,8 @@
 		"sqlite3": "^5.0.2",
 		"ts-node": "^10.9.1",
 		"url-regex-safe": "^3.0.0",
-		"winston": "^3.8.1"
+		"winston": "^3.8.1",
+		"winston-daily-rotate-file": "^4.7.1"
 	},
 	"devDependencies": {
 		"@swc/core": "^1.2.233",
