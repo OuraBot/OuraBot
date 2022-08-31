@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import consoleStamp from 'console-stamp';
 import OuraBot from './Client';
-import * as fs from 'fs';
 
 consoleStamp(console, {
 	format: ':date(yyyy/mm/dd HH:MM:ss.l).blue :smartLabel(7)',
@@ -36,3 +35,13 @@ process.on('SIGINT', async () => {
 	await ob.shutdown();
 	process.exit(0);
 });
+
+process
+	.on('unhandledRejection', (reason, p) => {
+		ob.logger.error(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`, 'ob.unhandledRejection');
+		process.exit(1);
+	})
+	.on('uncaughtException', (err) => {
+		ob.logger.error(`Uncaught Exception: ${err}`, 'ob.uncaughtException');
+		process.exit(1);
+	});
