@@ -186,11 +186,11 @@ class OuraBot {
 		winston.addColors(colors);
 
 		const transport = new DailyRotateFile({
+			level: 'info',
 			filename: '../logs/bot-%DATE%.log',
 			datePattern: 'YYYY-MM-DD',
 			zippedArchive: true,
 			maxSize: '20m',
-			maxFiles: '30d',
 			format: winston.format.combine(
 				winston.format.timestamp(),
 				winston.format.printf((info) => {
@@ -274,12 +274,16 @@ class OuraBot {
 					label,
 				});
 			},
-			fatal: (message, label) => {
+			fatal: async (message, label) => {
 				this._logger.log({
 					level: 'fatal',
 					message,
 					label,
 				});
+				// wait 1s for the logger to write the log to disk
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				// fatals are irrecoverable, so we exit
+				process.exit(1);
 			},
 		};
 		// #endregion
