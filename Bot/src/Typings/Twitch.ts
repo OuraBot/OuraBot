@@ -204,7 +204,7 @@ export async function getCommands(): Promise<Map<string, Command>> {
 		(await fs.readdir('./src/Events/Commands')).map((file) => {
 			delete require.cache[require.resolve(`../Events/Commands/${file.replace('.ts', '')}`)];
 			const cmd = require(`../Events/Commands/${file.replace('.ts', '')}`);
-			console.log(chalk.green(`Loaded command: ${cmd.cmd.name}`));
+			ob.logger.info(chalk.green(`Loaded command: ${cmd.cmd.name}`), 'ob.twitch.commands');
 			return [cmd.cmd.name, cmd.cmd];
 		})
 	);
@@ -215,7 +215,7 @@ export async function getModules(): Promise<Map<string, Module>> {
 		(await fs.readdir('./src/Events/Modules')).map((file) => {
 			delete require.cache[require.resolve(`../Events/Modules/${file.replace('.ts', '')}`)];
 			const module = require(`../Events/Modules/${file.replace('.ts', '')}`);
-			console.log(chalk.green(`Loaded module: ${module._module.name}`));
+			ob.logger.info(chalk.green(`Loaded module: ${module._module.name}`), 'ob.twitch.modules');
 			return [module._module.name, module._module];
 		})
 	);

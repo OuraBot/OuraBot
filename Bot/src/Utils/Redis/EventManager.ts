@@ -55,14 +55,14 @@ export class EventManager {
 			// There is no point in sending a message back if we aren't sure
 			// that it has a UUID to listen for
 			if (!event) {
-				console.warn('invalid event recieved', message);
+				ob.logger.warn('invalid event recieved: ' + JSON.stringify(message), 'ob.eventmanager');
 				return;
 			}
 
 			// If the event was sent by the server, this app, don't do anything
 			if (event.sender == 'SERVER') return;
 
-			console.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`);
+			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`, 'ob.eventmanager');
 
 			switch (event.operation) {
 				case 'QUERY':
@@ -78,7 +78,7 @@ export class EventManager {
 					break;
 
 				default:
-					console.warn('invalid event operation', event.operation);
+					ob.logger.warn('invalid event operation: ' + JSON.stringify(event), 'ob.eventmanager');
 					this.sendEvent({
 						status: StatusCodes.BadRequest,
 						...event,
@@ -123,7 +123,7 @@ export class EventManager {
 
 			// A handler should be present, but just in case
 			if (!handler) {
-				console.error('missing handler for event', event);
+				ob.logger.warn('missing handler for event: ' + JSON.stringify(event), 'ob.eventmanager');
 				return this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
@@ -172,7 +172,7 @@ export class EventManager {
 
 			// A handler should be present, but just in case
 			if (!handler) {
-				console.error('missing handler for event', event);
+				ob.logger.warn('missing handler for event: ' + JSON.stringify(event), 'ob.eventmanager');
 				return this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
@@ -215,7 +215,7 @@ export class EventManager {
 		});
 
 		this.emitter.on('RESPONSE', async (event: Event) => {
-			console.warn('RESPONE handling is not implemented yet');
+			ob.logger.warn('RESPONE handling is not implemented yet', 'ob.eventmanager');
 		});
 	}
 

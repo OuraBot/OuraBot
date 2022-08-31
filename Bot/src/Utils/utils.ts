@@ -10,7 +10,6 @@ import { ChattersResponse, IvrFiSubage, IvrFiUser, LogsIvrFiChannels, SevenTVEmo
 import { Emote } from '../Typings/ThirdPartyEmotes';
 import { Channel, Command, hasPermission, SimplifiedChannel, TwitchUserId } from '../Typings/Twitch';
 import { CacheTimes } from './API/constants';
-import { ChalkConstants } from './ChalkConstants';
 import { EnvironmentVariables } from './env';
 
 export default class Utils {
@@ -123,7 +122,7 @@ export default class Utils {
 			throw new Error(`Stopwatch ${name} not started`);
 		}
 		this.nanoStopwatches.delete(name);
-		console.log(`${chalk.bold('[⏱ ]')} ${chalk.bold(`${name}:`)} ${Number(process.hrtime.bigint() - start) / 1000000}ms`);
+		ob.logger.info(`${name}: ${Number(process.hrtime.bigint() - start) / 1000000}ms`, 'ob.utils.stopwatch');
 	}
 
 	attemptStopNanoStopwatch(name: string): void {
@@ -168,7 +167,7 @@ export default class Utils {
 				}, command.channelCooldown * 1000);
 			}
 		} else {
-			console.log(`${ChalkConstants.LOG('[COOLDOWNS]')} Ignored cooldown for ${user}-${command.name}`);
+			ob.logger.info(`Ignored cooldown for ${user}-${command.name}`, 'ob.utils');
 		}
 		if (command.permissions) {
 			if (!hasPermission(command.permissions, user, channel.channel, msg)) {
@@ -459,7 +458,7 @@ export default class Utils {
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
-			console.warn(`Error getting 7tv emotes for ${channel}: ${resp.error}`);
+			ob.logger.warn(`Error getting 7tv emotes for ${channel}: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 
@@ -479,7 +478,7 @@ export default class Utils {
 		let resp = await ob.api.get<SevenTVEmote[]>('https://api.7tv.app/v2/emotes/global', 3600);
 
 		if (resp.error) {
-			console.warn(`Error getting 7tv global emotes: ${resp.error}`);
+			ob.logger.warn(`Error getting 7tv global emotes: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 
@@ -495,7 +494,7 @@ export default class Utils {
 		let resp = await ob.api.get<SevenTVRESTUserResponse>(`https://api.7tv.app/v2/users/${user}`, 3600);
 
 		if (resp.error) {
-			console.warn(`Error getting 7tv user data for ${user}: ${resp.error}`);
+			ob.logger.warn(`Error getting 7tv user data for ${user}: ${resp.error}`, 'ob.utils');
 			return null;
 		}
 
@@ -507,7 +506,7 @@ export default class Utils {
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
-			console.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`);
+			ob.logger.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 
@@ -529,7 +528,7 @@ export default class Utils {
 		let resp = await ob.api.get<any>('https://api.frankerfacez.com/v1/set/global', 3600);
 
 		if (resp.error) {
-			console.warn(`Error getting ffz global emotes: ${resp.error}`);
+			ob.logger.warn(`Error getting ffz global emotes: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 
@@ -552,7 +551,7 @@ export default class Utils {
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
-			console.warn(`Error getting bttv emotes for ${channelId}: ${resp.error}`);
+			ob.logger.warn(`Error getting bttv emotes for ${channelId}: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 
@@ -570,7 +569,7 @@ export default class Utils {
 		let resp = await ob.api.get<any>('https://api.betterttv.net/3/cached/emotes/global', 3600);
 
 		if (resp.error) {
-			console.warn(`Error getting bttv global emotes: ${resp.error}`);
+			ob.logger.warn(`Error getting bttv global emotes: ${resp.error}`, 'ob.utils');
 			return [];
 		}
 

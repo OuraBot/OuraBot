@@ -27,7 +27,6 @@ export class MessageHeight {
 		});
 
 		const channelEmotesMap = new Map(channelEmotes.map((emote) => [emote.name, emote]));
-		console.log(channelEmotesMap.size);
 
 		formattedMessage.split(' ').forEach((word) => {
 			if (channelEmotesMap.has(word)) {

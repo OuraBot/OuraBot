@@ -9,7 +9,7 @@ export const event: Events = {
 	run: async (client, _channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
 		if (user === ob.config.login) return;
 
-		console.log(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`);
+		ob.logger.info(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`, 'ob.twitch.events.message');
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
 
 		if (ob.utils.keyInObject(_channel, ob.metrics.messages.managers)) {
@@ -20,7 +20,7 @@ export const event: Events = {
 
 		const channel = new Channel(_channel, msg);
 		if (!(await channel.fetchDatabaseData())) {
-			console.warn(chalk.yellow(`Channel ${_channel} not found in database, parting...`));
+			ob.logger.warn(`Channel ${_channel} not found in database, parting...`, 'ob.twitch.events.message');
 			ob.twitch.chatClient.part(_channel);
 		}
 
@@ -31,7 +31,7 @@ export const event: Events = {
 		for (const module of enabledModules) {
 			let moduleInstance = ob.modules.get(module);
 			if (!moduleInstance) {
-				console.warn(`Attempted to load module "${module}" in ${channel.channel} (${channel.id}) but it doesn't exist.`);
+				ob.logger.warn(`Attempted to load module "${module}" in ${channel.channel} (${channel.id}) but it doesn't exist.`, 'ob.twitch.events.message');
 				continue;
 			}
 
@@ -191,7 +191,6 @@ export const event: Events = {
 							60
 						);
 
-						console.log(targetCmd.chatMode, isOnline, targetCmd.name, '< Information');
 						if (targetCmd.chatMode == 'online' && !isOnline) return;
 						if (targetCmd.chatMode == 'offline' && isOnline) return;
 					}

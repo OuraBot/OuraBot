@@ -3,6 +3,7 @@ import { promises as fs } from 'fs-extra';
 import { EnvironmentVariables } from '../env';
 
 import { IChannel, ChannelSchema } from 'common';
+import ob from '../..';
 
 export class Database {
 	connection: Mongoose;
@@ -15,17 +16,17 @@ export class Database {
 	async init() {
 		this.connection = await connect(EnvironmentVariables.MONGO_URI);
 		this.connection.connection.on('error', (err) => {
-			console.error(err);
+			ob.logger.fatal(`MongoDB connection error: ${err}`, 'ob.mongo');
 			this.connection.connect(EnvironmentVariables.MONGO_URI);
 		});
 
 		this.connection.connection.on('disconnected', () => {
-			console.error('MongoDB disconnected');
+			ob.logger.warn('MongoDB disconnected', 'ob.mongo');
 			this.connection.connect(EnvironmentVariables.MONGO_URI);
 		});
 
 		this.connection.connection.on('connected', () => {
-			console.log('MongoDB connected');
+			ob.logger.info('MongoDB connected', 'ob.mongo');
 		});
 
 		const Str = Schema.Types.String as any;

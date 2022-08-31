@@ -25,8 +25,6 @@ export const cmd = new (class command implements Command {
 
 		const token = sign({ id }, secret);
 
-		console.log(token);
-
 		return {
 			success: true,
 			message: 'ppHop',

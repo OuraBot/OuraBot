@@ -29,12 +29,12 @@ export class SevenTVEvents {
 		this._channels.push(login);
 
 		const channel = await ob.db.models.Channel.model.findOne({ login: login });
-		if (!channel) return console.warn(chalk.yellow(`Channel ${login} not found in database.`));
+		if (!channel) return ob.logger.warn(`Channel ${login} not found in database.`, 'ob.seventv.events');
 
 		channel.emoteEvents = true;
 		await channel.save();
 
-		console.log(chalk.green('[7TV] Adding channel #' + login));
+		ob.logger.info('Adding channel #' + login, 'ob.seventv.events');
 		ob.twitch.say(login, '7TV emote updates are now enabled');
 		this.updateSources();
 	}
@@ -43,12 +43,12 @@ export class SevenTVEvents {
 		this._channels = this._channels.filter((c) => c !== login);
 
 		const channel = await ob.db.models.Channel.model.findOne({ login: login });
-		if (!channel) return console.warn(chalk.yellow(`Channel ${login} not found in database.`));
+		if (!channel) return ob.logger.warn(chalk.yellow(`Channel ${login} not found in database.`), 'ob.seventv.events');
 
 		channel.emoteEvents = false;
 		await channel.save();
 
-		console.log(chalk.red('[7TV] Removing channel #' + login));
+		ob.logger.info('Removing channel #' + login, 'ob.seventv.events');
 		ob.twitch.say(login, '7TV emote updates are now disabled');
 		this.updateSources();
 	}
@@ -58,7 +58,7 @@ export class SevenTVEvents {
 	}
 
 	public updateSources() {
-		console.log(chalk.yellow('[7TV] Updating event sources'));
+		ob.logger.debug('Updating event sources', 'ob.seventv.events');
 
 		let chunks: string[][] = this._channels.reduce((acc, cur, i) => {
 			if (i % 100 === 0) {
@@ -90,17 +90,15 @@ export class SevenTVEvents {
 
 	private bindEvents(source: EventSource) {
 		source.addEventListener('open', (msg) => {
-			console.log(chalk.green('[7TV] EventSource opened'));
+			ob.logger.debug('EventSource opened', 'ob.seventv.events');
 		});
 
 		source.addEventListener('error', (msg) => {
-			console.error('error', msg);
-			// TODO: implement logger
+			ob.logger.error('EventSource error', 'ob.seventv.events');
 			this.updateSources();
 		});
 
 		source.addEventListener('update', (msg) => {
-			console.log('update', msg);
 			let data = JSON.parse(msg.data) as EmoteEventUpdate;
 			switch (data.action) {
 				case 'ADD':
