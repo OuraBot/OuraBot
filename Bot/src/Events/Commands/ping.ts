@@ -10,7 +10,6 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 5;
 	category = CategoryEnum.Utility;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
-		ob.logger.info('xD');
 		return {
 			success: true,
 			message: `Pong! Serving ${ob.channels.length} channels for ${ob.utils.humanizeTime(process.uptime())}. ${ob.utils.stopNanoStopwatch(
