@@ -209,7 +209,11 @@ export const event: Events = {
 							}
 						})
 						.catch((err) => {
-							// TODO: add logger
+							if (err instanceof Error) {
+								ob.logger.error(err, 'ob.commands.execute');
+							} else {
+								ob.logger.error(new Error(err), 'ob.commands.execute');
+							}
 							ob.twitch.say(channel.channel, `there was an unknown error while executing the command`, undefined, undefined, msg.id);
 						});
 				}

@@ -70,11 +70,11 @@ class OuraBot {
 	blockedUsers: SQLBlockUser[];
 	MessageHeight: MessageHeight;
 	logger: {
-		debug: (message: string, label: string) => void;
-		info: (message: string, label: string) => void;
-		warn: (message: string, label: string) => void;
-		error: (message: string, label: string) => void;
-		fatal: (message: string, label: string) => void;
+		debug: (message: any, label: string) => void;
+		info: (message: any, label: string) => void;
+		warn: (message: any, label: string) => void;
+		error: (message: any, label: string) => void;
+		fatal: (message: any, label: string) => void;
 	};
 	_logger: winston.Logger;
 	cooldowns: {
@@ -199,6 +199,13 @@ class OuraBot {
 			),
 		});
 
+		// https://github.com/winstonjs/winston/issues/1338
+		const print = winston.format.printf((info) => {
+			const log = `${info.level}: ${info.message}`;
+
+			return info.stack ? `${log}\n${info.stack}` : log;
+		});
+
 		this._logger = winston.createLogger({
 			level: 'debug',
 			levels: {
@@ -208,6 +215,7 @@ class OuraBot {
 				error: 1,
 				fatal: 0,
 			},
+			format: winston.format.combine(winston.format.errors({ stack: true }), print),
 			transports: [
 				new winston.transports.Console({
 					format: winston.format.combine(
@@ -223,11 +231,12 @@ class OuraBot {
 						}),
 						winston.format.printf((info) => {
 							return (
-								chalk.gray(`[${info.timestamp}] `) +
+								chalk.blue(`[${info.timestamp}] `) +
 								// @ts-ignore
 								chalk.bold(chalk[info.color](`[${info.level}]`.padEnd(7, ' '))) +
-								chalk.gray(`  ${info.label}`) +
-								chalk.white(`${info.message}`)
+								chalk.blue(`  ${info.label}`) +
+								chalk.white(`${info.message}`) +
+								(info.stack ? chalk.gray(`\n${info.stack}`) : '')
 							);
 						})
 					),
@@ -238,27 +247,37 @@ class OuraBot {
 
 		this.logger = {
 			debug: (message, label) => {
-				this._logger.log('debug', message, {
+				this._logger.log({
+					level: 'debug',
+					message,
 					label,
 				});
 			},
 			info: (message, label) => {
-				this._logger.log('info', message, {
+				this._logger.log({
+					level: 'info',
+					message,
 					label,
 				});
 			},
 			warn: (message, label) => {
-				this._logger.log('warn', message, {
+				this._logger.log({
+					level: 'warn',
+					message,
 					label,
 				});
 			},
 			error: (message, label) => {
-				this._logger.log('error', message, {
+				this._logger.log({
+					level: 'error',
+					message,
 					label,
 				});
 			},
 			fatal: (message, label) => {
-				this._logger.log('fatal', message, {
+				this._logger.log({
+					level: 'fatal',
+					message,
 					label,
 				});
 			},
