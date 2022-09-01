@@ -23,8 +23,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 	const channel = await ChannelModel.findOne({ login });
 
-	console.log(channel, login);
-
 	if (!channel) throw new Response('channel not found', { status: 404 });
 
 	const active = channel.premium.orders.some((order: any) => {
