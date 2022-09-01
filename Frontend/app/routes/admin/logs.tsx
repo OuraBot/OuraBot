@@ -43,8 +43,6 @@ export default function Index() {
 
 	return (
 		<>
-			<p>Logs</p>
-
 			<NativeSelect
 				data={data.logs.data.available}
 				value={value}

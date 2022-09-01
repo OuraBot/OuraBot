@@ -55,7 +55,7 @@ export class EventManager {
 			// There is no point in sending a message back if we aren't sure
 			// that it has a UUID to listen for
 			if (!event) {
-				ob.logger.warn('invalid event recieved: ' + JSON.stringify(message), 'ob.eventmanager');
+				ob.logger.warn('invalid event recieved: ' + JSON.stringify({ ...message, auth: '[REDACTED]' }), 'ob.eventmanager');
 				return;
 			}
 
@@ -78,7 +78,7 @@ export class EventManager {
 					break;
 
 				default:
-					ob.logger.warn('invalid event operation: ' + JSON.stringify(event), 'ob.eventmanager');
+					ob.logger.warn('invalid event operation: ' + JSON.stringify({ ...event, auth: '[REDACTED]' }), 'ob.eventmanager');
 					this.sendEvent({
 						status: StatusCodes.BadRequest,
 						...event,
@@ -123,7 +123,7 @@ export class EventManager {
 
 			// A handler should be present, but just in case
 			if (!handler) {
-				ob.logger.warn('missing handler for event: ' + JSON.stringify(event), 'ob.eventmanager');
+				ob.logger.warn('missing handler for event: ' + JSON.stringify({ ...event, auth: '[REDACTED]' }), 'ob.eventmanager');
 				return this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
@@ -172,7 +172,7 @@ export class EventManager {
 
 			// A handler should be present, but just in case
 			if (!handler) {
-				ob.logger.warn('missing handler for event: ' + JSON.stringify(event), 'ob.eventmanager');
+				ob.logger.warn('missing handler for event: ' + JSON.stringify({ ...event, auth: null }), 'ob.eventmanager');
 				return this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
