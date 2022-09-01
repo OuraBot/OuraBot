@@ -1,7 +1,6 @@
-import { NativeSelect, Button, Group, Grid, Paper, Container } from '@mantine/core';
-import { Prism } from '@mantine/prism';
-import { LoaderFunction, redirect } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Button, Checkbox, NativeSelect, Table } from '@mantine/core';
+import { LoaderFunction } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import type { IChannel } from 'common';
 import { useState } from 'react';
 import { forbidden, unauthorized } from 'remix-utils';
@@ -46,7 +45,6 @@ export default function Index() {
 			<NativeSelect
 				data={data.logs.data.available}
 				value={value}
-				mb="sm"
 				onChange={(event) => {
 					setValue(event.currentTarget.value);
 				}}
@@ -63,10 +61,41 @@ export default function Index() {
 						setFile(data.log);
 					});
 				}}
+				my="md"
 			>
 				Get log
 			</Button>
-			<p>{file}</p>
+
+			<Table verticalSpacing="xs" fontSize="xs">
+				<thead>
+					<tr>
+						<th>Level</th>
+						<th>Label</th>
+						<th>Message</th>
+						<th>Timestamp</th>
+					</tr>
+				</thead>
+				<tbody>
+					{file
+						.split('\n')
+						.map((_log: string) => {
+							try {
+								let log = JSON.parse(_log);
+								return (
+									<tr key={`${log.level}${log.label}${log.timestamp}_${Math.random()}`}>
+										<td>{log.level}</td>
+										<td>{log.label}</td>
+										<td>{log.message}</td>
+										<td>{log.timestamp}</td>
+									</tr>
+								);
+							} catch (e) {
+								return null;
+							}
+						})
+						.reverse()}
+				</tbody>
+			</Table>
 		</>
 	);
 }
