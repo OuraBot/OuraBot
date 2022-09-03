@@ -1,4 +1,4 @@
-import redis, { Redis } from 'ioredis';
+import redis from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
 
 const channel = process.env.REDIS_CHANNEL || 'obv3:events';
@@ -16,7 +16,7 @@ export type UUID = string;
 export type JwtToken = string;
 export type TwitchUserId = string;
 
-const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs'] as const;
+const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Leave'] as const;
 
 type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
