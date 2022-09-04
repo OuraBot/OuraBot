@@ -1,4 +1,4 @@
-import { Button, Group, Text, TextInput } from '@mantine/core';
+import { Button, Group, Table, Text, TextInput } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Form, useLoaderData } from '@remix-run/react';
 import type { ActionArgs, LoaderFunction } from '@remix-run/server-runtime';
@@ -63,6 +63,34 @@ export default function ChannelsPage() {
 	const data = useLoaderData<typeof loader>();
 	console.log(data.admin.data.ob.channels);
 
+	const datasets: any[] = [];
+	const labels: string[] = [];
+
+	type Metric = {
+		// the epoch timestamp
+		timestamp: number;
+		// the amount of messages per second
+		rate: number;
+	};
+
+	for (const [key, value] of Object.entries(data.admin.data.ob.metrics.messages.history)) {
+		let metrics = value as Metric[];
+
+		const data = metrics.map((metric: Metric) => {
+			return {
+				x: `${new Date(metric.timestamp).toTimeString().split(' ')[0]}`,
+				y: metric.rate,
+			};
+		});
+
+		datasets.push({
+			label: key,
+			data: data,
+		});
+	}
+
+	console.log(datasets);
+
 	return (
 		<div>
 			<Form method="post">
@@ -76,34 +104,48 @@ export default function ChannelsPage() {
 				</Group>
 			</Form>
 			<Form method="post">
-				<ul>
-					{data.admin.data.ob.channels.map((channel: { id: string; login: string }) => (
-						<li key={channel.id}>
-							<Group grow>
-								<Text variant="link" component="a" target="_blank" href={`https://twitch.tv/${channel.login}`}>
-									{channel.login}{' '}
-								</Text>
-								<Text
-									onClick={() => {
-										navigator.clipboard.writeText(channel.id);
-										showNotification({
-											title: 'Copied!',
-											message: `Copied ${channel.login}'s ID to clipboard`,
-										});
-									}}
-									variant="text"
-								>
-									(ID: {channel.id}) 📋
-								</Text>
-								<TextInput name="channelLogin" hidden defaultValue={channel.login} />
-								<Button color="gray" name="action" value="PART" type="submit">
-									❌
-								</Button>
-							</Group>
-							<br />
-						</li>
-					))}
-				</ul>
+				<Table verticalSpacing="xs" fontSize="sm">
+					<thead>
+						<tr>
+							<th>Channel</th>
+							<th>ID</th>
+							<th>Messages per minute</th>
+							<th>Leave Channel</th>
+						</tr>
+					</thead>
+					<tbody>
+						{data.admin.data.ob.channels.map((channel: { id: string; login: string }) => (
+							<tr key={channel.id}>
+								<td>
+									<Text variant="link" component="a" target="_blank" href={`https://twitch.tv/${channel.login}`}>
+										{channel.login}{' '}
+									</Text>
+								</td>
+								<td>
+									<Text
+										onClick={() => {
+											navigator.clipboard.writeText(channel.id);
+											showNotification({
+												title: 'Copied!',
+												message: `Copied ${channel.login}'s ID to clipboard`,
+											});
+										}}
+										variant="text"
+									>
+										(ID: {channel.id}) 📋
+									</Text>
+								</td>
+								<td>{datasets[0].data[0].x}</td>
+								<td>
+									<TextInput name="channelLogin" hidden defaultValue={channel.login} />
+									<Button color="gray" name="action" value="PART" type="submit">
+										❌
+									</Button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</Table>
 			</Form>
 		</div>
 	);
