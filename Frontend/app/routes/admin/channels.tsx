@@ -1,4 +1,5 @@
 import { Button, Group, Table, Text, TextInput } from '@mantine/core';
+import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { Form, useLoaderData } from '@remix-run/react';
 import type { ActionArgs, LoaderFunction } from '@remix-run/server-runtime';
@@ -24,6 +25,18 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 	if (channel.role !== 1) throw forbidden('Missing permissions');
 
 	const admin = await query('QUERY', 'Admin', channel.token, session.id);
+
+	let channels: any;
+	for (const channel of admin.data?.ob.channels) {
+		const channelData = await ChannelModel.findOne({ id: channel.id });
+		console.log(channelData);
+
+		if (channelData) {
+			channels[channel.id] = channelData;
+		} else {
+			break;
+		}
+	}
 
 	return {
 		session,
@@ -65,6 +78,16 @@ export default function ChannelsPage() {
 
 	const datasets: any[] = [];
 	const labels: string[] = [];
+
+	const openModal = () =>
+		openConfirmModal({
+			title: 'Please confirm your action',
+			children: <Text size="sm">This action is so important that you are required to confirm it with a modal. Please click one of these buttons to proceed.</Text>,
+			labels: {
+				confirm: 'Confirm',
+				cancel: 'Close',
+			},
+		});
 
 	type Metric = {
 		// the epoch timestamp
@@ -117,7 +140,7 @@ export default function ChannelsPage() {
 						{data.admin.data.ob.channels.map((channel: { id: string; login: string }) => (
 							<tr key={channel.id}>
 								<td>
-									<Text variant="link" component="a" target="_blank" href={`https://twitch.tv/${channel.login}`}>
+									<Text variant="link" component="p" onClick={openModal}>
 										{channel.login}{' '}
 									</Text>
 								</td>
