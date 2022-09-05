@@ -26,8 +26,6 @@ export const cmd = new (class command implements Command {
 
 		const decoded = verify(token, secret);
 
-		console.log(decoded);
-
 		return {
 			success: true,
 			message: 'ppHop',

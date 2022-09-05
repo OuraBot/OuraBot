@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import Redis from 'ioredis';
 import ob from '../..';
-import { ChalkConstants } from '../ChalkConstants';
 
 export class CacheManager {
 	public async cache(callback: () => Promise<any>, key: string, ttl: number = 1000 * 60): Promise<any> {
@@ -9,11 +8,10 @@ export class CacheManager {
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:' + cacheHash);
 
 		if (cacheData) {
-			// console.log(`${ChalkConstants.LOG('[CACHE]')} HIT: ${key}`);
 			return JSON.parse(cacheData);
 		}
 
-		console.log(`${ChalkConstants.LOG('[CACHE]')} MISS: ${key}`);
+		ob.logger.info(`MISS: ${key}`, 'ob.cache');
 		const data = await callback();
 		await ob.redis.set(ob.config.redisPrefix + ':' + 'cache:' + cacheHash, JSON.stringify(data), 'EX', ttl);
 
@@ -30,7 +28,7 @@ export class CacheManager {
 		for (let key of keys) {
 			await ob.redis.del(key);
 		}
-		console.log(`${ChalkConstants.LOG('[CACHE]')} Cleared ${keys.length} keys`);
+		ob.logger.info(`Cleared ${keys.length} keys`, 'ob.cache');
 	}
 
 	public async size(): Promise<number> {

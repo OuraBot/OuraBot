@@ -7,37 +7,37 @@ export const event: Events = {
 	run: async (client) => {
 		if (ob.debug) {
 			const channels = ob.config.channels;
-			console.log(`${chalk.green(`[Twitch]`)} Ready (DEBUG) (${channels.length} channels)`);
+			ob.logger.info(`Ready (DEBUG) (${channels.length} channels)`, 'ob.twitch.events.ready');
 
 			for (let channel of channels) {
 				await ob.twitch.joinRateLimiter.take();
-				console.debug(`${chalk.green('[Twitch]')} Joining #${chalk.bold(channel.login)}`);
+				ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 				ob.twitch.chatClient
 					.join(channel.login)
 					.then(() => {
-						console.debug(`${chalk.green('[Twitch]')} Joined #${chalk.bold(channel.login)}`);
+						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 					})
 					.catch((err) => {
-						console.warn(`${chalk.yellow('[Twitch]')} Failed to join #${chalk.bold(channel.login)} (${err})`);
+						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
 					});
 			}
 		} else {
 			const channels = await ob.db.models.Channel.model.find({});
-			console.log(`${chalk.green(`[Twitch]`)} Ready (${chalk.bold(channels.length)} channels)`);
+			ob.logger.info(`Ready (${chalk.bold(channels.length)} channels)`, 'ob.twitch.events.ready');
 
 			ob.twitch.joinRateLimiter.MAX_LIMIT = 2000;
 			ob.twitch.joinRateLimiter.REFILL_TIME = 10 * 1000;
 
 			for (let channel of channels) {
 				await ob.twitch.joinRateLimiter.take(channel.role > 0);
-				console.debug(`${chalk.green('[Twitch]')} Joining #${chalk.bold(channel.login)}`);
+				ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 				ob.twitch.chatClient
 					.join(channel.login)
 					.then(() => {
-						console.debug(`${chalk.green('[Twitch]')} Joined #${chalk.bold(channel.login)}`);
+						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 					})
 					.catch((err) => {
-						console.warn(`${chalk.yellow('[Twitch]')} Failed to join #${chalk.bold(channel.login)} (${err})`);
+						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
 					});
 			}
 		}

@@ -39,7 +39,7 @@ export const _module = new (class module implements Module {
 			`messageHeight_${Channel.channel}-${message}-${user}`,
 			60 * 60 * 6
 		);
-		console.log(messageHeight);
+		ob.logger.debug(messageHeight, 'ob.modules.messageheight');
 
 		// TODO: handle messageHeight number based on channel configured setting
 	};

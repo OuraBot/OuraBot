@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponseHeaders } from 'axios';
 import ob from '../..';
-import { ChalkConstants } from '../ChalkConstants';
 
 export class API {
 	async get<Type>(url: string, cache: number, options?: AxiosRequestConfig): Promise<APIReturn<Type>> {
@@ -8,7 +7,7 @@ export class API {
 		const cacheHash = ob.utils.generateMD5(url + (options ? JSON.stringify(options) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
 
-		console.log(`${ChalkConstants.LOG('[API]')}${cacheData ? ' CACHED' : ''}: ${url}`);
+		ob.logger.info(`${cacheData ? ' CACHED' : ''}: ${url}`, 'ob.http');
 
 		if (cacheData) {
 			return {
@@ -88,7 +87,7 @@ export class API {
 		const cacheHash = ob.utils.generateMD5(url + query + (variables ? JSON.stringify(variables) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
 
-		console.log(`${ChalkConstants.LOG('[API]')}${cacheData ? ' CACHED' : ''}: ${url}`);
+		ob.logger.info(`${cacheData ? ' CACHED' : ''}: ${url}`, 'ob.http');
 
 		if (cacheData) {
 			return {

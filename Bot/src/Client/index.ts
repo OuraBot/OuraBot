@@ -1,47 +1,44 @@
 import { ApiClient } from '@twurple/api';
 import { AuthProvider, RefreshingAuthProvider } from '@twurple/auth';
 import { ChatClient, ChatSayMessageAttributes } from '@twurple/chat';
+import { PubSubClient } from '@twurple/pubsub';
 import chalk from 'chalk';
+import { exec, execSync } from 'child_process';
 import * as dotenv from 'dotenv';
-import * as _fs from 'fs';
 import { EventEmitter } from 'events';
+import * as _fs from 'fs';
 import { promises as fs } from 'fs-extra';
 import Redis from 'ioredis';
 import path from 'path';
+import * as winston from 'winston';
+import ob from '..';
 import {
+	ChannelRecentMessage,
 	Command,
-	Module,
 	Events,
 	getCommands,
+	getModules,
+	Module,
+	NukeMessage,
 	OuraBotConfig,
+	SelfRecentMessage,
 	SimplifiedChannel,
 	TwitchController,
-	getModules,
-	NukeMessage,
-	Channel,
-	SelfRecentMessage,
-	ChannelRecentMessage,
-	ChatroomMessage,
 } from '../Typings/Twitch';
+import { AfkManager } from '../Utils/Afk';
 import { API } from '../Utils/API';
 import { EnvironmentVariables } from '../Utils/env';
 import { eventBinder } from '../Utils/eventBinder';
+import { MessageHeight } from '../Utils/MessageHeight';
+import { Metric } from '../Utils/Metric';
 import { Database } from '../Utils/Mongo';
+import { CacheManager } from '../Utils/Redis/CacheManager';
 import { EventManager } from '../Utils/Redis/EventManager';
+import { ReminderManager } from '../Utils/Reminders';
 import { SevenTVEvents } from '../Utils/SevenTVEvents';
 import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
-import { exec, execSync } from 'child_process';
-import { CacheManager } from '../Utils/Redis/CacheManager';
-import ob from '..';
-import { AfkManager } from '../Utils/Afk';
-import { ReminderManager } from '../Utils/Reminders';
-import { ChalkConstants } from '../Utils/ChalkConstants';
-import { MessageHeight } from '../Utils/MessageHeight';
-import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-import { PubSubClient } from '@twurple/pubsub';
-import { IChannel } from 'common';
-import { Metric } from '../Utils/Metric';
+import DailyRotateFile from 'winston-daily-rotate-file';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -54,10 +51,6 @@ class OuraBot {
 	events: Map<string, Events> = new Map();
 	commands: Map<string, Command> = new Map();
 	modules: Map<string, Module> = new Map();
-	cooldowns: {
-		userCooldowns: Map<string, number>;
-		channelCooldowns: Map<string, number>;
-	};
 	nukeMessages: NukeMessage[] = new Array();
 	activeSays: Set<string> = new Set();
 	db: Database;
@@ -76,6 +69,18 @@ class OuraBot {
 	cancels: Set<string>;
 	blockedUsers: SQLBlockUser[];
 	MessageHeight: MessageHeight;
+	logger: {
+		debug: (message: any, label: string) => void;
+		info: (message: any, label: string) => void;
+		warn: (message: any, label: string) => void;
+		error: (message: any, label: string) => void;
+		fatal: (message: any, label: string) => void;
+	};
+	_logger: winston.Logger;
+	cooldowns: {
+		userCooldowns: Map<string, number>;
+		channelCooldowns: Map<string, number>;
+	};
 	metrics: {
 		messages: {
 			managers: {
@@ -120,6 +125,7 @@ class OuraBot {
 			retryStrategy: (times: number) => {
 				return times * 10 * 1000;
 			},
+			// lazyConnect lets use .catch() on Redis.connect() to handle errors
 			lazyConnect: true,
 		};
 
@@ -169,6 +175,119 @@ class OuraBot {
 
 		this.debug = EnvironmentVariables.DEBUG;
 
+		// #region Logger
+		const colors = {
+			debug: 'blue',
+			info: 'green',
+			warn: 'yellow',
+			error: 'red',
+			fatal: 'magenta',
+		};
+		winston.addColors(colors);
+
+		const transport = new DailyRotateFile({
+			level: 'info',
+			filename: '../logs/bot-%DATE%.log',
+			datePattern: 'YYYY-MM-DD',
+			zippedArchive: true,
+			maxSize: '20m',
+			format: winston.format.combine(
+				winston.format.timestamp(),
+				winston.format.printf((info) => {
+					return JSON.stringify(info);
+				})
+			),
+		});
+
+		// https://github.com/winstonjs/winston/issues/1338
+		const print = winston.format.printf((info) => {
+			const log = `${info.level}: ${info.message}`;
+
+			return info.stack ? `${log}\n${info.stack}` : log;
+		});
+
+		this._logger = winston.createLogger({
+			level: 'debug',
+			levels: {
+				debug: 4,
+				info: 3,
+				warn: 2,
+				error: 1,
+				fatal: 0,
+			},
+			format: winston.format.combine(winston.format.errors({ stack: true }), print),
+			transports: [
+				new winston.transports.Console({
+					format: winston.format.combine(
+						winston.format.align(),
+						winston.format((info) => {
+							// Winston's color only highlights the level
+							info.color = colors[info.level as keyof typeof colors];
+							info.level = info.level.toUpperCase();
+							return info;
+						})(),
+						winston.format.timestamp({
+							format: 'YYYY-MM-DD HH:mm:ss.SSS',
+						}),
+						winston.format.printf((info) => {
+							return (
+								chalk.blue(`[${info.timestamp}] `) +
+								// @ts-ignore
+								chalk.bold(chalk[info.color](`[${info.level}]`.padEnd(7, ' '))) +
+								chalk.blue(`  ${info.label}`) +
+								chalk.white(`${info.message}`) +
+								(info.stack ? chalk.gray(`\n${info.stack}`) : '')
+							);
+						})
+					),
+				}),
+				transport,
+			],
+		});
+
+		this.logger = {
+			debug: (message, label) => {
+				this._logger.log({
+					level: 'debug',
+					message,
+					label,
+				});
+			},
+			info: (message, label) => {
+				this._logger.log({
+					level: 'info',
+					message,
+					label,
+				});
+			},
+			warn: (message, label) => {
+				this._logger.log({
+					level: 'warn',
+					message,
+					label,
+				});
+			},
+			error: (message, label) => {
+				this._logger.log({
+					level: 'error',
+					message,
+					label,
+				});
+			},
+			fatal: async (message, label) => {
+				this._logger.log({
+					level: 'fatal',
+					message,
+					label,
+				});
+				// wait 1s for the logger to write the log to disk
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				// fatals are irrecoverable, so we exit
+				process.exit(1);
+			},
+		};
+		// #endregion
+
 		// #region MongoDB
 		this.utils.startNanoStopwatch('startup.connect_to_mongo');
 		await this.db.init();
@@ -178,49 +297,55 @@ class OuraBot {
 		// #region Redis
 		this.utils.startNanoStopwatch('startup.connect_to_redis_cache');
 		this.redis.connect().catch((err) => {
-			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (CACHE): ${err}`);
+			this.logger.fatal(`Error connecting to Redis (CACHE): ${err}`, 'ob.startup.redis');
 			this.redis.disconnect();
 			process.exit(1);
 		});
 		this.redis.on('ready', () => {
-			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (CACHE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_cache')}ms)`);
+			this.logger.info(`Redis (CACHE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_cache')}ms)`, 'ob.startup.redis');
 		});
 
 		this.redis.on('error', (err) => {
 			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_cache');
-			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (CACHE) error: ${err}`);
+			this.logger.fatal(`Redis (CACHE) error: ${err}`, 'ob.startup.redis');
+			this.redis.disconnect();
+			process.exit(1);
 		});
 
 		this.utils.startNanoStopwatch('startup.connect_to_redis_sub');
 		this.subRedis.connect().catch((err) => {
-			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (SUBSCRIBE): ${err}`);
+			this.logger.fatal(`Error connecting to Redis (SUBSCRIBE): ${err}`, 'ob.startup.redis');
 			this.subRedis.disconnect();
 			process.exit(1);
 		});
 
 		this.subRedis.on('ready', () => {
-			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (SUBSCRIBE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_sub')}ms)`);
+			this.logger.info(`Redis (SUBSCRIBE) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_sub')}ms)`, 'ob.startup.redis');
 		});
 
 		this.subRedis.on('error', (err) => {
 			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_sub');
-			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (SUBSCRIBE) error: ${err}`);
+			this.logger.fatal(`Redis (SUBSCRIBE) error: ${err}`, 'ob.startup.redis');
+			this.subRedis.disconnect();
+			process.exit(1);
 		});
 
 		this.utils.startNanoStopwatch('startup.connect_to_redis_pub');
 		this.pubRedis.connect().catch((err) => {
-			console.error(`${ChalkConstants.ALERT('[REDIS]')} Error connecting to Redis (PUBLISH): ${err}`);
+			this.logger.fatal(`Error connecting to Redis (PUBLISH): ${err}`, 'ob.startup.redis');
 			this.pubRedis.disconnect();
 			process.exit(1);
 		});
 
 		this.pubRedis.on('ready', () => {
-			console.log(`${ChalkConstants.LOG('[REDIS]')} Redis (PUBLISH) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_pub')}ms)`);
+			this.logger.info(`Redis (PUBLISH) is ready (${this.utils.stopNanoStopwatch('startup.connect_to_redis_pub')}ms)`, 'ob.startup.redis');
 		});
 
 		this.pubRedis.on('error', (err) => {
 			this.utils.attemptStopNanoStopwatch('startup.connect_to_redis_pub');
-			console.warn(`${ChalkConstants.ALERT('[REDIS]')} Redis (PUBLISH) error: ${err}`);
+			this.logger.fatal(`Redis (PUBLISH) error: ${err}`, 'ob.startup.redis');
+			this.pubRedis.disconnect();
+			process.exit(1);
 		});
 		// #endregion
 
@@ -274,7 +399,7 @@ class OuraBot {
 
 		let _chatClientSay = chatClient.say;
 		chatClient.say = (channel: string, message: string): Promise<void> => {
-			console.warn(chalk.yellow(`Avoid using the listener client's say method. Use ob.twitch.say() instead.`));
+			this.logger.warn(chalk.yellow(`Avoid using the listener client's say method. Use ob.twitch.say() instead.`), 'ob.startup.twitch');
 			return _chatClientSay.call(chatClient, channel, message);
 		};
 
@@ -317,7 +442,7 @@ class OuraBot {
 	}
 
 	public async saveState() {
-		console.log(`${ChalkConstants.LOG('[STATE]')} Saving state in Redis...`);
+		ob.logger.info(`Saving state in Redis...`, 'ob.state.save');
 		await this.redis.set('state:' + 'nuke_messages', JSON.stringify(ob.nukeMessages ?? []));
 
 		const cooldowns: { userCooldowns: { key: string; expiry: number }[]; channelCooldowns: { key: string; expiry: number }[] } = {
@@ -329,20 +454,20 @@ class OuraBot {
 
 		await this.redis.set('state:' + 'metrics.messages.history', JSON.stringify(ob.metrics.messages.history));
 
-		console.log(`${ChalkConstants.LOG('[STATE]')} State saved in Redis`);
+		ob.logger.info(`tate saved in Redis`, 'ob.state.save');
 	}
 
 	public async restoreState() {
-		console.log(`${ChalkConstants.LOG('[STATE]')} Restoring state from Redis...`);
+		ob.logger.info(`Restoring state from Redis...`, 'ob.state.restore');
 		const nukeMessages = JSON.parse(await this.redis.get('state:' + 'nuke_messages'));
 		const cooldowns: { userCooldowns: { key: string; expiry: number }[]; channelCooldowns: { key: string; expiry: number }[] } = JSON.parse(
 			await this.redis.get('state:' + 'cooldowns')
 		);
 		const metricsMessagesHistory = JSON.parse(await this.redis.get('state:' + 'metrics.messages.history'));
 
-		if (!nukeMessages && !cooldowns) return console.log(`${ChalkConstants.LOG('[STATE]')} No state found in Redis`);
-		if (!cooldowns?.channelCooldowns) return console.log(`${ChalkConstants.LOG('[STATE]')} No channel cooldowns found in Redis`);
-		if (!cooldowns?.userCooldowns) return console.log(`${ChalkConstants.LOG('[STATE]')} No user cooldowns found in Redis`);
+		if (!nukeMessages && !cooldowns) return ob.logger.info(`No state found in Redis`, 'ob.state.restore');
+		if (!cooldowns?.channelCooldowns) return ob.logger.info(`No channel cooldowns found in Redis`, 'ob.state.restore');
+		if (!cooldowns?.userCooldowns) return ob.logger.info(`No user cooldowns found in Redis`, 'ob.state.restore');
 
 		if (nukeMessages) {
 			this.nukeMessages.push(...nukeMessages);
@@ -372,23 +497,24 @@ class OuraBot {
 			ob.metrics.messages.history = metricsMessagesHistory;
 		}
 
-		console.log(
-			`${ChalkConstants.LOG('[STATE]')} State restored from Redis (${nukeMessages?.length ?? 0} NM, ${ob.cooldowns?.channelCooldowns?.size ?? 0}/${
-				cooldowns.channelCooldowns.length
-			} CC, ${ob.cooldowns?.userCooldowns?.size ?? 0}/${cooldowns.userCooldowns.length} UC)`
+		ob.logger.info(
+			`State restored from Redis (${nukeMessages?.length ?? 0} NM, ${ob.cooldowns?.channelCooldowns?.size ?? 0}/${cooldowns.channelCooldowns.length} CC, ${
+				ob.cooldowns?.userCooldowns?.size ?? 0
+			}/${cooldowns.userCooldowns.length} UC)`,
+			'ob.state.restore'
 		);
 	}
 
 	public async shutdown() {
-		console.log(`${ChalkConstants.ALERT('[SHUTDOWN]')} Attempting to shutdown...`);
+		ob.logger.info(`Attempting to shutdown...`, 'ob.shutdown');
 
 		if (this?.activeSays?.size === 0 && this?.twitch?.rateLimiter?.queue?.length === 0) {
-			console.log(`${ChalkConstants.ALERT('[SHUTDOWN]')} Shutting down...`);
+			ob.logger.info(`Shutting down...`, 'ob.shutdown');
 			await this.saveState();
 			await this.twitch.chatClient.quit();
 			await this.twitch.clients.forEach((client) => client.quit());
 		} else {
-			console.log(`${ChalkConstants.ALERT('[SHUTDOWN]')} Active say, delaying shutdown...`);
+			ob.logger.info(`Active say, delaying shutdown...`, 'ob.shutdown');
 			await ob.utils.sleep(1000);
 			await this.shutdown();
 		}

@@ -44,8 +44,6 @@ export const cmd = new (class command implements Command {
 				message: `Error: ${userData.error.code}`,
 			};
 
-		console.log(userData.data.response.data.data.user.editors);
-
 		if (!userData.data.response.data.data.user.editors.map((e) => e.twitch_id).includes(ob.config.twitch_id))
 			return {
 				success: false,
@@ -60,8 +58,6 @@ export const cmd = new (class command implements Command {
 				success: false,
 				message: `Invalid emote`,
 			};
-
-		console.log(emoteAlias, typeof emoteAlias);
 
 		let emoteData = await ob.api.gql<SevenTVGQLMutationEditChannelEmote>(
 			SevenTVGQLUrl,
