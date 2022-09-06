@@ -37,5 +37,14 @@ export class Database {
 				model: models['Channel'] || model<IChannel>('Channel', ChannelSchema),
 			},
 		};
+
+		setInterval(() => {
+			try {
+				ob.db.connection.connection.db.admin().ping();
+			} catch (e) {
+				ob.logger.warn('MongoDB ping failed', 'ob.mongo');
+				ob.db.connection.connect(EnvironmentVariables.MONGO_URI);
+			}
+		}, 1000 * 60);
 	}
 }
