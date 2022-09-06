@@ -21,7 +21,12 @@ export default function handler(Event: Event): Promise<Event> {
 
 		const logs = await fs.readdir('../logs');
 		const today = logs.filter((log) => log.includes(new Date().toISOString().split('T')[0]))[0];
-		const log = await fs.readFile(`../logs/${file ? file : today}`, 'utf8');
+		let log;
+		try {
+			log = await fs.readFile(`../logs/${file ? file : today}`, 'utf8');
+		} catch (e) {
+			log = 'no logs found';
+		}
 
 		resolve({
 			...Event,
