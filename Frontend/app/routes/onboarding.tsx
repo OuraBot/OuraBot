@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import type { TwitchSession } from '~/services/oauth.strategy';
-import { query } from '~/services/redis.server';
+import { query, StatusCodes } from '~/services/redis.server';
 import { sign } from '~/utils/jsonwebtoken.server';
 import { redirect } from '~/utils/redirect.server';
 
@@ -48,11 +48,15 @@ export async function action({ request }: ActionArgs) {
 		profile_image_url: session.profile_image_url,
 	});
 
-	await query('UPDATE', 'Join', token, session.id, {
+	let resp = await query('UPDATE', 'Join', token, session.id, {
 		login: session.login,
 	});
 
-	return redirect(`/dashboard`);
+	if (resp.status !== 200) {
+		throw new Error(`UPDATE Join returned error code ${resp.status}`);
+	} else {
+		return redirect(`/dashboard`);
+	}
 }
 
 export default function Onboarding() {

@@ -21,6 +21,8 @@ export async function loader({ request }: LoaderArgs) {
 
 	const settings = await query('QUERY', 'Settings', channel.token, session.json.id);
 
+	if (settings.status !== 200) throw new Error(`QUERY Settings returned error code ${settings.status}`);
+
 	return json({
 		session,
 		channel,
@@ -79,6 +81,8 @@ export async function action({ request }: ActionArgs) {
 		lastfmUsername: lastfmUsername,
 		emoteEventsEnabled: emoteEventsEnabled,
 	});
+
+	if (change.status !== 200) throw new Error(`UPDATE Settings returned error code ${change.status}`);
 
 	return change;
 }

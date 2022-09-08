@@ -4,6 +4,7 @@ import { verify } from 'jsonwebtoken';
 import ob from '../..';
 import { TwitchUserId } from '../../Typings/Twitch';
 import { EnvironmentVariables } from '../env';
+import { SimpleRateLimiter } from '../SimpleRateLimiter';
 
 export enum StatusCodes {
 	OK = 200,
@@ -130,6 +131,18 @@ export class EventManager {
 				});
 			}
 
+			if (ob.rateLimits.query.has(event.userId)) {
+				if (!ob.rateLimits.query.get(event.userId).take()) {
+					ob.logger.debug(`rate limit exceeded: ${event.operation} - ${event.userId}`, 'ob.eventmanager');
+					return this.sendEvent({
+						status: StatusCodes.TooManyRequests,
+						...event,
+					});
+				}
+			} else {
+				ob.rateLimits.query.set(event.userId, new SimpleRateLimiter(50, 30));
+			}
+
 			let decodedId: TwitchUserId;
 
 			try {
@@ -177,6 +190,18 @@ export class EventManager {
 					status: StatusCodes.InternalServerError,
 					...event,
 				});
+			}
+
+			if (ob.rateLimits.update.has(event.userId)) {
+				if (!ob.rateLimits.update.get(event.userId).take()) {
+					ob.logger.debug(`rate limit exceeded: ${event.operation} - ${event.userId}`, 'ob.eventmanager');
+					return this.sendEvent({
+						status: StatusCodes.TooManyRequests,
+						...event,
+					});
+				}
+			} else {
+				ob.rateLimits.update.set(event.userId, new SimpleRateLimiter(20, 30));
 			}
 
 			let decodedId: TwitchUserId;

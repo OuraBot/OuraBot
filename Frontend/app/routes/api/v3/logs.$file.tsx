@@ -20,6 +20,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 		file: params.file,
 	});
 
+	if (logs.status !== 200) throw new Response(`QUERY Logs returned error code ${logs.status}`, { status: logs.status });
+
 	return {
 		...logs.data,
 	};
