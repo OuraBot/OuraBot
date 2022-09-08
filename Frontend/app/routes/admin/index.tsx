@@ -27,6 +27,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	const admin = await query('QUERY', 'Admin', channel.token, session.id);
 
+	if (admin.status !== 200) throw new Error(`QUERY Admin returned error code ${admin.status}`);
+
 	return {
 		session,
 		channel,

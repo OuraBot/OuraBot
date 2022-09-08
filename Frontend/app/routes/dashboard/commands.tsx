@@ -48,6 +48,8 @@ export async function loader({ request }: LoaderArgs) {
 
 	const commands = await query('QUERY', 'Commands', channel.token, session.json.id);
 
+	if (commands.status !== 200) throw new Error(`QUERY Commands returned error code ${commands.status}`);
+
 	return json({
 		session,
 		channel,

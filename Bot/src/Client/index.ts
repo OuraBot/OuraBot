@@ -39,6 +39,7 @@ import { SevenTVEvents } from '../Utils/SevenTVEvents';
 import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -77,9 +78,15 @@ class OuraBot {
 		fatal: (message: any, label: string) => void;
 	};
 	_logger: winston.Logger;
+	// Command cooldowns
 	cooldowns: {
 		userCooldowns: Map<string, number>;
 		channelCooldowns: Map<string, number>;
+	};
+	// EventManager rate limits
+	rateLimits: {
+		query: Map<string, SimpleRateLimiter>;
+		update: Map<string, SimpleRateLimiter>;
 	};
 	metrics: {
 		messages: {
@@ -112,6 +119,12 @@ class OuraBot {
 			userCooldowns: new Map(),
 			channelCooldowns: new Map(),
 		};
+
+		this.rateLimits = {
+			query: new Map(),
+			update: new Map(),
+		};
+
 		this.db = new Database();
 		this.recentMessages = {
 			self: [],
