@@ -16,7 +16,7 @@ export type UUID = string;
 export type JwtToken = string;
 export type TwitchUserId = string;
 
-const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs'] as const;
+const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Phrases', 'Logs'] as const;
 
 type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
