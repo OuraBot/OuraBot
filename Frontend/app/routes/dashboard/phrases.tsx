@@ -1,10 +1,11 @@
-import { Button, Group, Radio, Table, TextInput, Title, useMantineTheme } from '@mantine/core';
+import { Button, Group, Input, Radio, SegmentedControl, Table, Text, TextInput, Title, useMantineTheme } from '@mantine/core';
 import { ModalsProvider, useModals } from '@mantine/modals';
-import type { LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Edit, Plus, Search } from 'tabler-icons-react';
+import NewPhrase from '~/components/NewPhrase';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
@@ -39,6 +40,30 @@ export async function loader({ request }: LoaderArgs) {
 	});
 }
 
+export async function action({ request }: ActionArgs) {
+	console.log('Hit');
+
+	const session = await authenticator.isAuthenticated(request, {
+		failureRedirect: '/login',
+	});
+
+	const channel = await ChannelModel.findOne({ id: session.json.id });
+
+	const formData = await request.formData();
+
+	console.log(formData.forEach((value, key) => console.log(`${key}: ${value}`)));
+
+	const responseType = formData.get('responseType') as 'message' | 'timeout' | 'ban';
+
+	switch (responseType) {
+		case 'message':
+			const response = formData.get('message-response') as string;
+			const reply = formData.get('message-reply') === 'on' ? true : false;
+
+			return null;
+	}
+}
+
 export default function Phrases() {
 	const data = useLoaderData<typeof loader>();
 	const [search, setSearch] = useState('');
@@ -46,7 +71,6 @@ export default function Phrases() {
 	const modals = useModals();
 	let phrases = data.phrases?.data;
 	const [searchResults, setSearchResults] = useState(phrases ?? []);
-
 	const [responseType, setResponseType] = useState('message');
 
 	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,17 +99,7 @@ export default function Phrases() {
 			),
 			children: (
 				<>
-					<Form method="post">
-						<TextInput required name="name" label="Name" placeholder="Phrase name" />
-						<Radio.Group label="Response Type" description="How should the bot respond to the phrase?" value="message">
-							<Radio value="message" label="Message" />
-							<Radio value="timeout" label="Timeout" />
-							<Radio value="ban" label="Ban" />
-						</Radio.Group>
-						<Button type="submit" fullWidth mt="md">
-							Save
-						</Button>
-					</Form>
+					<NewPhrase />
 				</>
 			),
 		});
