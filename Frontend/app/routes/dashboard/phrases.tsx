@@ -53,14 +53,36 @@ export async function action({ request }: ActionArgs) {
 
 	console.log(formData.forEach((value, key) => console.log(`${key}: ${value}`)));
 
-	const responseType = formData.get('responseType') as 'message' | 'timeout' | 'ban';
+	const responseType = formData.get('responsetype') as 'message' | 'timeout' | 'ban';
 
-	switch (responseType) {
-		case 'message':
-			const response = formData.get('message-response') as string;
-			const reply = formData.get('message-reply') === 'on' ? true : false;
+	const name = formData.get('name') as string;
 
-			return null;
+	if (responseType === 'message') {
+		const response = formData.get('message-response') as string;
+		const reply = formData.get('message-reply') === 'on' ? true : false;
+		const trigger = formData.get('message-phrase') as string;
+		const regex = formData.get('message-regex') === 'on' ? true : false;
+
+		const updated = await query('UPDATE', 'Phrases', channel.token, session.json.id, {
+			name,
+			response: {
+				type: responseType,
+				value: response,
+				reply,
+			},
+			trigger: {
+				value: trigger,
+				regex,
+			},
+			cooldowns: {
+				user: 0,
+				channel: 0,
+			},
+		});
+
+		return updated;
+	} else {
+		return null;
 	}
 }
 

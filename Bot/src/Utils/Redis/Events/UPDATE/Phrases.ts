@@ -8,11 +8,27 @@ export default function handler(Event: Event): Promise<Event> {
 			id: Event.userId,
 		});
 
+		console.log(Event.data);
+
+		resolve(Event);
+
 		// const modifiedDefaultPhrases: RecievedDefaultPhraseOptions[] = Event.data?.modifiedDefaultPhrases || [];
 	});
 }
 
 interface RecievedPhrase {
 	name: string;
-	type: 'message' | 'timeout' | 'ban';
+	response: {
+		type: 'message';
+		value: string;
+		reply: boolean;
+	};
+	trigger: {
+		value: string;
+		regex: boolean;
+	};
+	cooldowns: {
+		user: number;
+		channel: number;
+	};
 }

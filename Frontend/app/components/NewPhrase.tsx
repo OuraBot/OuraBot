@@ -1,4 +1,4 @@
-import { Button, Input, SegmentedControl, TextInput, Text, Collapse, Table, Code, Textarea, Checkbox, Box } from '@mantine/core';
+import { Button, Input, SegmentedControl, TextInput, Text, Collapse, Table, Code, Textarea, Checkbox, Box, Divider } from '@mantine/core';
 import { Form } from '@remix-run/react';
 import { useState } from 'react';
 
@@ -16,6 +16,11 @@ export default function NewPhrase() {
 		<>
 			<Form method="post" action="/dashboard/phrases">
 				<TextInput required name="name" label="Name" placeholder="Phrase name" />
+				<Divider mt="sm" />
+				<Input.Wrapper required my="sm" label="Phrase" description="What message should make the bot trigger this phrase??">
+					<TextInput required my="sm" name="message-phrase" placeholder="Phrase to trigger" />
+					<Checkbox id="message-regex" name="message-regex" label="Use regex?" my="sm" />
+				</Input.Wrapper>
 				<Input.Wrapper my="sm" label="Response Type" description="How should the bot respond to the phrase?">
 					<SegmentedControl
 						name="responsetype"

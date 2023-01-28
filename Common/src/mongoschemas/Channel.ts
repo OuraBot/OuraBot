@@ -61,12 +61,17 @@ export interface IChannel extends Schema {
 		response: {
 			type: 'timeout' | 'ban' | 'message';
 			value: string;
+			reply: boolean;
+		};
+		trigger: {
+			value: string;
+			regex: boolean;
 		};
 		cooldowns: {
 			user: number;
 			channel: number;
 		};
-		permissions: string[];
+		// permissions: string[];
 	}[];
 }
 
@@ -127,12 +132,17 @@ export const ChannelSchema = new Schema<IChannel>(
 							enum: ['timeout', 'ban', 'message'],
 						},
 						value: { type: String, required: true },
+						reply: { type: Boolean, required: true },
+					},
+					trigger: {
+						value: { type: String, required: true },
+						regex: { type: Boolean, required: true },
 					},
 					cooldowns: {
 						user: { type: Number, required: true },
 						channel: { type: Number, required: true },
 					},
-					permissions: { type: [String], required: true },
+					// permissions: { type: [String], required: true },
 				},
 			],
 			required: true,
