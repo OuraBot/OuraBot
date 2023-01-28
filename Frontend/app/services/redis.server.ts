@@ -18,7 +18,7 @@ export type TwitchUserId = string;
 
 const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Phrases', 'Logs'] as const;
 
-type Topic = typeof topics[number];
+type Topic = (typeof topics)[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
 
 export interface Event {
