@@ -55,6 +55,24 @@ export interface IChannel extends Schema {
 			status: 'PENDING' | 'PAID';
 		}[];
 	};
+	// Phrases
+	phrases: {
+		name: string;
+		response: {
+			type: 'timeout' | 'ban' | 'message';
+			value: string;
+			reply: boolean;
+		};
+		trigger: {
+			value: string;
+			regex: boolean;
+		};
+		cooldowns: {
+			user: number;
+			channel: number;
+		};
+		// permissions: string[];
+	}[];
 }
 
 export const ChannelSchema = new Schema<IChannel>(
@@ -102,6 +120,33 @@ export const ChannelSchema = new Schema<IChannel>(
 			},
 			required: true,
 			default: { orders: [] },
+		},
+		phrases: {
+			type: [
+				{
+					name: { type: String, required: true },
+					response: {
+						type: {
+							type: String,
+							required: true,
+							enum: ['timeout', 'ban', 'message'],
+						},
+						value: { type: String, required: true },
+						reply: { type: Boolean, required: true },
+					},
+					trigger: {
+						value: { type: String, required: true },
+						regex: { type: Boolean, required: true },
+					},
+					cooldowns: {
+						user: { type: Number, required: true },
+						channel: { type: Number, required: true },
+					},
+					// permissions: { type: [String], required: true },
+				},
+			],
+			required: true,
+			default: [],
 		},
 	},
 	{
