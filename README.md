@@ -1,5 +1,9 @@
 # OuraBot
 
+## Release Date 3/26/23
+
+The release date is for a minimum viable product. It may lack certain features however it will be able to run.
+
 ## Getting Started
 
 1. Clone the repository
