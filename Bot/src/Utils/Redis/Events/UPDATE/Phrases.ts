@@ -10,6 +10,8 @@ export default function handler(Event: Event): Promise<Event> {
 
 		console.log(Event.data);
 
+		channel.phrases.forEach((phrase) => {});
+
 		resolve(Event);
 
 		// const modifiedDefaultPhrases: RecievedDefaultPhraseOptions[] = Event.data?.modifiedDefaultPhrases || [];
