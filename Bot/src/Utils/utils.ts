@@ -360,15 +360,7 @@ export default class Utils {
 	async sleep(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
-
-	async getChatters(_channel: string | Channel | SimplifiedChannel): Promise<ChattersResponse> {
-		let channel = this.channelFromMany(_channel);
-
-		let resp = await ob.api.get<ChattersResponse>(`https://tmi.twitch.tv/group/user/${channel}/chatters`, CacheTimes.TMIChatters);
-		if (resp.error) return null;
-		return resp.data.response.data;
-	}
-
+	
 	channelFromMany(_channel: Channel | SimplifiedChannel | string): string {
 		let channel;
 		if (typeof _channel === 'string') {
@@ -384,28 +376,9 @@ export default class Utils {
 		return channel;
 	}
 
+	// Left for backwards compatibility
 	async smartObfuscate(_channel: Channel | SimplifiedChannel | string, user: string, author: string): Promise<string> {
-		if (user === author) return user;
-
-		let channel = this.channelFromMany(_channel);
-
-		let chatters: string[] = [];
-
-		let chattersResponse = await this.getChatters(channel);
-		if (!chattersResponse) chatters = [];
-		else
-			chatters = chattersResponse.chatters.admins
-				.concat(chattersResponse.chatters.global_mods)
-				.concat(chattersResponse.chatters.moderators)
-				.concat(chattersResponse.chatters.staff)
-				.concat(chattersResponse.chatters.vips)
-				.concat(chattersResponse.chatters.broadcaster);
-
-		if (chatters.includes(user.toLowerCase())) {
-			return this.obfuscateStr(user);
-		} else {
-			return user;
-		}
+		return user;
 	}
 
 	async getBanReason(user: string): Promise<string> {

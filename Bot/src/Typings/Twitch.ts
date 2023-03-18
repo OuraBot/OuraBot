@@ -237,21 +237,6 @@ export class Channel {
 		this.id = msg.channelId;
 	}
 
-	async getChatters(): Promise<string[]> {
-		const response = await ob.api.get<TMIChatters>(`https://tmi.twitch.tv/group/user/${this.channel}/chatters`, CacheTimes.TMIChatters);
-
-		if (response?.error) return [];
-
-		const allChatters = response.data.response.data.chatters.broadcaster.concat(
-			response.data.response.data.chatters.moderators,
-			response.data.response.data.chatters.staff,
-			response.data.response.data.chatters.admins,
-			response.data.response.data.chatters.global_mods,
-			response.data.response.data.chatters.viewers
-		);
-		return allChatters;
-	}
-
 	async fetchDatabaseData(): Promise<boolean> {
 		const channelData = await ob.CacheManager.cache(
 			async () => {
