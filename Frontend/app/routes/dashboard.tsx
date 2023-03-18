@@ -147,7 +147,7 @@ const _data = [
 	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
-	{ link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 },
+	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
 	{
 		link: '/dashboard/premium',
 		label: 'Premium',
