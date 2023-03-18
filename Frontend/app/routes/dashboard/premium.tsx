@@ -21,7 +21,7 @@ import {
 import { useModals } from '@mantine/modals';
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useSubmit, Link } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
 import { badRequest } from 'remix-utils';
 import { ArrowBackUp } from 'tabler-icons-react';
@@ -224,6 +224,9 @@ export default function Premium() {
 				<Text>
 					Hosting and maintaining this bot is unfortunately not free. You can support the developer by purchasing a <strong>non-recurring</strong> payment.
 				</Text>
+				<Text>
+					If you have any questions, please email <strong>support@ourabot.com</strong>. All payments are non-refundable.
+				</Text>
 				<Box>
 					<Paper
 						m="sm"
@@ -231,6 +234,7 @@ export default function Premium() {
 							backgroundColor: 'transparent',
 						}}
 					>
+						{/* 
 						<Card.Section>
 							<Text mb="xs" weight={500}>
 								Premium Features:
@@ -262,6 +266,7 @@ export default function Premium() {
 								</Grid.Col>
 							</Grid>
 						</Card.Section>
+							*/}
 					</Paper>
 				</Box>
 
