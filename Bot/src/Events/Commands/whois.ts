@@ -1,7 +1,6 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
-import { SevenTVEvents } from '../../Utils/SevenTVEvents';
 
 export const cmd = new (class command implements Command {
 	name = 'whois';

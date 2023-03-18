@@ -77,12 +77,6 @@ export default function handler(Event: Event): Promise<Event> {
 			});
 		}
 
-		if (ob.SevenTVEvents.isListenedChannel(channel.login) && !Event.data.emoteEventsEnabled) {
-			await ob.SevenTVEvents.removeChannel(channel.login);
-		} else if (!ob.SevenTVEvents.isListenedChannel(channel.login) && Event.data.emoteEventsEnabled) {
-			await ob.SevenTVEvents.addChannel(channel.login);
-		}
-
 		await channel.save();
 
 		if (shouldAnnouncePrefix) ob.twitch.say(channel.login, `Prefix has been changed to ${newPrefix}`);
@@ -94,8 +88,7 @@ export default function handler(Event: Event): Promise<Event> {
 			data: {
 				prefix: channel.prefix,
 				clipUrl: channel.clipUrl,
-				lastfmUsername: channel.lastfmUsername,
-				emoteEventsEnabled: ob.SevenTVEvents.isListenedChannel(channel.login),
+				lastfmUsername: channel.lastfmUsername
 			},
 		});
 	});

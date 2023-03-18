@@ -41,7 +41,6 @@ type Data = {
 		};
 		activeSaysSize: number;
 		cacheSize: number;
-		sevenTvEventsChannels: string[];
 		afks: Afk[];
 		remindersSizes: number;
 		channels: SimplifiedChannel[];
@@ -145,7 +144,6 @@ export default function handler(Event: Event): Promise<Event> {
 				nukeMessages,
 				activeSaysSize: ob.activeSays.size,
 				cacheSize: await ob.CacheManager.size(),
-				sevenTvEventsChannels: ob.SevenTVEvents._channels,
 				afks,
 				remindersSizes: await ob.ReminderManager.getReminderCount(),
 				channels: ob.channels,

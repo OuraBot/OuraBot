@@ -1,6 +1,5 @@
 import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn, Permission } from '../../Typings/Twitch';
-import { SevenTVEvents } from '../../Utils/SevenTVEvents';
 import { parseTwitchMessage } from '@twurple/chat';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 
