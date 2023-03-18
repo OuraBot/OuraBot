@@ -14,7 +14,6 @@ export default function handler(Event: Event): Promise<Event> {
 				prefix: channel.prefix,
 				clipUrl: channel.clipUrl,
 				lastfmUsername: channel.lastfmUsername,
-				emoteEventsEnabled: ob.SevenTVEvents.isListenedChannel(channel.login),
 			},
 		});
 	});
