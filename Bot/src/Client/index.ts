@@ -35,7 +35,6 @@ import { Database } from '../Utils/Mongo';
 import { CacheManager } from '../Utils/Redis/CacheManager';
 import { EventManager } from '../Utils/Redis/EventManager';
 import { ReminderManager } from '../Utils/Reminders';
-import { SevenTVEvents } from '../Utils/SevenTVEvents';
 import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
@@ -62,7 +61,6 @@ class OuraBot {
 	subRedis: Redis.Redis;
 	pubRedis: Redis.Redis;
 	api: API;
-	SevenTVEvents: SevenTVEvents;
 	EventManager: EventManager;
 	CacheManager: CacheManager;
 	AfkManager: AfkManager;
@@ -147,7 +145,6 @@ class OuraBot {
 		this.pubRedis = new Redis(redisOpts);
 		this.api = new API();
 		this.sqlite = new SQLite(`../${this.config.sqlitePath}`);
-		this.SevenTVEvents = new SevenTVEvents();
 		this.EventManager = new EventManager();
 
 		this.CacheManager = new CacheManager();
@@ -361,8 +358,6 @@ class OuraBot {
 			process.exit(1);
 		});
 		// #endregion
-
-		if (!this.debug) this.SevenTVEvents.init();
 
 		this.EventManager.init();
 
