@@ -380,16 +380,14 @@ class OuraBot {
 
 		// #region Twitch
 		const tokenData = JSON.parse(await fs.readFile('../tokens.json', 'utf8'));
-		const authProvider = new RefreshingAuthProvider(
-			{
-				clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
-				clientSecret: EnvironmentVariables.TWITCH_CLIENT_SECRET,
-				onRefresh: async (newTokenData) => {
-					await fs.writeFile('../tokens.json', JSON.stringify(newTokenData, null, 4), 'utf8');
-				},
-			},
-			tokenData
-		);
+		const authProvider = new RefreshingAuthProvider({
+			clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
+			clientSecret: EnvironmentVariables.TWITCH_CLIENT_SECRET,
+			onRefresh: async (userId: string, newTokenData: any) => await fs.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8'),
+		});
+
+		await authProvider.addUserForToken(tokenData);
+		authProvider.addIntentsToUser(ob.config.twitch_id, ['chat']);
 
 		// The other connections are handled in the onRegister event (https://twurple.js.org/docs/faq/)
 		this.channels = [
@@ -403,6 +401,7 @@ class OuraBot {
 			authProvider,
 			this.config.channels.map((channel) => channel.login)
 		);
+
 		chatClient.connect();
 
 		let _chatClientSay = chatClient.say;
@@ -425,8 +424,7 @@ class OuraBot {
 			authProvider,
 		});
 
-		const pubSubClient = new PubSubClient();
-		await pubSubClient.registerUserListener(authProvider);
+		const pubSubClient = new PubSubClient({ authProvider });
 
 		this.twitch = new TwitchController(chatClient, apiClient, pubSubClient, clients);
 

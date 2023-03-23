@@ -98,8 +98,9 @@ export const cmd = new (class command implements Command {
 
 		// prettier-ignore
 		const URL = await ob.utils.upload(`Nuke from ${Channel.channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${permaban ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.join('\n')}`);
-		// TODO: maybe implement a whisper handler since twitch hates bots whispering
-		ob.twitch.getClient().whisper(user, `Nuke report from ${Channel.channel}: ${URL}`);
+
+		// If the whisper is silently dropped, too bad!
+		ob.twitch.apiClient.whispers.sendWhisper(ob.config.twitch_id, msg.userInfo.userId, `Nuke report from ${Channel.channel}: ${URL}`);
 
 		if (!dryrun)
 			ob.twitch.say(
