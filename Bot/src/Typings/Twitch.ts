@@ -73,6 +73,8 @@ export class TwitchController {
 				}
 			}
 		});
+
+		// TODO: Subscribe to PubSubChannelRoleChangeMessage (https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
 	}
 
 	async say(
@@ -117,7 +119,8 @@ export class TwitchController {
 	}
 
 	getClient(): ChatClient {
-		const readyClients = ob.twitch.clients.filter((client: ChatClient) => client.isConnected);
+		// https://discordapp.com/channels/325552783787032576/1084914772631371826/1084916752275734571 for using irc.isConnected instead of isConnected
+		const readyClients = ob.twitch.clients.filter((client: ChatClient) => client.irc.isConnected);
 		return readyClients[this.lastIndex++ % readyClients.length];
 	}
 }

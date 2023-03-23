@@ -64,7 +64,7 @@ export const clientEvent = new EventEmitter();
  * })
  */
 export function eventBinder(client: ChatClient): EventEmitter {
-	client.onRegister(() => {
+	client.irc.onRegister(() => {
 		clientEvent.emit('ready');
 	});
 
@@ -72,7 +72,7 @@ export function eventBinder(client: ChatClient): EventEmitter {
 		clientEvent.emit('command', channel, user, message, msg);
 	});
 
-	client.onAnyMessage((msg) => {
+	client.irc.onAnyMessage((msg) => {
 		clientEvent.emit('anyMessage', msg);
 	});
 
@@ -112,18 +112,6 @@ export function eventBinder(client: ChatClient): EventEmitter {
 		clientEvent.emit('giftPaidUpgrade', channel, user, subInfo, msg);
 	});
 
-	client.onHost((channel, target, viewers) => {
-		clientEvent.emit('host', channel, target, viewers);
-	});
-
-	client.onHosted((channel, byChannel, auto, viewers) => {
-		clientEvent.emit('hosted', channel, byChannel, auto, viewers);
-	});
-
-	client.onHostsRemaining((channel, numberOfHosts) => {
-		clientEvent.emit('hostsRemaining', channel, numberOfHosts);
-	});
-
 	client.onMessage((channel, user, message, msg) => {
 		clientEvent.emit('message', channel, user, message, msg);
 	});
@@ -138,10 +126,6 @@ export function eventBinder(client: ChatClient): EventEmitter {
 
 	client.onMessageRemove((channel, messageId, msg) => {
 		clientEvent.emit('messageRemoved', channel, messageId, msg);
-	});
-
-	client.onNickChange((oldNick, newNick, msg) => {
-		clientEvent.emit('nickChange', oldNick, newNick, msg);
 	});
 
 	client.onNoPermission((channel, message) => {
@@ -202,10 +186,6 @@ export function eventBinder(client: ChatClient): EventEmitter {
 
 	client.onTimeout((channel, user, duration) => {
 		clientEvent.emit('timeout', channel, user, duration);
-	});
-
-	client.onUnhost((channel) => {
-		clientEvent.emit('unHost', channel);
 	});
 
 	client.onWhisper((user, message, msg) => {

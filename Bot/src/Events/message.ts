@@ -137,28 +137,36 @@ export const event: Events = {
 
 				if (ob.utils.canUseCommand(user, channel, targetCmd, msg)) {
 					if (targetCmd.requiresFastLimits || targetCmd.requiresMod) {
-						const vips = await ob.CacheManager.cache(
-							() => {
-								return ob.twitch.getClient().getVips(channel.channel);
-							},
-							`${msg.channelId}_vips`,
-							30
-						);
+						// const vips = await ob.CacheManager.cache(
+						// 	() => {
+						// 		return ob.twitch.getClient().getVips(channel.channel);
+						// 	},
+						// 	`${msg.channelId}_vips`,
+						// 	30
+						// );
 
-						const mods = await ob.CacheManager.cache(
-							() => {
-								return ob.twitch.getClient().getMods(channel.channel);
-							},
-							`${msg.channelId}_mods`,
-							30
-						);
+						// const mods = await ob.CacheManager.cache(
+						// 	() => {
+						// 		return ob.twitch.getClient().getMods(channel.channel);
+						// 	},
+						// 	`${msg.channelId}_mods`,
+						// 	30
+						// );
 
-						// we have to use display name because twitch returns vips as displayname
-						// checking displayName and login is just future proofing in case they change it back
-						// https://github.com/twitchdev/issues/issues/73
+						// // we have to use display name because twitch returns vips as displayname
+						// // checking displayName and login is just future proofing in case they change it back
+						// // https://github.com/twitchdev/issues/issues/73
 
-						const isMod = mods.includes(ob.config.login) || mods.includes(ob.config.displayName);
-						const isVip = vips.includes(ob.config.displayName) || vips.includes(ob.config.login);
+						// const isMod = mods.includes(ob.config.login) || mods.includes(ob.config.displayName);
+						// const isVip = vips.includes(ob.config.displayName) || vips.includes(ob.config.login);
+
+						// TODO: Create a new VIP/Mod checker:
+						// 		 - send a message to the channel if no cached data is available
+						// 		 - check the badge data for VIP or Mod
+						//		 - subscribe to PubSubChannelRoleChangeMessage (available when 6.1.0 is released for twurple: https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
+						
+						const isMod = true;
+						const isVip = false;
 
 						if (targetCmd.requiresMod && !isMod)
 							return ob.twitch.say(

@@ -120,12 +120,12 @@ export default function handler(Event: Event): Promise<Event> {
 
 			twitch: {
 				chat: {
-					isConnected: ob.twitch.chatClient.isConnected,
+					isConnected: ob.twitch.chatClient.irc.isConnected,
 				},
 				api: {
-					lastKnownLimit: ob.twitch.apiClient.lastKnownLimit,
-					lastKnownRemainingRequests: ob.twitch.apiClient.lastKnownRemainingRequests,
-					lastKnownResetDate: ob.twitch.apiClient.lastKnownResetDate,
+					lastKnownLimit: ob.twitch.apiClient.rateLimiterStats.lastKnownLimit,
+					lastKnownRemainingRequests: ob.twitch.apiClient.rateLimiterStats.lastKnownRemainingRequests,
+					lastKnownResetDate: ob.twitch.apiClient.rateLimiterStats.lastKnownResetDate,
 				},
 			},
 
