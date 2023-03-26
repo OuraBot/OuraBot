@@ -35,7 +35,7 @@ export const cmd = new (class command implements Command {
 
 		try {
 			clipRes = await ob.twitch.apiClient.clips.createClip({
-				channelId: Channel.id,
+				channel: Channel.id,
 				createAfterDelay: true,
 			});
 		} catch (e) {
