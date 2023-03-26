@@ -3,6 +3,7 @@ import { CategoryEnum, Channel, Command, CommandReturn, Permission } from '../..
 import ms from 'ms';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { HelixFollow } from '@twurple/api/lib';
+import { HelixChannelFollower } from '@twurple/api/lib/api/helix/channel/HelixChannelFollower';
 
 const dryrunRegex = /--(dont|dry)-?(ban|run)/gi;
 
@@ -21,7 +22,7 @@ export const cmd = new (class command implements Command {
 				message: 'Missing time (30s, 5m, 1h, etc)',
 			};
 
-		const dryrun = args[1].match(dryrunRegex);
+		const dryrun = args[1]?.match(dryrunRegex);
 		const timeToCallback = Math.abs(ms(args[0]));
 
 		// Check if NaN before fetching users since NaN bypasses all if statements
@@ -40,9 +41,9 @@ export const cmd = new (class command implements Command {
 
 		const callbackTime = Date.now() - timeToCallback;
 
-		let followers: HelixFollow[] = [];
+		let followers: HelixChannelFollower[] = [];
 
-		let followsResp = ob.twitch.apiClient.users.getFollowsPaginated({ followedUser: msg.channelId });
+		let followsResp = ob.twitch.apiClient.channels.getChannelFollowersPaginated(Channel.id, ob.config.twitch_id);
 		for await (const follower of followsResp) {
 			let followTime = new Date(follower.followDate).getTime();
 			if (callbackTime > followTime) {
@@ -67,10 +68,11 @@ export const cmd = new (class command implements Command {
 			};
 		} else {
 			ob.twitch.say(Channel, `Banning ${followers.length} users: ${userListHaste}`);
-			ob.twitch.say(
-				Channel,
-				followers.map((follower) => `/ban ${follower.userName}`)
-			);
+
+			for (const follower of followers) {
+				await ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, { user: follower.userId, reason: `Follownuke by ${user}` });
+			}
+
 			return {
 				success: true,
 				message: `Banned ${followers.length} users: ${userListHaste}`,
