@@ -88,7 +88,7 @@ export default function handler(Event: Event): Promise<Event> {
 			data: {
 				prefix: channel.prefix,
 				clipUrl: channel.clipUrl,
-				lastfmUsername: channel.lastfmUsername
+				lastfmUsername: channel.lastfmUsername,
 			},
 		});
 	});

@@ -360,7 +360,7 @@ export default class Utils {
 	async sleep(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
-	
+
 	channelFromMany(_channel: Channel | SimplifiedChannel | string): string {
 		let channel;
 		if (typeof _channel === 'string') {

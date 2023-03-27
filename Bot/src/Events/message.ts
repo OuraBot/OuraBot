@@ -164,7 +164,7 @@ export const event: Events = {
 						// 		 - send a message to the channel if no cached data is available
 						// 		 - check the badge data for VIP or Mod
 						//		 - subscribe to PubSubChannelRoleChangeMessage (available when 6.1.0 is released for twurple: https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
-						
+
 						const isMod = true;
 						const isVip = false;
 
