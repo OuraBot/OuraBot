@@ -10,6 +10,7 @@ export const cmd = new (class command implements Command {
 	usage = 'filesay <url> <--silent?> [formatting string; use %line% for the message and %idx% for the line number - ?]';
 	userCooldown = 10;
 	channelCooldown = 5;
+	hidden = true;
 	permissions = [Permission.Broadcaster, Permission.Moderator];
 	category = CategoryEnum.Moderation;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
