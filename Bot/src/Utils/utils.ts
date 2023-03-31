@@ -427,6 +427,7 @@ export default class Utils {
 
 	async get7tvChannelEmotes(channel: string): Promise<Emote[]> {
 		// TODO: migrate to v3 api when it arrives
+		// Auro: no
 		let resp = await ob.api.get<SevenTVEmote[]>(`https://api.7tv.app/v2/users/${channel}/emotes`, 3600);
 
 		if (resp.error) {

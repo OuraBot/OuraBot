@@ -102,17 +102,15 @@ export const cmd = new (class command implements Command {
 		// If the whisper is silently dropped, too bad!
 		ob.twitch.apiClient.whispers.sendWhisper(ob.config.twitch_id, msg.userInfo.userId, `Nuke report from ${Channel.channel}: ${URL}`);
 
-		if (!dryrun)
-			ob.twitch.say(
-				Channel,
-				usersToTimeout.map((userToTimeout) =>
-					`${permaban ? '/ban' : '/timeout '} ${userToTimeout} ${
-						permaban ? `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"` : timeoutTime
-					} ${permaban ? '' : `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`}`.replace(/\s+/g, ' ')
-				),
-				0.05,
-				'nuke'
-			);
+		if (!dryrun) {
+			for (const user of usersToTimeout) {
+				ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, {
+					reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
+					user: user,
+					duration: permaban ? undefined : timeoutTime,
+				});
+			}
+		}
 
 		return {
 			success: true,
