@@ -82,36 +82,18 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface HeaderResponsiveProps {
-	links: { link: string; label: string }[];
 	channel?: IChannel;
 }
 
 export function HeaderResponsive(props: HeaderResponsiveProps) {
 	const [opened, { toggle }] = useDisclosure(false);
-	const [active, setActive] = useState(props.links[0].link);
 	const { classes, cx } = useStyles();
-
-	const items = props.links.map((link) => (
-		<a
-			key={link.label}
-			href={link.link}
-			className={cx(classes.link, { [classes.linkActive]: active === link.link })}
-			onClick={(event) => {
-				event.preventDefault();
-				setActive(link.link);
-				toggle();
-			}}
-		>
-			{link.label}
-		</a>
-	));
 
 	return (
 		<Header height={HEADER_HEIGHT} mb={120} className={classes.root}>
 			<Container className={classes.header}>
 				<OuraBotLogo />
 				<Group spacing={5} className={classes.links}>
-					{items}
 					{props.channel && (
 						<Menu>
 							<Menu.Target>
@@ -139,7 +121,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 				</Group>
 
 				<Group spacing={5} className={classes.burger}>
-					<Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
+					{/* <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" /> */}
 
 					{props.channel && (
 						<Menu position="bottom-end">
@@ -167,13 +149,13 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 					)}
 				</Group>
 
-				<Transition transition="pop-top-right" duration={200} mounted={opened}>
+				{/* <Transition transition="pop-top-right" duration={200} mounted={opened}>
 					{(styles) => (
 						<Paper className={classes.dropdown} withBorder style={styles}>
-							{items}
+							
 						</Paper>
 					)}
-				</Transition>
+				</Transition> */}
 			</Container>
 		</Header>
 	);

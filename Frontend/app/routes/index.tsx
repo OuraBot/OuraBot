@@ -29,7 +29,7 @@ export default function Index() {
 
 	return (
 		<>
-			<HeaderResponsive links={[{ label: 'Features', link: '#features' }]} channel={data} />
+			<HeaderResponsive channel={data} />
 			<HeroBullets channel={data} />
 			<FeaturesGrid
 				title="Title"
