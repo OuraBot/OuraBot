@@ -136,58 +136,16 @@ export const event: Events = {
 				if (!enabled) return;
 
 				if (ob.utils.canUseCommand(user, channel, targetCmd, msg)) {
-					if (targetCmd.requiresFastLimits || targetCmd.requiresMod) {
-						// const vips = await ob.CacheManager.cache(
-						// 	() => {
-						// 		return ob.twitch.getClient().getVips(channel.channel);
-						// 	},
-						// 	`${msg.channelId}_vips`,
-						// 	30
-						// );
+					const isMod = ob.channels.find((c) => c.login == ob.utils.sanitizeName(channel.channel)).isMod;
 
-						// const mods = await ob.CacheManager.cache(
-						// 	() => {
-						// 		return ob.twitch.getClient().getMods(channel.channel);
-						// 	},
-						// 	`${msg.channelId}_mods`,
-						// 	30
-						// );
-
-						// // we have to use display name because twitch returns vips as displayname
-						// // checking displayName and login is just future proofing in case they change it back
-						// // https://github.com/twitchdev/issues/issues/73
-
-						// const isMod = mods.includes(ob.config.login) || mods.includes(ob.config.displayName);
-						// const isVip = vips.includes(ob.config.displayName) || vips.includes(ob.config.login);
-
-						// TODO: Create a new VIP/Mod checker:
-						// 		 - send a message to the channel if no cached data is available
-						// 		 - check the badge data for VIP or Mod
-						//		 - subscribe to PubSubChannelRoleChangeMessage (available when 6.1.0 is released for twurple: https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
-
-						const isMod = true;
-						const isVip = false;
-
-						if (targetCmd.requiresMod && !isMod)
-							return ob.twitch.say(
-								channel.channel,
-								`I need to be a moderator to use that command. (if you just modded me, please wait up to 30 seconds before trying again)`,
-								undefined,
-								undefined,
-								msg.id
-							);
-
-						const hasFastLimits = isMod || isVip;
-
-						if (targetCmd.requiresFastLimits && !hasFastLimits)
-							return ob.twitch.say(
-								channel.channel,
-								`I need to be a VIP or a moderator to use that command. (if you just vipped/modded me, please wait up to 30 seconds before trying again)`,
-								undefined,
-								undefined,
-								msg.id
-							);
-					}
+					if (!isMod)
+						return ob.twitch.say(
+							channel.channel,
+							`I need to be moderator to use any commands. If the broadcaster had just modded me, please run the ${channel.prefix}checkmod command.`,
+							undefined,
+							undefined,
+							msg.id
+						);
 
 					if (targetCmd.chatMode !== 'both') {
 						const isOnline = await ob.CacheManager.cache(
