@@ -74,7 +74,7 @@ export function HeroBullets(props: Props) {
 					<div className={classes.content}>
 						<Title className={classes.title}>OuraBot</Title>
 						<Text color="dimmed" mt="md">
-							Lorem ipsum
+							A high-performance, feature-rich, and easy-to-use Twitch bot.
 						</Text>
 
 						<List
@@ -88,13 +88,13 @@ export function HeroBullets(props: Props) {
 							}
 						>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+								<b>Moderation tools</b> – Keep your chat clean and safe with our powerful moderation tools.
 							</List.Item>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+								<b>Fun commands</b> – Entertain your viewers with our fun commands that will allow them to express themselves in a fun way.
 							</List.Item>
 							<List.Item>
-								<b>Lorem ipsum</b> – Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+								<b>Easy-to-use</b> – Spend more time streaming and less time configuring your bot.
 							</List.Item>
 						</List>
 
@@ -123,7 +123,7 @@ export function HeroBullets(props: Props) {
 							)}
 						</Group>
 					</div>
-					<Image src="https://static-cdn.jtvnw.net/emoticons/v2/28/default/dark/3.0" className={classes.image} />
+					<Image src="/resources/Logo.png" className={classes.image} alt='OuraBot Logo - I am not a good artist' fit='contain' />
 				</div>
 			</Container>
 		</div>
