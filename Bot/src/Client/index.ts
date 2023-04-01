@@ -39,6 +39,7 @@ import { SQLBlockUser, SQLite } from '../Utils/SQLite';
 import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
+import gradient = require('gradient-string');
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -298,6 +299,34 @@ class OuraBot {
 		};
 		// #endregion
 
+		if (!this.debug) {
+			const nonDebugPuns = [
+				"Debugging? Who needs it! I'm in production mode now!",
+				"Starting up in production mode... let's hope I don't crash and burn!",
+				'Ready or not, production mode, here I come!',
+				"Time to show the world what I'm made of in production mode!",
+				"No more training wheels for me, I'm a production mode pro!",
+				'Debugging is for amateurs, production mode is for pros!',
+				"Let's hope all the bugs are gone now that I'm in production mode!",
+				"Production mode, baby! No more 'console.log()' for me!",
+				"Starting up in production mode... let's hope there are no unexpected errors!",
+				"Debugging? More like 'de-boring'. Production mode is where the fun is at!",
+				'In production mode and ready to take on the world!',
+				"Let's hope my code is as good as my dad jokes now that I'm in production mode!",
+				"No more 'console.error()' for me, I'm in production mode!",
+				'Production mode activated! Let the chatting commence!',
+				"Debugging is for quitters. I'm in production mode now!",
+				"It's showtime! I'm in production mode and ready to shine!",
+				'Production mode: the moment I become a real bot.',
+				"I've been training for this moment! Starting up in production mode!",
+				"Let's hope I don't start glitching now that I'm in production mode!",
+				"From beta to production mode. I'm officially a grown-up bot now!",
+			];
+
+			const randomPun = nonDebugPuns[Math.floor(Math.random() * nonDebugPuns.length)];
+			console.log(gradient.rainbow(randomPun));
+		}
+
 		// #region MongoDB
 		this.utils.startNanoStopwatch('startup.connect_to_mongo');
 		await this.db.init();
@@ -394,6 +423,7 @@ class OuraBot {
 			{
 				id: this.config.twitch_id,
 				login: this.config.login,
+				isMod: false,
 			},
 		];
 
