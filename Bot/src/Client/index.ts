@@ -490,7 +490,7 @@ class OuraBot {
 
 		await this.redis.set('state:' + 'metrics.messages.history', JSON.stringify(ob.metrics.messages.history));
 
-		ob.logger.info(`tate saved in Redis`, 'ob.state.save');
+		ob.logger.info(`State saved in Redis`, 'ob.state.save');
 	}
 
 	public async restoreState() {
