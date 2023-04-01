@@ -274,6 +274,7 @@ export interface NukeMessage {
 export class SimplifiedChannel {
 	public login: string;
 	public id: string;
+	public isMod: boolean;
 }
 
 export type TwitchUserId = string;

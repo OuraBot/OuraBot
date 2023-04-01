@@ -7,6 +7,7 @@ export const event: Events = {
 	run: async (client) => {
 		if (ob.debug) {
 			const channels = ob.config.channels;
+
 			ob.logger.info(`Ready (DEBUG) (${channels.length} channels)`, 'ob.twitch.events.ready');
 
 			for (let channel of channels) {
@@ -35,11 +36,29 @@ export const event: Events = {
 					.join(channel.login)
 					.then(() => {
 						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+						ob.channels.push({
+							id: channel.id,
+							login: channel.login,
+							isMod: false,
+						});
 					})
 					.catch((err) => {
 						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
 					});
 			}
 		}
+
+		// This is a horrible way to do this, but it works
+		ob.twitch.chatClient.irc.onNamedMessage('USERSTATE', (msg) => {
+			const channel = msg.rawParamValues[0].split(';');
+
+			ob.channels.forEach((c) => {
+				// ob.logger.debug(`Checking if ${c.login} === ${ob.utils.sanitizeName(channel[0])}`, 'ob.twitch.events.ready');
+				if (c.login === ob.utils.sanitizeName(channel[0])) {
+					c.isMod = msg.tags.get('mod') === '1';
+					ob.logger.debug(`Updated mod status for ${c.login} to ${c.isMod}`, 'ob.twitch.events.ready');
+				}
+			});
+		});
 	},
 };

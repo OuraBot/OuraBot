@@ -3,7 +3,8 @@
     "channels": [
         {
             "login": "auror6s",
-            "id": "94568374"
+            "id": "94568374",
+			"isMod": false
         }
     ],
     "prefix": ";",
