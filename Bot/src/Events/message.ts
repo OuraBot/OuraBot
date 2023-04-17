@@ -141,7 +141,7 @@ export const event: Events = {
 					if (!isMod)
 						return ob.twitch.say(
 							channel.channel,
-							`I need to be moderator to use any commands. If the broadcaster had just modded me, please run the ${channel.prefix}checkmod command.`,
+							`I need to be moderator to use any commands. Please contact the channel owner to make me a moderator.`,
 							undefined,
 							undefined,
 							msg.id

@@ -1960,48 +1960,48 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
-"@twurple/api-call@6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-6.0.9.tgz#40458f1767ca0d6ae3829f47085ce0415edce06e"
-  integrity sha512-9X6usnG7JudEkwCar/OqTn5GgqFYR9sSzuWfe87fKjYv8W6oac2Rze4TBgNQ8pQrHHNDjRTEW2Ra8xhGBjoYGQ==
+"@twurple/api-call@6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-6.1.1.tgz#3311ad876800564daaeedd8d1ca58abde31796c7"
+  integrity sha512-d4QLFozCo4qeCTKjk8W+OlEZalPPoMybWx7/XtATH5J6Ktwmt3kwY6oH1NoNlES7wVvHG4Rk27ORwGnldKkiVg==
   dependencies:
     "@d-fischer/cross-fetch" "^4.0.2"
     "@d-fischer/qs" "^7.0.2"
     "@d-fischer/shared-utils" "^3.4.0"
-    "@twurple/common" "6.0.9"
+    "@twurple/common" "6.1.1"
     "@types/node-fetch" "^2.5.7"
     tslib "^2.0.3"
 
-"@twurple/api@^6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/api/-/api-6.0.9.tgz#971e5b9d98892848dd6b1e2b591ac76ce70ad067"
-  integrity sha512-ZWiMEG7hc6p0m0fxyR5iqYWy1wY2d30COQ4rvdh6FatYc9lb95nIy7BY9NCRdvH0l1GZaADzMhUu+NrVihBEIg==
+"@twurple/api@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/api/-/api-6.1.1.tgz#d485e0ec1981aab3dc9706640567935f7d034e62"
+  integrity sha512-UlaAJMxI0v3s1WA9VJpNc60tBjubXbnQuZa2igNVj2+NaM2Q58gI+KA1JY90YdkKjjjJUlRagcPykjagRCWQJQ==
   dependencies:
     "@d-fischer/cache-decorators" "^3.0.0"
     "@d-fischer/detect-node" "^3.0.1"
     "@d-fischer/logger" "^4.2.1"
     "@d-fischer/rate-limiter" "^0.7.2"
     "@d-fischer/shared-utils" "^3.4.0"
-    "@twurple/api-call" "6.0.9"
-    "@twurple/common" "6.0.9"
+    "@twurple/api-call" "6.1.1"
+    "@twurple/common" "6.1.1"
     retry "^0.13.1"
     tslib "^2.0.3"
 
-"@twurple/auth@^6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-6.0.9.tgz#722f9ca93a7354eb2b912904ffb78c654325a7ca"
-  integrity sha512-t9vFmiVD0QKsWjAYAQ0NnpeGFtxiTi3R+dIBASwYbadSbnNTIQtocW3csD2b+pUb4dzsRMNwhz8eWiUY/Lc03w==
+"@twurple/auth@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-6.1.1.tgz#54f368c8b5e9a3f71ec54228b59f7c7548e161bb"
+  integrity sha512-mIkSfCDvWO6WdXJMysvr1XAs0es1Ni3hD74sekOhnBCgtQ7WEG+7NA/X1M5USJjtEk4GYLuUdk7WWTsBHfQ7sw==
   dependencies:
     "@d-fischer/logger" "^4.2.1"
     "@d-fischer/shared-utils" "^3.4.0"
-    "@twurple/api-call" "6.0.9"
-    "@twurple/common" "6.0.9"
+    "@twurple/api-call" "6.1.1"
+    "@twurple/common" "6.1.1"
     tslib "^2.0.3"
 
-"@twurple/chat@^6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/chat/-/chat-6.0.9.tgz#738b03ddc56a6e84274dd434ea57ecb91f56dfd3"
-  integrity sha512-sRaO4p3UYgzEorsOYPPHsM+FebzEEg2dIum7bFIbg8OsqyESqMcTcsfeLMgxJjnncDmT4uZ3cdpVGntsqfQPsw==
+"@twurple/chat@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/chat/-/chat-6.1.1.tgz#3663ce891221dc0b2fa2302eae73ae82202db54d"
+  integrity sha512-PdllWpuBugxGtw40KtyFB3pR0RBTf+Rd3673cLbnnX9AN1b+Ja2zXMP7MztslcmTKLrkLCj5RUOpgTNyXP/IPw==
   dependencies:
     "@d-fischer/cache-decorators" "^3.0.0"
     "@d-fischer/deprecate" "^2.0.2"
@@ -2009,29 +2009,29 @@
     "@d-fischer/rate-limiter" "^0.7.2"
     "@d-fischer/shared-utils" "^3.4.0"
     "@d-fischer/typed-event-emitter" "^3.3.0"
-    "@twurple/common" "6.0.9"
+    "@twurple/common" "6.1.1"
     ircv3 "^0.31.6"
     tslib "^2.0.3"
 
-"@twurple/common@6.0.9", "@twurple/common@^6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-6.0.9.tgz#5baa03051258143a1d578682cd16714bc0224407"
-  integrity sha512-PKMXI5krHCaZT274vi4cBZn7t4Nq2zJc8illBr/inHwuuG6GYhFzRs5hBLdl5GL+F3hSyDpiD5MNLGLsfKPkWg==
+"@twurple/common@6.1.1", "@twurple/common@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-6.1.1.tgz#0ec8aede5af4f248b3a2d7a9ab91a15afc38a527"
+  integrity sha512-eqJr3zbbWpFkbQJg8K8vZXD80JrPVsTQxvr6G+lhMwh/KbP2zha+9dtZAe0QpbOPGbIRHrs9uhEeMu4JNNs8kA==
   dependencies:
     "@d-fischer/shared-utils" "^3.4.0"
     klona "^2.0.4"
     tslib "^2.0.3"
 
-"@twurple/pubsub@^6.0.9":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@twurple/pubsub/-/pubsub-6.0.9.tgz#bc1f3d490d4412ef80080fef3bee91124ce583f4"
-  integrity sha512-ZHGuLdpV47s3fiy7DAl4x10zbm8ml6aG+W/V3Q/50z/XndKbxw3Khz7bW7CRBEGOb7Rqsnrs9qmah3lHcsJmSQ==
+"@twurple/pubsub@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@twurple/pubsub/-/pubsub-6.1.1.tgz#d87ae034526878539461b63a3e7d0e50a147ccbc"
+  integrity sha512-BO7r5pMQTFfAtPlgWdZ97qklDOLM/4qDQJUHg4n4wEkoZ9weWPIJrVTaGQnU3UZXPLmkv39q4MhMwbgGnI0H+A==
   dependencies:
     "@d-fischer/connection" "^8.0.2"
     "@d-fischer/logger" "^4.2.1"
     "@d-fischer/shared-utils" "^3.4.0"
     "@d-fischer/typed-event-emitter" "^3.3.0"
-    "@twurple/common" "6.0.9"
+    "@twurple/common" "6.1.1"
     tslib "^2.0.3"
 
 "@types/acorn@^4.0.0":
@@ -7630,6 +7630,13 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
+react-easy-emoji@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/react-easy-emoji/-/react-easy-emoji-1.8.1.tgz#29fce29ca03fe0e4976f9e3ff2beb984c69f45f1"
+  integrity sha512-wAf2x+cjwtOlLfXnjc0J3k5B2PDZdoxd1BjtfKr5tq2AL7t2ygvByJQWgFOyN28xg3qe8EKBM6pKxGP+qrGWuQ==
+  dependencies:
+    string-replace-to-array "^2.1.0"
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -8457,6 +8464,11 @@ stream-slice@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/stream-slice/-/stream-slice-0.1.2.tgz#2dc4f4e1b936fb13f3eb39a2def1932798d07a4b"
   integrity sha512-QzQxpoacatkreL6jsxnVb7X5R/pGw9OUv2qWTYWnmLpg4NdN31snPy/f3TdQE1ZUXaThRvj1Zw4/OGg0ZkaLMA==
+
+string-replace-to-array@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/string-replace-to-array/-/string-replace-to-array-2.1.0.tgz#44571dbd33a3e23de31db948b5b84f1b7913fb39"
+  integrity sha512-xG2w4fE5FsTXS4AFxoF3uctByqTIFBX8lFRNcPcIznTVCMXbYvbatkPVLpAo13tfuWtzbWEV6u5bjoE9bOv87w==
 
 "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.3:
   version "4.2.3"
