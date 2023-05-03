@@ -61,81 +61,8 @@ export async function action({ request }: ActionArgs) {
 
 export default function Onboarding() {
 	const loaderData: { session?: TwitchSession } = useLoaderData<typeof loader>();
-	const [openedTos, setOpenedTos] = useState(false);
 	const [agreed, setAgreed] = useState(false);
-	const [kappad, setKappad] = useState(false);
 	const modals = useModals();
-	const openContentModal = () => {
-		const id = modals.openModal({
-			title: kappad ? 'Can you just read the Terms of Service please...' : 'Did you really read the Terms of Service?',
-			children: (
-				<>
-					{kappad ? (
-						<>
-							<Center>
-								<Image src="/resources/PoroSad.png" width="5rem" />
-							</Center>
-
-							<Button
-								onClick={() => {
-									modals.closeModal(id);
-									setKappad(false);
-								}}
-								fullWidth
-								mt="md"
-							>
-								Okay, I will REALLY read them now
-							</Button>
-						</>
-					) : (
-						<>
-							<Group grow>
-								<Button
-									color="green"
-									fullWidth
-									variant="light"
-									onClick={() => {
-										modals.closeModal(id);
-										openKappaModal();
-									}}
-									mt="md"
-								>
-									Yes
-								</Button>
-								<Button variant="light" color="red" fullWidth onClick={() => modals.closeModal(id)} mt="md">
-									No
-								</Button>
-							</Group>
-						</>
-					)}
-				</>
-			),
-		});
-	};
-
-	const openKappaModal = () => {
-		const id = modals.openModal({
-			title: 'Sure you did...',
-			children: (
-				<>
-					<Center>
-						<Image src="/resources/Kappa.png" width="5rem" />
-					</Center>
-
-					<Button
-						onClick={() => {
-							modals.closeModal(id);
-							setKappad(true);
-						}}
-						fullWidth
-						mt="md"
-					>
-						Okay, I will read them now
-					</Button>
-				</>
-			),
-		});
-	};
 
 	return (
 		<Container size="sm">
@@ -150,21 +77,24 @@ export default function Onboarding() {
 					<Divider my="sm" />
 					<Text>
 						Before you can use OuraBot, you need to agree to our{' '}
-						<Text variant="link" component="a" target="_blank" href="/tos" onClick={() => setOpenedTos(true)} onAuxClick={() => setOpenedTos(true)}>
-							Terms of Service.
+						<Text variant="link" component="a" target="_blank" href="/tos">
+							Terms of Service
+						</Text>{' '}
+						and{' '}
+						<Text variant="link" component="a" target="_blank" href="/privacy">
+							Privacy Policy
 						</Text>
 					</Text>
 
 					<Form method="post">
 						<Checkbox
 							mt="sm"
-							label="I have agree with the Terms of Service"
+							label="I agree with the Terms of Service and Privacy Policy"
 							name="tos"
 							checked={agreed}
 							required
 							onChange={() => {
-								if (!openedTos) openContentModal();
-								else setAgreed(!agreed);
+								setAgreed(!agreed);
 							}}
 						/>
 						<Button my="md" fullWidth type="submit">
