@@ -82,8 +82,9 @@ export default function Onboarding() {
 						</Text>{' '}
 						and{' '}
 						<Text variant="link" component="a" target="_blank" href="/privacy">
-							Privacy Policy
-						</Text>
+							Privacy Policy.
+						</Text>{' '}
+						Cookies will be used to store your session.
 					</Text>
 
 					<Form method="post">
