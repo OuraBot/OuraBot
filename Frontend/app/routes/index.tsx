@@ -2,6 +2,7 @@ import { Switch } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { Activity, Checklist, Cloud, Settings } from 'tabler-icons-react';
+import BetaBanner from '~/components/BetaBanner';
 import { FeaturesGrid } from '~/components/Features';
 import { HeaderResponsive } from '~/components/Header';
 import { HeroBullets } from '~/components/Hero';
@@ -29,6 +30,7 @@ export default function Index() {
 
 	return (
 		<>
+			<BetaBanner />
 			<HeaderResponsive channel={data} />
 			<HeroBullets channel={data} />
 			<FeaturesGrid

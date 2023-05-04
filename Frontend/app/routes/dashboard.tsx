@@ -11,6 +11,7 @@ import {
 	Menu,
 	Navbar,
 	Space,
+	Stack,
 	Title,
 	UnstyledButton,
 	useMantineTheme,
@@ -20,6 +21,7 @@ import { json } from '@remix-run/node';
 import { Form, Link, Outlet, PrefetchPageLinks, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
 import { LayoutGrid, Logout, MessageCircle2, Settings, Shield, SquaresFilled, Star } from 'tabler-icons-react';
+import BetaBanner from '~/components/BetaBanner';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { OuraBotLogo } from '~/shared/Logo';
@@ -253,6 +255,7 @@ export default function Dashboard() {
 							<Burger opened={opened} onClick={() => setOpened((o) => !o)} size="sm" color={theme.colors.gray[6]} mr="xl" />
 						</MediaQuery>
 						<OuraBotLogo />
+
 						<Group>
 							<>
 								{data ? (
