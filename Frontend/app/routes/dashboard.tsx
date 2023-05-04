@@ -99,6 +99,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 					color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 5 : 7],
 				},
 			},
+			cursor: 'pointer',
 		},
 
 		admin: {
@@ -202,28 +203,48 @@ export default function Dashboard() {
 				</Link>
 			);
 		} else if (!item.admin) {
-			if (item.label !== active) prefetchLinks.push(item.link);
-			links.push(
-				<Link
-					className={cx(classes.link, {
-						[classes.linkActive]: item.label === active,
-						[classes.subscribe]: item.special,
-						[classes.subscribeActive]: item.special && item.label === active,
-					})}
-					to={item.link}
-					key={item.label}
-					onClick={(event) => {
-						setActive(item.label);
-					}}
-				>
-					<item.icon
-						className={cx(classes.linkIcon, {
-							[classes.subscribeIcon]: item.special,
+			if (item.label !== active) {
+				prefetchLinks.push(item.link);
+				links.push(
+					<Link
+						className={cx(classes.link, {
+							[classes.linkActive]: item.label === active,
+							[classes.subscribe]: item.special,
+							[classes.subscribeActive]: item.special && item.label === active,
 						})}
-					/>
-					<span>{item.label}</span>
-				</Link>
-			);
+						to={item.link}
+						key={item.label}
+						onClick={(event) => {
+							setActive(item.label);
+						}}
+					>
+						<item.icon
+							className={cx(classes.linkIcon, {
+								[classes.subscribeIcon]: item.special,
+							})}
+						/>
+						<span>{item.label}</span>
+					</Link>
+				);
+			} else {
+				links.push(
+					<div
+						className={cx(classes.link, {
+							[classes.linkActive]: item.label === active,
+							[classes.subscribe]: item.special,
+							[classes.subscribeActive]: item.special && item.label === active,
+						})}
+						key={item.label}
+					>
+						<item.icon
+							className={cx(classes.linkIcon, {
+								[classes.subscribeIcon]: item.special,
+							})}
+						/>
+						<span>{item.label}</span>
+					</div>
+				);
+			}
 		}
 	});
 
