@@ -225,7 +225,7 @@ export default function Premium() {
 					Hosting and maintaining this bot is unfortunately not free. You can support the developer by purchasing a <strong>non-recurring</strong> payment.
 				</Text>
 				<Text>
-					If you have any questions, please email <strong>support@ourabot.com</strong>. All payments are non-refundable.
+					If you have any questions, please email <strong>contact@ourabot.com</strong>. All payments are non-refundable.
 				</Text>
 				<Box>
 					<Paper

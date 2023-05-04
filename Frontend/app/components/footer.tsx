@@ -128,7 +128,7 @@ export function FooterLinks() {
 					<ActionIcon size="lg" component="a" href="https://twitch.tv/oura_bot" target="_blank" rel="noreferrer">
 						<BrandTwitch size={18} />
 					</ActionIcon>
-					<ActionIcon size="lg" component="a" href="mailto:support@ourabot.com" target="_blank" rel="noreferrer">
+					<ActionIcon size="lg" component="a" href="mailto:contact@ourabot.com" target="_blank" rel="noreferrer">
 						<Mail size={18} />
 					</ActionIcon>
 				</Group>
