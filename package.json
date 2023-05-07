@@ -7,9 +7,9 @@
 	"author": "Auro <35087590+MrAuro@users.noreply.github.com>",
 	"license": "MIT",
 	"workspaces": [
-		"bot",
-		"frontend",
-		"common"
+		"Bot",
+		"Frontend",
+		"Common"
 	],
 	"scripts": {
 		"bot": "yarn workspace bot",
