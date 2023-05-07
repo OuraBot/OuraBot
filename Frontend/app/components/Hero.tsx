@@ -3,7 +3,7 @@ import React from 'react';
 import { Form } from '@remix-run/react';
 import { Check } from 'tabler-icons-react';
 import { OAuth2Profile } from '~/services/oauth.strategy';
-import { IChannel } from 'common';
+import { IChannel } from 'Common';
 
 const useStyles = createStyles((theme) => ({
 	inner: {
@@ -123,7 +123,7 @@ export function HeroBullets(props: Props) {
 							)}
 						</Group>
 					</div>
-					<Image src="/resources/Logo.png" className={classes.image} alt='OuraBot Logo - I am not a good artist' fit='contain' />
+					<Image src="/resources/Logo.png" className={classes.image} alt="OuraBot Logo - I am not a good artist" fit="contain" />
 				</div>
 			</Container>
 		</div>

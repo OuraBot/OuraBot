@@ -2,7 +2,7 @@ import { connect, Mongoose, Schema, model, Model, models } from 'mongoose';
 import { promises as fs } from 'fs-extra';
 import { EnvironmentVariables } from '../env';
 
-import { IChannel, ChannelSchema } from 'common';
+import { IChannel, ChannelSchema } from 'Common';
 import ob from '../..';
 
 export class Database {

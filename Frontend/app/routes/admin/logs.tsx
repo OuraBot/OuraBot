@@ -1,7 +1,7 @@
 import { Button, Checkbox, NativeSelect, Table } from '@mantine/core';
 import { LoaderFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import type { IChannel } from 'common';
+import type { IChannel } from 'Common';
 import { useState } from 'react';
 import { forbidden, unauthorized } from 'remix-utils';
 import { authenticator } from '~/services/auth.server';

@@ -3,7 +3,7 @@ import { ChatClient } from '@twurple/chat';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { PubSubClient } from '@twurple/pubsub/lib';
 import chalk from 'chalk';
-import { DefaultCommandOption } from 'common';
+import { DefaultCommandOption } from 'Common';
 import { promises as fs } from 'fs-extra';
 import ob from '..';
 import OuraBot from '../Client';
