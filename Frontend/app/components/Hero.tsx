@@ -3,7 +3,7 @@ import React from 'react';
 import { Form } from '@remix-run/react';
 import { Check } from 'tabler-icons-react';
 import { OAuth2Profile } from '~/services/oauth.strategy';
-import { IChannel } from 'Common';
+import { IChannel } from '../../../Common';
 
 const useStyles = createStyles((theme) => ({
 	inner: {

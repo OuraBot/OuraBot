@@ -8,7 +8,7 @@ import { authenticator } from '~/services/auth.server';
 import type { OAuth2Profile } from '~/services/oauth.strategy';
 import { OuraBotLogo } from '../shared/Logo';
 import { Link } from 'react-router-dom';
-import { IChannel } from 'Common';
+import { IChannel } from '../../../Common';
 
 const HEADER_HEIGHT = 60;
 
