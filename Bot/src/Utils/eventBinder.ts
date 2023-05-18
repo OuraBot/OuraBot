@@ -64,7 +64,7 @@ export const clientEvent = new EventEmitter();
  * })
  */
 export function eventBinder(client: ChatClient): EventEmitter {
-	client.irc.onRegister(() => {
+	client.onAuthenticationSuccess(() => {
 		clientEvent.emit('ready');
 	});
 
