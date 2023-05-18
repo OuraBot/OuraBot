@@ -20,7 +20,7 @@ export type JwtToken = string;
 
 const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Phrases'] as const;
 
-type Topic = typeof topics[number];
+type Topic = (typeof topics)[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
 
 export interface Event {
