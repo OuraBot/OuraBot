@@ -24,7 +24,11 @@ export const event: Events = {
 			ob.twitch.chatClient.part(_channel);
 		}
 
+		ob.logger.debug(`Channel ${_channel} found in database`, 'ob.twitch.events.message');
+
 		ob.sqlite.addMessage(msg.userInfo.userId, channel.id, message);
+
+		ob.logger.debug(`Message added to database`, 'ob.twitch.events.message');
 
 		// Module Handler
 		const enabledModules = channel.enabledModules;
@@ -38,8 +42,10 @@ export const event: Events = {
 			moduleInstance.execute(ob, user, channel, message, msg);
 		}
 
+		ob.logger.debug(`Modules executed`, 'ob.twitch.events.message');
+
 		// Nuke Messages
-		let cantTimeout = msg.userInfo.isMod || msg.userInfo.isBroadcaster;
+		let cantTimeout = msg.userInfo?.isMod || msg.userInfo.isBroadcaster;
 		if (!cantTimeout)
 			ob.nukeMessages.push({
 				channel: channel.channel,
@@ -48,7 +54,11 @@ export const event: Events = {
 				sentAt: Date.now(),
 			});
 
+		ob.logger.debug(`Nuke messages added`, 'ob.twitch.events.message');
+
 		ob.nukeMessages = ob.nukeMessages.filter((m) => Date.now() - m.sentAt < 1000 * 60 * 30);
+
+		ob.logger.debug(`Nuke messages filtered`, 'ob.twitch.events.message');
 
 		// Blocked Users
 		const blockedData = ob.blockedUsers.filter((blockedUser) => blockedUser.userId === msg.userInfo.userId);
@@ -56,8 +66,12 @@ export const event: Events = {
 			if (blockedData[0].commands.length == 0) return;
 		}
 
+		ob.logger.debug(`Blocked users filtered`, 'ob.twitch.events.message');
+
 		// Users
 		ob.sqlite.createUser(msg.userInfo.userId, new Date());
+
+		ob.logger.debug(`User created`, 'ob.twitch.events.message');
 
 		// Reminder Handler
 		ob.ReminderManager.getReminders(msg.userInfo.userId).then(async (reminders) => {
@@ -70,6 +84,8 @@ export const event: Events = {
 			let messages = ob.utils.chunkArr(reminderMessages, 450).map((msg) => `@${user}, reminders - ${msg}`);
 			if (messages.length > 0) ob.twitch.say(channel, messages);
 		});
+
+		ob.logger.debug(`Reminders executed`, 'ob.twitch.events.message');
 
 		// Afk Handler
 		ob.AfkManager.getAfks(msg.userInfo.userId).then((afks) => {
@@ -96,9 +112,13 @@ export const event: Events = {
 			});
 		});
 
+		ob.logger.debug(`AFKs executed`, 'ob.twitch.events.message');
+
 		// Command Handler
 		const prefixRegex = new RegExp(`^${channel.prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
 		if (prefixRegex.test(message)) {
+			ob.logger.debug(`Prefix regex tested`, 'ob.twitch.events.message');
+
 			const args = message.split(/\s+/);
 			const commandName = args.shift().replace(prefixRegex, '');
 			let targetCmd: Command;
@@ -136,7 +156,7 @@ export const event: Events = {
 				if (!enabled) return;
 
 				if (ob.utils.canUseCommand(user, channel, targetCmd, msg)) {
-					const isMod = ob.channels.find((c) => c.login == ob.utils.sanitizeName(channel.channel)).isMod;
+					const isMod = ob.channels.find((c) => c.login == ob.utils.sanitizeName(channel.channel))?.isMod;
 
 					if (!isMod)
 						return ob.twitch.say(
