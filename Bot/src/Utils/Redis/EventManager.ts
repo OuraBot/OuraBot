@@ -20,7 +20,7 @@ export type JwtToken = string;
 
 const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Phrases'] as const;
 
-type Topic = (typeof topics)[number];
+type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
 
 export interface Event {
@@ -171,6 +171,7 @@ export class EventManager {
 					this.sendEvent(response);
 				});
 			} catch (e) {
+				ob.logger.warn('error in handler for event: ' + JSON.stringify({ ...event, auth: null }) + ` - ${e}`, 'ob.eventmanager');
 				this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
@@ -232,6 +233,8 @@ export class EventManager {
 					this.sendEvent(response);
 				});
 			} catch (e) {
+				ob.logger.warn('error in handler for event: ' + JSON.stringify({ ...event, auth: null }) + ` - ${e}`, 'ob.eventmanager');
+
 				this.sendEvent({
 					status: StatusCodes.InternalServerError,
 					...event,
