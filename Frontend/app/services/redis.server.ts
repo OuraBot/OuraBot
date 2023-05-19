@@ -18,7 +18,8 @@ export type TwitchUserId = string;
 
 const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Phrases', 'Logs'] as const;
 
-type Topic = (typeof topics)[number];
+// prettier-ignore
+type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
 
 export interface Event {
@@ -119,6 +120,11 @@ export async function query(operation: Operation, topic: Topic, auth: JwtToken, 
 
 				sub.unsubscribe(channel);
 				sub.removeListener('message', handleMessage);
+
+				if (event.status !== StatusCodes.OK) {
+					console.log('Non-OK status code received', event);
+				}
+
 				resolve(event);
 			} catch (e) {
 				console.error(e);
