@@ -67,16 +67,6 @@ export default function handler(Event: Event): Promise<Event> {
 			channel.lastfmUsername = newLastfmUsername;
 		}
 
-		if (typeof Event.data.emoteEventsEnabled !== 'boolean') {
-			return resolve({
-				...Event,
-				status: StatusCodes.BadRequest,
-				data: {
-					error: 'malformed emoteEventsEnabled value',
-				},
-			});
-		}
-
 		await channel.save();
 
 		if (shouldAnnouncePrefix) ob.twitch.say(channel.login, `Prefix has been changed to ${newPrefix}`);
