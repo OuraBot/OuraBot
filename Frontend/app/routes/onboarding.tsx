@@ -16,11 +16,7 @@ export async function loader({ request }: LoaderArgs) {
 		failureRedirect: '/login',
 	});
 
-	console.log(session.json);
-
 	const channel = await ChannelModel.findOne({ id: session.json.id });
-
-	console.log(channel, 'chnl fnd');
 
 	if (channel) return redirect('/dashboard');
 	return json({

@@ -139,9 +139,7 @@ export const event: Events = {
 				if (!enabled) return;
 
 				if (ob.utils.canUseCommand(user, channel, targetCmd, msg)) {
-					console.log(ob.channels);
 					const isMod = ob.channels.find((c) => c.login == ob.utils.sanitizeName(channel.channel))?.isMod;
-					console.log(isMod);
 
 					if (!isMod)
 						return ob.twitch.say(
