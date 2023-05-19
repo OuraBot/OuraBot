@@ -33,15 +33,16 @@ export const event: Events = {
 			for (let channel of channels) {
 				await ob.twitch.joinRateLimiter.take(channel.role > 0);
 				ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+				ob.channels.push({
+					id: channel.id,
+					login: channel.login,
+					isMod: false,
+				});
+
 				ob.twitch.chatClient
 					.join(channel.login)
 					.then(() => {
 						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
-						ob.channels.push({
-							id: channel.id,
-							login: channel.login,
-							isMod: false,
-						});
 
 						ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
 							ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
