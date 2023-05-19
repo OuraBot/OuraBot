@@ -11,7 +11,7 @@ export const cmd = new (class command implements Command {
 	userCooldown = 10;
 	channelCooldown = 5;
 	hidden = true;
-	permissions = [Permission.Broadcaster, Permission.Moderator];
+	permissions = [Permission.Owner];
 	category = CategoryEnum.Moderation;
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		if (!args[0])
