@@ -186,7 +186,7 @@ export default class Utils {
 	 * Returns a humanized time
 	 *
 	 * @param {number} ms
-	 * @param @deprecated {('seconds' | 'minutes' | 'hours' | 'days' | 'auto')} [depth='auto']
+	 * @param {('seconds' | 'minutes' | 'hours' | 'days' | 'auto')} [depth='auto']
 	 * @return {*}  {string}
 	 * @memberof Utils
 	 */
