@@ -20,7 +20,7 @@ export type JwtToken = string;
 
 const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Phrases'] as const;
 
-type Topic = (typeof topics)[number];
+type Topic = typeof topics[number];
 type Operation = 'QUERY' | 'UPDATE' | 'RESPONSE';
 
 export interface Event {
@@ -63,7 +63,9 @@ export class EventManager {
 			// If the event was sent by the server, this app, don't do anything
 			if (event.sender == 'SERVER') return;
 
-			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}] - ${event}`, 'ob.eventmanager');
+			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`, 'ob.eventmanager');
+			console.log(event);
+			console.log(JSON.stringify(event));
 
 			switch (event.operation) {
 				case 'QUERY':
