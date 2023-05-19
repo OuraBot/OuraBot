@@ -109,62 +109,72 @@ export default function handler(Event: Event): Promise<Event> {
 
 		const afks = await ob.AfkManager.getAllAfks();
 
-		const data: Data = {
-			node: {
-				processMemoryUsage: process.memoryUsage().heapUsed,
-				systemMemoryUsage: process.memoryUsage().heapTotal,
-				systemMemory: os.totalmem(),
-				cpuUsage: os.loadavg()[0],
-				uptime: os.uptime(),
-			},
+		try {
+			const data: Data = {
+				node: {
+					processMemoryUsage: process.memoryUsage().heapUsed,
+					systemMemoryUsage: process.memoryUsage().heapTotal,
+					systemMemory: os.totalmem(),
+					cpuUsage: os.loadavg()[0],
+					uptime: os.uptime(),
+				},
 
-			twitch: {
-				chat: {
-					isConnected: ob.twitch.chatClient.irc.isConnected,
-				},
-				api: {
-					lastKnownLimit: ob.twitch.apiClient.rateLimiterStats.lastKnownLimit,
-					lastKnownRemainingRequests: ob.twitch.apiClient.rateLimiterStats.lastKnownRemainingRequests,
-					lastKnownResetDate: ob.twitch.apiClient.rateLimiterStats.lastKnownResetDate,
-				},
-			},
-
-			git: {
-				commit,
-				branch,
-			},
-
-			ob: {
-				commandsSize: ob.commands.size,
-				modulesSize: ob.modules.size,
-				cooldowns: {
-					userCooldownsSize: ob.cooldowns.userCooldowns.size,
-					channelCooldownsSize: ob.cooldowns.channelCooldowns.size,
-				},
-				nukeMessages,
-				activeSaysSize: ob.activeSays.size,
-				cacheSize: await ob.CacheManager.size(),
-				afks,
-				remindersSizes: await ob.ReminderManager.getReminderCount(),
-				channels: ob.channels,
-				recentMessages: {
-					self: ob.recentMessages.self,
-					channels: ob.recentMessages.channels,
-				},
-				metrics: {
-					messages: {
-						history: ob.metrics.messages.history,
+				twitch: {
+					chat: {
+						isConnected: ob.twitch.chatClient.irc.isConnected,
+					},
+					api: {
+						lastKnownLimit: 0,
+						lastKnownRemainingRequests: 0,
+						lastKnownResetDate: new Date(0),
 					},
 				},
-			},
-		};
 
-		resolve({
-			...Event,
-			status: StatusCodes.OK,
-			data: {
-				...data,
-			},
-		});
+				git: {
+					commit,
+					branch,
+				},
+
+				ob: {
+					commandsSize: ob.commands.size,
+					modulesSize: ob.modules.size,
+					cooldowns: {
+						userCooldownsSize: ob.cooldowns.userCooldowns.size,
+						channelCooldownsSize: ob.cooldowns.channelCooldowns.size,
+					},
+					nukeMessages,
+					activeSaysSize: ob.activeSays.size,
+					cacheSize: await ob.CacheManager.size(),
+					afks,
+					remindersSizes: await ob.ReminderManager.getReminderCount(),
+					channels: ob.channels,
+					recentMessages: {
+						self: ob.recentMessages.self,
+						channels: ob.recentMessages.channels,
+					},
+					metrics: {
+						messages: {
+							history: ob.metrics.messages.history,
+						},
+					},
+				},
+			};
+
+			resolve({
+				...Event,
+				status: StatusCodes.OK,
+				data: {
+					...data,
+				},
+			});
+		} catch (e) {
+			resolve({
+				...Event,
+				status: StatusCodes.InternalServerError,
+				data: {
+					message: e.message,
+				},
+			});
+		}
 	});
 }
