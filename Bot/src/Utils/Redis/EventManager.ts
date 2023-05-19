@@ -251,6 +251,7 @@ export class EventManager {
 
 	sendEvent(event: Event) {
 		const json = { ...event, sender: 'SERVER', operation: 'RESPONSE', auth: null } as Event;
+		console.log('sending event: ' + JSON.stringify(json));
 		ob.pubRedis.publish(this.redisChannel, JSON.stringify(json));
 	}
 
