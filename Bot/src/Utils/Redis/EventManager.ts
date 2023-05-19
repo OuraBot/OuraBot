@@ -63,10 +63,7 @@ export class EventManager {
 			// If the event was sent by the server, this app, don't do anything
 			if (event.sender == 'SERVER') return;
 
-			ob.logger.debug(
-				`event recieved ${event.operation}ing ${event.topic} [${event.uuid}] - ${JSON.stringify({ ...message, auth: '[REDACTED]' })}`,
-				'ob.eventmanager'
-			);
+			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}] - ${event}`, 'ob.eventmanager');
 
 			switch (event.operation) {
 				case 'QUERY':
