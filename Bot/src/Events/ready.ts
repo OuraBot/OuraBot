@@ -50,14 +50,20 @@ export const event: Events = {
 							switch (data.type) {
 								case 'moderator_added':
 									{
-										ob.channels.find((c) => c.id === channel.id).isMod = true;
-										ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
+										let d = data as PubSubChannelRoleChangeMessage;
+										if (d.targetUserId == ob.config.twitch_id) {
+											ob.channels.find((c) => c.id === channel.id).isMod = true;
+											ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
+										}
 									}
 									break;
 								case 'moderator_removed':
 									{
-										ob.channels.find((c) => c.id === channel.id).isMod = false;
-										ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
+										let d = data as PubSubChannelRoleChangeMessage;
+										if (d.targetUserId == ob.config.twitch_id) {
+											ob.channels.find((c) => c.id === channel.id).isMod = false;
+											ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
+										}
 									}
 									break;
 							}
