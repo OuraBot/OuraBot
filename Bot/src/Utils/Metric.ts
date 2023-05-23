@@ -1,8 +1,10 @@
+const RATE_INTERVAL = 1000 * 60 * 10; // 10 minutes
+
 export class Metric {
 	public count = 0;
 	public ms: number;
 
-	constructor(ms: number = 6e4) {
+	constructor(ms: number = RATE_INTERVAL) {
 		this.ms = ms;
 	}
 
@@ -14,6 +16,6 @@ export class Metric {
 	}
 
 	public getRate(): number {
-		return this.count / (this.ms / 6e4);
+		return this.count / (this.ms / RATE_INTERVAL);
 	}
 }
