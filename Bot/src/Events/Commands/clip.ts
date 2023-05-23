@@ -34,9 +34,11 @@ export const cmd = new (class command implements Command {
 		let clipRes: string;
 
 		try {
-			clipRes = await ob.twitch.apiClient.clips.createClip({
-				channel: Channel.id,
-				createAfterDelay: true,
+			clipRes = await ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+				return ctx.clips.createClip({
+					channel: Channel.id,
+					createAfterDelay: true,
+				});
 			});
 		} catch (e) {
 			ob.logger.warn(`Failed to create clip for ${Channel.channel} (${Channel.id}): ${e}`, 'ob.twitch.events.message.clip');
