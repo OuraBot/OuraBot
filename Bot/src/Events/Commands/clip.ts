@@ -39,6 +39,8 @@ export const cmd = new (class command implements Command {
 				createAfterDelay: true,
 			});
 		} catch (e) {
+			ob.logger.warn(`Failed to create clip for ${Channel.channel} (${Channel.id}): ${e}`, 'ob.twitch.events.message.clip');
+
 			return {
 				success: false,
 				message: 'Failed to create clip (does this channel have clips disabled?) NotLikeThis',
