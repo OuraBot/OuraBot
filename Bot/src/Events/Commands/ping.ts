@@ -14,7 +14,7 @@ export const cmd = new (class command implements Command {
 			success: true,
 			message: `Pong! Serving ${ob.channels.length} channels for ${ob.utils.humanizeTime(process.uptime() * 1000)}. ${ob.utils.stopNanoStopwatch(
 				`interal_message_delay_${msg.id}`
-			)}ms internal delay. Prefix: ${Channel.prefix}`,
+			)}ms internal delay. Prefix: ${Channel.prefix} (https://status.mrauro.dev/)`,
 		};
 	};
 })();
