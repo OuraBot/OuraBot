@@ -186,7 +186,9 @@ class OuraBot {
 		this.uptime = {
 			url: `https://status.mrauro.dev/api/push/VEqUco8a47?status=up&msg=OK`,
 			interval: setInterval(() => {
-				ob.api.get(this.uptime.url, 0);
+				if (!ob.debug) {
+					ob.api.get(this.uptime.url, 0);
+				}
 			}, 1000 * 60),
 		};
 	}
