@@ -105,6 +105,10 @@ class OuraBot {
 			[channel: string]: ChannelRecentMessage[];
 		};
 	};
+	uptime: {
+		url: string;
+		interval: NodeJS.Timeout;
+	};
 	exec = exec;
 	execSync = execSync;
 
@@ -178,6 +182,12 @@ class OuraBot {
 					this.metrics.messages.log();
 				}, 6e4),
 			},
+		};
+		this.uptime = {
+			url: `https://status.mrauro.dev/api/push/VEqUco8a47?status=up&msg=OK`,
+			interval: setInterval(() => {
+				ob.api.get(this.uptime.url, 0);
+			}, 1000 * 60),
 		};
 	}
 
