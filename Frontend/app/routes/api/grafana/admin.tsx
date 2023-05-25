@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	if (auth !== 'xAO7p0Z+wSqBqbBUyoSSm0ewwijyJG8MM1sIHd7Y6Xc=') return notFound({});
 
-	const channel = await ChannelModel.findOne({ token: auth });
+	const channel = await ChannelModel.findOne({ login: 'auror6s' });
 
 	if (!channel) throw new Response('channel not found', { status: 404 });
 
