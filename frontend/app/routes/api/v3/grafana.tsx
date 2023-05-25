@@ -6,5 +6,5 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	if (auth !== '9lr2j36kQ+oSGmY0tEewOl+B7XNWA35lY0v+fXyTvr4=') throw new Response('forbidden', { status: 403 });
 
-	return json({});
+	return json('success');
 };
