@@ -41,7 +41,7 @@ export const cmd = new (class command implements Command {
 
 		const callbackTime = Date.now() - timeToCallback;
 
-		let followers: HelixChannelFollower[] = [];
+		let followers: any[] = [];
 
 		let followsResp = ob.twitch.apiClient.channels.getChannelFollowersPaginated(Channel.id, ob.config.twitch_id);
 		for await (const follower of followsResp) {

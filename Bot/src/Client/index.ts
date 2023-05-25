@@ -40,6 +40,7 @@ import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 import gradient = require('gradient-string');
+import { Server } from '../Utils/API/express';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -109,6 +110,7 @@ class OuraBot {
 		url: string;
 		interval: NodeJS.Timeout;
 	};
+	server: Server;
 	exec = exec;
 	execSync = execSync;
 
@@ -191,6 +193,7 @@ class OuraBot {
 				}
 			}, 1000 * 60),
 		};
+		this.server = new Server(3006);
 	}
 
 	public async init() {
