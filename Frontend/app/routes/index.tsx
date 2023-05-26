@@ -1,7 +1,7 @@
-import { Switch } from '@mantine/core';
+import { Alert, Text, Switch, Container } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Activity, Checklist, Cloud, Settings } from 'tabler-icons-react';
+import { Activity, AlertCircle, Checklist, Cloud, Settings } from 'tabler-icons-react';
 import BetaBanner from '~/components/BetaBanner';
 import { FeaturesGrid } from '~/components/Features';
 import { HeaderResponsive } from '~/components/Header';
@@ -10,14 +10,43 @@ import { FooterLinks } from '~/components/footer';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import type { TwitchSession } from '~/services/oauth.strategy';
+import { redisConnect } from '~/services/redis.server';
 
 export async function loader({ request }: LoaderArgs) {
 	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
+
+	const { pub, sub } = await redisConnect();
+
+	const cached = await pub.get('obfrontend:status');
+
+	let online = true;
+
+	if (cached) {
+		online = JSON.parse(cached)._online;
+	} else {
+		const status = await fetch('https://status.mrauro.dev/api/badge/2/status');
+		const data = await status.text();
+		const statusText = data?.match(/(?<=aria-label="Status: )\w+/)![0];
+		const _online = statusText === 'Up' ? true : false;
+		const returnData = {
+			_online,
+		};
+
+		await pub.set('obfrontend:status', JSON.stringify(returnData), 'EX', 30);
+
+		online = returnData._online;
+	}
+
 	if (session) {
 		const channel = await ChannelModel.findOne({ id: session.id });
-		return channel;
+		return {
+			channel,
+			online,
+		};
 	} else {
-		return null;
+		return {
+			online,
+		};
 	}
 }
 
@@ -26,13 +55,23 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
-	let data = useLoaderData<typeof loader>();
+	let { channel, online } = useLoaderData();
 
 	return (
 		<>
 			<BetaBanner />
-			<HeaderResponsive channel={data} />
-			<HeroBullets channel={data} />
+			<HeaderResponsive channel={channel} />
+			{online ? null : (
+				<Container>
+					<Alert icon={<AlertCircle size="1rem" />} title="Degraded Service" color="red" radius="md" variant="light" my="sm">
+						OuraBot is offline due to a server outage. We are working on getting it back online as soon as possible. You can check the status of OuraBot{' '}
+						<Text variant="link" component="a" href="https://status.mrauro.dev" target="_blank">
+							here.
+						</Text>
+					</Alert>
+				</Container>
+			)}
+			<HeroBullets channel={channel} />
 			<FeaturesGrid
 				title="Get started in seconds"
 				description="Simply sign in with your Twitch account and you are ready to go."
