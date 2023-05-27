@@ -2,7 +2,7 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import chalk from 'chalk';
 import ob from '..';
 import { Channel, Command, Events, Permission } from '../Typings/Twitch';
-import { Metric } from '../Utils/Metric';
+import { Counter } from 'prom-client';
 
 export const event: Events = {
 	name: 'message',
@@ -15,10 +15,13 @@ export const event: Events = {
 		ob.logger.info(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`, 'ob.twitch.events.message');
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
 
-		if (ob.utils.keyInObject(_channel, ob.metrics.messages.managers)) {
-			ob.metrics.messages.managers[_channel].trigger();
+		if (ob.utils.keyInObject(_channel, ob.prometheus.messages)) {
+			ob.prometheus.messages[_channel].inc();
 		} else {
-			ob.metrics.messages.managers[_channel] = new Metric();
+			ob.prometheus.messages[_channel] = new Counter({
+				name: `channel_messages_${_channel.replace('#', '')}`,
+				help: 'Messages sent in channel',
+			});
 		}
 
 		const channel = new Channel(_channel, msg);

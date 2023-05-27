@@ -7,7 +7,7 @@ import { exec, execSync } from 'child_process';
 import * as dotenv from 'dotenv';
 import { EventEmitter } from 'events';
 import * as _fs from 'fs';
-import { promises as fs } from 'fs-extra';
+import { promises as fs, writeFileSync } from 'fs-extra';
 import Redis from 'ioredis';
 import path from 'path';
 import * as winston from 'winston';
@@ -40,6 +40,7 @@ import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 import gradient = require('gradient-string');
+import { Counter, register } from 'prom-client';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -87,18 +88,6 @@ class OuraBot {
 		query: Map<string, SimpleRateLimiter>;
 		update: Map<string, SimpleRateLimiter>;
 	};
-	metrics: {
-		messages: {
-			managers: {
-				[key: string]: Metric;
-			};
-			history: {
-				[key: string]: { timestamp: number; rate: number }[];
-			};
-			log: () => void;
-			timer: NodeJS.Timeout;
-		};
-	};
 	recentMessages: {
 		self: SelfRecentMessage[];
 		channels: {
@@ -108,6 +97,12 @@ class OuraBot {
 	uptime: {
 		url: string;
 		interval: NodeJS.Timeout;
+	};
+	prometheus: {
+		interval: NodeJS.Timeout;
+		messages: {
+			[channel: string]: Counter<string>;
+		};
 	};
 	exec = exec;
 	execSync = execSync;
@@ -157,32 +152,6 @@ class OuraBot {
 		this.ReminderManager = new ReminderManager();
 		this.cancels = new Set();
 		this.MessageHeight = new MessageHeight();
-		this.metrics = {
-			messages: {
-				managers: {},
-				history: {},
-				log: () => {
-					// FIFO for history
-					for (const [key, value] of Object.entries(this.metrics.messages.managers)) {
-						if (this.metrics.messages.history[key] === undefined) {
-							this.metrics.messages.history[key] = [];
-						}
-
-						this.metrics.messages.history[key].push({
-							timestamp: Date.now(),
-							rate: value.getRate(),
-						});
-
-						if (this.metrics.messages.history[key].length > 60 * 24) {
-							this.metrics.messages.history[key].shift();
-						}
-					}
-				},
-				timer: setInterval(() => {
-					this.metrics.messages.log();
-				}, 6e4),
-			},
-		};
 		this.uptime = {
 			url: `https://status.mrauro.dev/api/push/VEqUco8a47?status=up&msg=OK`,
 			interval: setInterval(() => {
@@ -190,6 +159,17 @@ class OuraBot {
 					ob.api.get(this.uptime.url, 0);
 				}
 			}, 1000 * 45),
+		};
+		this.prometheus = {
+			interval: setInterval(async () => {
+				if (!ob.debug) {
+					const metrics = await register.metrics();
+					console.log(metrics);
+
+					_fs.writeFileSync('./bot_metrics.txt', metrics);
+				}
+			}, 1000 * 60),
+			messages: {},
 		};
 	}
 
@@ -500,8 +480,6 @@ class OuraBot {
 
 		await this.redis.set('state:' + 'cooldowns', JSON.stringify(cooldowns));
 
-		await this.redis.set('state:' + 'metrics.messages.history', JSON.stringify(ob.metrics.messages.history));
-
 		ob.logger.info(`State saved in Redis`, 'ob.state.save');
 	}
 
@@ -511,7 +489,6 @@ class OuraBot {
 		const cooldowns: { userCooldowns: { key: string; expiry: number }[]; channelCooldowns: { key: string; expiry: number }[] } = JSON.parse(
 			await this.redis.get('state:' + 'cooldowns')
 		);
-		const metricsMessagesHistory = JSON.parse(await this.redis.get('state:' + 'metrics.messages.history'));
 
 		if (!nukeMessages && !cooldowns) return ob.logger.info(`No state found in Redis`, 'ob.state.restore');
 		if (!cooldowns?.channelCooldowns) return ob.logger.info(`No channel cooldowns found in Redis`, 'ob.state.restore');
@@ -539,10 +516,6 @@ class OuraBot {
 					}, channelCooldown.expiry - Date.now());
 				}
 			}
-		}
-
-		if (metricsMessagesHistory) {
-			ob.metrics.messages.history = metricsMessagesHistory;
 		}
 
 		ob.logger.info(
