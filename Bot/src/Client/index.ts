@@ -166,7 +166,7 @@ class OuraBot {
 					const metrics = await register.metrics();
 					console.log(metrics);
 
-					_fs.writeFileSync('./bot_metrics.txt', metrics);
+					_fs.writeFileSync('./bot_metrics.yml', metrics);
 				}
 			}, 1000 * 60),
 			messages: {},
