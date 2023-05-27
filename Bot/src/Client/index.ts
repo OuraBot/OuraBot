@@ -189,7 +189,7 @@ class OuraBot {
 				if (!ob.debug) {
 					ob.api.get(this.uptime.url, 0);
 				}
-			}, 1000 * 60),
+			}, 1000 * 45),
 		};
 	}
 
