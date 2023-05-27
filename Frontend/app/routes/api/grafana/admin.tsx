@@ -15,9 +15,18 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 	if (!channel) throw new Response('channel not found', { status: 404 });
 
 	if (channel.role !== 1) throw new Response('forbidden', { status: 403 });
-	const admin = await query('QUERY', 'Admin', channel.token, channel.id);
+	const prom = await query('QUERY', 'Prometheus', channel.token, channel.id);
 
-	if (admin.status !== 200) throw new Error(`QUERY Admin returned error code ${admin.status}`);
+	if (prom.status !== 200) throw new Error(`QUERY Prometheus returned error code ${prom.status}`);
 
-	return json(admin);
+	console.log(prom.data);
+	const promData = prom?.data?.prom;
+	if (!promData) throw new Error('no prom data');
+	const data = promData.replace(/\\n/g, '\n');
+
+	return new Response(data, {
+		headers: {
+			'Content-Type': 'text/plain; charset=utf-8',
+		},
+	});
 };

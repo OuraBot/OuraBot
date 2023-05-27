@@ -99,7 +99,6 @@ class OuraBot {
 		interval: NodeJS.Timeout;
 	};
 	prometheus: {
-		interval: NodeJS.Timeout;
 		messages: {
 			[channel: string]: Counter<string>;
 		};
@@ -161,14 +160,6 @@ class OuraBot {
 			}, 1000 * 45),
 		};
 		this.prometheus = {
-			interval: setInterval(async () => {
-				if (!ob.debug) {
-					const metrics = await register.metrics();
-					console.log(metrics);
-
-					_fs.writeFileSync('./bot_metrics.yml', metrics);
-				}
-			}, 1000 * 60),
 			messages: {},
 		};
 	}
