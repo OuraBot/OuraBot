@@ -8,7 +8,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	if (!auth) return notFound({});
 
-	if (auth !== 'xAO7p0Z+wSqBqbBUyoSSm0ewwijyJG8MM1sIHd7Y6Xc=') return notFound({});
+	console.log(auth);
+
+	if (!auth.endsWith('xAO7p0Z+wSqBqbBUyoSSm0ewwijyJG8MM1sIHd7Y6Xc=')) return notFound({});
 
 	const channel = await ChannelModel.findOne({ login: 'auror6s' });
 
