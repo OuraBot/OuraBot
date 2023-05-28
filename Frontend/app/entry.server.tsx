@@ -10,7 +10,7 @@ Sentry.init({
 	dsn: 'https://5c0abffe843d4fab8a7915be315b3058:5af23cd2c9b044b1852cdec606f4c999@o4505139595575296.ingest.sentry.io/4505211544076288',
 	integrations: [],
 	// Performance Monitoring
-	tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+	tracesSampleRate: 0.2, // Capture 100% of the transactions, reduce in production!
 });
 
 const server = createStylesServer();
