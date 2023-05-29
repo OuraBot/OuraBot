@@ -1,4 +1,5 @@
 import { Button, Center, Container, List, Paper, Text, Title } from '@mantine/core';
+import { FooterLinks } from '~/components/footer';
 
 export default function Privacy() {
 	return (
@@ -39,6 +40,7 @@ export default function Privacy() {
 				<Title order={3}>CONTACT INFORMATION</Title>
 				<Text ml="lg">If you have any questions or concerns about our Privacy Policy, please contact us at contact@ourabot.com.</Text>
 			</Container>
+			<FooterLinks />
 		</>
 	);
 }

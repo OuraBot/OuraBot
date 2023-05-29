@@ -1,4 +1,5 @@
 import { Button, Center, Container, List, Paper, Text, Title } from '@mantine/core';
+import { FooterLinks } from '~/components/footer';
 
 export default function TOS() {
 	return (
@@ -160,6 +161,7 @@ export default function TOS() {
 				<Title order={3}>Contact Information</Title>
 				<Text ml="lg">If you have any questions about these Terms of Service or if you need to contact us, please email us at contact@ourabot.com</Text>
 			</Container>
+			<FooterLinks />
 		</>
 	);
 }

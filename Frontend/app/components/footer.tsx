@@ -1,6 +1,6 @@
 import { createStyles, Text, Container, ActionIcon, Group } from '@mantine/core';
 import emoji from 'react-easy-emoji';
-import { BrandTwitter, BrandTwitch, Mail } from 'tabler-icons-react';
+import { BrandTwitter, BrandTwitch, Mail, Spy, ClipboardText, Shield } from 'tabler-icons-react';
 import { OuraBotLogo } from '~/shared/Logo';
 
 const useStyles = createStyles((theme) => ({
@@ -122,13 +122,19 @@ export function FooterLinks() {
 				</Text>
 
 				<Group spacing={0} className={classes.social} position="right" noWrap>
-					<ActionIcon size="lg" component="a" href="https://twitter.com/auror6s" target="_blank" rel="noreferrer">
+					<ActionIcon title="Privacy Policy" size="lg" component="a" href="https://ourabot.com/privacy" target="_blank" rel="noreferrer">
+						<Shield size={18} />
+					</ActionIcon>
+					<ActionIcon title="Terms of Service" size="lg" component="a" href="https://ourabot.com/tos" target="_blank" rel="noreferrer">
+						<ClipboardText size={18} />
+					</ActionIcon>
+					<ActionIcon title="Twitter" size="lg" component="a" href="https://twitter.com/auror6s" target="_blank" rel="noreferrer">
 						<BrandTwitter size={18} />
 					</ActionIcon>
-					<ActionIcon size="lg" component="a" href="https://twitch.tv/oura_bot" target="_blank" rel="noreferrer">
+					<ActionIcon title="Twitch" size="lg" component="a" href="https://twitch.tv/oura_bot" target="_blank" rel="noreferrer">
 						<BrandTwitch size={18} />
 					</ActionIcon>
-					<ActionIcon size="lg" component="a" href="mailto:contact@ourabot.com" target="_blank" rel="noreferrer">
+					<ActionIcon title="Email" size="lg" component="a" href="mailto:contact@ourabot.com" target="_blank" rel="noreferrer">
 						<Mail size={18} />
 					</ActionIcon>
 				</Group>
