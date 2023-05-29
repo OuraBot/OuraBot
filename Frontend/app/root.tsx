@@ -16,6 +16,16 @@ export const meta: MetaFunction = () => ({
 	charset: 'utf-8',
 	title: 'OuraBot',
 	viewport: 'width=device-width,initial-scale=1',
+	'og:type': 'website',
+	'og:url': 'https://ourabot.com',
+	'og:title': 'OuraBot — a powerful and FREE Twitch Bot',
+	'og:description': 'OuraBot is a Twitch chat bot that you can use for free, empowering your Twitch channel.',
+	'og:image': 'https://ourabot.com/resources/LogoBG.png',
+	'twitter:card': 'summary_large_image',
+	'twitter:creator': '@auror6s',
+	'twitter:title': 'OuraBot — a powerful and FREE Twitch Bot',
+	'twitter:description': 'OuraBot is a Twitch chat bot that you can use for free, empowering your Twitch channel.',
+	'twitter:image': 'https://ourabot.com/resources/LogoBanner.png',
 });
 
 export const loader: LoaderFunction = async () => {

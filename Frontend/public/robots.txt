@@ -1,0 +1,10 @@
+# Hello there :D
+
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /logout
+Disallow: /onboarding
+
+Sitemap: https://ourabot.com/sitemap.xml
