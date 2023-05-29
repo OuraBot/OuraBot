@@ -20,3 +20,6 @@ dist
 build
 tsconfig.tsbuildinfo
 logs
+
+bot_metrics.txt
+bot_metrics.yml

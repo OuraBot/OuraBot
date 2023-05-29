@@ -18,7 +18,7 @@ export enum StatusCodes {
 export type UUID = string;
 export type JwtToken = string;
 
-const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Phrases'] as const;
+const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Logs', 'Phrases', 'Prometheus'] as const;
 
 // prettier-ignore
 type Topic = typeof topics[number];

@@ -16,7 +16,7 @@ export type UUID = string;
 export type JwtToken = string;
 export type TwitchUserId = string;
 
-const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Phrases', 'Logs'] as const;
+const topics = ['Commands', 'Settings', 'Join', 'Admin', 'Phrases', 'Logs', 'Prometheus'] as const;
 
 // prettier-ignore
 type Topic = typeof topics[number];
