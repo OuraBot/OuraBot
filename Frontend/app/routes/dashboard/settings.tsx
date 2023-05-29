@@ -1,7 +1,7 @@
 import { Button, Code, createStyles, Divider, PasswordInput, Stack, Switch, Text, TextInput, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
-import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime';
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
 import { json } from '@remix-run/server-runtime';
 import { useState } from 'react';
 import { InfoCircle, Link, UserCircle } from 'tabler-icons-react';
@@ -29,6 +29,13 @@ export async function loader({ request }: LoaderArgs) {
 		settings,
 	});
 }
+
+export const meta: MetaFunction = () => {
+	return {
+		title: 'Settings / OuraBot',
+		description: 'Manage your settings',
+	};
+};
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();

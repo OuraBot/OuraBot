@@ -1,6 +1,6 @@
 import { Alert, Center, Container, Text } from '@mantine/core';
 import { useLoaderData } from '@remix-run/react';
-import { LoaderArgs, json } from '@remix-run/server-runtime';
+import { LoaderArgs, MetaFunction, json } from '@remix-run/server-runtime';
 import { redisConnect } from '~/services/redis.server';
 import { AlertCircle } from 'tabler-icons-react';
 
@@ -25,6 +25,13 @@ export async function loader({ params }: LoaderArgs) {
 		return json(returnData);
 	}
 }
+
+export const meta: MetaFunction = () => {
+	return {
+		title: 'Dashboard / OuraBot',
+		description: 'Dashboard',
+	};
+};
 
 export default function Index() {
 	const { online } = useLoaderData();

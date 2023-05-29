@@ -1,6 +1,6 @@
 import { Button, Group, Input, Radio, SegmentedControl, Table, Text, TextInput, Title, useMantineTheme } from '@mantine/core';
 import { ModalsProvider, useModals } from '@mantine/modals';
-import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { useEffect, useState } from 'react';
@@ -39,6 +39,13 @@ export async function loader({ request }: LoaderArgs) {
 		phrases,
 	});
 }
+
+export const meta: MetaFunction = () => {
+	return {
+		title: 'Phrases / OuraBot',
+		description: 'Manage your phrases',
+	};
+};
 
 export async function action({ request }: ActionArgs) {
 	console.log('Hit');

@@ -17,7 +17,7 @@ import {
 } from '@mantine/core';
 import { ModalsProvider, useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import type { ActionArgs, LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
 import { useState } from 'react';
@@ -56,6 +56,13 @@ export async function loader({ request }: LoaderArgs) {
 		commands,
 	});
 }
+
+export const meta: MetaFunction = () => {
+	return {
+		title: 'Commands / OuraBot',
+		description: 'Manage your commands',
+	};
+};
 
 export async function action({ request }: ActionArgs) {
 	const session = await authenticator.isAuthenticated(request, {

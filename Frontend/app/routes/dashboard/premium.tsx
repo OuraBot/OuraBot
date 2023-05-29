@@ -20,7 +20,7 @@ import {
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import type { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useSubmit, Link } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
 import { badRequest } from 'remix-utils';
@@ -46,6 +46,13 @@ const pricePoints = [
 	37, // 11 months
 	40, // 12 months
 ];
+
+export const meta: MetaFunction = () => {
+	return {
+		title: 'Premium / OuraBot',
+		description: 'Purchase and manage Premium',
+	};
+};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
 	const session = await authenticator.isAuthenticated(request, {
