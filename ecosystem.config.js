@@ -8,6 +8,7 @@ module.exports = {
       args: 'workspace bot start',
       exp_backoff_restart_delay: 1000,
       auto_restart: true,
+      autorestart: true,
       env: {
         ...process.env,
         ...parseEnv('.env')
