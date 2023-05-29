@@ -1,13 +1,8 @@
-import { Avatar, Burger, Container, createStyles, Group, Header, Menu, Paper, Transition, UnstyledButton } from '@mantine/core';
+import { Avatar, Container, Group, Header, Image, Menu, UnstyledButton, createStyles } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useState } from 'react';
-import type { ActionFunction } from '@remix-run/node';
 import { Form } from '@remix-run/react';
-import { Dashboard, Logout, Shield } from 'tabler-icons-react';
-import { authenticator } from '~/services/auth.server';
-import type { OAuth2Profile } from '~/services/oauth.strategy';
-import { OuraBotLogo } from '../shared/Logo';
 import { Link } from 'react-router-dom';
+import { Dashboard, Logout, Shield } from 'tabler-icons-react';
 import { IChannel } from '../../../Common';
 
 const HEADER_HEIGHT = 60;
@@ -92,7 +87,9 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 	return (
 		<Header height={HEADER_HEIGHT} mb={120} className={classes.root}>
 			<Container className={classes.header}>
-				<OuraBotLogo />
+				<a href="/">
+					<Image src="/resources/LogoText.png" fit="contain" width="45%" alt="OuraBot" />
+				</a>
 				<Group spacing={5} className={classes.links}>
 					{props.channel && (
 						<Menu>

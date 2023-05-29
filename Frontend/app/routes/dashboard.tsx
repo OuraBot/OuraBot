@@ -3,28 +3,26 @@ import {
 	Avatar,
 	Burger,
 	Center,
-	createStyles,
 	Group,
 	Header,
+	Image,
 	Loader,
 	MediaQuery,
 	Menu,
 	Navbar,
 	Space,
-	Stack,
 	Title,
 	UnstyledButton,
+	createStyles,
 	useMantineTheme,
 } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, PrefetchPageLinks, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
-import { LayoutGrid, Logout, MessageCircle2, Settings, Shield, SquaresFilled, Star } from 'tabler-icons-react';
-import BetaBanner from '~/components/BetaBanner';
+import { LayoutGrid, Logout, Settings, Shield, SquaresFilled, Star } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
-import { OuraBotLogo } from '~/shared/Logo';
 import { redirect } from '~/utils/redirect.server';
 
 export async function loader({ request }: LoaderArgs) {
@@ -275,7 +273,9 @@ export default function Dashboard() {
 						<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
 							<Burger opened={opened} onClick={() => setOpened((o) => !o)} size="sm" color={theme.colors.gray[6]} mr="xl" />
 						</MediaQuery>
-						<OuraBotLogo />
+						<a href="/">
+							<Image src="/resources/LogoText.png" fit="contain" width="12rem" alt="OuraBot" />
+						</a>
 
 						<Group>
 							<>

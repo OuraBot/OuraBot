@@ -123,7 +123,7 @@ export function HeroBullets(props: Props) {
 							)}
 						</Group>
 					</div>
-					<Image src="/resources/Logo.png" className={classes.image} alt="OuraBot Logo - I am not a good artist" fit="contain" />
+					<Image src="/resources/Logo.png" className={classes.image} alt="OuraBot Logo" fit="contain" />
 				</div>
 			</Container>
 		</div>

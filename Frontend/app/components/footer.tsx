@@ -1,4 +1,4 @@
-import { createStyles, Text, Container, ActionIcon, Group } from '@mantine/core';
+import { createStyles, Text, Container, ActionIcon, Group, Image } from '@mantine/core';
 import emoji from 'react-easy-emoji';
 import { BrandTwitter, BrandTwitch, Mail, Spy, ClipboardText, Shield } from 'tabler-icons-react';
 import { OuraBotLogo } from '~/shared/Logo';
@@ -109,7 +109,9 @@ export function FooterLinks() {
 		<footer className={classes.footer}>
 			<Container className={classes.inner}>
 				<div className={classes.logo}>
-					<OuraBotLogo />
+					<a href="/">
+						<Image src="/resources/LogoText.png" fit="contain" width="90%" alt="OuraBot" />
+					</a>
 					<Text size="xs" color="dimmed" className={classes.description}>
 						Made with {emoji('💙')} by Auro
 					</Text>
