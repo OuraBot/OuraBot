@@ -5,7 +5,7 @@ module.exports = {
     {
       name: 'bot',
       script: 'yarn',
-      args: 'workspace bot start',
+      args: 'run workspace bot start',
       // exp_backoff_restart_delay: 1000,
       restart_delay: 5000,
       autorestart: true,
@@ -17,7 +17,7 @@ module.exports = {
     {
       name: 'frontend',
       script: 'yarn',
-      args: 'workspace frontend start',
+      args: 'run workspace frontend start',
       env: {
         ...process.env,
         ...parseEnv('.env')
