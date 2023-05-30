@@ -9,21 +9,26 @@ export async function loader({ params }: LoaderArgs) {
 
 	const cached = await pub.get('obfrontend:status');
 
+	let status: boolean;
+
 	if (cached) {
-		return json(JSON.parse(cached));
+		status = cached === 'true' ? true : false;
 	} else {
-		const status = await fetch('https://status.mrauro.dev/api/badge/2/status');
-		const data = await status.text();
-		const statusText = data?.match(/(?<=aria-label="Status: )\w+/)![0];
-		const online = statusText === 'Up' ? true : false;
-		const returnData = {
-			online,
-		};
+		try {
+			const data = await fetch('https://status.mrauro.dev/api/badge/2/status');
+			const text = await data.text();
+			if (text.includes('Up')) status = true;
+			else status = false;
 
-		await pub.set('obfrontend:status', JSON.stringify(returnData), 'EX', 30);
-
-		return json(returnData);
+			await pub.set('obfrontend:status', status.toString(), 'EX', 60);
+		} catch (e) {
+			status = false;
+		}
 	}
+
+	return {
+		online: status,
+	};
 }
 
 export const meta: MetaFunction = () => {
@@ -38,7 +43,7 @@ export default function Index() {
 
 	return (
 		<Text>
-			{!online ? null : (
+			{online ? null : (
 				<Alert icon={<AlertCircle size="1rem" />} title="Degraded Service" color="red" radius="md" variant="light" my="sm">
 					OuraBot is offline due to a server outage. We are working on getting it back online as soon as possible. You can check the status of OuraBot{' '}
 					<Text variant="link" component="a" href="https://status.mrauro.dev" target="_blank">

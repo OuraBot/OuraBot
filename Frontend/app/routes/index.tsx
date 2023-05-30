@@ -19,35 +19,33 @@ export async function loader({ request }: LoaderArgs) {
 
 	const cached = await pub.get('obfrontend:status');
 
-	let online = true;
+	let status: boolean;
 
 	if (cached) {
-		online = JSON.parse(cached)._online;
+		status = cached === 'true' ? true : false;
 	} else {
-		const status = await fetch('https://status.mrauro.dev/api/badge/2/status');
-		const data = await status.text();
-		const statusText = data?.match(/(?<=aria-label="Status: )\w+/)![0];
-		const _online = statusText === 'Up' ? true : false;
-		const returnData = {
-			_online,
-			session,
-		};
+		try {
+			const data = await fetch('https://status.mrauro.dev/api/badge/2/status');
+			const text = await data.text();
+			if (text.includes('Up')) status = true;
+			else status = false;
 
-		await pub.set('obfrontend:status', JSON.stringify(returnData), 'EX', 30);
-
-		online = returnData._online;
+			await pub.set('obfrontend:status', status.toString(), 'EX', 60);
+		} catch (e) {
+			status = false;
+		}
 	}
 
 	if (session) {
 		const channel = await ChannelModel.findOne({ id: session.id });
 		return {
 			channel,
-			online,
+			online: status,
 			session,
 		};
 	} else {
 		return {
-			online,
+			online: status,
 		};
 	}
 }
