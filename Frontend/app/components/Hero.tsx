@@ -1,131 +1,136 @@
-import { Button, Container, createStyles, Group, Image, List, Text, ThemeIcon, Title } from '@mantine/core';
-import React from 'react';
-import { Form } from '@remix-run/react';
-import { Check } from 'tabler-icons-react';
-import { OAuth2Profile } from '~/services/oauth.strategy';
-import { IChannel } from '../../../Common';
+import { createStyles, Title, Text, Button, Container } from '@mantine/core';
+import { Dots } from './Dots';
 
 const useStyles = createStyles((theme) => ({
+	wrapper: {
+		position: 'relative',
+		paddingTop: 120,
+		paddingBottom: 80,
+
+		[theme.fn.smallerThan('sm')]: {
+			paddingTop: 80,
+			paddingBottom: 60,
+		},
+	},
+
 	inner: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		paddingTop: theme.spacing.xl * 4,
-		paddingBottom: theme.spacing.xl * 4,
+		position: 'relative',
+		zIndex: 1,
 	},
 
-	content: {
-		maxWidth: 480,
-		marginRight: theme.spacing.xl * 3,
+	dots: {
+		position: 'absolute',
+		color: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
 
-		[theme.fn.smallerThan('md')]: {
-			maxWidth: '100%',
-			marginRight: 0,
-		},
-	},
-
-	title: {
-		color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-		fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-		fontSize: 44,
-		lineHeight: 1.2,
-		fontWeight: 900,
-
-		[theme.fn.smallerThan('xs')]: {
-			fontSize: 28,
-		},
-	},
-
-	control: {
-		backgroundColor: '#6441a5',
-		':hover': {
-			backgroundColor: '#593A93',
-		},
-		[theme.fn.smallerThan('xs')]: {
-			flex: 1,
-		},
-	},
-
-	image: {
-		flex: 1,
-
-		[theme.fn.smallerThan('md')]: {
+		[theme.fn.smallerThan('sm')]: {
 			display: 'none',
 		},
 	},
 
+	dotsLeft: {
+		left: 0,
+		top: 0,
+	},
+
+	title: {
+		textAlign: 'center',
+		fontWeight: 800,
+		fontSize: 40,
+		letterSpacing: -1,
+		color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+		marginBottom: theme.spacing.xs,
+		fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+
+		[theme.fn.smallerThan('xs')]: {
+			fontSize: 28,
+			textAlign: 'left',
+		},
+	},
+
 	highlight: {
-		position: 'relative',
-		backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][6], 0.55) : theme.colors[theme.primaryColor][0],
-		borderRadius: theme.radius.sm,
-		padding: '4px 12px',
+		color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6],
+	},
+
+	description: {
+		textAlign: 'center',
+
+		[theme.fn.smallerThan('xs')]: {
+			textAlign: 'left',
+			fontSize: theme.fontSizes.md,
+		},
+	},
+
+	controls: {
+		marginTop: theme.spacing.lg,
+		display: 'flex',
+		justifyContent: 'center',
+
+		[theme.fn.smallerThan('xs')]: {
+			flexDirection: 'column',
+		},
+	},
+
+	control: {
+		'&:not(:first-of-type)': {
+			marginLeft: theme.spacing.md,
+		},
+
+		[theme.fn.smallerThan('xs')]: {
+			height: 42,
+			fontSize: theme.fontSizes.md,
+
+			'&:not(:first-of-type)': {
+				marginTop: theme.spacing.md,
+				marginLeft: 0,
+			},
+		},
 	},
 }));
 
 interface Props {
-	channel?: IChannel;
+	channel?: string;
 }
 
-export function HeroBullets(props: Props) {
+export function HeroText(props: Props) {
 	const { classes } = useStyles();
+
 	return (
-		<div>
-			<Container>
-				<div className={classes.inner}>
-					<div className={classes.content}>
-						<Title className={classes.title}>OuraBot</Title>
-						<Text color="dimmed" mt="md">
-							A high-performance, feature-rich, and easy-to-use Twitch bot.
-						</Text>
+		<Container className={classes.wrapper} size={1400}>
+			<Dots className={classes.dots} style={{ left: 0, top: 0 }} />
+			<Dots className={classes.dots} style={{ left: 60, top: 0 }} />
+			<Dots className={classes.dots} style={{ left: 0, top: 140 }} />
+			<Dots className={classes.dots} style={{ right: 0, top: 60 }} />
 
-						<List
-							mt={30}
-							spacing="sm"
-							size="sm"
-							icon={
-								<ThemeIcon size={20} radius="xl">
-									<Check size={12} />
-								</ThemeIcon>
-							}
-						>
-							<List.Item>
-								<b>Moderation tools</b> – Keep your chat clean and safe with our powerful moderation tools.
-							</List.Item>
-							<List.Item>
-								<b>Fun commands</b> – Entertain your viewers with our fun commands that will allow them to express themselves in a fun way.
-							</List.Item>
-							<List.Item>
-								<b>Easy-to-use</b> – Spend more time streaming and less time configuring your bot.
-							</List.Item>
-						</List>
+			<div className={classes.inner}>
+				<Title className={classes.title}>
+					A powerful and{' '}
+					<Text component="span" className={classes.highlight} inherit>
+						free
+					</Text>{' '}
+					Twitch chat bot
+				</Title>
 
-						<Group mt={30}>
-							{/* <button className="btn btn-primary bg-twitch_purple hover:bg-twitch_purple_light rounded-full text-white font-bold py-2 px-4">
-								Signin with Twitch
-							</button> */}
-							{props.channel ? (
-								<Form action="/dashboard">
-									<Button type="submit">Dashboard</Button>
-								</Form>
-							) : (
-								<Form action="/login">
-									<Button
-										type="submit"
-										color="twitch"
-										sx={{
-											backgroundColor: '#6441a5',
-											color: 'white',
-											':hover': { backgroundColor: '#593A93' },
-										}}
-									>
-										Sign in with Twitch
-									</Button>
-								</Form>
-							)}
-						</Group>
-					</div>
-					<Image src="/resources/Logo.png" className={classes.image} alt="OuraBot Logo" fit="contain" />
+				<Container p={0} size={600}>
+					<Text size="lg" color="dimmed" className={classes.description}>
+						Enhance your Twitch stream with our powerful and feature-packed bot, offering robust moderation tools and engaging community features.
+					</Text>
+				</Container>
+
+				<div className={classes.controls}>
+					{props.channel ? (
+						<Button component="a" href="/dashboard" className={classes.control} size="lg">
+							Open dashboard
+						</Button>
+					) : (
+						<Button component="a" href="/login" className={classes.control} size="lg" variant="gradient" color="blue">
+							Login with Twitch
+						</Button>
+					)}
+					{/* <Button className={classes.control} size="lg" variant="default" color="gray">
+						What does it do?
+					</Button> */}
 				</div>
-			</Container>
-		</div>
+			</div>
+		</Container>
 	);
 }

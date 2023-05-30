@@ -73,7 +73,7 @@ export function FeaturesGrid({ title, description, data }: FeaturesGridProps) {
 
 			<SimpleGrid
 				mt={60}
-				cols={3}
+				cols={4}
 				spacing={theme.spacing.xl * 2}
 				breakpoints={[
 					{ maxWidth: 980, cols: 2, spacing: 'xl' },

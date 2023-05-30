@@ -1,11 +1,11 @@
 import { Alert, Text, Switch, Container } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { Activity, AlertCircle, Checklist, Cloud, Settings } from 'tabler-icons-react';
+import { Activity, AlertCircle, Checklist, Cloud, Settings, Users } from 'tabler-icons-react';
 import BetaBanner from '~/components/BetaBanner';
 import { FeaturesGrid } from '~/components/Features';
 import { HeaderResponsive } from '~/components/Header';
-import { HeroBullets } from '~/components/Hero';
+import { HeroText } from '~/components/Hero';
 import { FooterLinks } from '~/components/footer';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
@@ -71,7 +71,7 @@ export default function Index() {
 					</Alert>
 				</Container>
 			)}
-			<HeroBullets channel={channel} />
+			<HeroText channel={channel} />
 			<FeaturesGrid
 				title="Get started in seconds"
 				description="Simply sign in with your Twitch account and you are ready to go."
@@ -79,6 +79,7 @@ export default function Index() {
 					{ title: 'Cloud Hosted', description: 'No downloads, simply sign in and you are ready to go.', icon: Cloud },
 					{ title: 'Simple', description: 'No complicated setup, just a simple dashboard.', icon: Checklist },
 					{ title: 'Configurable', description: 'Configure your bot to your liking.', icon: Settings },
+					{ title: 'Community Driven', description: 'OuraBot is open source, and is driven by the community.', icon: Users },
 				]}
 			/>
 			<FooterLinks />
