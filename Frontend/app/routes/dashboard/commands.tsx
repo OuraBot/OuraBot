@@ -180,7 +180,7 @@ export default function Commands() {
 
 	return (
 		<ModalsProvider>
-			<Tabs defaultValue="moderation">
+			<Tabs defaultValue="utility">
 				<Tabs.List grow>
 					<Tabs.Tab value="utility">Utility</Tabs.Tab>
 					<Tabs.Tab value="fun">Fun</Tabs.Tab>
