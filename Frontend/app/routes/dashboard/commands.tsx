@@ -182,14 +182,10 @@ export default function Commands() {
 		<ModalsProvider>
 			<Tabs defaultValue="moderation">
 				<Tabs.List grow>
-					<Tabs.Tab value="moderation">Moderation</Tabs.Tab>
 					<Tabs.Tab value="utility">Utility</Tabs.Tab>
 					<Tabs.Tab value="fun">Fun</Tabs.Tab>
+					<Tabs.Tab value="moderation">Moderation</Tabs.Tab>
 				</Tabs.List>
-
-				<Tabs.Panel pt="sm" value="moderation">
-					<SearchTable commands={moderationCommands} />
-				</Tabs.Panel>
 
 				<Tabs.Panel pt="sm" value="utility">
 					<SearchTable commands={utilityCommands} />
@@ -197,6 +193,10 @@ export default function Commands() {
 
 				<Tabs.Panel pt="sm" value="fun">
 					<SearchTable commands={funCommands} />
+				</Tabs.Panel>
+
+				<Tabs.Panel pt="sm" value="moderation">
+					<SearchTable commands={moderationCommands} />
 				</Tabs.Panel>
 			</Tabs>
 		</ModalsProvider>
