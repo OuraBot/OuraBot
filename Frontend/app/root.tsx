@@ -39,6 +39,7 @@ export function Mantine({ children }: { children: React.ReactNode }) {
 		<MantineProvider
 			theme={{
 				colorScheme: 'dark',
+				fontFamily: 'Montserrat, sans-serif',
 			}}
 			withGlobalStyles
 			withNormalizeCSS
@@ -48,6 +49,7 @@ export function Mantine({ children }: { children: React.ReactNode }) {
 					<html lang="en">
 						<head>
 							<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+							<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat" />
 							<Meta />
 							<Links />
 							<LiveReload />
