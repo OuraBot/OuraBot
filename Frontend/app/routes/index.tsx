@@ -30,6 +30,7 @@ export async function loader({ request }: LoaderArgs) {
 		const _online = statusText === 'Up' ? true : false;
 		const returnData = {
 			_online,
+			session,
 		};
 
 		await pub.set('obfrontend:status', JSON.stringify(returnData), 'EX', 30);
@@ -42,6 +43,7 @@ export async function loader({ request }: LoaderArgs) {
 		return {
 			channel,
 			online,
+			session,
 		};
 	} else {
 		return {
@@ -55,12 +57,12 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
-	let { channel, online } = useLoaderData();
+	let { channel, online, session } = useLoaderData();
 
 	return (
 		<>
 			<BetaBanner />
-			<HeaderResponsive channel={channel} />
+			<HeaderResponsive channel={channel} session={session} />
 			{online ? null : (
 				<Container>
 					<Alert icon={<AlertCircle size="1rem" />} title="Degraded Service" color="red" radius="md" variant="light" my="sm">

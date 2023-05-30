@@ -78,6 +78,7 @@ const useStyles = createStyles((theme) => ({
 
 interface HeaderResponsiveProps {
 	channel?: IChannel;
+	session?: any;
 }
 
 export function HeaderResponsive(props: HeaderResponsiveProps) {
@@ -95,7 +96,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 						<Menu>
 							<Menu.Target>
 								<UnstyledButton>
-									<Avatar src={props.channel.profile_image_url} radius="xl" />
+									<Avatar src={props.session.profile_image_url} radius="xl" />
 								</UnstyledButton>
 							</Menu.Target>
 							<Menu.Dropdown>
