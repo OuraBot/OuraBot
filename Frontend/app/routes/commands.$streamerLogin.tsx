@@ -1,5 +1,5 @@
 import { Avatar, Button, Center, Container, Divider, Group, Table, Text, Title } from '@mantine/core';
-import type { LoaderArgs } from '@remix-run/node';
+import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { fetch, json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ChannelModel } from '~/services/models/Channel';
@@ -16,6 +16,19 @@ enum CategoryEnum {
 	Fun = 'Fun',
 	Moderation = 'Moderation',
 }
+
+export const meta: MetaFunction = ({ data }) => {
+	const { channel } = data;
+
+	return {
+		title: `${channel.login}'s Commands / OuraBot`,
+		description: 'A list of commands available in a channel',
+		'og:title': `${channel.login}'s Commands / OuraBot`,
+		'og:description': 'A list of commands available in a channel',
+		'og:image': channel.profile_image_url,
+		'og:url': `https://ourabot.com/commands/${channel.login}`,
+	};
+};
 
 export async function loader({ params }: LoaderArgs) {
 	// Since this is a public facing endpoint that makes requests, we need to heavily cache the results.
