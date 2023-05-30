@@ -47,6 +47,7 @@ export function Mantine({ children }: { children: React.ReactNode }) {
 				<ModalsProvider>
 					<html lang="en">
 						<head>
+							<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 							<Meta />
 							<Links />
 							<LiveReload />
