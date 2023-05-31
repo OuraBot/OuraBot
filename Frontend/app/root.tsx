@@ -50,6 +50,7 @@ export function Mantine({ children }: { children: React.ReactNode }) {
 						<head>
 							<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 							<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat" />
+							<link rel="canonical" href="https://ourabot.com" />
 							<Meta />
 							<Links />
 							<LiveReload />
