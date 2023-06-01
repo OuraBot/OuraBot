@@ -39,6 +39,9 @@ export default function Privacy() {
 				</Text>
 				<Title order={3}>CONTACT INFORMATION</Title>
 				<Text ml="lg">If you have any questions or concerns about our Privacy Policy, please contact us at contact@ourabot.com.</Text>
+				<Button component="a" href="/" mt="md">
+					Go Back
+				</Button>
 			</Container>
 			<FooterLinks />
 		</>

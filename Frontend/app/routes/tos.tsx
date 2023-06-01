@@ -160,6 +160,9 @@ export default function TOS() {
 				</Text>
 				<Title order={3}>Contact Information</Title>
 				<Text ml="lg">If you have any questions about these Terms of Service or if you need to contact us, please email us at contact@ourabot.com</Text>
+				<Button component="a" href="/" mt="md">
+					Go Back
+				</Button>
 			</Container>
 			<FooterLinks />
 		</>
