@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	if (!auth) return notFound({});
 
-	console.log(auth);
+	// console.log(auth);
 
 	if (!auth.endsWith('xAO7p0Z+wSqBqbBUyoSSm0ewwijyJG8MM1sIHd7Y6Xc=')) return notFound({});
 
@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 	if (prom.status !== 200) throw new Error(`QUERY Prometheus returned error code ${prom.status}`);
 
-	console.log(prom.data);
+	// console.log(prom.data);
 	const promData = prom?.data?.prom;
 	if (!promData) throw new Error('no prom data');
 	const data = promData.replace(/\\n/g, '\n');
