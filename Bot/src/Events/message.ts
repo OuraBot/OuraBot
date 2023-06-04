@@ -15,14 +15,7 @@ export const event: Events = {
 		ob.logger.info(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`, 'ob.twitch.events.message');
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
 
-		if (ob.utils.keyInObject(_channel, ob.prometheus.messages)) {
-			ob.prometheus.messages[_channel].inc();
-		} else {
-			ob.prometheus.messages[_channel] = new Counter({
-				name: `channel_messages_${_channel.replace('#', '')}`,
-				help: 'Messages sent in channel',
-			});
-		}
+		ob.prometheus.messages.labels({ channel: _channel.replace('#', '') }).inc();
 
 		const channel = new Channel(_channel, msg);
 		if (!(await channel.fetchDatabaseData())) {
