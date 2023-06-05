@@ -65,8 +65,8 @@ export class EventManager {
 			if (event.sender == 'SERVER') return;
 
 			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`, 'ob.eventmanager');
-			console.log(event);
-			console.log(JSON.stringify(event));
+			// console.log(event);
+			// console.log(JSON.stringify(event));
 
 			switch (event.operation) {
 				case 'QUERY':
@@ -252,7 +252,7 @@ export class EventManager {
 
 	sendEvent(event: Event) {
 		const json = { ...event, sender: 'SERVER', operation: 'RESPONSE', auth: null } as Event;
-		console.log('sending event: ' + JSON.stringify(json));
+		// console.log('sending event: ' + JSON.stringify(json));
 		ob.pubRedis.publish(this.redisChannel, JSON.stringify(json));
 	}
 
