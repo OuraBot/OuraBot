@@ -100,6 +100,8 @@ class OuraBot {
 	};
 	prometheus: {
 		messages: Counter;
+		botMessages: Counter;
+		blockedBotMessages: Counter;
 	};
 	exec = exec;
 	execSync = execSync;
@@ -161,6 +163,16 @@ class OuraBot {
 			messages: new Counter({
 				name: 'channel_messages',
 				help: 'Total number of messages sent',
+				labelNames: ['channel'],
+			}),
+			botMessages: new Counter({
+				name: 'bot_messages',
+				help: 'Total number of messages sent by the bot',
+				labelNames: ['channel'],
+			}),
+			blockedBotMessages: new Counter({
+				name: 'blocked_bot_messages',
+				help: 'Total number of messages sent by the bot that were blocked',
 				labelNames: ['channel'],
 			}),
 		};
@@ -576,8 +588,10 @@ class OuraBot {
 			message = slashMe ? `/me ${message}` : message;
 
 			if (this.utils.isSafeMessage(message)) {
+				ob.prometheus.botMessages.labels({ channel: channel }).inc();
 				return _chatClientSay.call(_chatClient, channel, message, attributes);
 			} else {
+				ob.prometheus.blockedBotMessages.labels({ channel: channel }).inc();
 				return _chatClientSay.call(_chatClient, channel, '[A message that was supposed to be sent here was held back]', attributes);
 			}
 		};
