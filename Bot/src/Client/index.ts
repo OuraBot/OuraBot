@@ -99,9 +99,7 @@ class OuraBot {
 		interval: NodeJS.Timeout;
 	};
 	prometheus: {
-		messages: {
-			[channel: string]: Counter<string>;
-		};
+		messages: Counter;
 	};
 	exec = exec;
 	execSync = execSync;
@@ -160,7 +158,11 @@ class OuraBot {
 			}, 1000 * 45),
 		};
 		this.prometheus = {
-			messages: {},
+			messages: new Counter({
+				name: 'channel_messages',
+				help: 'Total number of messages sent',
+				labelNames: ['channel'],
+			}),
 		};
 	}
 
