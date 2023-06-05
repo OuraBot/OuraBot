@@ -102,6 +102,8 @@ class OuraBot {
 		messages: Counter;
 		botMessages: Counter;
 		blockedBotMessages: Counter;
+		messagesFailed: Counter;
+		messagesRateLimited: Counter;
 	};
 	exec = exec;
 	execSync = execSync;
@@ -173,6 +175,16 @@ class OuraBot {
 			blockedBotMessages: new Counter({
 				name: 'blocked_bot_messages',
 				help: 'Total number of messages sent by the bot that were blocked',
+				labelNames: ['channel'],
+			}),
+			messagesFailed: new Counter({
+				name: 'channel_messages_failed',
+				help: 'Total number of messages that failed to send',
+				labelNames: ['channel', 'reason'],
+			}),
+			messagesRateLimited: new Counter({
+				name: 'channel_messages_rate_limited',
+				help: 'Total number of messages that were rate limited',
 				labelNames: ['channel'],
 			}),
 		};
@@ -463,8 +475,12 @@ class OuraBot {
 				// since the Commands folder is nested in here, we need to check if the file is actually a file
 				if (file.endsWith('.js')) {
 					const { event } = await import(`${eventPath}/${file}`);
+					if (!event) {
+						ob.logger.warn(chalk.yellow(`Event file ${file} does not export an event.`), 'ob.twitch.events');
+					}
 					this.events.set(event.name, event);
 					this.clientEvent.on(event.name, event.run.bind(null, this));
+					ob.logger.info(chalk.green(`Loaded event: ${event.name}`), 'ob.twitch.events');
 				}
 			}
 		});
@@ -588,10 +604,10 @@ class OuraBot {
 			message = slashMe ? `/me ${message}` : message;
 
 			if (this.utils.isSafeMessage(message)) {
-				ob.prometheus.botMessages.labels({ channel: channel }).inc();
+				ob.prometheus.botMessages.labels({ channel: ob.utils.sanitizeName(channel) }).inc();
 				return _chatClientSay.call(_chatClient, channel, message, attributes);
 			} else {
-				ob.prometheus.blockedBotMessages.labels({ channel: channel }).inc();
+				ob.prometheus.blockedBotMessages.labels({ channel: ob.utils.sanitizeName(channel) }).inc();
 				return _chatClientSay.call(_chatClient, channel, '[A message that was supposed to be sent here was held back]', attributes);
 			}
 		};

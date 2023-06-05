@@ -1,4 +1,4 @@
-import { json, LoaderFunction, Response } from '@remix-run/node';
+import { LoaderFunction, Response } from '@remix-run/node';
 import { notFound } from 'remix-utils';
 import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';

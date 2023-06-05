@@ -18,6 +18,7 @@ process
 		if (!ob.debug) {
 			await ob.api.get('https://status.mrauro.dev/api/push/VEqUco8a47?status=down&msg=Unhandled%20Rejection', 0);
 		}
+		console.error(reason, 'ob.unhandledRejection');
 		process.exit(1);
 	})
 	.on('uncaughtException', async (err) => {
@@ -25,5 +26,6 @@ process
 		if (!ob.debug) {
 			await ob.api.get('https://status.mrauro.dev/api/push/VEqUco8a47?status=down&msg=Uncaught%20Exception', 0);
 		}
+		console.error(err, 'ob.uncaughtException');
 		process.exit(1);
 	});
