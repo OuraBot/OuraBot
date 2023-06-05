@@ -612,6 +612,20 @@ class OuraBot {
 			}
 		};
 
+		_chatClient.onMessageFailed((channel, reason) => {
+			ob.logger.info(`Message failed to send in #${channel}: ${reason}`, 'ob.twitch.events.messageFailed');
+			ob.prometheus.messagesFailed.labels({ channel: channel, reason: reason }).inc();
+
+			if (reason === 'msg_rejected_mandatory') {
+				ob.twitch.say(channel, '[A message that was supposed to be sent here was held back]');
+			}
+		});
+
+		_chatClient.onMessageRatelimit((channel) => {
+			ob.logger.info(`Message rate limited in ${channel}`, 'ob.twitch.events.messageRateLimit');
+			ob.prometheus.messagesRateLimited.labels({ channel: channel }).inc();
+		});
+
 		return _chatClient;
 	}
 }
