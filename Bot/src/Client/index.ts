@@ -613,6 +613,8 @@ class OuraBot {
 		};
 
 		_chatClient.onMessageFailed((channel, reason) => {
+			channel = ob.utils.sanitizeName(channel);
+
 			ob.logger.info(`Message failed to send in #${channel}: ${reason}`, 'ob.twitch.events.messageFailed');
 			ob.prometheus.messagesFailed.labels({ channel: channel, reason: reason }).inc();
 
@@ -622,6 +624,8 @@ class OuraBot {
 		});
 
 		_chatClient.onMessageRatelimit((channel) => {
+			channel = ob.utils.sanitizeName(channel);
+
 			ob.logger.info(`Message rate limited in ${channel}`, 'ob.twitch.events.messageRateLimit');
 			ob.prometheus.messagesRateLimited.labels({ channel: channel }).inc();
 		});
