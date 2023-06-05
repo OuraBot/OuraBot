@@ -69,6 +69,10 @@ export default class Utils {
 			return false;
 		}
 
+		if (sanitizedMessage.includes('blockedwordtest')) {
+			return false;
+		}
+
 		return true;
 	}
 
