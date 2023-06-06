@@ -40,7 +40,7 @@ import Utils from '../Utils/utils';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 import gradient = require('gradient-string');
-import { Counter, register } from 'prom-client';
+import { Counter, Gauge, register } from 'prom-client';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -104,6 +104,8 @@ class OuraBot {
 		blockedBotMessages: Counter;
 		messagesFailed: Counter;
 		messagesRateLimited: Counter;
+		channels: Gauge;
+		_channelInterval: NodeJS.Timeout;
 	};
 	exec = exec;
 	execSync = execSync;
@@ -187,6 +189,13 @@ class OuraBot {
 				help: 'Total number of messages that were rate limited',
 				labelNames: ['channel'],
 			}),
+			channels: new Gauge({
+				name: 'channels',
+				help: 'Number of channels the bot is in',
+			}),
+			_channelInterval: setInterval(() => {
+				this.prometheus.channels.set(this.channels.length);
+			}, 1000 * 60),
 		};
 	}
 
