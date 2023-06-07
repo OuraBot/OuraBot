@@ -44,6 +44,8 @@ export interface IChannel extends Schema {
 	defaultCommandOptions: DefaultCommandOption[];
 	// Lastfm username
 	lastfmUsername: string;
+	// Referrer
+	referrer: string;
 	// Premium information
 	premium: {
 		orders: {
@@ -89,6 +91,7 @@ export const ChannelSchema = new Schema<IChannel>(
 		clipUrl: { type: String, required: true, default: '' },
 		modules: { type: [String], required: true, default: [] },
 		lastfmUsername: { type: String, required: false, default: '' },
+		referrer: { type: String, required: false, default: '' },
 		defaultCommandOptions: {
 			type: [
 				{

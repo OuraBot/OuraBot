@@ -1,4 +1,4 @@
-import { Avatar, Button, Center, Checkbox, Container, Divider, Group, Image, Paper, Text, Title } from '@mantine/core';
+import { Avatar, Button, Center, Checkbox, Container, Divider, Group, Image, Paper, Text, TextInput, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
@@ -37,11 +37,15 @@ export async function action({ request }: ActionArgs) {
 
 	const token = sign({ id: session.id }, process.env.JWT_SECRET || 'secret');
 
+	const formData = await request.formData();
+	const referrer = (formData.get('referrer') as string) || '/';
+
 	await ChannelModel.create({
 		login: session.login,
 		id: session.id,
 		token: token,
 		profile_image_url: session.profile_image_url,
+		referrer: referrer,
 	});
 
 	let resp = await query('UPDATE', 'Join', token, session.id, {
@@ -83,7 +87,10 @@ export default function Onboarding() {
 						Cookies will be used to store your session.
 					</Text>
 
+					<Divider my="md" />
+
 					<Form method="post">
+						<TextInput name="referrer" id="referrer" placeholder="Social media, Solrock, a Twitch streamer" label="How did you hear about us?" />
 						<Checkbox
 							mt="sm"
 							label="I agree with the Terms of Service and Privacy Policy"
