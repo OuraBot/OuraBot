@@ -173,6 +173,7 @@ export interface Module {
 	description: string;
 	requiresMod?: boolean;
 	hidden?: boolean;
+	options?: { [key: string]: string };
 	execute: (ob: OuraBot, user: string, channel: Channel, message: string, msg: TwitchPrivateMessage) => void;
 }
 

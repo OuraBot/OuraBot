@@ -37,15 +37,20 @@ export interface IChannel extends Schema {
 	emoteEvents: boolean;
 	// Clip Discord webhook
 	clipUrl: string;
-	// Moderation modules
-	// TODO: allow for module customization (different timeout lengths, etc.)
-	modules: string[];
 	// Default command options
 	defaultCommandOptions: DefaultCommandOption[];
 	// Lastfm username
 	lastfmUsername: string;
 	// Referrer
 	referrer: string;
+	// Moderation modules
+	modules: {
+		name: string;
+		enabled: boolean;
+		data: {
+			[key: string]: any;
+		};
+	}[];
 	// Premium information
 	premium: {
 		orders: {
@@ -89,7 +94,6 @@ export const ChannelSchema = new Schema<IChannel>(
 		profile_image_url: { type: String, required: true },
 		emoteEvents: { type: Boolean, required: true, default: false },
 		clipUrl: { type: String, required: true, default: '' },
-		modules: { type: [String], required: true, default: [] },
 		lastfmUsername: { type: String, required: false, default: '' },
 		referrer: { type: String, required: false, default: '' },
 		defaultCommandOptions: {
@@ -101,6 +105,17 @@ export const ChannelSchema = new Schema<IChannel>(
 					modifiedPermissions: { type: [String], required: true },
 					enabled: { type: Boolean, required: true },
 					chatMode: { type: String, required: true },
+				},
+			],
+			required: true,
+			default: [],
+		},
+		modules: {
+			type: [
+				{
+					name: { type: String, required: true },
+					enabled: { type: Boolean, required: true },
+					data: { type: Schema.Types.Mixed, required: true },
 				},
 			],
 			required: true,
