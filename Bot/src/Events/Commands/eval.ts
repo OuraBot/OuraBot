@@ -8,6 +8,7 @@ export const cmd = new (class command implements Command {
 	usage = 'eval <code>';
 	permissions = [Permission.Owner];
 	ownerOnly = true;
+	hidden = true;
 	userCooldown = 0;
 	channelCooldown = 0;
 	category = CategoryEnum.Utility;
