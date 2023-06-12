@@ -1,4 +1,4 @@
-import { Avatar, Button, Center, Container, Divider, Group, Table, Text, Title } from '@mantine/core';
+import { Avatar, Button, Center, Container, Divider, Group, Kbd, Table, Text, Title } from '@mantine/core';
 import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { fetch, json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -9,6 +9,7 @@ type PublicChannel = {
 	login: string;
 	profile_image_url: string;
 	id: string;
+	prefix: string;
 };
 
 enum CategoryEnum {
@@ -51,6 +52,7 @@ export async function loader({ params }: LoaderArgs) {
 					login: channel.login,
 					profile_image_url: channel.profile_image_url,
 					id: channel.id,
+					prefix: channel.prefix,
 				};
 
 				const commands = await query('QUERY', 'Commands', channel.token, channel.id);
@@ -87,7 +89,7 @@ export default function StreamerPage() {
 						<h1>{channel.login}'s Commands</h1>
 					</Group>
 					<Text mb="xl" align="center">
-						Below are commands available in {channel.login}'s chat.
+						Below are commands available in {channel.login}'s chat with the <Kbd>{channel.prefix}</Kbd> prefix.
 					</Text>
 
 					<Title order={2}>Fun Commands</Title>
