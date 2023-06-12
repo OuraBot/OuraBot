@@ -205,10 +205,10 @@ export function hasPermission(requiredPermissions: Permission[], user: string, c
 	if (requiredPermissions.length === 0) return true;
 
 	for (const permission of requiredPermissions) {
-		if (!permissions.includes(permission)) return false;
+		if (permissions.includes(permission)) return true;
 	}
 
-	return true;
+	return false;
 }
 
 export async function getCommands(): Promise<Map<string, Command>> {
