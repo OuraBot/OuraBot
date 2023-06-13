@@ -31,47 +31,52 @@ export const event: Events = {
 			ob.twitch.joinRateLimiter.REFILL_TIME = 10 * 1000;
 
 			for (let channel of channels) {
-				await ob.twitch.joinRateLimiter.take(channel.role > 0);
-				ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
-				ob.channels.push({
-					id: channel.id,
-					login: channel.login,
-					isMod: false,
-				});
+				if (!ob.channels.find((c) => c.id === channel.id)) {
+					await ob.twitch.joinRateLimiter.take(channel.role > 0);
+					ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 
-				ob.twitch.chatClient
-					.join(channel.login)
-					.then(() => {
-						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
-
-						ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
-							ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
-
-							switch (data.type) {
-								case 'moderator_added':
-									{
-										let d = data as PubSubChannelRoleChangeMessage;
-										if (d.targetUserId == ob.config.twitch_id) {
-											ob.channels.find((c) => c.id === channel.id).isMod = true;
-											ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
-										}
-									}
-									break;
-								case 'moderator_removed':
-									{
-										let d = data as PubSubChannelRoleChangeMessage;
-										if (d.targetUserId == ob.config.twitch_id) {
-											ob.channels.find((c) => c.id === channel.id).isMod = false;
-											ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
-										}
-									}
-									break;
-							}
-						});
-					})
-					.catch((err) => {
-						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
+					ob.channels.push({
+						id: channel.id,
+						login: channel.login,
+						isMod: false,
 					});
+
+					ob.twitch.chatClient
+						.join(channel.login)
+						.then(() => {
+							ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+
+							ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
+								ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
+
+								switch (data.type) {
+									case 'moderator_added':
+										{
+											let d = data as PubSubChannelRoleChangeMessage;
+											if (d.targetUserId == ob.config.twitch_id) {
+												ob.channels.find((c) => c.id === channel.id).isMod = true;
+												ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
+											}
+										}
+										break;
+									case 'moderator_removed':
+										{
+											let d = data as PubSubChannelRoleChangeMessage;
+											if (d.targetUserId == ob.config.twitch_id) {
+												ob.channels.find((c) => c.id === channel.id).isMod = false;
+												ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
+											}
+										}
+										break;
+								}
+							});
+						})
+						.catch((err) => {
+							ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
+						});
+				} else {
+					ob.logger.info(`Already joined #${chalk.bold(channel.login)} - skipping`, 'ob.twitch.events.ready');
+				}
 			}
 		}
 

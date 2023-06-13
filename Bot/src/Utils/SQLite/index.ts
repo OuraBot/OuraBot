@@ -64,7 +64,7 @@ export class SQLite {
 		return this.query(`SELECT * FROM "blockedusers"`);
 	}
 
-	public async getUser(userId: TwitchUserId): Promise<SQLUser> {
+	public async getUser(userId: TwitchUserId): Promise<SQLUser | undefined> {
 		return (await this.query(`SELECT * FROM "users" WHERE "userId" = ?`, [userId]))[0];
 	}
 

@@ -17,12 +17,19 @@ export const cmd = new (class command implements Command {
 		const sqlMsg = msgs[0] as SQLMessage;
 		const date = ob.utils.SQLiteDateToDate(sqlMsg.date);
 
-		if (await ob.utils.shouldHideLogs(sqlMsg.userId)) {
+		const sqlUser = await ob.sqlite.getUser(sqlMsg.userId);
+
+		if (!sqlUser)
+			return {
+				success: true,
+				message: `I have not seen this user across any of the channels I am in`,
+			};
+
+		if (sqlUser.hideLogs)
 			return {
 				success: true,
 				message: `This user has opted out of having their logs displayed`,
 			};
-		}
 
 		let userResp = await ob.utils.resolveUserById(sqlMsg.userId);
 

@@ -204,9 +204,18 @@ export function hasPermission(requiredPermissions: Permission[], user: string, c
 	if (msg.userInfo.isVip) permissions.push(Permission.VIP);
 	if (msg.userInfo.isSubscriber) permissions.push(Permission.Subscriber);
 
+	ob.logger.debug(
+		`User: ${user} | Channel: ${channel} | Permissions: ${permissions.join(', ')} | Required Permissions: ${requiredPermissions.join(', ')}`,
+		'ob.twitch.permissions'
+	);
+
 	if (requiredPermissions.length === 0) return true;
 
-	return requiredPermissions.every((permission) => permissions.includes(permission));
+	for (const permission of requiredPermissions) {
+		if (permissions.includes(permission)) return true;
+	}
+
+	return false;
 }
 
 export async function getCommands(): Promise<Map<string, Command>> {

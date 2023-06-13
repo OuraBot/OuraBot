@@ -271,7 +271,7 @@ export default class Utils {
 
 	getAllEmotes(Channel: Channel): Promise<Emote[]> {
 		return Promise.all([
-			this.get7tvChannelEmotes(Channel.channel),
+			this.get7tvChannelEmotes(Channel.id),
 			this.get7tvGlobalmotes(),
 			this.getFfzChannelEmotes(Channel.channel),
 			this.getFfzGlobalEmotes(),
@@ -423,10 +423,6 @@ export default class Utils {
 		);
 
 		return banReason;
-	}
-
-	async shouldHideLogs(userId: TwitchUserId): Promise<boolean> {
-		return (await ob.sqlite.getUser(userId)).hideLogs;
 	}
 
 	async get7tvChannelEmotes(channel: string): Promise<Emote[]> {
