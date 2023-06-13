@@ -426,7 +426,9 @@ export default class Utils {
 	}
 
 	async shouldHideLogs(userId: TwitchUserId): Promise<boolean> {
-		return (await ob.sqlite.getUser(userId)).hideLogs;
+		const user = await ob.sqlite.getUser(userId);
+		if (!user) return false;
+		return user.hideLogs;
 	}
 
 	async get7tvChannelEmotes(channel: string): Promise<Emote[]> {
