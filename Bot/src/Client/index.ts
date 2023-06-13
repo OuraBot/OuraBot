@@ -202,17 +202,17 @@ class OuraBot {
 			commands: new Counter({
 				name: 'commands',
 				help: 'Total number of commands executed',
-				labelNames: ['channel', 'command'],
+				labelNames: ['command'],
 			}),
 			commandsErrored: new Counter({
 				name: 'commands_errored',
 				help: 'Total number of commands that failed to execute due to an error',
-				labelNames: ['channel', 'command'],
+				labelNames: ['command'],
 			}),
 			commandsUnsuccessful: new Counter({
 				name: 'commands_unsuccessful',
 				help: 'Total number of commands that failed to execute due to a user error',
-				labelNames: ['channel', 'command'],
+				labelNames: ['command'],
 			}),
 		};
 	}

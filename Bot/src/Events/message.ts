@@ -168,12 +168,12 @@ export const event: Events = {
 							if (result.success) {
 								// TODO: banphrase checking
 								if (result.message) {
-									ob.prometheus.commands.labels({ channel: ob.utils.sanitizeName(channel.channel), command: targetCmd.name }).inc();
+									ob.prometheus.commands.labels({ command: targetCmd.name }).inc();
 									ob.twitch.say(channel.channel, `${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
 								}
 							} else {
 								// TODO: banphrase checking
-								ob.prometheus.commandsUnsuccessful.labels({ channel: ob.utils.sanitizeName(channel.channel), command: targetCmd.name }).inc();
+								ob.prometheus.commandsUnsuccessful.labels({ command: targetCmd.name }).inc();
 								ob.twitch.say(channel.channel, `command unsuccessful: ${result.message}`, undefined, undefined, result?.noping ? undefined : msg.id);
 							}
 						})
@@ -183,7 +183,7 @@ export const event: Events = {
 							} else {
 								ob.logger.error(new Error(err), 'ob.commands.execute');
 							}
-							ob.prometheus.commandsErrored.labels({ channel: ob.utils.sanitizeName(channel.channel), command: targetCmd.name }).inc();
+							ob.prometheus.commandsErrored.labels({ command: targetCmd.name }).inc();
 							ob.twitch.say(channel.channel, `there was an unknown error while executing the command`, undefined, undefined, msg.id);
 						});
 				}
