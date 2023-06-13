@@ -42,7 +42,15 @@ export const cmd = new (class command implements Command {
 				message: `Invalid user`,
 			};
 
-		if (await ob.utils.shouldHideLogs(resolvedUser.id))
+		const sqlUser = await ob.sqlite.getUser(resolvedUser.id);
+
+		if (!sqlUser)
+			return {
+				success: true,
+				message: `I have not seen this user across any of the channels I am in`,
+			};
+
+		if (sqlUser.hideLogs)
 			return {
 				success: true,
 				message: `This user has opted out of having their logs displayed`,
