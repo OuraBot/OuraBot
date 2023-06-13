@@ -10,6 +10,25 @@ export default function handler(Event: Event): Promise<Event> {
 
 		console.log(Event.data);
 
+		switch (Event.data.name) {
+			case 'smartemoteonly':
+				{
+					const { enabled } = Event.data;
+					channel.modules.smartemoteonly.enabled = enabled;
+
+					channel.markModified('modules');
+					await channel.save();
+
+					ob.CacheManager.clear(`${Event.userId}_channelInfo`);
+
+					resolve({
+						...Event,
+						status: StatusCodes.OK,
+					});
+				}
+				break;
+		}
+
 		resolve(Event);
 	});
 }

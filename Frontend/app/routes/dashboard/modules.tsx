@@ -3,6 +3,8 @@ import { useForm } from '@mantine/form';
 import { Prism } from '@mantine/prism';
 import { Form, useLoaderData } from '@remix-run/react';
 import { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
+import { set } from 'mongoose';
+import { useState } from 'react';
 import { json } from 'remix-utils';
 import { InfoCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
@@ -15,16 +17,9 @@ export async function loader({ request }: LoaderArgs) {
 	});
 	const channel = await ChannelModel.findOne({ id: session.json.id });
 
-	const modules = await query('QUERY', 'Modules', channel.token, session.json.id);
-
-	if (modules.status !== 200) throw new Error(`QUERY Modules returned error code ${modules.status}`);
-
-	console.log(modules);
-
 	return {
 		session,
 		channel,
-		modules,
 	};
 }
 
@@ -49,7 +44,7 @@ export async function action({ request }: ActionArgs) {
 	console.log(formData.forEach((value, key) => console.log(`${key}: ${value}`)));
 
 	const module = formData.get('module');
-	const enabled = formData.get('enabled') === 'true' ? true : false;
+	const enabled = formData.get('enabled') === 'on' ? true : false;
 
 	console.log({ module, enabled });
 
@@ -69,27 +64,22 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Modules() {
-	const { modules } = useLoaderData();
-	console.log(modules);
+	const { channel } = useLoaderData();
 
 	return (
 		<>
-			<Prism withLineNumbers language="json">
-				{JSON.stringify(modules, null, 2)}
-			</Prism>
 			<Grid>
-				<CardSmartEmoteOnly enabled={modules.data.modules.find((m: any) => m.name === 'smartemoteonly')?.enabled ?? false} />
+				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} />
 			</Grid>
+			<Prism withLineNumbers language="json">
+				{JSON.stringify(channel, null, 2)}
+			</Prism>
 		</>
 	);
 }
 
 function CardSmartEmoteOnly(props: { enabled: boolean }) {
-	const form = useForm({
-		initialValues: {
-			enabled: props.enabled,
-		},
-	});
+	const [enabled, setEnabled] = useState(props.enabled);
 
 	return (
 		<Grid.Col md={6} lg={3}>
@@ -112,9 +102,9 @@ function CardSmartEmoteOnly(props: { enabled: boolean }) {
 
 					<input type="hidden" name="module" value="smartemoteonly" />
 
-					<Switch name="enabled" id="enabled" {...form.getInputProps('enabled')} my="md" label="Enabled" />
+					<Switch name="enabled" id="enabled" my="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
 
-					<Button type="submit" color="blue" fullWidth radius="md" disabled={!form.isDirty()}>
+					<Button type="submit" color="blue" fullWidth radius="md" disabled={enabled === props.enabled}>
 						Save
 					</Button>
 				</Card>

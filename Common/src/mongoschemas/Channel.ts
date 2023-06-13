@@ -16,6 +16,12 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
+export interface Modules {
+	smartemoteonly: {
+		enabled: boolean;
+	};
+}
+
 export interface IChannel extends Schema {
 	// Twitch Login
 	login: string;
@@ -44,13 +50,7 @@ export interface IChannel extends Schema {
 	// Referrer
 	referrer: string;
 	// Moderation modules
-	modules: {
-		name: string;
-		enabled: boolean;
-		data: {
-			[key: string]: any;
-		};
-	}[];
+	modules: Modules;
 	// Premium information
 	premium: {
 		orders: {
@@ -111,15 +111,17 @@ export const ChannelSchema = new Schema<IChannel>(
 			default: [],
 		},
 		modules: {
-			type: [
-				{
-					name: { type: String, required: true },
-					enabled: { type: Boolean, required: true },
-					data: { type: Schema.Types.Mixed, required: true },
+			type: {
+				smartemoteonly: {
+					type: {
+						enabled: { type: Boolean, required: true },
+					},
+					required: true,
+					default: { enabled: false },
 				},
-			],
+			},
 			required: true,
-			default: [],
+			default: { smartemoteonly: { enabled: false } },
 		},
 		premium: {
 			type: {
