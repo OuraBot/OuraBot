@@ -137,7 +137,7 @@ export const event: Events = {
 				if (ob.utils.canUseCommand(user, channel, targetCmd, msg)) {
 					const isMod = ob.channels.find((c) => c.login == ob.utils.sanitizeName(channel.channel))?.isMod;
 
-					if (!isMod && !ob.debug)
+					if (!isMod)
 						return ob.twitch.say(
 							channel.channel,
 							`I need to be moderator to use any commands. Please contact the channel owner to make me a moderator.`,

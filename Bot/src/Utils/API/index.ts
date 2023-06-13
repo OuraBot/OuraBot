@@ -7,7 +7,7 @@ export class API {
 		const cacheHash = ob.utils.generateMD5(url + (options ? JSON.stringify(options) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
 
-		ob.logger.info(`${cacheData ? ' CACHED:' : ''} ${url}`, 'ob.http');
+		ob.logger.info(`${cacheData ? ' CACHED' : ''}: ${url}`, 'ob.http');
 
 		if (cacheData) {
 			return {
@@ -87,7 +87,7 @@ export class API {
 		const cacheHash = ob.utils.generateMD5(url + query + (variables ? JSON.stringify(variables) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
 
-		ob.logger.info(`${cacheData ? ' CACHED:' : ''} ${url}`, 'ob.http');
+		ob.logger.info(`${cacheData ? ' CACHED' : ''}: ${url}`, 'ob.http');
 
 		if (cacheData) {
 			return {
