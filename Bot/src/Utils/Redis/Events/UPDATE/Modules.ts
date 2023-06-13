@@ -8,8 +8,6 @@ export default function handler(Event: Event): Promise<Event> {
 			id: Event.userId,
 		});
 
-		console.log(Event.data);
-
 		switch (Event.data.name) {
 			case 'smartemoteonly':
 				{

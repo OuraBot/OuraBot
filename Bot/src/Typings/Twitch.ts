@@ -180,7 +180,7 @@ export interface Module {
 			max?: number;
 		};
 	};
-	execute: (ob: OuraBot, user: string, channel: Channel, message: string, msg: TwitchPrivateMessage) => void;
+	execute: (ob: OuraBot, user: string, channel: Channel, message: string, msg: TwitchPrivateMessage, data?: any) => void;
 }
 
 export enum Permission {

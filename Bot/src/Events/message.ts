@@ -26,16 +26,22 @@ export const event: Events = {
 		ob.sqlite.addMessage(msg.userInfo.userId, channel.id, message);
 
 		// Module Handler
-		const enabledModules = channel.enabledModules;
-		for (const module of enabledModules) {
-			let moduleInstance = ob.modules.get(module);
-			if (!moduleInstance) {
-				ob.logger.warn(`Attempted to load module "${module}" in ${channel.channel} (${channel.id}) but it doesn't exist.`, 'ob.twitch.events.message');
-				continue;
-			}
+		const modules = channel.modules;
+		ob.modules.forEach((module) => {
+			for (const moduleKey in modules) {
+				if (moduleKey === module.name) {
+					// @ts-ignore
+					const moduleData = modules[moduleKey];
 
-			moduleInstance.execute(ob, user, channel, message, msg);
-		}
+					if (moduleData.enabled) {
+						ob.logger.debug(`Executing module "${module.name}" in ${channel.channel} (${channel.id})`, 'ob.twitch.events.message');
+						module.execute(ob, user, channel, message, msg, moduleData);
+					} else {
+						ob.logger.debug(`Module "${module.name}" in ${channel.channel} (${channel.id}) is disabled`, 'ob.twitch.events.message');
+					}
+				}
+			}
+		});
 
 		// Nuke Messages
 		let cantTimeout = msg.userInfo?.isMod || msg.userInfo.isBroadcaster;

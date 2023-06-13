@@ -16,11 +16,15 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
-export interface Modules {
+export interface ModuleKey {
 	smartemoteonly: {
 		enabled: boolean;
 	};
 }
+
+export type Modules = {
+	[K in keyof ModuleKey]: ModuleKey[K];
+};
 
 export interface IChannel extends Schema {
 	// Twitch Login
