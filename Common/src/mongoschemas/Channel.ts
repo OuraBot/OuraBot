@@ -16,6 +16,17 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
+export interface ModuleKey {
+	smartemoteonly: {
+		enabled: boolean;
+		timeout: number; // in seconds, 0 is delete
+	};
+}
+
+export type Modules = {
+	[K in keyof ModuleKey]: ModuleKey[K];
+};
+
 export interface IChannel extends Schema {
 	// Twitch Login
 	login: string;
@@ -37,15 +48,14 @@ export interface IChannel extends Schema {
 	emoteEvents: boolean;
 	// Clip Discord webhook
 	clipUrl: string;
-	// Moderation modules
-	// TODO: allow for module customization (different timeout lengths, etc.)
-	modules: string[];
 	// Default command options
 	defaultCommandOptions: DefaultCommandOption[];
 	// Lastfm username
 	lastfmUsername: string;
 	// Referrer
 	referrer: string;
+	// Moderation modules
+	modules: Modules;
 	// Premium information
 	premium: {
 		orders: {
@@ -89,7 +99,6 @@ export const ChannelSchema = new Schema<IChannel>(
 		profile_image_url: { type: String, required: true },
 		emoteEvents: { type: Boolean, required: true, default: false },
 		clipUrl: { type: String, required: true, default: '' },
-		modules: { type: [String], required: true, default: [] },
 		lastfmUsername: { type: String, required: false, default: '' },
 		referrer: { type: String, required: false, default: '' },
 		defaultCommandOptions: {
@@ -105,6 +114,18 @@ export const ChannelSchema = new Schema<IChannel>(
 			],
 			required: true,
 			default: [],
+		},
+		modules: {
+			type: {
+				smartemoteonly: {
+					type: {
+						enabled: { type: Boolean },
+						timeout: { type: Number },
+					},
+				},
+			},
+			required: true,
+			default: { smartemoteonly: { enabled: false, timeout: 0 } },
 		},
 		premium: {
 			type: {

@@ -3,7 +3,7 @@ import { ChatClient } from '@twurple/chat';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { PubSubClient } from '@twurple/pubsub/lib';
 import chalk from 'chalk';
-import { DefaultCommandOption } from '../../../Common';
+import { DefaultCommandOption, Modules } from '../../../Common';
 import { promises as fs } from 'fs-extra';
 import ob from '..';
 import OuraBot from '../Client';
@@ -173,7 +173,7 @@ export interface Module {
 	description: string;
 	requiresMod?: boolean;
 	hidden?: boolean;
-	execute: (ob: OuraBot, user: string, channel: Channel, message: string, msg: TwitchPrivateMessage) => void;
+	execute: (ob: OuraBot, user: string, channel: Channel, message: string, msg: TwitchPrivateMessage, data?: any) => void;
 }
 
 export enum Permission {
@@ -236,7 +236,7 @@ export async function getModules(): Promise<Map<string, Module>> {
 export class Channel {
 	public channel: string;
 	public id: string;
-	public enabledModules: string[] = [];
+	public modules: Modules;
 	public prefix: string;
 	public mongoId: string;
 	public emoteEvents: boolean;
@@ -263,7 +263,7 @@ export class Channel {
 
 		this.prefix = channelData.prefix;
 		this.mongoId = channelData._id;
-		this.enabledModules = channelData.modules;
+		this.modules = channelData.modules;
 		this.emoteEvents = channelData.emoteEvents;
 		this.defaultCommandOptions = channelData.defaultCommandOptions;
 		this.clipUrl = channelData.clipUrl;
