@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import OuraBot from '../../Client';
 import { Module, CommandReturn, Channel } from '../../Typings/Twitch';
 import { ModuleKey } from '../../../../Common/src';
+import { Emote } from '../../Typings/ThirdPartyEmotes';
 
 export const _module = new (class module implements Module {
 	name = 'smartemoteonly';
@@ -24,7 +25,15 @@ export const _module = new (class module implements Module {
 
 		if (isCheerMessage) return;
 
-		emotes.push(...(await ob.utils.getAllEmotes(Channel)).map((e) => e.name));
+		const otherEmotes: Emote[] = await ob.CacheManager.cache(
+			async () => {
+				return await ob.utils.getAllEmotes(Channel);
+			},
+			`smartEmoteOnly_${Channel.channel}`,
+			60
+		);
+
+		emotes.push(...(await otherEmotes).map((e: Emote) => e.name));
 
 		const splitMessage = message.split(' ');
 
