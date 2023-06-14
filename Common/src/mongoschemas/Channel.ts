@@ -19,6 +19,7 @@ export interface DefaultCommandOption {
 export interface ModuleKey {
 	smartemoteonly: {
 		enabled: boolean;
+		timeout: number; // in seconds, 0 is delete
 	};
 }
 
@@ -118,14 +119,13 @@ export const ChannelSchema = new Schema<IChannel>(
 			type: {
 				smartemoteonly: {
 					type: {
-						enabled: { type: Boolean, required: true },
+						enabled: { type: Boolean },
+						timeout: { type: Number },
 					},
-					required: true,
-					default: { enabled: false },
 				},
 			},
 			required: true,
-			default: { smartemoteonly: { enabled: false } },
+			default: { smartemoteonly: { enabled: false, timeout: 0 } },
 		},
 		premium: {
 			type: {

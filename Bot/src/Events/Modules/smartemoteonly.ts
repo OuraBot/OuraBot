@@ -11,8 +11,6 @@ export const _module = new (class module implements Module {
 	execute = async (ob: OuraBot, user: string, Channel: Channel, message: string, msg: TwitchPrivateMessage, data: ModuleKey['smartemoteonly']): Promise<void> => {
 		if (msg.userInfo.isMod == true || msg.userInfo.isBroadcaster == true || msg.userInfo.isVip) return;
 
-		console.log(data);
-
 		let isCheerMessage = false;
 
 		const emotes: string[] = [];
@@ -32,8 +30,15 @@ export const _module = new (class module implements Module {
 
 		for (let word of splitMessage) {
 			if (!emotes.includes(word)) {
-				// ob.twitch.say(Channel, `/delete ${msg.id}`);
-				ob.twitch.apiClient.moderation.deleteChatMessages(Channel.id, ob.config.twitch_id, msg.id);
+				if (data.timeout == 0) {
+					ob.twitch.apiClient.moderation.deleteChatMessages(Channel.id, ob.config.twitch_id, msg.id);
+				} else {
+					ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, {
+						reason: 'Smart emote only module is enabled (only Twitch or 3rd party emotes are allowed)',
+						duration: data.timeout,
+						user: msg.userInfo.userId,
+					});
+				}
 				return;
 			}
 		}

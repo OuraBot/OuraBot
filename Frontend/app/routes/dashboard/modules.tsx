@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Grid, Group, Switch, Text, Title } from '@mantine/core';
+import { Button, Card, Divider, Grid, Group, NumberInput, Switch, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Prism } from '@mantine/prism';
 import { Form, useLoaderData } from '@remix-run/react';
@@ -10,6 +10,7 @@ import { InfoCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
+import { inBounds } from './commands';
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -51,9 +52,19 @@ export async function action({ request }: ActionArgs) {
 	switch (module) {
 		case 'smartemoteonly':
 			{
+				const rawTimeout = formData.get('timeout');
+				if (!rawTimeout) throw new Error('timeout is required');
+
+				const timeout = parseInt(rawTimeout.toString());
+
+				if (isNaN(timeout)) throw new Error('timeout must be a number');
+
+				if (!inBounds(0, 3600, timeout)) throw new Error('timeout must be between 0 and 3600 seconds');
+
 				const modules = await query('UPDATE', 'Modules', channel.token, session.json.id, {
 					name: 'smartemoteonly',
 					enabled: enabled,
+					timeout: timeout,
 				});
 				console.log(modules);
 			}
@@ -69,7 +80,7 @@ export default function Modules() {
 	return (
 		<>
 			<Grid>
-				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} />
+				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} timeout={channel.modules.smartemoteonly.timeout} />
 			</Grid>
 			<Prism withLineNumbers language="json">
 				{JSON.stringify(channel, null, 2)}
@@ -78,8 +89,11 @@ export default function Modules() {
 	);
 }
 
-function CardSmartEmoteOnly(props: { enabled: boolean }) {
+function CardSmartEmoteOnly(props: { enabled: boolean; timeout: number }) {
+	console.log({ ...props });
+
 	const [enabled, setEnabled] = useState(props.enabled);
+	const [timeout, _setTimeout] = useState(props.timeout ?? 0);
 
 	return (
 		<Grid.Col md={6} lg={3}>
@@ -102,9 +116,23 @@ function CardSmartEmoteOnly(props: { enabled: boolean }) {
 
 					<input type="hidden" name="module" value="smartemoteonly" />
 
-					<Switch name="enabled" id="enabled" my="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
+					<Switch name="enabled" id="enabled" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
 
-					<Button type="submit" color="blue" fullWidth radius="md" disabled={enabled === props.enabled}>
+					<NumberInput
+						name="timeout"
+						id="timeout"
+						label="Timeout length (seconds)"
+						description="How long to timeout users.  Use 0 to delete messages instead."
+						min={0}
+						max={3600}
+						step={1}
+						value={timeout}
+						onChange={(val) => {
+							_setTimeout(val ?? 0);
+						}}
+					/>
+
+					<Button type="submit" color="blue" fullWidth mt="md" radius="md" disabled={enabled === props.enabled && timeout === props.timeout}>
 						Save
 					</Button>
 				</Card>

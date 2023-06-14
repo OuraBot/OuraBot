@@ -11,8 +11,9 @@ export default function handler(Event: Event): Promise<Event> {
 		switch (Event.data.name) {
 			case 'smartemoteonly':
 				{
-					const { enabled } = Event.data;
+					const { enabled, timeout } = Event.data;
 					channel.modules.smartemoteonly.enabled = enabled;
+					channel.modules.smartemoteonly.timeout = timeout;
 
 					channel.markModified('modules');
 					await channel.save();
