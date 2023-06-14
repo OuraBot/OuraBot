@@ -81,17 +81,16 @@ export default function Modules() {
 		<>
 			<Grid>
 				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} timeout={channel.modules.smartemoteonly.timeout} />
+				<MoreComingSoon />
 			</Grid>
-			<Prism withLineNumbers language="json">
+			{/* <Prism withLineNumbers language="json">
 				{JSON.stringify(channel, null, 2)}
-			</Prism>
+			</Prism> */}
 		</>
 	);
 }
 
 function CardSmartEmoteOnly(props: { enabled: boolean; timeout: number }) {
-	console.log({ ...props });
-
 	const [enabled, setEnabled] = useState(props.enabled);
 	const [timeout, _setTimeout] = useState(props.timeout ?? 0);
 
@@ -137,6 +136,27 @@ function CardSmartEmoteOnly(props: { enabled: boolean; timeout: number }) {
 					</Button>
 				</Card>
 			</Form>
+		</Grid.Col>
+	);
+}
+
+function MoreComingSoon() {
+	return (
+		<Grid.Col md={6} lg={3}>
+			<Card shadow="sm" p="lg" radius="md" withBorder>
+				<Group position="apart" mb="xs">
+					<Title order={3}>More coming soon!</Title>
+				</Group>
+
+				<Text size="sm">We're working on more modules for you to use. Check back soon!</Text>
+				<Divider my="md" />
+				<Text size="sm">
+					Have a module idea? Suggest it{' '}
+					<Text variant="link" component="a" href="/dashboard/suggest">
+						here!
+					</Text>{' '}
+				</Text>
+			</Card>
 		</Grid.Col>
 	);
 }
