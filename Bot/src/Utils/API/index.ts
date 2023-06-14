@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosRespon
 import ob from '../..';
 
 export class API {
-	async get<Type>(url: string, cache: number, options?: AxiosRequestConfig): Promise<APIReturn<Type>> {
+	async get<Type>(url: string, cache: number, options?: AxiosRequestConfig, cacheAnyways: boolean = false): Promise<APIReturn<Type>> {
 		// instead of using ob's cache manager, we use this slightly modified version
 		const cacheHash = ob.utils.generateMD5(url + (options ? JSON.stringify(options) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
@@ -21,12 +21,22 @@ export class API {
 		try {
 			response = await axios.get(url, options);
 		} catch (err) {
-			return {
-				error: err,
-				cached: false,
-				data: null,
-				invalidateCache: this.invalidateCache.bind(this, cacheHash),
-			};
+			if (cacheAnyways) {
+				ob.redis.set(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash, JSON.stringify({}), 'EX', cache);
+				return {
+					error: err,
+					cached: false,
+					data: null,
+					invalidateCache: this.invalidateCache.bind(this, cacheHash),
+				};
+			} else {
+				return {
+					error: err,
+					cached: false,
+					data: null,
+					invalidateCache: this.invalidateCache.bind(this, cacheHash),
+				};
+			}
 		}
 
 		const returnData: APIReturnPartial<Type> = {

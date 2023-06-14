@@ -449,7 +449,14 @@ export default class Utils {
 
 	async get7tvGlobalmotes(): Promise<Emote[]> {
 		// TODO: migrate to v3 api when it arrives
-		let resp = await ob.api.get<SevenTVEmote[]>('https://api.7tv.app/v2/emotes/global', 3600);
+		let resp = await ob.api.get<SevenTVEmote[]>(
+			'https://api.7tv.app/v2/emotes/global',
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			ob.logger.warn(`Error getting 7tv global emotes: ${resp.error}`, 'ob.utils');
@@ -465,7 +472,14 @@ export default class Utils {
 
 	async get7tvUserData(user: string): Promise<SevenTVRESTUserResponse> {
 		// TODO: migrate to v3 api when it arrives
-		let resp = await ob.api.get<SevenTVRESTUserResponse>(`https://api.7tv.app/v2/users/${user}`, 3600);
+		let resp = await ob.api.get<SevenTVRESTUserResponse>(
+			`https://api.7tv.app/v2/users/${user}`,
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			ob.logger.warn(`Error getting 7tv user data for ${user}: ${resp.error}`, 'ob.utils');
@@ -476,7 +490,14 @@ export default class Utils {
 	}
 
 	async getFfzChannelEmotes(channel: string): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(`https://api.frankerfacez.com/v1/room/${channel}`, 3600);
+		let resp = await ob.api.get<any>(
+			`https://api.frankerfacez.com/v1/room/${channel}`,
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
@@ -499,7 +520,14 @@ export default class Utils {
 	}
 
 	async getFfzGlobalEmotes(): Promise<Emote[]> {
-		let resp = await ob.api.get<any>('https://api.frankerfacez.com/v1/set/global', 3600);
+		let resp = await ob.api.get<any>(
+			'https://api.frankerfacez.com/v1/set/global',
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			ob.logger.warn(`Error getting ffz global emotes: ${resp.error}`, 'ob.utils');
@@ -521,7 +549,14 @@ export default class Utils {
 	}
 
 	async getBttvChannelEmotes(channelId: string): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(`https://api.betterttv.net/3/cached/users/twitch/${channelId}`, 3600);
+		let resp = await ob.api.get<any>(
+			`https://api.betterttv.net/3/cached/users/twitch/${channelId}`,
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
@@ -540,7 +575,14 @@ export default class Utils {
 	}
 
 	async getBttvGlobalEmotes(): Promise<Emote[]> {
-		let resp = await ob.api.get<any>('https://api.betterttv.net/3/cached/emotes/global', 3600);
+		let resp = await ob.api.get<any>(
+			'https://api.betterttv.net/3/cached/emotes/global',
+			3600,
+			{
+				timeout: 5000,
+			},
+			true
+		);
 
 		if (resp.error) {
 			ob.logger.warn(`Error getting bttv global emotes: ${resp.error}`, 'ob.utils');
