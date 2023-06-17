@@ -1,11 +1,7 @@
 import { Button, Card, Divider, Grid, Group, NumberInput, Switch, Text, Title } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { Prism } from '@mantine/prism';
 import { Form, useLoaderData } from '@remix-run/react';
-import { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
-import { set } from 'mongoose';
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
 import { useState } from 'react';
-import { json } from 'remix-utils';
 import { InfoCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
@@ -45,13 +41,15 @@ export async function action({ request }: ActionArgs) {
 	console.log(formData.forEach((value, key) => console.log(`${key}: ${value}`)));
 
 	const module = formData.get('module');
-	const enabled = formData.get('enabled') === 'on' ? true : false;
+	// const enabled = formData.get('enabled') === 'on' ? true : false;
 
-	console.log({ module, enabled });
+	console.log({ module });
 
 	switch (module) {
 		case 'smartemoteonly':
 			{
+				const enabled = formData.get('enabledSEO') === 'on' ? true : false;
+
 				const rawTimeout = formData.get('timeout');
 				if (!rawTimeout) throw new Error('timeout is required');
 
@@ -69,6 +67,18 @@ export async function action({ request }: ActionArgs) {
 				console.log(modules);
 			}
 			break;
+
+		case 'xqclivekick':
+			{
+				const enabled = formData.get('enabledXLK') === 'on' ? true : false;
+
+				const modules = await query('UPDATE', 'Modules', channel.token, session.json.id, {
+					name: 'xqclivekick',
+					enabled: enabled,
+				});
+				console.log(modules);
+			}
+			break;
 	}
 
 	return null;
@@ -81,6 +91,7 @@ export default function Modules() {
 		<>
 			<Grid>
 				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} timeout={channel.modules.smartemoteonly.timeout} />
+				<CardxQcLiveKick enabled={channel.modules.xqclivekick.enabled} />
 				<MoreComingSoon />
 			</Grid>
 			{/* <Prism withLineNumbers language="json">
@@ -115,7 +126,7 @@ function CardSmartEmoteOnly(props: { enabled: boolean; timeout: number }) {
 
 					<input type="hidden" name="module" value="smartemoteonly" />
 
-					<Switch name="enabled" id="enabled" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
+					<Switch name="enabledSEO" id="enabledSEO" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
 
 					<NumberInput
 						name="timeout"
@@ -132,6 +143,39 @@ function CardSmartEmoteOnly(props: { enabled: boolean; timeout: number }) {
 					/>
 
 					<Button type="submit" color="blue" fullWidth mt="md" radius="md" disabled={enabled === props.enabled && timeout === props.timeout}>
+						Save
+					</Button>
+				</Card>
+			</Form>
+		</Grid.Col>
+	);
+}
+
+function CardxQcLiveKick(props: { enabled: boolean }) {
+	const [enabled, setEnabled] = useState(props.enabled);
+
+	return (
+		<Grid.Col md={6} lg={3}>
+			<Form method="post">
+				<Card shadow="sm" p="lg" radius="md" withBorder>
+					<Group position="apart" mb="xs">
+						<Title order={3}>xQc Live on Kick</Title>
+					</Group>
+
+					<Text size="sm">
+						Notifies your chat when xQc is live on{' '}
+						<Text component="a" variant="link" href="https://kick.com" target="_blank">
+							Kick
+						</Text>
+					</Text>
+
+					<Divider mt="sm" />
+
+					<input type="hidden" name="module" value="xqclivekick" />
+
+					<Switch name="enabledXLK" id="enabledXLK" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
+
+					<Button type="submit" color="blue" fullWidth mt="md" radius="md" disabled={enabled === props.enabled}>
 						Save
 					</Button>
 				</Card>

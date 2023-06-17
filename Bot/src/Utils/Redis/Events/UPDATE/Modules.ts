@@ -26,6 +26,23 @@ export default function handler(Event: Event): Promise<Event> {
 					});
 				}
 				break;
+
+			case 'xqclivekick':
+				{
+					const { enabled } = Event.data;
+					channel.modules.xqclivekick.enabled = enabled;
+
+					channel.markModified('modules');
+					await channel.save();
+
+					// We don't clear the cache here because xqclivekick doesn't connect with any messages
+
+					resolve({
+						...Event,
+						status: StatusCodes.OK,
+					});
+				}
+				break;
 		}
 
 		resolve(Event);

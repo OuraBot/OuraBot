@@ -41,6 +41,7 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 import gradient = require('gradient-string');
 import { Counter, Gauge, register } from 'prom-client';
+import { PusherSubscriber } from '../Utils/Kick';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -110,6 +111,7 @@ class OuraBot {
 		commandsErrored: Counter;
 		commandsUnsuccessful: Counter;
 	};
+	pusher = new PusherSubscriber();
 	exec = exec;
 	execSync = execSync;
 

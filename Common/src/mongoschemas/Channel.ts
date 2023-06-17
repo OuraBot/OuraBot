@@ -21,6 +21,9 @@ export interface ModuleKey {
 		enabled: boolean;
 		timeout: number; // in seconds, 0 is delete
 	};
+	xqclivekick: {
+		enabled: boolean;
+	};
 }
 
 export type Modules = {
@@ -122,10 +125,17 @@ export const ChannelSchema = new Schema<IChannel>(
 						enabled: { type: Boolean },
 						timeout: { type: Number },
 					},
+					required: true,
+				},
+				xqclivekick: {
+					type: {
+						enabled: { type: Boolean },
+					},
+					required: true,
 				},
 			},
 			required: true,
-			default: { smartemoteonly: { enabled: false, timeout: 0 } },
+			default: { smartemoteonly: { enabled: false, timeout: 0 }, xqclivekick: { enabled: false } },
 		},
 		premium: {
 			type: {
