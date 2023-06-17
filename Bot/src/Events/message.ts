@@ -33,11 +33,15 @@ export const event: Events = {
 					// @ts-ignore
 					const moduleData = modules[moduleKey];
 
-					if (moduleData.enabled) {
-						ob.logger.debug(`Executing module "${module.name}" in ${channel.channel} (${channel.id})`, 'ob.twitch.events.message');
-						module.execute(ob, user, channel, message, msg, moduleData);
-					} else {
-						ob.logger.debug(`Module "${module.name}" in ${channel.channel} (${channel.id}) is disabled`, 'ob.twitch.events.message');
+					try {
+						if (moduleData.enabled) {
+							ob.logger.debug(`Executing module "${module.name}" in ${channel.channel} (${channel.id})`, 'ob.twitch.events.message');
+							module.execute(ob, user, channel, message, msg, moduleData);
+						} else {
+							ob.logger.debug(`Module "${module.name}" in ${channel.channel} (${channel.id}) is disabled`, 'ob.twitch.events.message');
+						}
+					} catch (e) {
+						ob.logger.warn(`Error executing module "${module.name}" in ${channel.channel} (${channel.id}): ${e}`, 'ob.twitch.events.message');
 					}
 				}
 			}
