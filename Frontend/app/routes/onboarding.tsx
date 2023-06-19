@@ -46,6 +46,15 @@ export async function action({ request }: ActionArgs) {
 		token: token,
 		profile_image_url: session.profile_image_url,
 		referrer: referrer,
+		modules: {
+			smartemoteonly: {
+				enabled: false,
+				timeout: 0,
+			},
+			xqclivekick: {
+				enabled: false,
+			},
+		},
 	});
 
 	let resp = await query('UPDATE', 'Join', token, session.id, {
