@@ -59,7 +59,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Commands / OuraBot',
+		title: 'Commands - OuraBot',
 		description: 'Manage your commands',
 	};
 };

@@ -22,9 +22,9 @@ export const meta: MetaFunction = ({ data }) => {
 	const { channel } = data;
 
 	return {
-		title: `${channel.login}'s Commands / OuraBot`,
+		title: `${channel.login}'s Commands - OuraBot`,
 		description: 'A list of commands available in a channel',
-		'og:title': `${channel.login}'s Commands / OuraBot`,
+		'og:title': `${channel.login}'s Commands - OuraBot`,
 		'og:description': 'A list of commands available in a channel',
 		'og:image': channel.profile_image_url,
 		'og:url': `https://ourabot.com/commands/${channel.login}`,

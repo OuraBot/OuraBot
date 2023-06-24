@@ -33,7 +33,7 @@ export async function loader({ params }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Dashboard / OuraBot',
+		title: 'Dashboard - OuraBot',
 		description: 'Dashboard',
 	};
 };

@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Settings / OuraBot',
+		title: 'Settings - OuraBot',
 		description: 'Manage your settings',
 	};
 };

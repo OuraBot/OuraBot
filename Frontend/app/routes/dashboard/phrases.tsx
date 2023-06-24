@@ -42,7 +42,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Phrases / OuraBot',
+		title: 'Phrases - OuraBot',
 		description: 'Manage your phrases',
 	};
 };

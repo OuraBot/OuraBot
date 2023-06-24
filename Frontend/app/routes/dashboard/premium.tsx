@@ -49,7 +49,7 @@ const pricePoints = [
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Premium / OuraBot',
+		title: 'Premium - OuraBot',
 		description: 'Purchase and manage Premium',
 	};
 };

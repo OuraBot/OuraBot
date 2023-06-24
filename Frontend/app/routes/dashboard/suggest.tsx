@@ -8,7 +8,7 @@ import { ChannelModel } from '~/services/models/Channel';
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Suggest / OuraBot',
+		title: 'Suggest - OuraBot',
 		description: 'Suggest features for OuraBot',
 	};
 };

@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
 	return {
-		title: 'Modules / OuraBot',
+		title: 'Modules - OuraBot',
 		description: 'Manage your modules',
 	};
 };
