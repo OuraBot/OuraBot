@@ -62,7 +62,7 @@ export async function action({ request }: ActionArgs) {
 	});
 
 	if (resp.status !== 200) {
-		throw new Error(`UPDATE Join returned error code ${resp.status}`);
+		throw new Error(`UPDATE Join returned error code ${resp.status} \n\nIs the bot banned from your channel? Try /unban oura_bot in your chat.`);
 	} else {
 		return redirect(`/dashboard`);
 	}
