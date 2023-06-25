@@ -2,7 +2,11 @@ import ob from '../../../..';
 import { Event, StatusCodes } from '../../EventManager';
 
 export default function handler(Event: Event): Promise<Event> {
-	return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
+		const channel = await ob.db.models.Channel.model.findOne({
+			id: Event.userId,
+		});
+
 		ob.twitch.chatClient.join(Event.data.login);
 		ob.twitch.say(Event.data.login, `MrDestructoid 👋 @${Event.data.login} please give me moderator permissions with '/mod @oura_bot'`);
 
@@ -36,6 +40,7 @@ export default function handler(Event: Event): Promise<Event> {
 			}
 		} catch (err) {
 			ob.logger.warn(`Failed to join channel for the first time: ${err}`, `ob.eventmanager.update.join`);
+			channel.alerts.push('Failed to join channel. Please unban the bot with /unban oura_bot');
 
 			resolve({
 				...Event,

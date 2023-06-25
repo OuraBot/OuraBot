@@ -59,6 +59,8 @@ export interface IChannel extends Schema {
 	referrer: string;
 	// Moderation modules
 	modules: Modules;
+	// Alerts
+	alerts: string[];
 	// Premium information
 	premium: {
 		orders: {
@@ -136,6 +138,11 @@ export const ChannelSchema = new Schema<IChannel>(
 			},
 			required: true,
 			default: { smartemoteonly: { enabled: false, timeout: 0 }, xqclivekick: { enabled: false } },
+		},
+		alerts: {
+			type: [String],
+			required: true,
+			default: [],
 		},
 		premium: {
 			type: {
