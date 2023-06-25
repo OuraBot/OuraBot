@@ -82,6 +82,8 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
+	const message = error.message;
+
 	return (
 		<Mantine>
 			<Container size="lg">
@@ -95,7 +97,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 						to return to the homepage.
 					</Text>
 					<ScrollArea>
-						<pre>{error.stack}</pre>
+						<pre>{error.message}</pre>
 					</ScrollArea>
 				</Paper>
 			</Container>
