@@ -43,8 +43,16 @@ export async function action({ request }: ActionArgs) {
 	await ChannelModel.create({
 		login: session.login,
 		id: session.id,
+		role: 0,
 		token: token,
+		managers: [],
+		banned: null,
+		prefix: '!',
 		profile_image_url: session.profile_image_url,
+		emoteEvents: false,
+		clipUrl: '',
+		defaultCommandOptions: [],
+		lastfmUsername: '',
 		referrer: referrer,
 		modules: {
 			smartemoteonly: {
@@ -55,6 +63,10 @@ export async function action({ request }: ActionArgs) {
 				enabled: false,
 			},
 		},
+		premium: {
+			orders: [],
+		},
+		phrases: [],
 		alerts: [],
 	});
 
