@@ -46,6 +46,15 @@ export const event: Events = {
 						.then(() => {
 							ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 
+							if (channel.alerts?.length > 0) {
+								channel.alerts = channel.alerts.filter((a) => a !== 'Failed to join channel. Please unban the bot with /unban oura_bot');
+
+								channel.markModified('alerts');
+								channel.save();
+
+								ob.logger.info(`Removed join alert for ${channel.login}`, 'ob.twitch.events.ready');
+							}
+
 							ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
 								ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
 
@@ -73,6 +82,11 @@ export const event: Events = {
 						})
 						.catch((err) => {
 							ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
+
+							channel.alerts.push('Failed to join channel. Please unban the bot with /unban oura_bot');
+
+							channel.markModified('alerts');
+							channel.save();
 						});
 				} else {
 					ob.logger.info(`Already joined #${chalk.bold(channel.login)} - skipping`, 'ob.twitch.events.ready');

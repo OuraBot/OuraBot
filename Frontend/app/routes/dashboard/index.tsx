@@ -1,11 +1,17 @@
-import { Alert, Center, Container, Text } from '@mantine/core';
+import { Alert, Center, Container, List, Text } from '@mantine/core';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderArgs, MetaFunction, json } from '@remix-run/server-runtime';
 import { redisConnect } from '~/services/redis.server';
-import { AlertCircle } from 'tabler-icons-react';
+import { AlertCircle, AlertTriangle } from 'tabler-icons-react';
+import { authenticator } from '~/services/auth.server';
+import { ChannelModel } from '~/services/models/Channel';
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ request }: LoaderArgs) {
 	const { pub, sub } = await redisConnect();
+	const session = await authenticator.isAuthenticated(request, {
+		failureRedirect: '/login',
+	});
+	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	const cached = await pub.get('obfrontend:status');
 
@@ -28,6 +34,7 @@ export async function loader({ params }: LoaderArgs) {
 
 	return {
 		online: status,
+		channel,
 	};
 }
 
@@ -39,7 +46,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-	const { online } = useLoaderData();
+	const { online, channel } = useLoaderData();
 
 	return (
 		<Text>
@@ -51,6 +58,16 @@ export default function Index() {
 					</Text>
 				</Alert>
 			)}
+			{channel.alerts.length > 0 ? (
+				<Alert icon={<AlertTriangle size="1rem" />} title="Alerts" color="orange" radius="md" variant="light" my="sm">
+					You have some alerts that may be preventing OuraBot from working properly:
+					<List withPadding size="sm">
+						{channel.alerts.map((alert: string) => (
+							<List.Item key={Math.random()}>{alert}</List.Item>
+						))}
+					</List>
+				</Alert>
+			) : null}
 			OuraBot is still in beta. Please report any bugs to our{' '}
 			<Text variant="link" component="a" href="https://discord.gg/ZHqpuszdaM" target="_blank">
 				Discord.
