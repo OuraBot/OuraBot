@@ -55,6 +55,7 @@ export async function action({ request }: ActionArgs) {
 				enabled: false,
 			},
 		},
+		alerts: [],
 	});
 
 	let resp = await query('UPDATE', 'Join', token, session.id, {
