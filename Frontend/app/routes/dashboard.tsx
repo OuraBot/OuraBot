@@ -141,8 +141,53 @@ const useStyles = createStyles((theme, _params, getRef) => {
 				},
 			},
 		},
+
+		kick: {
+			color: '#53fc18',
+
+			'&:hover': {
+				color: '#3ad305',
+			},
+		},
+
+		kickIcon: {
+			ref: icon,
+			color: '#53fc18',
+			marginRight: theme.spacing.sm,
+		},
+
+		kickActive: {
+			'&, &:hover': {
+				backgroundColor: theme.fn.rgba('#53fc18', 0.2),
+				color: '#3ad305',
+				[`& .${icon}`]: {
+					color: '#3ad305',
+				},
+			},
+		},
 	};
 });
+
+function KickIcon({ size = 24, color = 'currentColor', ...restProps }) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			className="icon icon-tabler icon-tabler-123"
+			width={size}
+			height={size}
+			viewBox="0 0 24 24"
+			stroke={color}
+			strokeWidth="2"
+			fill="none"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			{...restProps}
+		>
+			<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+			<path d="M4 4h5v4h3v-2h2v-2h6v4h-2v2h-2v4h2v2h2v4h-6v-2h-2v-2h-3v4h-5z"></path>
+		</svg>
+	);
+}
 
 const _data = [
 	{ link: '/dashboard', label: 'Dashboard', icon: SquaresFilled },
@@ -150,6 +195,8 @@ const _data = [
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
 	{ link: '/dashboard/suggest', label: 'Suggest', icon: Friends },
 	{ link: '/dashboard/modules', label: 'Modules', icon: Category },
+	{ link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
+
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
 	{
 		link: '/dashboard/premium',
@@ -211,6 +258,8 @@ export default function Dashboard() {
 							[classes.linkActive]: item.label === active,
 							[classes.subscribe]: item.special,
 							[classes.subscribeActive]: item.special && item.label === active,
+							[classes.kick]: item.kick,
+							[classes.kickActive]: item.kick && item.label === active,
 						})}
 						to={item.link}
 						key={item.label}
@@ -221,6 +270,7 @@ export default function Dashboard() {
 						<item.icon
 							className={cx(classes.linkIcon, {
 								[classes.subscribeIcon]: item.special,
+								[classes.kickIcon]: item.kick,
 							})}
 						/>
 						<span>{item.label}</span>
@@ -233,12 +283,15 @@ export default function Dashboard() {
 							[classes.linkActive]: item.label === active,
 							[classes.subscribe]: item.special,
 							[classes.subscribeActive]: item.special && item.label === active,
+							[classes.kick]: item.kick,
+							[classes.kickActive]: item.kick && item.label === active,
 						})}
 						key={item.label}
 					>
 						<item.icon
 							className={cx(classes.linkIcon, {
 								[classes.subscribeIcon]: item.special,
+								[classes.kickIcon]: item.kick,
 							})}
 						/>
 						<span>{item.label}</span>
