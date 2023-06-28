@@ -251,7 +251,7 @@ export default function Dashboard() {
 			);
 		} else if (!item.admin) {
 			if (item.label !== active) {
-				prefetchLinks.push(item.link);
+				// prefetchLinks.push(item.link);
 				links.push(
 					<Link
 						className={cx(classes.link, {
@@ -303,9 +303,9 @@ export default function Dashboard() {
 
 	return (
 		<>
-			{prefetchLinks.map((link) => (
+			{/* {prefetchLinks.map((link) => (
 				<PrefetchPageLinks page={link} key={link} />
-			))}
+			))} */}
 
 			<AppShell
 				navbarOffsetBreakpoint="sm"
