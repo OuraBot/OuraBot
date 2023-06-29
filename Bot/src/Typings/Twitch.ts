@@ -142,6 +142,11 @@ export class CommandReturn {
 	noping?: boolean;
 }
 
+export enum PlatformEnum {
+	Twitch,
+	Kick,
+}
+
 export interface Command {
 	name: string;
 	description: string;
@@ -159,6 +164,7 @@ export interface Command {
 	modifiablePermissions?: boolean;
 	chatMode?: 'online' | 'both' | 'offline';
 	category: CategoryEnum;
+	platforms: PlatformEnum[];
 	execute: (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string) => Promise<CommandReturn>;
 }
 

@@ -1,6 +1,6 @@
 import OuraBot from '../../Client';
 // import * as _ob from '../../index';
-import { Command, CommandReturn, Channel, CategoryEnum, Permission } from '../../Typings/Twitch';
+import { Command, CommandReturn, Channel, CategoryEnum, Permission, PlatformEnum } from '../../Typings/Twitch';
 
 export const cmd = new (class command implements Command {
 	name = 'eval';
@@ -12,6 +12,7 @@ export const cmd = new (class command implements Command {
 	userCooldown = 0;
 	channelCooldown = 0;
 	category = CategoryEnum.Utility;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (_ob: OuraBot, user: string, Channel: Channel, args: string[]): Promise<CommandReturn> => {
 		const ob = _ob;
 		let code = args.join(' ');
