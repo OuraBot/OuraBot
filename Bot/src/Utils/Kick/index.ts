@@ -2,6 +2,10 @@ import Pusher from 'pusher-js';
 import * as PusherTypes from 'pusher-js';
 import ob from '../..';
 import cycleTLS from 'cycletls';
+import EventEmitter from 'events';
+import { CacheTimes } from '../API/constants';
+import { Document, Types } from 'mongoose';
+import { IChannel } from '../../../../Common/src';
 
 export class PusherSubscriber {
 	private pusher: Pusher;
@@ -38,6 +42,20 @@ export class PusherSubscriber {
 }
 
 export class KickController {
+	private pusher: Pusher;
+	public channels: Map<string, PusherTypes.Channel> = new Map();
+	public tempChannels: string[] = [];
+
+	constructor() {
+		this.pusher = new Pusher('eb1d5f283081a78b932c', {
+			cluster: 'us2',
+		});
+
+		this.pusher.connection.bind('error', (err: any) => {
+			ob.logger.warn(`Pusher error: ${err}`, 'ob.utils.pusher');
+		});
+	}
+
 	async fetchChannel(channel: string): Promise<Channel | null> {
 		const response = await ob.CacheManager.cache(
 			async () => {
@@ -61,6 +79,80 @@ export class KickController {
 			return null;
 		} else {
 			return response.body as Channel;
+		}
+	}
+
+	async joinChannel(channel_id: string): Promise<void> {
+		const conn = this.pusher.subscribe(`chatrooms.${channel_id}.v2`);
+		// this.channels.set(channel_id, conn);
+
+		// conn.bind_global((event: any, data: any) => {
+		// 	ob.logger.info(`${event}: ${JSON.stringify(data, null, 2)}`, `ob.utils.pusher`);
+		// });
+
+		conn.bind('App\\Events\\ChatMessageEvent', async (data: any) => this.handleChatMessage(JSON.parse(JSON.stringify(data))));
+	}
+
+	async joinChannelTemporarily(channel_id: string): Promise<void> {
+		this.tempChannels.push(channel_id);
+		const conn = this.pusher.subscribe(`chatrooms.${channel_id}.v2`);
+		// this.channels
+
+		conn.bind('App\\Events\\ChatMessageEvent', async (data: any) => this.handleChatMessage(JSON.parse(JSON.stringify(data))));
+
+		setTimeout(() => {
+			if (!this.tempChannels.includes(channel_id)) return; // If not in the temp array then they confirmed
+			this.pusher.unsubscribe(`chatrooms.${channel_id}.v2`);
+			ob.logger.info(`Unsubscribed from ${channel_id} (it was temp)`, 'ob.kick.events.chatmessage');
+		}, 1000 * 60 * 5);
+	}
+
+	async handleChatMessage(data: ChatMessage) {
+		if (data.sender.username === ob.config.login) return;
+		ob.logger.info(`${data.sender.username}: ${data.content}`, 'ob.kick.events.chatmessage');
+
+		const channelData: Document<unknown, any, IChannel> &
+			IChannel & {
+				_id: Types.ObjectId;
+			} = await ob.CacheManager.cache(
+			async () => {
+				console.log(data, 'data');
+				const channel = await ob.db.models.Channel.model.findOne({ 'kick.chatroom_id': data.chatroom_id });
+				console.log(channel, 'cannel');
+				if (!channel) return null;
+
+				return channel;
+			},
+			`kick_${data.chatroom_id}_channelInfo`,
+			CacheTimes.ChannelInfo
+		);
+
+		if (!channelData) return;
+
+		ob.logger.info(`Found channel ${channelData.login} for chatroom ${data.chatroom_id}`, 'ob.kick.events.chatmessage');
+
+		if (!channelData.kick.secretConfirmed) {
+			if (new Date(channelData.kick.codeExpiresAt).getTime() < Date.now()) {
+				ob.logger.info(`Code expired for ${channelData.login}`, 'ob.kick.events.chatmessage');
+				channelData.kick.verificationCode = '';
+				channelData.kick.codeExpiresAt = null;
+				channelData.save();
+				return;
+			}
+
+			if (new Date(channelData.kick.codeExpiresAt).getTime() > Date.now()) {
+				if (data.content === `!verify ${channelData.kick.verificationCode}`) {
+					this.tempChannels = this.tempChannels.filter((c) => c !== `${data.chatroom_id}`);
+					ob.logger.info(`Code confirmed for ${channelData.login}`, 'ob.kick.events.chatmessage');
+					channelData.kick.secretConfirmed = true;
+					channelData.kick.verificationCode = '';
+					channelData.kick.codeExpiresAt = null;
+					channelData.kick.linkedAt = new Date();
+					channelData.save();
+					ob.CacheManager.clear(`kick_${data.chatroom_id}_channelInfo`);
+					return;
+				}
+			}
 		}
 	}
 }
@@ -145,5 +237,48 @@ interface Channel {
 		emotes_mode: boolean;
 		message_interval: number;
 		following_min_duration: number;
+	};
+}
+
+/*
+	{
+  "id": "9ed11022-171a-47f1-8aab-5170f204d650",
+  "chatroom_id": 1592050,
+  "content": "[emote:755487:emojiAngry]",
+  "type": "message",
+  "created_at": "2023-06-28T20:35:30+00:00",
+  "sender": {
+    "id": 1647653,
+    "username": "AuroR6S",
+    "slug": "auror6s",
+    "identity": {
+      "color": "#FBCFD8",
+      "badges": [
+        {
+          "type": "broadcaster",
+          "text": "Broadcaster"
+        }
+      ]
+    }
+  }
+}
+*/
+interface ChatMessage {
+	id: string;
+	chatroom_id: number;
+	content: string;
+	type: string;
+	created_at: string;
+	sender: {
+		id: number;
+		username: string;
+		slug: string;
+		identity: {
+			color: string;
+			badges: {
+				type: string;
+				text: string;
+			}[];
+		};
 	};
 }
