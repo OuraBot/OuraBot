@@ -225,9 +225,12 @@ export default function Kick() {
 						<Text mt="sm">
 							Open your Kick chat and say <Code>!verify {data?.data?.verificationCode || channel?.kick?.verificationCode}</Code>
 						</Text>
+						<Text size="xs">Once done, press the button below to check if it worked</Text>
 
 						<Form method="get">
-							<Button type="submit">Check</Button>
+							<Button type="submit" mt="xs">
+								Check
+							</Button>
 						</Form>
 					</>
 				) : null}
