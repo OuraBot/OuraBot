@@ -490,95 +490,106 @@ export default class Utils {
 	}
 
 	async getFfzChannelEmotes(channel: string): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			`https://api.frankerfacez.com/v1/room/${channel}`,
-			3600,
-			{
-				timeout: 5000,
-			},
-			true
-		);
+		try {
 
-		if (resp.error) {
-			if (resp.error.code === '404') return [];
-			ob.logger.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`, 'ob.utils');
-			return [];
-		}
-
-		let emotes: Emote[] = [];
-		for (let set in resp.data.response.data.sets) {
-			for (let emote of resp.data.response.data.sets[set].emoticons) {
-				emotes.push({
-					provider: 'FFZ',
-					id: emote.id,
-					name: emote.name,
-				});
+			let resp = await ob.api.get<any>(
+				`https://api.frankerfacez.com/v1/room/${channel}`,
+				3600,
+				{
+					timeout: 5000,
+				},
+				true
+				);
+				
+				if (resp.error) {
+					if (resp.error.code === '404') return [];
+					ob.logger.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`, 'ob.utils');
+					return [];
+				}
+				
+				let emotes: Emote[] = [];
+				for (let set in resp.data.response.data.sets) {
+					for (let emote of resp.data.response.data.sets[set].emoticons) {
+						emotes.push({
+							provider: 'FFZ',
+							id: emote.id,
+							name: emote.name,
+						});
+					}
+				}
+				
+				return emotes;
+			} catch (e) {
+				// bandaid solution while im on vacation
+				return [];
 			}
-		}
-
-		return emotes;
-	}
+			}
 
 	async getFfzGlobalEmotes(): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			'https://api.frankerfacez.com/v1/set/global',
-			3600,
-			{
-				timeout: 5000,
-			},
-			true
-		);
+		try {
 
-		if (resp.error) {
-			ob.logger.warn(`Error getting ffz global emotes: ${resp.error}`, 'ob.utils');
-			return [];
-		}
-
-		let emotes: Emote[] = [];
-		for (let set in resp.data.response.data.sets) {
-			for (let emote of resp.data.response.data.sets[set].emoticons) {
-				emotes.push({
-					provider: 'FFZ',
-					id: emote.id,
-					name: emote.name,
-				});
+			let resp = await ob.api.get<any>(
+				'https://api.frankerfacez.com/v1/set/global',
+				3600,
+				{
+					timeout: 5000,
+				},
+				true
+				);
+				
+				if (resp.error) {
+					ob.logger.warn(`Error getting ffz global emotes: ${resp.error}`, 'ob.utils');
+					return [];
+				}
+				
+				let emotes: Emote[] = [];
+				for (let set in resp.data.response.data.sets) {
+					for (let emote of resp.data.response.data.sets[set].emoticons) {
+						emotes.push({
+							provider: 'FFZ',
+							id: emote.id,
+							name: emote.name,
+						});
+					}
+				}
+				
+				return emotes;
+			} catch (e) {
+				return [];
 			}
-		}
-
-		return emotes;
-	}
-
-	async getBttvChannelEmotes(channelId: string): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			`https://api.betterttv.net/3/cached/users/twitch/${channelId}`,
-			3600,
-			{
-				timeout: 5000,
-			},
-			true
-		);
-
-		if (resp.error) {
-			if (resp.error.code === '404') return [];
-			ob.logger.warn(`Error getting bttv emotes for ${channelId}: ${resp.error}`, 'ob.utils');
-			return [];
-		}
-
-		let emotes: Emote[] = [];
-		for (let emote of resp.data.response.data['channelEmotes']) {
-			emotes.push({
-				provider: 'BTTV',
-				id: emote.id,
-				name: emote.code,
-			});
-		}
-	}
-
-	async getBttvGlobalEmotes(): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			'https://api.betterttv.net/3/cached/emotes/global',
-			3600,
-			{
+			}
+			
+			async getBttvChannelEmotes(channelId: string): Promise<Emote[]> {
+				let resp = await ob.api.get<any>(
+					`https://api.betterttv.net/3/cached/users/twitch/${channelId}`,
+					3600,
+					{
+						timeout: 5000,
+					},
+					true
+					);
+					
+					if (resp.error) {
+						if (resp.error.code === '404') return [];
+						ob.logger.warn(`Error getting bttv emotes for ${channelId}: ${resp.error}`, 'ob.utils');
+						return [];
+					}
+					
+					let emotes: Emote[] = [];
+					for (let emote of resp.data.response.data['channelEmotes']) {
+						emotes.push({
+							provider: 'BTTV',
+							id: emote.id,
+							name: emote.code,
+						});
+					}
+				}
+				
+				async getBttvGlobalEmotes(): Promise<Emote[]> {
+					let resp = await ob.api.get<any>(
+						'https://api.betterttv.net/3/cached/emotes/global',
+						3600,
+						{
 				timeout: 5000,
 			},
 			true
