@@ -68,6 +68,18 @@ export async function action({ request }: ActionArgs) {
 		},
 		phrases: [],
 		alerts: [],
+		kick: {
+			slug: '',
+			id: '',
+			user_id: '',
+			streamer_id: '',
+			chatroom_id: '',
+			chatroom_channel_id: '',
+			secretConfirmed: false,
+			linkedAt: null,
+			verificationCode: '',
+			codeExpiresAt: null,
+		},
 	});
 
 	let resp = await query('UPDATE', 'Join', token, session.id, {

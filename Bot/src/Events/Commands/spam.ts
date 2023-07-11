@@ -1,6 +1,6 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
-import { Command, CommandReturn, Channel, CategoryEnum, Permission } from '../../Typings/Twitch';
+import { Command, CommandReturn, Channel, CategoryEnum, Permission, PlatformEnum } from '../../Typings/Twitch';
 
 export const cmd = new (class command implements Command {
 	name = 'spam';
@@ -12,6 +12,7 @@ export const cmd = new (class command implements Command {
 	modifiablePermissions = true;
 	requiresFastLimits = true;
 	category = CategoryEnum.Fun;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let count = parseInt(args[0]);
 		if (isNaN(count))

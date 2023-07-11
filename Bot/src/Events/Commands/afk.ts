@@ -1,5 +1,5 @@
 import OuraBot from '../../Client';
-import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, PlatformEnum } from '../../Typings/Twitch';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { AfkStatuses } from '../../Utils/Afk';
 
@@ -70,6 +70,7 @@ export const cmd = new (class command implements Command {
 	userCooldown = 10;
 	channelCooldown = 0;
 	category = CategoryEnum.Fun;
+	platforms = [PlatformEnum.Kick, PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let reason: string;
 		if (!args[0]) {

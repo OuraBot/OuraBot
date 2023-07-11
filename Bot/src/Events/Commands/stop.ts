@@ -1,6 +1,6 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
-import { Command, CommandReturn, Channel, CategoryEnum, Permission } from '../../Typings/Twitch';
+import { Command, CommandReturn, Channel, CategoryEnum, Permission, PlatformEnum } from '../../Typings/Twitch';
 
 export const cmd = new (class command implements Command {
 	name = 'stop';
@@ -10,6 +10,7 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 5;
 	permissions = [Permission.Broadcaster, Permission.Moderator];
 	category = CategoryEnum.Utility;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		if (ob.cancels.has(Channel.channel))
 			return {

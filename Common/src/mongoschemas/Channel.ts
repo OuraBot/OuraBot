@@ -61,6 +61,19 @@ export interface IChannel extends Schema {
 	modules: Modules;
 	// Alerts
 	alerts: string[];
+	// Kick Information
+	kick: {
+		slug: string;
+		id: string;
+		user_id: string;
+		streamer_id: string;
+		chatroom_id: string;
+		chatroom_channel_id: string;
+		secretConfirmed: boolean;
+		linkedAt: Date;
+		verificationCode: string;
+		codeExpiresAt: Date;
+	};
 	// Premium information
 	premium: {
 		orders: {
@@ -106,6 +119,21 @@ export const ChannelSchema = new Schema<IChannel>(
 		clipUrl: { type: String, required: true, default: '' },
 		lastfmUsername: { type: String, required: false, default: '' },
 		referrer: { type: String, required: false, default: '' },
+		kick: {
+			type: {
+				slug: { type: String, required: true, default: '' },
+				id: { type: String, required: true, default: '' },
+				user_id: { type: String, required: true, default: '' },
+				streamer_id: { type: String, required: true, default: '' },
+				chatroom_id: { type: String, required: true, default: '' },
+				chatroom_channel_id: { type: String, required: true, default: '' },
+				secretConfirmed: { type: Boolean, required: true, default: false },
+				linkedAt: { type: Date, required: false, default: null },
+				verificationCode: { type: String, required: true, default: '' },
+				codeExpiresAt: { type: Date, required: false, default: null },
+			},
+			required: true,
+		},
 		defaultCommandOptions: {
 			type: [
 				{

@@ -67,11 +67,14 @@ export class Afk {
 			}
 		});
 		this.pending = true;
-		setTimeout(() => {
-			if (this.pending) {
-				this.delete();
-			}
-		}, 1000 * 60 * 5);
+		setTimeout(
+			() => {
+				if (this.pending) {
+					this.delete();
+				}
+			},
+			1000 * 60 * 5
+		);
 	}
 
 	unpendDeletion(): void {
