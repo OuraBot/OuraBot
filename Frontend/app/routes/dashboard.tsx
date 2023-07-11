@@ -194,8 +194,8 @@ const _data = [
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
 	{ link: '/dashboard/suggest', label: 'Suggest', icon: Friends },
-	{ link: '/dashboard/modules', label: 'Modules', icon: Category },
-	{ link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
+	{ link: '/dashboard/modules', label: 'Modules', icon: Category, kick: false },
+	// { link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
 
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
 	{
