@@ -28,6 +28,8 @@
 		"@remix-run/serve": "^1.6.5",
 		"@remix-run/server-runtime": "^1.6.5",
 		"@sentry/remix": "^7.52.1",
+		"@stripe/react-stripe-js": "^2.1.1",
+		"@stripe/stripe-js": "^1.54.1",
 		"@types/crypto-js": "^4.1.1",
 		"@types/ioredis": "^4.28.10",
 		"@types/jsonwebtoken": "^8.5.8",
@@ -45,9 +47,12 @@
 		"react-chartjs-2": "^4.3.1",
 		"react-dom": "^17.0.2",
 		"react-easy-emoji": "^1.8.1",
+		"react-particles": "^2.10.1",
 		"react-router-dom": "^6.3.0",
 		"remix-utils": "^3.3.0",
-		"tabler-icons-react": "^1.39.0"
+		"stripe": "^12.12.0",
+		"tabler-icons-react": "^1.39.0",
+		"tsparticles": "^2.10.1"
 	},
 	"devDependencies": {
 		"@remix-run/dev": "^1.6.5",
