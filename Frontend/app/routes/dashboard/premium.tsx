@@ -332,6 +332,7 @@ export default function Premium() {
 				<Button
 					my="md"
 					fullWidth
+					disabled={subscribed} // TODO: Enable this when gifting is available
 					onClick={() => {
 						handleCheckout();
 					}}
