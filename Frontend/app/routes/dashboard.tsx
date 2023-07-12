@@ -216,7 +216,7 @@ export default function Dashboard() {
 	let data = useLoaderData<typeof loader>();
 	const { classes, cx } = useStyles();
 	const location = useLocation();
-	const [active, setActive] = useState(_data[_data.findIndex(({ link }) => link === location.pathname)]?.label);
+	const [active, setActive] = useState(_data[_data.findIndex(({ link }) => link === location.pathname.replace(/\/$/, ''))]?.label);
 	const theme = useMantineTheme();
 	const [opened, setOpened] = useState(false);
 
