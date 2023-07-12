@@ -8,6 +8,9 @@ import { UserCircle } from 'tabler-icons-react';
 import { useState } from 'react';
 import { query } from '~/services/redis.server';
 import * as crypto from 'crypto';
+import emoji from 'react-easy-emoji';
+
+/*
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -183,7 +186,7 @@ export default function Kick() {
 				</Text>
 				<Divider my="sm" />
 				<Title order={2}>Link Account</Title>
-				{/* {data ? JSON.stringify(data) : <Loader />} */}
+				{/{data ? JSON.stringify(data) : <Loader />}/}
 				{channel.kick.secretConfirmed ? <Badge color="green">Account Linked</Badge> : <Badge color="red">Account Not Linked</Badge>}
 				<Form method="post">
 					<input type="hidden" name="stage" value="username" />
@@ -235,22 +238,35 @@ export default function Kick() {
 					</>
 				) : null}
 			</Text>
-			{/* <Prism withLineNumbers language="json">
-				{JSON.stringify(channel, null, 2)}
-			</Prism> */}
-		</>
-	);
+		
+			</>
+			);
 }
 
 function generateRandomString(): string {
 	const length = 16;
 	const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	let randomString = '';
-
+	
 	for (let i = 0; i < length; i++) {
 		const randomIndex = Math.floor(Math.random() * characters.length);
 		randomString += characters.charAt(randomIndex);
 	}
-
+	
 	return randomString;
+}
+
+*/
+
+export default function Kick() {
+	return (
+		<>
+			<Text>
+				You aren't supposed to be here {emoji(`🤦‍♂️`)}, but I'll let you in on a secret. Kick support is coming soon. Just don't tell anyone {emoji(`🤫`)}
+			</Text>
+			<Button component="a" href="/dashboard/" mt="sm">
+				Go Back
+			</Button>
+		</>
+	);
 }
