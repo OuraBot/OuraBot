@@ -8,15 +8,15 @@ export async function up() {
 		{
 			$set: {
 				kick: {
-					slug: '',
-					id: '',
-					user_id: '',
-					streamer_id: '',
-					chatroom_id: '',
-					chatroom_channel_id: '',
+					slug: 'notlinked',
+					id: 'notlinked',
+					user_id: 'notlinked',
+					streamer_id: 'notlinked',
+					chatroom_id: 'notlinked',
+					chatroom_channel_id: 'notlinked',
 					secretConfirmed: false,
 					linkedAt: null,
-					verificationCode: '',
+					verificationCode: 'notlinked',
 					codeExpiresAt: null,
 				},
 			},
