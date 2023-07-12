@@ -124,7 +124,7 @@ export default function Premium() {
 	const [checkout, setCheckout] = useState(false);
 	const [months, setMonths] = useState(3);
 	const [realMonths, setRealMonths] = useState(3);
-	const { cid, channel, subscribed, expiresAt } = useLoaderData();
+	const { channel, subscribed, expiresAt } = useLoaderData();
 	const actionData = useActionData();
 	const [error, setError] = useState('');
 	const [gifting, setGifting] = useState(subscribed);
@@ -166,7 +166,7 @@ export default function Premium() {
 		}
 	};
 
-	/*
+	/* MIGRATE TO PREMIUM.SUCCESS.TSX
 	if (actionData && !actionData.error && !shownModal) {
 		setShownModal(true);
 		modals.openModal({
