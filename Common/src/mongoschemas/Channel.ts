@@ -31,6 +31,8 @@ export type Modules = {
 };
 
 export interface IChannel extends Schema {
+	// MongoDB ID
+	_id: string;
 	// Twitch Login
 	login: string;
 	// Twitch Id
