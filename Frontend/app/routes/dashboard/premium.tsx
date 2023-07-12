@@ -9,6 +9,7 @@ import {
 	Grid,
 	HoverCard,
 	Loader,
+	Overlay,
 	Paper,
 	Slider,
 	Space,
@@ -96,6 +97,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 	const recipient = formData.get('recepient_DO_NOT_MODIFY') as string;
 	if (!recipient) return badRequest('invalid recipient');
+
+	if (recipient.toLowerCase() !== session.json.login.toLowerCase()) return badRequest('gifting is unavailable at this time');
 
 	const channel: (IChannel & Document) | null = await ChannelModel.findOne({ login: recipient });
 	if (!channel) return badRequest('channel not found');
@@ -217,7 +220,7 @@ export default function Premium() {
 					<Text color="dimmed" size="xs">
 						Your support genuinely means a lot to me, thank you so much! {'<3'}
 					</Text>
-					<Text>You can gift premium to other people below</Text>
+					{/* <Text>You can gift premium to other people below</Text> */}
 					<Text>
 						Your premium will expire on <strong>{new Date(expiresAt)?.toUTCString()}</strong>
 					</Text>
@@ -300,6 +303,7 @@ export default function Premium() {
 
 				<Checkbox
 					label="Gift to another user"
+					disabled // TODO: Enable this when gifting is available
 					checked={gifting}
 					onChange={(event) => {
 						if (subscribed && !event.target.checked) return;
@@ -307,8 +311,13 @@ export default function Premium() {
 						setRecepient('');
 					}}
 				/>
+				<Text size="xs" color="dimmed">
+					Gifting will be available soon!
+				</Text>
+
 				<Collapse in={gifting}>
 					<TextInput
+						disabled // TODO: Enable this when gifting is available
 						label="Gift to"
 						error={error}
 						autoFocus
