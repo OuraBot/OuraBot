@@ -19,8 +19,8 @@ export async function purchasePremium(quantity: number, user_db_id: string) {
 			user_db_id: user_db_id.toString(),
 		},
 		mode: 'payment',
-		success_url: `http://localhost:3000/dashboard/premium/success?session_id={CHECKOUT_SESSION_ID}`,
-		cancel_url: `http://localhost:3000/dashboard/premium/cancel`,
+		success_url: `${process.env.ORIGIN}/dashboard/premium/success?session_id={CHECKOUT_SESSION_ID}`,
+		cancel_url: `${process.env.ORIGIN}/dashboard/premium/cancel`,
 		automatic_tax: { enabled: true },
 	});
 
