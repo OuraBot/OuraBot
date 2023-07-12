@@ -7,7 +7,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
 export async function purchasePremium(quantity: number, user_db_id: string) {
 	console.log('purchasePremium for user_db_id: ', user_db_id.toString(), ' with quantity: ', quantity);
 
-	console.log(`origin is ${process.env.ORIGIN} and STRIPE_PUBLISHABLE_KEY ${process.env.STRIPE_PUBLISHABLE_KEY}`);
+	console.log(`STRIPE_CALLBACK_URL is ${process.env.STRIPE_CALLBACK_URL}`);
 
 	const session = await stripe.checkout.sessions.create({
 		line_items: [
@@ -21,8 +21,8 @@ export async function purchasePremium(quantity: number, user_db_id: string) {
 			user_db_id: user_db_id.toString(),
 		},
 		mode: 'payment',
-		success_url: `${process.env.ORIGIN}/dashboard/premium/success?session_id={CHECKOUT_SESSION_ID}`,
-		cancel_url: `${process.env.ORIGIN}/dashboard/premium/cancel`,
+		success_url: `${process.env.STRIPE_CALLBACK_URL}/dashboard/premium/success?session_id={CHECKOUT_SESSION_ID}`,
+		cancel_url: `${process.env.STRIPE_CALLBACK_URL}/dashboard/premium/cancel`,
 		automatic_tax: { enabled: true },
 	});
 
