@@ -194,16 +194,16 @@ const _data = [
 	{ link: '/dashboard/commands', label: 'Commands', icon: LayoutGrid },
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
 	{ link: '/dashboard/suggest', label: 'Suggest', icon: Friends },
-	{ link: '/dashboard/modules', label: 'Modules', icon: Category, kick: false },
+	{ link: '/dashboard/modules', label: 'Modules', icon: Category, kick: false, special: false },
 	// { link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
 
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
-	{
-		link: '/dashboard/premium',
-		label: 'Premium',
-		icon: Star,
-		special: true,
-	},
+	// {
+	// 	link: '/dashboard/premium',
+	// 	label: 'Premium',
+	// 	icon: Star,
+	// 	special: true,
+	// },
 	{
 		link: '/admin',
 		label: 'Admin Dashboard',
@@ -216,7 +216,7 @@ export default function Dashboard() {
 	let data = useLoaderData<typeof loader>();
 	const { classes, cx } = useStyles();
 	const location = useLocation();
-	const [active, setActive] = useState(_data[_data.findIndex(({ link }) => link === location.pathname)].label);
+	const [active, setActive] = useState(_data[_data.findIndex(({ link }) => link === location.pathname.replace(/\/$/, ''))]?.label);
 	const theme = useMantineTheme();
 	const [opened, setOpened] = useState(false);
 
@@ -236,35 +236,35 @@ export default function Dashboard() {
 			links.push(
 				<Link
 					className={cx(classes.link, {
-						[classes.linkActive]: item.label === active,
+						[classes.linkActive]: item?.label === active,
 						[classes.admin]: item.admin,
 					})}
 					to={item.link}
-					key={item.label}
+					key={item?.label}
 					onClick={(event) => {
-						setActive(item.label);
+						setActive(item?.label);
 					}}
 				>
 					<item.icon className={classes.adminIcon} />
-					<span>{item.label}</span>
+					<span>{item?.label}</span>
 				</Link>
 			);
 		} else if (!item.admin) {
-			if (item.label !== active) {
+			if (item?.label !== active) {
 				// prefetchLinks.push(item.link);
 				links.push(
 					<Link
 						className={cx(classes.link, {
-							[classes.linkActive]: item.label === active,
+							[classes.linkActive]: item?.label === active,
 							[classes.subscribe]: item.special,
-							[classes.subscribeActive]: item.special && item.label === active,
+							[classes.subscribeActive]: item.special && item?.label === active,
 							[classes.kick]: item.kick,
-							[classes.kickActive]: item.kick && item.label === active,
+							[classes.kickActive]: item.kick && item?.label === active,
 						})}
 						to={item.link}
-						key={item.label}
+						key={item?.label}
 						onClick={(event) => {
-							setActive(item.label);
+							setActive(item?.label);
 						}}
 					>
 						<item.icon
@@ -273,20 +273,20 @@ export default function Dashboard() {
 								[classes.kickIcon]: item.kick,
 							})}
 						/>
-						<span>{item.label}</span>
+						<span>{item?.label}</span>
 					</Link>
 				);
 			} else {
 				links.push(
 					<div
 						className={cx(classes.link, {
-							[classes.linkActive]: item.label === active,
+							[classes.linkActive]: item?.label === active,
 							[classes.subscribe]: item.special,
-							[classes.subscribeActive]: item.special && item.label === active,
+							[classes.subscribeActive]: item.special && item?.label === active,
 							[classes.kick]: item.kick,
-							[classes.kickActive]: item.kick && item.label === active,
+							[classes.kickActive]: item.kick && item?.label === active,
 						})}
-						key={item.label}
+						key={item?.label}
 					>
 						<item.icon
 							className={cx(classes.linkIcon, {
@@ -294,7 +294,7 @@ export default function Dashboard() {
 								[classes.kickIcon]: item.kick,
 							})}
 						/>
-						<span>{item.label}</span>
+						<span>{item?.label}</span>
 					</div>
 				);
 			}

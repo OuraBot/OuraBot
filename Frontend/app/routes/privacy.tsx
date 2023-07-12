@@ -1,14 +1,38 @@
-import { Button, Center, Container, List, Paper, Text, Title } from '@mantine/core';
+import { Button, Container, Text, Title } from '@mantine/core';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderArgs } from '@remix-run/server-runtime';
+import { HeaderResponsive } from '~/components/Header';
 import { FooterLinks } from '~/components/footer';
+import { authenticator } from '~/services/auth.server';
+import { ChannelModel } from '~/services/models/Channel';
+import { TwitchSession } from '~/services/oauth.strategy';
 
-export default function Privacy() {
+export async function loader({ request }: LoaderArgs) {
+	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
+
+	if (session) {
+		const channel = await ChannelModel.findOne({ id: session.id });
+		return {
+			channel,
+			session,
+		};
+	} else {
+		return null;
+	}
+}
+
+export default function TOS() {
+	let { channel, session } = useLoaderData();
+
 	return (
 		<>
+			<HeaderResponsive noMargin={true} channel={channel} session={session} />
+
 			<Container m="lg">
-				<Title order={1}>Privacy Policy</Title>
-				<Button component="a" href="/" mt="md">
-					Go Back
+				<Button size="sm" variant="light" component="a" href="/tos" mt="md">
+					Go to Terms of Service
 				</Button>
+				<Title order={1}>Privacy Policy</Title>
 				<Text ml="lg">
 					Thank you for your interest in OuraBot, a Service operated by Auro ("we", "us", or "our"). We are committed to protecting the privacy of our users,
 					and we take this responsibility seriously. If you have any questions or concerns, please contact us using the information provided at the end of this

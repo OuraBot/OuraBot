@@ -1,14 +1,38 @@
 import { Button, Center, Container, List, Paper, Text, Title } from '@mantine/core';
+import { useLoaderData } from '@remix-run/react';
+import { LoaderArgs } from '@remix-run/server-runtime';
+import { HeaderResponsive } from '~/components/Header';
 import { FooterLinks } from '~/components/footer';
+import { authenticator } from '~/services/auth.server';
+import { ChannelModel } from '~/services/models/Channel';
+import { TwitchSession } from '~/services/oauth.strategy';
+
+export async function loader({ request }: LoaderArgs) {
+	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
+
+	if (session) {
+		const channel = await ChannelModel.findOne({ id: session.id });
+		return {
+			channel,
+			session,
+		};
+	} else {
+		return null;
+	}
+}
 
 export default function TOS() {
+	let { channel, session } = useLoaderData();
+
 	return (
 		<>
+			<HeaderResponsive noMargin={true} channel={channel} session={session} />
+
 			<Container m="lg">
-				<Title order={1}>Terms of Service</Title>
-				<Button component="a" href="/" mt="md">
-					Go Back
+				<Button size="sm" variant="light" component="a" href="/privacy" mt="md">
+					Go to Privacy Policy
 				</Button>
+				<Title order={1}>Terms of Service</Title>
 				<Title order={3} mt="sm">
 					Agreement to Terms
 				</Title>
