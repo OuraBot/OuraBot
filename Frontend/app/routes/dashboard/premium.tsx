@@ -1,5 +1,4 @@
 import {
-	Badge,
 	Box,
 	Button,
 	Card,
@@ -21,19 +20,19 @@ import {
 	useMantineTheme,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { redirect, type ActionFunction, type LoaderFunction, type MetaFunction } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useSubmit, Link } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import type { Document } from 'mongoose';
 import { useEffect, useRef, useState } from 'react';
+import emoji from 'react-easy-emoji';
 import { badRequest } from 'remix-utils';
 import { ArrowBackUp, Clock, ExternalLink, Heart, Icons, InfoCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { ChannelModel, IChannel } from '~/services/models/Channel';
-import { getOrderDetails } from '~/utils/paypal.server';
-import { UserResponse } from '../api/v3/user.$login';
+import type { IChannel } from '~/services/models/Channel';
+import { ChannelModel } from '~/services/models/Channel';
 import { purchasePremium } from '~/services/stripe.server';
-import { Document, Model } from 'mongoose';
-import emoji from 'react-easy-emoji';
+import type { UserResponse } from '../api/v3/user.$login';
 
 export const meta: MetaFunction = () => {
 	return {
@@ -58,10 +57,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 		expiresAt = channel.premium.orders.at(-1).expiresAt;
 	}
 
-	const cid = process.env.PAYPAL_CLIENT_ID;
-
 	return {
-		cid,
 		channel,
 		subscribed,
 		expiresAt,
@@ -121,53 +117,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 	await channel.save();
 
 	return redirect(sessionData.url ?? '/dashboard/premium/cancel');
-
-	// return redirect((await createStripeCheckoutSession()) ?? '/dashboard/premium?error=true');
-
-	// const formData = await request.formData();
-
-	// const orderID = formData.get('orderID') as string;
-	// const recepient = formData.get('recepient') as string;
-	// const months = parseInt((formData.get('months') as string) ?? '0');
-
-	// const orderDetails = await getOrderDetails(orderID);
-
-	// if (!orderDetails) return badRequest('order not found');
-
-	// if (orderDetails.status !== 'COMPLETED') return badRequest('order not completed');
-
-	// // check if the order id has only been used once
-	// const pastOrders = await ChannelModel.find({ 'premium.orders.id': orderID });
-	// if (pastOrders?.length > 0) return badRequest('order id already used. contact support');
-
-	// const channel = await ChannelModel.findOne({ login: recepient });
-	// if (!channel) return badRequest('channel not found');
-
-	// const purchasedUnit = orderDetails.purchase_units[0];
-	// const idInfo = purchasedUnit.custom_id.split('-');
-
-	// const _months = parseInt(idInfo[1]);
-	// const _recepient = idInfo[2];
-
-	// if (_recepient !== recepient) return badRequest('invalid recepient');
-	// if (_months !== months) return badRequest('invalid months');
-
-	// channel.premium.orders.push({
-	// 	id: orderID,
-	// 	createdAt: new Date(orderDetails.create_time),
-	// 	expiresAt: new Date(new Date().setMonth(new Date().getMonth() + _months)),
-	// 	duration: months,
-	// 	email: orderDetails.payer.email_address ?? '',
-	// 	status: 'PAID',
-	// });
-
-	// await channel.save();
-
-	// return {
-	// 	months: _months,
-	// 	recepient: _recepient,
-	// 	expiresAt: new Date(new Date().setMonth(new Date().getMonth() + _months)),
-	// };
 };
 
 export default function Premium() {
