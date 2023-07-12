@@ -7,7 +7,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
 export async function purchasePremium(quantity: number, user_db_id: string) {
 	console.log('purchasePremium for user_db_id: ', user_db_id.toString(), ' with quantity: ', quantity);
 
-	console.log(`origin is ${process.env.ORIGIN}`);
+	console.log(`origin is ${process.env.ORIGIN} and STRIPE_PUBLISHABLE_KEY ${process.env.STRIPE_PUBLISHABLE_KEY}`);
 
 	const session = await stripe.checkout.sessions.create({
 		line_items: [
