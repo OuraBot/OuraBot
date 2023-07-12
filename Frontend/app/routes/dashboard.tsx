@@ -198,12 +198,12 @@ const _data = [
 	// { link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
 
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
-	{
-		link: '/dashboard/premium',
-		label: 'Premium',
-		icon: Star,
-		special: true,
-	},
+	// {
+	// 	link: '/dashboard/premium',
+	// 	label: 'Premium',
+	// 	icon: Star,
+	// 	special: true,
+	// },
 	{
 		link: '/admin',
 		label: 'Admin Dashboard',

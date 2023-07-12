@@ -248,7 +248,7 @@ export default function Premium() {
 										<Title order={4}>
 											<Icons size={16} /> Special Features
 										</Title>
-										<Text>Gain access to special commands and modules that are only available to premium users!</Text>
+										<Text>Gain access to special commands and modules that are only available to premium users! (coming soon)</Text>
 									</Card>
 								</Grid.Col>
 								<Grid.Col md={6} lg={3}>
