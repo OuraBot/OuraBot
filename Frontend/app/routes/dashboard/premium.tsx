@@ -147,7 +147,7 @@ export default function Premium() {
 			if (queriedLogin === recepient) return setError('Please enter a different recepient');
 			setQueriedLogin(recepient);
 
-			const user: UserResponse | null = await fetch('/api/v3/user/' + recepient)
+			const user: UserResponse | null = await fetch('/api/v3/user/' + recepient.toLowerCase())
 				.then((res) => res.json())
 				.catch(() => setError('User not found on OuraBot'));
 			// setCheckout(true);
