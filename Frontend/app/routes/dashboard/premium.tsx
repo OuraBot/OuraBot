@@ -239,7 +239,14 @@ export default function Premium() {
 				<Text>
 					If you have any questions, please email{' '}
 					<strong>
-						<a href="mailto:contact@ourabot.com">contact@ourabot.com</a>
+						<a
+							href="mailto:contact@ourabot.com"
+							style={{
+								color: 'white',
+							}}
+						>
+							contact@ourabot.com
+						</a>
 					</strong>
 					. All payments are non-refundable.
 				</Text>
@@ -253,7 +260,12 @@ export default function Premium() {
 						<Card.Section>
 							<Grid grow>
 								<Grid.Col md={6} lg={3}>
-									<Card>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
 										<Title order={4}>
 											<Icons size={16} /> Special Features
 										</Title>
@@ -261,7 +273,12 @@ export default function Premium() {
 									</Card>
 								</Grid.Col>
 								<Grid.Col md={6} lg={3}>
-									<Card>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
 										<Title order={4}>
 											<Clock size={16} /> Early Access
 										</Title>
@@ -269,7 +286,12 @@ export default function Premium() {
 									</Card>
 								</Grid.Col>
 								<Grid.Col md={6} lg={3}>
-									<Card>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
 										<Title order={4}>
 											<Heart size={16} /> Support the Developer
 										</Title>
@@ -288,6 +310,7 @@ export default function Premium() {
 					onChange={setMonths}
 					min={1}
 					max={12}
+					color="yellow"
 					label={(value) => `${value} month${value == 1 ? '' : 's'}`}
 					mx="md"
 					marks={[
@@ -313,6 +336,7 @@ export default function Premium() {
 				<Checkbox
 					label="Gift to another user"
 					checked={gifting}
+					color="yellow"
 					onChange={(event) => {
 						if (subscribed && !event.target.checked) return;
 						setGifting(event.target.checked);
@@ -336,6 +360,8 @@ export default function Premium() {
 				<Button
 					my="md"
 					fullWidth
+					variant="gradient"
+					gradient={{ from: '#ffa500', to: '#cc8400', deg: 105 }}
 					onClick={() => {
 						handleCheckout();
 					}}
