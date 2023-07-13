@@ -16,7 +16,7 @@ export class PusherSubscriber {
 		});
 
 		this.pusher.connection.bind('error', (err: any) => {
-			ob.logger.warn(`Pusher error: ${err}`, 'ob.utils.pusher');
+			ob.logger.warn(`Pusher error: ${JSON.stringify(err)}`, 'ob.utils.pusher');
 		});
 
 		const xqc = this.pusher.subscribe('channel.668');
@@ -52,7 +52,7 @@ export class KickController {
 		});
 
 		this.pusher.connection.bind('error', (err: any) => {
-			ob.logger.warn(`Pusher error: ${err}`, 'ob.utils.pusher');
+			ob.logger.warn(`Pusher error: ${JSON.stringify(err)}`, 'ob.utils.pusher');
 		});
 	}
 
@@ -100,14 +100,11 @@ export class KickController {
 
 		conn.bind('App\\Events\\ChatMessageEvent', async (data: any) => this.handleChatMessage(JSON.parse(JSON.stringify(data))));
 
-		setTimeout(
-			() => {
-				if (!this.tempChannels.includes(channel_id)) return; // If not in the temp array then they confirmed
-				this.pusher.unsubscribe(`chatrooms.${channel_id}.v2`);
-				ob.logger.info(`Unsubscribed from ${channel_id} (it was temp)`, 'ob.kick.events.chatmessage');
-			},
-			1000 * 60 * 5
-		);
+		setTimeout(() => {
+			if (!this.tempChannels.includes(channel_id)) return; // If not in the temp array then they confirmed
+			this.pusher.unsubscribe(`chatrooms.${channel_id}.v2`);
+			ob.logger.info(`Unsubscribed from ${channel_id} (it was temp)`, 'ob.kick.events.chatmessage');
+		}, 1000 * 60 * 5);
 	}
 
 	async handleChatMessage(data: ChatMessage) {
