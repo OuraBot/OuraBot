@@ -36,9 +36,14 @@ export async function loader({ request }: LoaderArgs) {
 		return redirect('/onboarding');
 	}
 
+	const subscribed = channel.premium.orders.some((order: any) => {
+		return order.status === 'PAID' && order.expiresAt > new Date();
+	});
+
 	return json({
 		session,
 		channel,
+		subscribed,
 	});
 }
 
@@ -198,12 +203,12 @@ const _data = [
 	// { link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
 
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
-	// {
-	// 	link: '/dashboard/premium',
-	// 	label: 'Premium',
-	// 	icon: Star,
-	// 	special: true,
-	// },
+	{
+		link: '/dashboard/premium',
+		label: 'Premium',
+		icon: Star,
+		special: true,
+	},
 	{
 		link: '/admin',
 		label: 'Admin Dashboard',
@@ -338,7 +343,16 @@ export default function Dashboard() {
 									<Menu position="bottom-end">
 										<Menu.Target>
 											<UnstyledButton>
-												<Avatar src={data.session?.json.profile_image_url} radius="xl" />
+												<Avatar
+													src={data.session?.json.profile_image_url}
+													radius="xl"
+													style={{
+														outline: 'groove',
+														outlineColor: data.subscribed ? '#ffaa00' : 'transparent',
+														outlineOffset: '2px',
+														outlineWidth: '2px',
+													}}
+												/>
 											</UnstyledButton>
 										</Menu.Target>
 

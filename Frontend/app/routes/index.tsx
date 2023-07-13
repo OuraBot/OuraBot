@@ -38,10 +38,16 @@ export async function loader({ request }: LoaderArgs) {
 
 	if (session) {
 		const channel = await ChannelModel.findOne({ id: session.id });
+
+		const subscribed = channel.premium.orders.some((order: any) => {
+			return order.status === 'PAID' && order.expiresAt > new Date();
+		});
+
 		return {
 			channel,
 			online: status,
 			session,
+			subscribed,
 		};
 	} else {
 		return {
@@ -55,12 +61,12 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
-	let { channel, online, session } = useLoaderData();
+	let { channel, online, session, subscribed } = useLoaderData();
 
 	return (
 		<>
 			<BetaBanner />
-			<HeaderResponsive channel={channel} session={session} />
+			<HeaderResponsive channel={channel} session={session} premium={subscribed} />
 			{online ? null : (
 				<Container>
 					<Alert icon={<AlertCircle size="1rem" />} title="Degraded Service" color="red" radius="md" variant="light" my="sm">
