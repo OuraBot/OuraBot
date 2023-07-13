@@ -9,7 +9,6 @@ import {
 	Grid,
 	HoverCard,
 	Loader,
-	Overlay,
 	Paper,
 	Slider,
 	Space,
@@ -18,12 +17,10 @@ import {
 	TextInput,
 	Title,
 	UnstyledButton,
-	useMantineTheme,
 } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { redirect, type ActionFunction, type LoaderFunction, type MetaFunction } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import { Form, useLoaderData, useSubmit } from '@remix-run/react';
 import type { Document } from 'mongoose';
 import { useEffect, useRef, useState } from 'react';
 import emoji from 'react-easy-emoji';
@@ -46,6 +43,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
+
 	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	// check all of the orders if one is still valid
@@ -77,7 +75,7 @@ function calculateExpirationDate(months: number): Date {
 	const expiresAt = new Date(currentDate);
 	expiresAt.setFullYear(targetYear);
 	expiresAt.setMonth(adjustedMonth);
-	expiresAt.setDate(expiresAt.getDate() + months * 30);
+	expiresAt.setDate(expiresAt.getDate() + months * 31);
 
 	return expiresAt;
 }
@@ -98,12 +96,22 @@ export const action: ActionFunction = async ({ request, params }) => {
 	const recipient = formData.get('recepient_DO_NOT_MODIFY') as string;
 	if (!recipient) return badRequest('invalid recipient');
 
-	if (recipient.toLowerCase() !== session.json.login.toLowerCase()) return badRequest('gifting is unavailable at this time');
+	const gifted = recipient.toLowerCase() !== session.json.login.toLowerCase();
 
-	const channel: (IChannel & Document) | null = await ChannelModel.findOne({ login: recipient });
+	let gifterChannel: (IChannel & Document) | null = null;
+	if (gifted) {
+		gifterChannel = await ChannelModel.findOne({ id: session.json.id });
+		if (!gifterChannel) return badRequest('gifter channel not found');
+	}
+
+	const channel: (IChannel & Document) | null = await ChannelModel.findOne({ login: recipient.toLowerCase() });
 	if (!channel) return badRequest('channel not found');
 
-	const sessionData = await purchasePremium(months, channel._id);
+	const sessionData = await purchasePremium(months, channel._id, {
+		gifted: `${gifted}` as 'true' | 'false',
+		giftedBy: gifted && gifterChannel ? gifterChannel._id : '',
+		recipient: channel.login, // should only be used in frontend ui after gifting
+	});
 	console.log(sessionData);
 
 	channel.premium.orders.push({
@@ -113,6 +121,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 		email: 'not yet provided',
 		status: 'PENDING',
 		id: sessionData.id,
+		giftedBy: gifted && gifterChannel ? gifterChannel._id : null,
 	});
 
 	channel.markModified('premium.orders');
@@ -128,13 +137,9 @@ export default function Premium() {
 	const [months, setMonths] = useState(3);
 	const [realMonths, setRealMonths] = useState(3);
 	const { channel, subscribed, expiresAt } = useLoaderData();
-	const actionData = useActionData();
 	const [error, setError] = useState('');
 	const [gifting, setGifting] = useState(subscribed);
 	const [queriedLogin, setQueriedLogin] = useState('');
-	const theme = useMantineTheme();
-	const modals = useModals();
-	const [shownModal, setShownModal] = useState(false);
 
 	const handleCheckout = async () => {
 		if (gifting) {
@@ -220,7 +225,7 @@ export default function Premium() {
 					<Text color="dimmed" size="xs">
 						Your support genuinely means a lot to me, thank you so much! {'<3'}
 					</Text>
-					{/* <Text>You can gift premium to other people below</Text> */}
+					<Text>You can gift premium to other people below</Text>
 					<Text>
 						Your premium will expire on <strong>{new Date(expiresAt)?.toUTCString()}</strong>
 					</Text>
@@ -303,7 +308,6 @@ export default function Premium() {
 
 				<Checkbox
 					label="Gift to another user"
-					disabled // TODO: Enable this when gifting is available
 					checked={gifting}
 					onChange={(event) => {
 						if (subscribed && !event.target.checked) return;
@@ -311,13 +315,9 @@ export default function Premium() {
 						setRecepient('');
 					}}
 				/>
-				<Text size="xs" color="dimmed">
-					Gifting will be available soon!
-				</Text>
 
 				<Collapse in={gifting}>
 					<TextInput
-						disabled // TODO: Enable this when gifting is available
 						label="Gift to"
 						error={error}
 						autoFocus
@@ -332,7 +332,6 @@ export default function Premium() {
 				<Button
 					my="md"
 					fullWidth
-					disabled={subscribed} // TODO: Enable this when gifting is available
 					onClick={() => {
 						handleCheckout();
 					}}
@@ -353,7 +352,7 @@ export default function Premium() {
 						<Stack>
 							<Text size="lg" align="center">
 								<strong>
-									${realMonths * 4} for {realMonths} month{realMonths == 1 ? '' : 's'} ({realMonths * 30} days)
+									${realMonths * 4} for {realMonths} month{realMonths == 1 ? '' : 's'} ({realMonths * 31} days)
 								</strong>
 							</Text>
 							{console.log(channel)}

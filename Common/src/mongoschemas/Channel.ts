@@ -1,4 +1,4 @@
-import { connection, model, Schema, models } from 'mongoose';
+import { connection, model, Schema, models, Mongoose, Types } from 'mongoose';
 const ModelName = 'Channel';
 
 export interface DefaultCommandOption {
@@ -83,8 +83,9 @@ export interface IChannel extends Schema {
 			createdAt: Date;
 			expiresAt: Date;
 			duration: number;
-			email: string;
+			email: string; // the email of the user who purchased this (if gifted)
 			status: 'PENDING' | 'PAID';
+			giftedBy: string | null; // ; // _id of the user who gifted this
 		}[];
 	};
 	// Phrases
@@ -185,6 +186,7 @@ export const ChannelSchema = new Schema<IChannel>(
 							duration: { type: Number, required: true },
 							email: { type: String, required: true },
 							status: { type: String, required: true },
+							giftedBy: { type: Types.ObjectId, required: false },
 						},
 					],
 				},
