@@ -29,7 +29,7 @@ export type ChatClientEvents =
 	| 'part'
 	| 'primeCommunityGift'
 	| 'primePaidUpgrade'
-	| 'R9k'
+	| 'uniqueChat'
 	| 'raid'
 	| 'raidCancel'
 	| 'reSub'
@@ -136,8 +136,8 @@ export function eventBinder(client: ChatClient): EventEmitter {
 		clientEvent.emit('part', channel, user);
 	});
 
-	client.onR9k((channel, enabled) => {
-		clientEvent.emit('R9k', channel, enabled);
+	client.onUniqueChat((channel, enabled) => {
+		clientEvent.emit('onUniqueChat', channel, enabled);
 	});
 
 	client.onRaid((channel, user, raidInfo, msg) => {
