@@ -66,7 +66,7 @@ export const cmd = new (class command implements Command {
 			};
 
 		let usingRegex: boolean = false;
-		let usersToTimeout: string[] = [];
+		let usersToTimeout: { login: string; user_id: string }[] = [];
 		if (targetMessage.startsWith('/') && targetMessage.endsWith('/')) {
 			let regex: RegExp;
 			try {
@@ -81,11 +81,11 @@ export const cmd = new (class command implements Command {
 			usingRegex = true;
 
 			channelNukeMessages.forEach((nukeMessage) => {
-				if (nukeMessage.message.match(regex)) usersToTimeout.push(nukeMessage.user);
+				if (nukeMessage.message.match(regex)) usersToTimeout.push({ login: nukeMessage.user, user_id: nukeMessage.user_id });
 			});
 		} else {
 			channelNukeMessages.forEach((nukeMessage) => {
-				if (nukeMessage.message.includes(targetMessage.toLowerCase())) usersToTimeout.push(nukeMessage.user);
+				if (nukeMessage.message.includes(targetMessage.toLowerCase())) usersToTimeout.push({ login: nukeMessage.user, user_id: nukeMessage.user_id });
 			});
 		}
 
@@ -98,19 +98,21 @@ export const cmd = new (class command implements Command {
 		usersToTimeout = [...new Set(usersToTimeout)];
 
 		// prettier-ignore
-		const URL = await ob.utils.upload(`Nuke from ${Channel.channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${permaban ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.join('\n')}`);
+		const URL = await ob.utils.upload(`Nuke from ${Channel.channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${permaban ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.map((user) => user.login).join('\n')}`);
 
 		// If the whisper is silently dropped, too bad!
 		ob.twitch.apiClient.whispers.sendWhisper(ob.config.twitch_id, msg.userInfo.userId, `Nuke report from ${Channel.channel}: ${URL}`);
 
 		if (!dryrun) {
-			for (const user of usersToTimeout) {
-				ob.twitch.apiClient.moderation.banUser(Channel.id, {
-					reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
-					user: user,
-					duration: permaban ? undefined : timeoutTime,
-				});
-			}
+			ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+				for (const user of usersToTimeout) {
+					ctx.moderation.banUser(Channel.id, {
+						reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
+						user: user.user_id,
+						duration: permaban ? undefined : timeoutTime,
+					});
+				}
+			});
 		}
 
 		return {

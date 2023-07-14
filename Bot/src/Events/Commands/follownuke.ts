@@ -2,14 +2,15 @@ import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn, Permission, PlatformEnum } from '../../Typings/Twitch';
 import ms from 'ms';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-import { HelixChannelFollower, HelixFollow } from '@twurple/api/lib';
+import { HelixChannelFollower, HelixFollow, HelixPaginatedRequestWithTotal } from '@twurple/api/lib';
+import { HelixChannelFollowerData } from '@twurple/api/lib/interfaces/endpoints/channel.external';
 
 const dryrunRegex = /--(dont|dry)-?(ban|run)/gi;
 
 export const cmd = new (class command implements Command {
 	name = 'follownuke';
 	description = 'Ban users who have folowed in the last X time (useful against followbots)';
-	usage = 'follownuke <time (30s, 5m, 1h)> <--dont-ban?>';
+	usage = 'follownuke <time (30s, 5m, 1h, etc)> <--dont-ban?>';
 	userCooldown = 10;
 	channelCooldown = 5;
 	permissions = [Permission.Broadcaster, Permission.Moderator];
@@ -43,8 +44,12 @@ export const cmd = new (class command implements Command {
 
 		let followers: HelixChannelFollower[] = [];
 
-		let followsResp = ob.twitch.apiClient.channels.getChannelFollowersPaginated(Channel.id);
-		for await (const follower of followsResp) {
+		let followsResp: HelixPaginatedRequestWithTotal<HelixChannelFollowerData, HelixChannelFollower>;
+		await ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+			followsResp = ctx.channels.getChannelFollowersPaginated(Channel.id);
+		});
+
+		for await (const follower of followsResp!) {
 			let followTime = new Date(follower.followDate).getTime();
 			if (callbackTime > followTime) {
 				break;
@@ -69,9 +74,11 @@ export const cmd = new (class command implements Command {
 		} else {
 			ob.twitch.say(Channel, `Banning ${followers.length} users: ${userListHaste}`);
 
-			for (const follower of followers) {
-				await ob.twitch.apiClient.moderation.banUser(Channel.id, { user: follower.userId, reason: `Follownuke by ${user}` });
-			}
+			await ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+				for (const follower of followers) {
+					await ctx.moderation.banUser(Channel.id, { user: follower.userId, reason: `Follownuke by ${user}` });
+				}
+			});
 
 			return {
 				success: true,

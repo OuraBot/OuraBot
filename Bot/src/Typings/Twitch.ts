@@ -283,6 +283,7 @@ export interface NukeMessage {
 	channel: string;
 	message: string;
 	user: string;
+	user_id: string;
 	sentAt: number;
 }
 

@@ -54,6 +54,7 @@ export const event: Events = {
 				channel: channel.channel,
 				message: message,
 				user: user,
+				user_id: msg.userInfo.userId,
 				sentAt: Date.now(),
 			});
 
