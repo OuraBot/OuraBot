@@ -453,8 +453,8 @@ class OuraBot {
 		const authProvider = new RefreshingAuthProvider({
 			clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
 			clientSecret: EnvironmentVariables.TWITCH_CLIENT_SECRET,
-			onRefresh: async (userId: string, newTokenData: any) => await fs.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8'),
 		});
+		authProvider.onRefresh(async (userId: string, newTokenData: any) => await fs.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8'));
 
 		await authProvider.addUserForToken(tokenData);
 		authProvider.addIntentsToUser(ob.config.twitch_id, ['chat']);
