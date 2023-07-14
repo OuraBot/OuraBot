@@ -105,7 +105,7 @@ export const cmd = new (class command implements Command {
 
 		if (!dryrun) {
 			for (const user of usersToTimeout) {
-				ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, {
+				ob.twitch.apiClient.moderation.banUser(Channel.id, {
 					reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
 					user: user,
 					duration: permaban ? undefined : timeoutTime,
