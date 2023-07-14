@@ -2,7 +2,7 @@ import OuraBot from '../../Client';
 import { CategoryEnum, Channel, Command, CommandReturn, Permission, PlatformEnum } from '../../Typings/Twitch';
 import ms from 'ms';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
-import { HelixFollow } from '@twurple/api/lib';
+import { HelixChannelFollower, HelixFollow } from '@twurple/api/lib';
 
 const dryrunRegex = /--(dont|dry)-?(ban|run)/gi;
 
@@ -43,7 +43,7 @@ export const cmd = new (class command implements Command {
 
 		let followers: HelixChannelFollower[] = [];
 
-		let followsResp = ob.twitch.apiClient.channels.getChannelFollowersPaginated(Channel.id, ob.config.twitch_id);
+		let followsResp = ob.twitch.apiClient.channels.getChannelFollowersPaginated(Channel.id);
 		for await (const follower of followsResp) {
 			let followTime = new Date(follower.followDate).getTime();
 			if (callbackTime > followTime) {
@@ -70,7 +70,7 @@ export const cmd = new (class command implements Command {
 			ob.twitch.say(Channel, `Banning ${followers.length} users: ${userListHaste}`);
 
 			for (const follower of followers) {
-				await ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, { user: follower.userId, reason: `Follownuke by ${user}` });
+				await ob.twitch.apiClient.moderation.banUser(Channel.id, { user: follower.userId, reason: `Follownuke by ${user}` });
 			}
 
 			return {
