@@ -3,7 +3,6 @@ import { CategoryEnum, Channel, Command, CommandReturn, Permission, PlatformEnum
 import ms from 'ms';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import { HelixFollow } from '@twurple/api/lib';
-import { HelixChannelFollower } from '@twurple/api/lib/api/helix/channel/HelixChannelFollower';
 
 const dryrunRegex = /--(dont|dry)-?(ban|run)/gi;
 
