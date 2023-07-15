@@ -37,25 +37,27 @@ export const _module = new (class module implements Module {
 
 		const splitMessage = message.split(' ');
 
-		for (let word of splitMessage) {
-			if (!emotes.includes(word)) {
-				if (data.timeout == 0) {
-					ob.twitch.apiClient.moderation.deleteChatMessages(Channel.id, ob.config.twitch_id, msg.id).catch((err) => {
-						ob.logger.warn(`Failed deleting message in ${Channel.channel}: ${err}`, 'ob.events.modules.smartemoteonly');
-					});
-				} else {
-					ob.twitch.apiClient.moderation
-						.banUser(Channel.id, ob.config.twitch_id, {
-							reason: 'Smart emote only module is enabled (only Twitch or 3rd party emotes are allowed)',
-							duration: data.timeout,
-							user: msg.userInfo.userId,
-						})
-						.catch((err) => {
-							ob.logger.warn(`Failed banning user in ${Channel.channel}: ${err}`, 'ob.events.modules.smartemoteonly');
+		await ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+			for (let word of splitMessage) {
+				if (!emotes.includes(word)) {
+					if (data.timeout == 0) {
+						ctx.moderation.deleteChatMessages(Channel.id, msg.id).catch((err) => {
+							ob.logger.warn(`Failed deleting message in ${Channel.channel}: ${err}`, 'ob.events.modules.smartemoteonly');
 						});
+					} else {
+						ctx.moderation
+							.banUser(Channel.id, {
+								reason: 'Smart emote only module is enabled (only Twitch or 3rd party emotes are allowed)',
+								duration: data.timeout,
+								user: msg.userInfo.userId,
+							})
+							.catch((err) => {
+								ob.logger.warn(`Failed banning user in ${Channel.channel}: ${err}`, 'ob.events.modules.smartemoteonly');
+							});
+					}
+					return;
 				}
-				return;
 			}
-		}
+		});
 	};
 })();

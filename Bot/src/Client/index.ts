@@ -41,13 +41,16 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 import { SimpleRateLimiter } from '../Utils/SimpleRateLimiter';
 import gradient = require('gradient-string');
 import { Counter, Gauge, register } from 'prom-client';
-import { PusherSubscriber } from '../Utils/Kick';
+import { KickController, PusherSubscriber } from '../Utils/Kick';
+import initCycleTLS, { CycleTLSClient } from 'cycletls';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
 
 class OuraBot {
 	twitch: TwitchController;
+	kick: KickController;
+	cycleTLS: CycleTLSClient;
 	config: OuraBotConfig;
 	utils: Utils;
 	clientEvent: EventEmitter;
@@ -450,8 +453,8 @@ class OuraBot {
 		const authProvider = new RefreshingAuthProvider({
 			clientId: EnvironmentVariables.TWITCH_CLIENT_ID,
 			clientSecret: EnvironmentVariables.TWITCH_CLIENT_SECRET,
-			onRefresh: async (userId: string, newTokenData: any) => await fs.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8'),
 		});
+		authProvider.onRefresh(async (userId: string, newTokenData: any) => await fs.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8'));
 
 		await authProvider.addUserForToken(tokenData);
 		authProvider.addIntentsToUser(ob.config.twitch_id, ['chat']);
@@ -495,6 +498,8 @@ class OuraBot {
 		const pubSubClient = new PubSubClient({ authProvider });
 
 		this.twitch = new TwitchController(chatClient, apiClient, pubSubClient, clients);
+		this.cycleTLS = await initCycleTLS();
+		this.kick = new KickController();
 
 		this.clientEvent = eventBinder(this.twitch.chatClient);
 

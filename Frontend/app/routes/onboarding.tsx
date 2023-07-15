@@ -43,8 +43,16 @@ export async function action({ request }: ActionArgs) {
 	await ChannelModel.create({
 		login: session.login,
 		id: session.id,
+		role: 0,
 		token: token,
+		managers: [],
+		banned: null,
+		prefix: '!',
 		profile_image_url: session.profile_image_url,
+		emoteEvents: false,
+		clipUrl: '',
+		defaultCommandOptions: [],
+		lastfmUsername: '',
 		referrer: referrer,
 		modules: {
 			smartemoteonly: {
@@ -54,6 +62,23 @@ export async function action({ request }: ActionArgs) {
 			xqclivekick: {
 				enabled: false,
 			},
+		},
+		premium: {
+			orders: [],
+		},
+		phrases: [],
+		alerts: [],
+		kick: {
+			slug: '',
+			id: '',
+			user_id: '',
+			streamer_id: '',
+			chatroom_id: '',
+			chatroom_channel_id: '',
+			secretConfirmed: false,
+			linkedAt: null,
+			verificationCode: '',
+			codeExpiresAt: null,
 		},
 	});
 

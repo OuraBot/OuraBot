@@ -1,6 +1,6 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
-import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, PlatformEnum } from '../../Typings/Twitch';
 import { SQLMessage } from '../../Utils/SQLite';
 
 export const cmd = new (class command implements Command {
@@ -11,6 +11,7 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 0;
 	aliases = ['lastseen', 'ls'];
 	category = CategoryEnum.Fun;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let targetUser = args[0]?.toLowerCase();
 		if (!targetUser)

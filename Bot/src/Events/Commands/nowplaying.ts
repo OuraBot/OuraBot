@@ -1,6 +1,6 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
-import { CategoryEnum, Channel, Command, CommandReturn } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, PlatformEnum } from '../../Typings/Twitch';
 import { EnvironmentVariables } from '../../Utils/env';
 import { LASTFM_USERNAME_REGEX } from '../../Utils/Redis/Events/UPDATE/Settings';
 
@@ -45,6 +45,7 @@ export const cmd = new (class command implements Command {
 	userCooldown = 30;
 	channelCooldown = 15;
 	category = CategoryEnum.Utility;
+	platforms = [PlatformEnum.Kick, PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		if (EnvironmentVariables.LAST_FM_TOKEN === undefined) return { success: false, message: 'Last.fm API key is unavailable.' };
 

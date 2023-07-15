@@ -273,8 +273,8 @@ export default class Utils {
 		return Promise.all([
 			this.get7tvChannelEmotes(Channel.id),
 			this.get7tvGlobalmotes(),
-			this.getFfzChannelEmotes(Channel.channel),
-			this.getFfzGlobalEmotes(),
+			// this.getFfzChannelEmotes(Channel.channel), ffz loves to bug xd
+			// this.getFfzGlobalEmotes(),
 			this.getBttvChannelEmotes(Channel.id),
 			this.getBttvGlobalEmotes(),
 		]).then((emotes: Emote[][]) => {
@@ -490,62 +490,79 @@ export default class Utils {
 	}
 
 	async getFfzChannelEmotes(channel: string): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			`https://api.frankerfacez.com/v1/room/${channel}`,
-			3600,
-			{
-				timeout: 5000,
-			},
-			true
-		);
+		return [];
+		// try {
+		//     let resp = await ob.api.get<any>(
+		//         `https://api.frankerfacez.com/v1/room/${channel}`,
+		//         3600,
+		//         {
+		//             timeout: 5000,
+		//         },
+		//         true
+		//     );
 
-		if (resp.error) {
-			if (resp.error.code === '404') return [];
-			ob.logger.warn(`Error getting ffz emotes for ${channel}: ${resp.error}`, 'ob.utils');
-			return [];
-		}
+		//     if (resp.error) {
+		//         if (resp.error.code === "404") return [];
+		//         ob.logger.warn(
+		//             `Error getting ffz emotes for ${channel}: ${resp.error}`,
+		//             "ob.utils"
+		//         );
+		//         return [];
+		//     }
 
-		let emotes: Emote[] = [];
-		for (let set in resp.data.response.data.sets) {
-			for (let emote of resp.data.response.data.sets[set].emoticons) {
-				emotes.push({
-					provider: 'FFZ',
-					id: emote.id,
-					name: emote.name,
-				});
-			}
-		}
+		//     let emotes: Emote[] = [];
+		//     for (let set in resp.data.response.data.sets) {
+		//         for (let emote of resp.data.response.data.sets[set].emoticons) {
+		//             emotes.push({
+		//                 provider: "FFZ",
+		//                 id: emote.id,
+		//                 name: emote.name,
+		//             });
+		//         }
+		//     }
 
-		return emotes;
+		//     return emotes;
+		// } catch (e) {
+		//     // bandaid solution while im on vacation
+		//     return [];
+		// }
 	}
 
 	async getFfzGlobalEmotes(): Promise<Emote[]> {
-		let resp = await ob.api.get<any>(
-			'https://api.frankerfacez.com/v1/set/global',
-			3600,
-			{
-				timeout: 5000,
-			},
-			true
-		);
+		return [];
+		// try {
+		//     let resp = await ob.api.get<any>(
+		//         "https://api.frankerfacez.com/v1/set/global",
+		//         3600,
+		//         {
+		//             timeout: 5000,
+		//         },
+		//         true
+		//     );
 
-		if (resp.error) {
-			ob.logger.warn(`Error getting ffz global emotes: ${resp.error}`, 'ob.utils');
-			return [];
-		}
+		//     if (resp.error) {
+		//         ob.logger.warn(
+		//             `Error getting ffz global emotes: ${resp.error}`,
+		//             "ob.utils"
+		//         );
+		//         return [];
+		//     }
 
-		let emotes: Emote[] = [];
-		for (let set in resp.data.response.data.sets) {
-			for (let emote of resp.data.response.data.sets[set].emoticons) {
-				emotes.push({
-					provider: 'FFZ',
-					id: emote.id,
-					name: emote.name,
-				});
-			}
-		}
+		//     let emotes: Emote[] = [];
+		//     for (let set in resp.data.response.data.sets) {
+		//         for (let emote of resp.data.response.data.sets[set].emoticons) {
+		//             emotes.push({
+		//                 provider: "FFZ",
+		//                 id: emote.id,
+		//                 name: emote.name,
+		//             });
+		//         }
+		//     }
 
-		return emotes;
+		//     return emotes;
+		// } catch (e) {
+		//     return [];
+		// }
 	}
 
 	async getBttvChannelEmotes(channelId: string): Promise<Emote[]> {

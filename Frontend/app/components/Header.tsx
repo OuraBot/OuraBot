@@ -79,6 +79,8 @@ const useStyles = createStyles((theme) => ({
 interface HeaderResponsiveProps {
 	channel?: IChannel;
 	session?: any;
+	noMargin?: boolean;
+	premium?: boolean;
 }
 
 export function HeaderResponsive(props: HeaderResponsiveProps) {
@@ -86,7 +88,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 	const { classes, cx } = useStyles();
 
 	return (
-		<Header height={HEADER_HEIGHT} mb={120} className={classes.root}>
+		<Header height={HEADER_HEIGHT} mb={props.noMargin ? 10 : 120} className={classes.root}>
 			<Container className={classes.header}>
 				<a href="/">
 					<Image src="/resources/LogoText.png" fit="contain" width="45%" alt="OuraBot" />
@@ -96,7 +98,16 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 						<Menu>
 							<Menu.Target>
 								<UnstyledButton>
-									<Avatar src={props.session.profile_image_url} radius="xl" />
+									<Avatar
+										src={props.session.profile_image_url}
+										radius="xl"
+										style={{
+											outline: 'groove',
+											outlineColor: props.premium ? '#ffaa00' : 'transparent',
+											outlineOffset: '2px',
+											outlineWidth: '2px',
+										}}
+									/>
 								</UnstyledButton>
 							</Menu.Target>
 							<Menu.Dropdown>

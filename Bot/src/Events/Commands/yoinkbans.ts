@@ -1,5 +1,5 @@
 import OuraBot from '../../Client';
-import { CategoryEnum, Channel, Command, CommandReturn, Permission } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, Permission, PlatformEnum } from '../../Typings/Twitch';
 import { parseTwitchMessage } from '@twurple/chat';
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 
@@ -12,6 +12,7 @@ export const cmd = new (class command implements Command {
 	permissions = [Permission.Owner, Permission.Admin];
 	category = CategoryEnum.Utility;
 	hidden = true;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let channel = ob.utils.sanitizeName(args[0]) || Channel.channel;
 		let specificDate = args[1] ?? '';

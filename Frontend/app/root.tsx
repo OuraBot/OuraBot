@@ -1,16 +1,12 @@
-import { Button, ColorScheme, Container, createEmotionCache, Paper, Title, Text, ScrollArea } from '@mantine/core';
-import { MantineProvider, ColorSchemeProvider } from '@mantine/core';
-import { useColorScheme } from '@mantine/hooks';
+import { Container, MantineProvider, Paper, ScrollArea, Text, Title } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/node';
+import type { LoaderFunction, MetaFunction } from '@remix-run/node';
 
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from '@remix-run/react';
 
-import dbConnect from './services/mongo.server';
 import { NotificationsProvider } from '@mantine/notifications';
 import { StylesPlaceholder } from '@mantine/remix';
+import dbConnect from './services/mongo.server';
 
 export const meta: MetaFunction = () => ({
 	charset: 'utf-8',
@@ -82,6 +78,8 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
+	const message = error.message;
+
 	return (
 		<Mantine>
 			<Container size="lg">
@@ -95,7 +93,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 						to return to the homepage.
 					</Text>
 					<ScrollArea>
-						<pre>{error.stack}</pre>
+						<pre>{error.message}</pre>
 					</ScrollArea>
 				</Paper>
 			</Container>

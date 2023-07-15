@@ -1,5 +1,4 @@
 import {
-	Badge,
 	Box,
 	Button,
 	Card,
@@ -8,44 +7,30 @@ import {
 	Collapse,
 	Divider,
 	Grid,
+	HoverCard,
 	Loader,
 	Paper,
 	Slider,
+	Space,
 	Stack,
 	Text,
 	TextInput,
 	Title,
 	UnstyledButton,
-	useMantineTheme,
 } from '@mantine/core';
-import { useModals } from '@mantine/modals';
-import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import type { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useSubmit, Link } from '@remix-run/react';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { redirect, type ActionFunction, type LoaderFunction, type MetaFunction } from '@remix-run/node';
+import { Form, useLoaderData, useSubmit } from '@remix-run/react';
+import type { Document } from 'mongoose';
 import { useEffect, useRef, useState } from 'react';
+import emoji from 'react-easy-emoji';
 import { badRequest } from 'remix-utils';
-import { ArrowBackUp } from 'tabler-icons-react';
+import { ArrowBackUp, Clock, ExternalLink, Heart, Icons, InfoCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
+import type { IChannel } from '~/services/models/Channel';
 import { ChannelModel } from '~/services/models/Channel';
-import { getOrderDetails } from '~/utils/paypal.server';
-import { UserResponse } from '../api/v3/user.$login';
-
-const pricePoints = [
-	0, // 0 month
-	4, // 1 month
-	8, // 2 months
-	12, // 3 months
-	16, // 4 months
-	// Save $1/month for each additional month
-	19, // 5 months
-	22, // 6 months
-	25, // 7 months
-	28, // 8 months
-	31, // 9 months
-	34, // 10 months
-	37, // 11 months
-	40, // 12 months
-];
+import { purchasePremium } from '~/services/stripe.server';
+import type { UserResponse } from '../api/v3/user.$login';
 
 export const meta: MetaFunction = () => {
 	return {
@@ -58,6 +43,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 	const session = await authenticator.isAuthenticated(request, {
 		failureRedirect: '/login',
 	});
+
 	const channel = await ChannelModel.findOne({ id: session.json.id });
 
 	// check all of the orders if one is still valid
@@ -70,345 +56,391 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 		expiresAt = channel.premium.orders.at(-1).expiresAt;
 	}
 
-	const cid = process.env.PAYPAL_CLIENT_ID;
-
 	return {
-		cid,
 		channel,
 		subscribed,
 		expiresAt,
 	};
 };
 
+// Watch out for roll overs (purchasing 3 months in december). One month is 30 days.
+function calculateExpirationDate(months: number): Date {
+	const currentDate = new Date();
+	const currentMonth = currentDate.getMonth();
+	const currentYear = currentDate.getFullYear();
+	const targetMonth = currentMonth + months;
+	const targetYear = currentYear + Math.floor(targetMonth / 12);
+	const adjustedMonth = targetMonth % 12;
+
+	const expiresAt = new Date(currentDate);
+	expiresAt.setFullYear(targetYear);
+	expiresAt.setMonth(adjustedMonth);
+	expiresAt.setDate(expiresAt.getDate() + months * 31);
+
+	return expiresAt;
+}
 export const action: ActionFunction = async ({ request, params }) => {
+	const session = await authenticator.isAuthenticated(request, {
+		failureRedirect: '/login',
+	});
+
 	const formData = await request.formData();
+	for (const [key, value] of formData.entries()) {
+		console.log(key, value);
+	}
 
-	const orderID = formData.get('orderID') as string;
-	const recepient = formData.get('recepient') as string;
-	const months = parseInt((formData.get('months') as string) ?? '0');
+	const months = parseInt(formData.get('months_DO_NOT_MODIFY') as string);
+	if (isNaN(months)) return badRequest('invalid months');
+	if (months < 1 || months > 12) return badRequest('invalid months');
 
-	const orderDetails = await getOrderDetails(orderID);
+	const recipient = formData.get('recepient_DO_NOT_MODIFY') as string;
+	if (!recipient) return badRequest('invalid recipient');
 
-	if (!orderDetails) return badRequest('order not found');
+	const gifted = recipient.toLowerCase() !== session.json.login.toLowerCase();
 
-	if (orderDetails.status !== 'COMPLETED') return badRequest('order not completed');
+	let gifterChannel: (IChannel & Document) | null = null;
+	if (gifted) {
+		gifterChannel = await ChannelModel.findOne({ id: session.json.id });
+		if (!gifterChannel) return badRequest('gifter channel not found');
+	}
 
-	// check if the order id has only been used once
-	const pastOrders = await ChannelModel.find({ 'premium.orders.id': orderID });
-	if (pastOrders?.length > 0) return badRequest('order id already used. contact support');
-
-	const channel = await ChannelModel.findOne({ login: recepient });
+	const channel: (IChannel & Document) | null = await ChannelModel.findOne({ login: recipient.toLowerCase() });
 	if (!channel) return badRequest('channel not found');
 
-	const purchasedUnit = orderDetails.purchase_units[0];
-	const idInfo = purchasedUnit.custom_id.split('-');
-
-	const _months = parseInt(idInfo[1]);
-	const _recepient = idInfo[2];
-
-	if (_recepient !== recepient) return badRequest('invalid recepient');
-	if (_months !== months) return badRequest('invalid months');
+	const sessionData = await purchasePremium(months, channel._id, {
+		gifted: `${gifted}` as 'true' | 'false',
+		giftedBy: gifted && gifterChannel ? gifterChannel._id : '',
+		recipient: channel.login, // should only be used in frontend ui after gifting
+	});
+	console.log(sessionData);
 
 	channel.premium.orders.push({
-		id: orderID,
-		createdAt: new Date(orderDetails.create_time),
-		expiresAt: new Date(new Date().setMonth(new Date().getMonth() + _months)),
+		createdAt: new Date(),
+		expiresAt: calculateExpirationDate(months),
 		duration: months,
-		email: orderDetails.payer.email_address ?? '',
-		status: 'PAID',
+		email: 'not yet provided',
+		status: 'PENDING',
+		id: sessionData.id,
+		giftedBy: gifted && gifterChannel ? gifterChannel._id : null,
 	});
+
+	channel.markModified('premium.orders');
 
 	await channel.save();
 
-	return {
-		months: _months,
-		recepient: _recepient,
-		expiresAt: new Date(new Date().setMonth(new Date().getMonth() + _months)),
-	};
+	return redirect(sessionData.url ?? '/dashboard/premium/cancel');
 };
 
 export default function Premium() {
+	const [recepient, setRecepient] = useState('');
+	const [checkout, setCheckout] = useState(false);
+	const [months, setMonths] = useState(3);
+	const [realMonths, setRealMonths] = useState(3);
+	const { channel, subscribed, expiresAt } = useLoaderData();
+	const [error, setError] = useState('');
+	const [gifting, setGifting] = useState(subscribed);
+	const [queriedLogin, setQueriedLogin] = useState('');
+
+	const handleCheckout = async () => {
+		if (gifting) {
+			if (recepient.toLowerCase() === channel.login.toLowerCase()) return setError('You cannot gift to yourself');
+			if (queriedLogin === recepient) return setError('Please enter a different recepient');
+			setQueriedLogin(recepient);
+
+			const user: UserResponse | null = await fetch('/api/v3/user/' + recepient.toLowerCase())
+				.then((res) => res.json())
+				.catch(() => setError('User not found on OuraBot'));
+			// setCheckout(true);
+
+			console.log(user);
+
+			if (!user) return setError('User not found on OuraBot');
+
+			if (user.premium.active == false) {
+				setCheckout(true);
+				setRealMonths(months);
+			} else {
+				return setError('User already has premium');
+			}
+		} else {
+			const user: UserResponse | null = await fetch('/api/v3/user/' + channel.login)
+				.then((res) => res.json())
+				.catch(() => setError('User not found on OuraBot'));
+
+			if (!user) return setError('User not found on OuraBot');
+			if (user.premium.active == true) return setError('You already have premium');
+			setCheckout(true);
+			setRealMonths(months);
+		}
+	};
+
+	/* MIGRATE TO PREMIUM.SUCCESS.TSX
+	if (actionData && !actionData.error && !shownModal) {
+		setShownModal(true);
+		modals.openModal({
+			size: 'lg',
+			overlayBlur: 0.75,
+			overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+			overlayOpacity: 0.55,
+			transition: 'fade',
+			transitionDuration: 300,
+			transitionTimingFunction: 'ease',
+			title: (
+				<>
+					<Title order={3}>Thank you for your purchase!</Title>
+				</>
+			),
+			children: (
+				<>
+					{actionData?.recepient === channel.login ? (
+						<>
+							<Text>
+								You have subscribed to premium for {actionData?.months} {actionData?.months === 1 ? 'month' : 'months'}. It will expire on{' '}
+								{new Date(actionData?.expiresAt)?.toUTCString()}.
+							</Text>
+							<Text>It really helps out a lot, so thank you for your support! {'<3'}</Text>
+							<Text>If you need any help, please contact support</Text>
+						</>
+					) : (
+						<>
+							<Text>
+								You have just gifted premium to {actionData?.recepient} for {actionData?.months} {actionData?.months === 1 ? 'month' : 'months'}. It will
+								expire on {new Date(actionData?.expiresAt)?.toUTCString()}.
+							</Text>
+							<Text>It really helps out a lot, so thank you for your support! {'<3'}</Text>
+							<Text>If you need any help, please contact support</Text>
+						</>
+					)}
+				</>
+			),
+		});
+	}
+	*/
+
 	return (
 		<>
-			<Title order={3}>Premium will be available in early Q4 of 2023.</Title>
-			<Text>
-				If you would like to support OuraBot in the meantime, please consider subscribing to the developer's{' '}
-				<Text component="a" href="https://twitch.tv/auror6s/subscribe" variant="link" target="_blank">
-					Twitch channel.
+			{subscribed ? (
+				<>
+					<Title order={3}>You already have premium, thanks for your support! {emoji('💙')}</Title>
+					<Text color="dimmed" size="xs">
+						Your support genuinely means a lot to me, thank you so much! {'<3'}
+					</Text>
+					<Text>You can gift premium to other people below</Text>
+					<Text>
+						Your premium will expire on <strong>{new Date(expiresAt)?.toUTCString()}</strong>
+					</Text>
+					<Divider variant="solid" my="md" />
+				</>
+			) : null}
+			<Collapse in={!checkout}>
+				<Text>
+					Hosting and maintaining this bot is unfortunately not free. You can support the developer by purchasing a <strong>non-recurring</strong> payment.
 				</Text>
-			</Text>
-			<Text>In then future, you will be able to purchase Premium through PayPal on this page and recieve benefits.</Text>
+				<Text>
+					If you have any questions, please email{' '}
+					<strong>
+						<a
+							href="mailto:contact@ourabot.com"
+							style={{
+								color: 'white',
+							}}
+						>
+							contact@ourabot.com
+						</a>
+					</strong>
+					. All payments are non-refundable.
+				</Text>
+				<Box>
+					<Paper
+						m="sm"
+						style={{
+							backgroundColor: 'transparent',
+						}}
+					>
+						<Card.Section>
+							<Grid grow>
+								<Grid.Col md={6} lg={3}>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
+										<Title order={4}>
+											<Icons size={16} /> Special Features
+										</Title>
+										<Text>Gain access to special commands and modules that are only available to premium users! (coming soon)</Text>
+									</Card>
+								</Grid.Col>
+								<Grid.Col md={6} lg={3}>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
+										<Title order={4}>
+											<Clock size={16} /> Early Access
+										</Title>
+										<Text>Gain early access to new features and commands before they are available publicly!</Text>
+									</Card>
+								</Grid.Col>
+								<Grid.Col md={6} lg={3}>
+									<Card
+										style={{
+											backgroundColor: 'rgba(240, 140, 0, 0.5)',
+											color: 'white',
+										}}
+									>
+										<Title order={4}>
+											<Heart size={16} /> Support the Developer
+										</Title>
+										<Text>I am a solo developer, and I work on this bot in my free time. Your support means a lot to me!</Text>
+									</Card>
+								</Grid.Col>
+							</Grid>
+						</Card.Section>
+					</Paper>
+				</Box>
+
+				<Divider variant="solid" my="md" />
+				<Slider
+					my="lg"
+					value={months}
+					onChange={setMonths}
+					min={1}
+					max={12}
+					color="yellow"
+					label={(value) => `${value} month${value == 1 ? '' : 's'}`}
+					mx="md"
+					marks={[
+						{ value: 1 },
+						{ value: 2 },
+						{ value: 3 },
+						{ value: 4 },
+						{ value: 5 },
+						{ value: 6 },
+						{ value: 7 },
+						{ value: 8 },
+						{ value: 9 },
+						{ value: 10 },
+						{ value: 11 },
+						{ value: 12 },
+					]}
+				/>
+				<Title order={2}>{`$${months * 4} USD`} </Title>
+				<Text size="lg" mb="md">
+					{months} month{months == 1 ? '' : 's'}
+				</Text>
+
+				<Checkbox
+					label="Gift to another user"
+					checked={gifting}
+					color="yellow"
+					onChange={(event) => {
+						if (subscribed && !event.target.checked) return;
+						setGifting(event.target.checked);
+						setRecepient('');
+					}}
+				/>
+
+				<Collapse in={gifting}>
+					<TextInput
+						label="Gift to"
+						error={error}
+						autoFocus
+						placeholder="Username"
+						value={recepient}
+						onChange={(event) => {
+							setRecepient(event.target.value);
+							setError('');
+						}}
+					/>
+				</Collapse>
+				<Button
+					my="md"
+					fullWidth
+					variant="gradient"
+					gradient={{ from: '#ffa500', to: '#cc8400', deg: 105 }}
+					onClick={() => {
+						handleCheckout();
+					}}
+				>
+					Checkout
+				</Button>
+			</Collapse>
+			{checkout && (
+				<>
+					<UnstyledButton
+						onClick={() => {
+							setCheckout(false);
+						}}
+					>
+						<ArrowBackUp />
+					</UnstyledButton>
+					<Center>
+						<Stack>
+							<Text size="lg" align="center">
+								<strong>
+									${realMonths * 4} for {realMonths} month{realMonths == 1 ? '' : 's'} ({realMonths * 31} days)
+								</strong>
+							</Text>
+							{console.log(channel)}
+							<Text align="center">
+								<div style={{ display: 'flex', alignItems: 'center' }}>
+									<Space w="xs" />
+									<HoverCard width={280} shadow="md">
+										<HoverCard.Target>
+											<div style={{ display: 'flex', alignItems: 'center' }}>
+												<InfoCircle size={18} />
+												<Space w={2} />
+											</div>
+										</HoverCard.Target>
+										<HoverCard.Dropdown>
+											<Text size="sm">
+												This is the username of the channel you are purchasing premium for. If this is not correct, please check the gifted field
+												(go back)
+											</Text>
+										</HoverCard.Dropdown>
+									</HoverCard>
+									<Text
+										variant="link"
+										component="a"
+										href={`https://twitch.tv/${gifting && recepient.length > 0 ? recepient : channel.login}`}
+										target="_blank"
+									>
+										https://twitch.tv/{gifting && recepient.length > 0 ? recepient : channel.login}
+									</Text>
+								</div>
+							</Text>
+							{/* <PayPalScriptProvider
+								options={{
+									'client-id': cid,
+									components: 'buttons',
+									currency: 'USD',
+								}}
+							>
+								<ButtonWrapper
+									amount={pricePoints[realMonths]}
+									currency={currency}
+									showSpinner={true}
+									recepient={gifting && recepient.length > 0 ? recepient : channel.login}
+									months={realMonths}
+								/>
+							</PayPalScriptProvider> */}
+							<Form method="post">
+								<input type="hidden" name="months_DO_NOT_MODIFY" value={realMonths} />
+								<input type="hidden" name="recepient_DO_NOT_MODIFY" value={gifting && recepient.length > 0 ? recepient : channel.login} />
+								<Button type="submit" fullWidth leftIcon={<ExternalLink />}>
+									Pay with Stripe
+								</Button>
+							</Form>
+						</Stack>
+					</Center>
+				</>
+			)}
 		</>
 	);
-
-	// UNCOMMENT AFTER 2023 Q3
-	// const [recepient, setRecepient] = useState('');
-	// const [checkout, setCheckout] = useState(false);
-	// const [months, setMonths] = useState(3);
-	// const [realMonths, setRealMonths] = useState(3);
-	// const { cid, channel, subscribed, expiresAt } = useLoaderData();
-	// const actionData = useActionData();
-	// const [error, setError] = useState('');
-	// const [gifting, setGifting] = useState(subscribed);
-	// const [queriedLogin, setQueriedLogin] = useState('');
-	// const theme = useMantineTheme();
-	// const modals = useModals();
-	// const [shownModal, setShownModal] = useState(false);
-
-	// const handleCheckout = async () => {
-	// 	if (gifting) {
-	// 		if (recepient.toLowerCase() === channel.login.toLowerCase()) return setError('You cannot gift to yourself');
-	// 		if (queriedLogin === recepient) return setError('Please enter a different recepient');
-	// 		setQueriedLogin(recepient);
-
-	// 		const user: UserResponse | null = await fetch('/api/v3/user/' + recepient)
-	// 			.then((res) => res.json())
-	// 			.catch(() => setError('User not found'));
-	// 		// setCheckout(true);
-
-	// 		console.log(user);
-
-	// 		if (!user) return setError('User not found');
-
-	// 		if (user.premium.active == false) {
-	// 			setCheckout(true);
-	// 			setRealMonths(months);
-	// 		} else {
-	// 			return setError('User already has premium');
-	// 		}
-	// 	} else {
-	// 		const user: UserResponse | null = await fetch('/api/v3/user/' + channel.login)
-	// 			.then((res) => res.json())
-	// 			.catch(() => setError('User not found'));
-
-	// 		if (!user) return setError('User not found');
-	// 		if (user.premium.active == true) return setError('You already have premium');
-	// 		setCheckout(true);
-	// 		setRealMonths(months);
-	// 	}
-	// };
-
-	// if (actionData && !actionData.error && !shownModal) {
-	// 	setShownModal(true);
-	// 	modals.openModal({
-	// 		size: 'lg',
-	// 		overlayBlur: 0.75,
-	// 		overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
-	// 		overlayOpacity: 0.55,
-	// 		transition: 'fade',
-	// 		transitionDuration: 300,
-	// 		transitionTimingFunction: 'ease',
-	// 		title: (
-	// 			<>
-	// 				<Title order={3}>Thank you for your purchase!</Title>
-	// 			</>
-	// 		),
-	// 		children: (
-	// 			<>
-	// 				{actionData?.recepient === channel.login ? (
-	// 					<>
-	// 						<Text>
-	// 							You have subscribed to premium for {actionData?.months} {actionData?.months === 1 ? 'month' : 'months'}. It will expire on{' '}
-	// 							{new Date(actionData?.expiresAt)?.toUTCString()}.
-	// 						</Text>
-	// 						<Text>It really helps out a lot, so thank you for your support! {'<3'}</Text>
-	// 						<Text>If you need any help, please contact support</Text>
-	// 					</>
-	// 				) : (
-	// 					<>
-	// 						<Text>
-	// 							You have just gifted premium to {actionData?.recepient} for {actionData?.months} {actionData?.months === 1 ? 'month' : 'months'}. It will
-	// 							expire on {new Date(actionData?.expiresAt)?.toUTCString()}.
-	// 						</Text>
-	// 						<Text>It really helps out a lot, so thank you for your support! {'<3'}</Text>
-	// 						<Text>If you need any help, please contact support</Text>
-	// 					</>
-	// 				)}
-	// 			</>
-	// 		),
-	// 	});
-	// }
-
-	// return (
-	// 	<>
-	// 		{subscribed ? (
-	// 			<>
-	// 				<Title order={3}>You already have premium, thanks for your support!</Title>
-	// 				<Text>You can gift premium to other people below</Text>
-	// 				<Text>
-	// 					Your premium will expire on <strong>{new Date(expiresAt)?.toUTCString()}</strong>
-	// 				</Text>
-	// 				<Divider variant="solid" my="md" />
-	// 			</>
-	// 		) : null}
-	// 		<Collapse in={!checkout}>
-	// 			<Text>
-	// 				Hosting and maintaining this bot is unfortunately not free. You can support the developer by purchasing a <strong>non-recurring</strong> payment.
-	// 			</Text>
-	// 			<Text>
-	// 				If you have any questions, please email <strong>contact@ourabot.com</strong>. All payments are non-refundable.
-	// 			</Text>
-	// 			<Box>
-	// 				<Paper
-	// 					m="sm"
-	// 					style={{
-	// 						backgroundColor: 'transparent',
-	// 					}}
-	// 				>
-	// 					{/*
-	// 					<Card.Section>
-	// 						<Text mb="xs" weight={500}>
-	// 							Premium Features:
-	// 						</Text>
-	// 						<Grid grow>
-	// 							<Grid.Col md={6} lg={3}>
-	// 								<Card>
-	// 									<Title order={4}>Feature Title</Title>
-	// 									<Text>Feature description will go here, describing what the feature does.</Text>
-	// 								</Card>
-	// 							</Grid.Col>
-	// 							<Grid.Col md={6} lg={3}>
-	// 								<Card>
-	// 									<Title order={4}>Feature Title</Title>
-	// 									<Text>Feature description will go here, describing what the feature does.</Text>
-	// 								</Card>
-	// 							</Grid.Col>
-	// 							<Grid.Col md={6} lg={3}>
-	// 								<Card>
-	// 									<Title order={4}>Feature Title</Title>
-	// 									<Text>Feature description will go here, describing what the feature does.</Text>
-	// 								</Card>
-	// 							</Grid.Col>
-	// 							<Grid.Col md={6} lg={3}>
-	// 								<Card>
-	// 									<Title order={4}>Feature Title</Title>
-	// 									<Text>Feature description will go here, describing what the feature does.</Text>
-	// 								</Card>
-	// 							</Grid.Col>
-	// 						</Grid>
-	// 					</Card.Section>
-	// 						*/}
-	// 				</Paper>
-	// 			</Box>
-
-	// 			<Divider variant="solid" my="md" />
-	// 			<Slider
-	// 				my="lg"
-	// 				value={months}
-	// 				onChange={setMonths}
-	// 				min={1}
-	// 				max={12}
-	// 				label={(value) => `${value} month${value == 1 ? '' : 's'}`}
-	// 				mx="md"
-	// 				marks={[
-	// 					{ value: 1 },
-	// 					{ value: 2 },
-	// 					{ value: 3 },
-	// 					{ value: 4 },
-	// 					{ value: 5 },
-	// 					{ value: 6 },
-	// 					{ value: 7 },
-	// 					{ value: 8 },
-	// 					{ value: 9 },
-	// 					{ value: 10 },
-	// 					{ value: 11 },
-	// 					{ value: 12 },
-	// 				]}
-	// 			/>
-	// 			<Title order={2}>
-	// 				{`$${pricePoints[months]} USD`}{' '}
-	// 				{months > 4 && (
-	// 					<>
-	// 						<Badge size="md" variant="filled">
-	// 							Save {Math.round((100 * (4 * months - pricePoints[months])) / (4 * months))}%
-	// 						</Badge>
-	// 					</>
-	// 				)}
-	// 			</Title>
-	// 			<Text size="lg" mb="md">
-	// 				{months} month{months == 1 ? '' : 's'}
-	// 			</Text>
-
-	// 			<Checkbox
-	// 				label="Gift to another user"
-	// 				checked={gifting}
-	// 				onChange={(event) => {
-	// 					if (subscribed && !event.target.checked) return;
-	// 					setGifting(event.target.checked);
-	// 					setRecepient('');
-	// 				}}
-	// 			/>
-	// 			<Collapse in={gifting}>
-	// 				<TextInput
-	// 					label="Gift to"
-	// 					error={error}
-	// 					autoFocus
-	// 					placeholder="Username"
-	// 					value={recepient}
-	// 					onChange={(event) => {
-	// 						setRecepient(event.target.value);
-	// 						setError('');
-	// 					}}
-	// 				/>
-	// 			</Collapse>
-	// 			<Button
-	// 				my="md"
-	// 				fullWidth
-	// 				onClick={() => {
-	// 					handleCheckout();
-	// 				}}
-	// 			>
-	// 				Checkout
-	// 			</Button>
-	// 		</Collapse>
-	// 		{checkout && (
-	// 			<>
-	// 				<UnstyledButton
-	// 					onClick={() => {
-	// 						setCheckout(false);
-	// 					}}
-	// 				>
-	// 					<ArrowBackUp />
-	// 				</UnstyledButton>
-	// 				<Center>
-	// 					<Stack>
-	// 						<Text size="lg" align="center">
-	// 							<strong>
-	// 								${pricePoints[realMonths]} · {realMonths} month{realMonths == 1 ? '' : 's'}
-	// 							</strong>
-	// 						</Text>
-	// 						{console.log(channel)}
-	// 						<Text align="center">
-	// 							<Text
-	// 								variant="link"
-	// 								component="a"
-	// 								href={`https://twitch.tv/${gifting && recepient.length > 0 ? recepient : channel.login}`}
-	// 								target="_blank"
-	// 							>
-	// 								https://twitch.tv/{gifting && recepient.length > 0 ? recepient : channel.login}
-	// 							</Text>
-	// 						</Text>
-	// 						<PayPalScriptProvider
-	// 							options={{
-	// 								'client-id': cid,
-	// 								components: 'buttons',
-	// 								currency: 'USD',
-	// 							}}
-	// 						>
-	// 							<ButtonWrapper
-	// 								amount={pricePoints[realMonths]}
-	// 								currency={currency}
-	// 								showSpinner={true}
-	// 								recepient={gifting && recepient.length > 0 ? recepient : channel.login}
-	// 								months={realMonths}
-	// 							/>
-	// 						</PayPalScriptProvider>
-	// 					</Stack>
-	// 				</Center>
-	// 			</>
-	// 		)}
-	// 	</>
-	// );
 }
 
 const currency = 'USD';

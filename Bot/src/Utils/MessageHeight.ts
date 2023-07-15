@@ -1,8 +1,8 @@
-import { ParsedMessagePart } from '@twurple/common/lib';
 import fs from 'fs';
 import ob from '..';
 import puppeteer from 'puppeteer';
 import { Emote } from '../Typings/ThirdPartyEmotes';
+import { ParsedMessagePart } from '@twurple/chat';
 
 export class MessageHeight {
 	//

@@ -2,7 +2,7 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import ms from 'ms';
 import { type } from 'os';
 import OuraBot from '../../Client';
-import { CategoryEnum, Channel, Command, CommandReturn, NukeMessage, Permission } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, NukeMessage, Permission, PlatformEnum } from '../../Typings/Twitch';
 
 export const cmd = new (class command implements Command {
 	name = 'nuke';
@@ -12,6 +12,7 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 5;
 	permissions = [Permission.Broadcaster, Permission.Moderator];
 	category = CategoryEnum.Moderation;
+	platforms = [PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		if (!args[0])
 			return {
@@ -65,7 +66,7 @@ export const cmd = new (class command implements Command {
 			};
 
 		let usingRegex: boolean = false;
-		let usersToTimeout: string[] = [];
+		let usersToTimeout: { login: string; user_id: string }[] = [];
 		if (targetMessage.startsWith('/') && targetMessage.endsWith('/')) {
 			let regex: RegExp;
 			try {
@@ -80,11 +81,11 @@ export const cmd = new (class command implements Command {
 			usingRegex = true;
 
 			channelNukeMessages.forEach((nukeMessage) => {
-				if (nukeMessage.message.match(regex)) usersToTimeout.push(nukeMessage.user);
+				if (nukeMessage.message.match(regex)) usersToTimeout.push({ login: nukeMessage.user, user_id: nukeMessage.user_id });
 			});
 		} else {
 			channelNukeMessages.forEach((nukeMessage) => {
-				if (nukeMessage.message.includes(targetMessage.toLowerCase())) usersToTimeout.push(nukeMessage.user);
+				if (nukeMessage.message.includes(targetMessage.toLowerCase())) usersToTimeout.push({ login: nukeMessage.user, user_id: nukeMessage.user_id });
 			});
 		}
 
@@ -97,19 +98,21 @@ export const cmd = new (class command implements Command {
 		usersToTimeout = [...new Set(usersToTimeout)];
 
 		// prettier-ignore
-		const URL = await ob.utils.upload(`Nuke from ${Channel.channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${permaban ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.join('\n')}`);
+		const URL = await ob.utils.upload(`Nuke from ${Channel.channel} at ${new Date()}\nChecked against ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"\n\n${usersToTimeout.length} user(s) nuked for ${permaban ? 'PERMABAN' : timeoutTime + 's'}\n\nUsers:\n${usersToTimeout.map((user) => user.login).join('\n')}`);
 
 		// If the whisper is silently dropped, too bad!
 		ob.twitch.apiClient.whispers.sendWhisper(ob.config.twitch_id, msg.userInfo.userId, `Nuke report from ${Channel.channel}: ${URL}`);
 
 		if (!dryrun) {
-			for (const user of usersToTimeout) {
-				ob.twitch.apiClient.moderation.banUser(Channel.id, ob.config.twitch_id, {
-					reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
-					user: user,
-					duration: permaban ? undefined : timeoutTime,
-				});
-			}
+			ob.twitch.apiClient.asUser(ob.config.twitch_id, async (ctx) => {
+				for (const user of usersToTimeout) {
+					ctx.moderation.banUser(Channel.id, {
+						reason: `Nuked with ${usingRegex ? 'regex' : 'message'}: "${targetMessage}"`,
+						user: user.user_id,
+						duration: permaban ? undefined : timeoutTime,
+					});
+				}
+			});
 		}
 
 		return {
