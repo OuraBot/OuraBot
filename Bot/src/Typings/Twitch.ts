@@ -11,6 +11,7 @@ import { CacheTimes } from '../Utils/API/constants';
 import { ChatClientEvents } from '../Utils/eventBinder';
 import { RateLimiter } from '../Utils/RateLimiter';
 import { TMIChatters } from './API';
+import { EventSubHttpListener, ReverseProxyAdapter } from '@twurple/eventsub-http';
 
 const CHUNK_SIZE = 3000;
 
@@ -49,6 +50,7 @@ export class TwitchController {
 	clients: ChatClient[];
 	rateLimiter: RateLimiter;
 	joinRateLimiter: RateLimiter;
+	eventsubListener: EventSubHttpListener;
 	private lastIndex: number = 0;
 
 	constructor(chatClient: ChatClient, apiClient: ApiClient, pubSubClient: PubSubClient, clients: ChatClient[]) {
@@ -58,6 +60,15 @@ export class TwitchController {
 		this.clients = clients;
 		this.rateLimiter = new RateLimiter();
 		this.joinRateLimiter = new RateLimiter();
+
+		this.eventsubListener = new EventSubHttpListener({
+			apiClient: this.apiClient,
+			adapter: new ReverseProxyAdapter({
+				hostName: 'ourabot.com',
+				port: 4005,
+			}),
+			secret: 'aserhjknraschjfvxzkjnmdfxcvyuighkragcsiknyuraschjkfxvjk',
+		});
 
 		pubSubClient.onCustomTopic(ob.config.twitch_id, 'chatrooms-user-v1', async (msg) => {
 			const data: ChatroomMessage = msg.data as ChatroomMessage;
@@ -74,6 +85,11 @@ export class TwitchController {
 			}
 		});
 
+		this.eventsubListener.onChannelUpdate('94568374', (event) => {
+			console.log(`new game ${event.categoryName} - ${event.broadcasterName} - ${Date.now()}`);
+		});
+
+		this.eventsubListener.start();
 		// TODO: Subscribe to PubSubChannelRoleChangeMessage (https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
 	}
 
