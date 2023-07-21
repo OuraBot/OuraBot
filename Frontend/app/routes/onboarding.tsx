@@ -62,6 +62,14 @@ export async function action({ request }: ActionArgs) {
 			xqclivekick: {
 				enabled: false,
 			},
+			links: {
+				enabled: false,
+				timeout: 0,
+				allowList: [],
+				blockList: [],
+				excludedPermissions: [],
+				chatMode: 'both',
+			},
 		},
 		premium: {
 			orders: [],
