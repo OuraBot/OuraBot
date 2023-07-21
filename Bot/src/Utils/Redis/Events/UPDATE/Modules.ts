@@ -43,8 +43,28 @@ export default function handler(Event: Event): Promise<Event> {
 					});
 				}
 				break;
+
+			case 'links':
+				{
+					const { enabled, timeout, chatMode } = Event.data;
+
+					channel.modules.links.enabled = enabled;
+					channel.modules.links.timeout = timeout;
+					channel.modules.links.chatMode = chatMode;
+
+					channel.markModified('modules');
+					await channel.save();
+
+					ob.CacheManager.clear(`${Event.userId}_channelInfo`);
+
+					resolve({
+						...Event,
+						status: StatusCodes.OK,
+					});
+				}
+				break;
 		}
 
-		resolve(Event);
+		resolve({ ...Event, status: StatusCodes.BadRequest });
 	});
 }

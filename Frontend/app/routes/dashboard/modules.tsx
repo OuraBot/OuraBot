@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Grid, Group, NumberInput, Switch, Text, Title } from '@mantine/core';
+import { Button, Card, Divider, Grid, Group, Input, NumberInput, SegmentedControl, Switch, Text, Title, useMantineTheme } from '@mantine/core';
 import { Form, useLoaderData } from '@remix-run/react';
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
 import { useState } from 'react';
@@ -79,6 +79,33 @@ export async function action({ request }: ActionArgs) {
 				console.log(modules);
 			}
 			break;
+		case 'links':
+			{
+				const enabled = formData.get('enabledL') === 'on' ? true : false;
+
+				const rawTimeout = formData.get('timeoutlinks');
+				if (!rawTimeout) throw new Error('timeout is required');
+
+				const timeout = parseInt(rawTimeout.toString());
+
+				if (isNaN(timeout)) throw new Error('timeout must be a number');
+
+				if (!inBounds(0, 3600, timeout)) throw new Error('timeout must be between 0 and 3600 seconds');
+
+				const chatMode = formData.get('chatmode') as 'offline' | 'both' | 'online';
+
+				if (!chatMode || chatMode == null) throw new Error('chatmode is required');
+
+				const modules = await query('UPDATE', 'Modules', channel.token, session.json.id, {
+					name: 'links',
+					enabled: enabled,
+					timeout: timeout,
+					chatMode: chatMode,
+				});
+
+				console.log(modules);
+			}
+			break;
 	}
 
 	return null;
@@ -92,6 +119,7 @@ export default function Modules() {
 			<Grid>
 				<CardSmartEmoteOnly enabled={channel.modules.smartemoteonly.enabled} timeout={channel.modules.smartemoteonly.timeout} />
 				<CardxQcLiveKick enabled={channel.modules.xqclivekick.enabled} />
+				<CardLinks data={channel.modules.links} />
 				<MoreComingSoon />
 			</Grid>
 			{/* <Prism withLineNumbers language="json">
@@ -176,6 +204,85 @@ function CardxQcLiveKick(props: { enabled: boolean }) {
 					<Switch name="enabledXLK" id="enabledXLK" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
 
 					<Button type="submit" color="blue" fullWidth mt="md" radius="md" disabled={enabled === props.enabled}>
+						Save
+					</Button>
+				</Card>
+			</Form>
+		</Grid.Col>
+	);
+}
+
+function CardLinks(props: {
+	data: {
+		enabled: boolean;
+		timeout: number;
+		// allowList: string[];
+		// blockList: string[];
+		// ignorePermissions: string[];
+		chatMode: 'offline' | 'both' | 'online';
+	};
+}) {
+	const [enabled, setEnabled] = useState(props.data.enabled);
+	const [timeout, _setTimeout] = useState(props.data.timeout ?? 0);
+	const [chatMode, setChatMode] = useState<string>(props.data.chatMode);
+	const theme = useMantineTheme();
+
+	return (
+		<Grid.Col md={6} lg={3}>
+			<Form method="post">
+				<Card shadow="sm" p="lg" radius="md" withBorder>
+					<Group position="apart" mb="xs">
+						<Title order={3}>Links Filter</Title>
+					</Group>
+
+					<Text size="sm">Timeout users for posting links based on your settings.</Text>
+
+					<Divider mt="sm" />
+
+					<input type="hidden" name="module" value="links" />
+					<Switch name="enabledL" id="enabledL" mt="md" label="Enabled" checked={enabled} onChange={(event) => setEnabled(event.currentTarget.checked)} />
+					<NumberInput
+						name="timeoutlinks"
+						id="timeoutlinks"
+						label="Timeout length (seconds)"
+						description="How long to timeout users.  Use 0 to delete messages instead."
+						min={0}
+						max={3600}
+						step={1}
+						value={timeout}
+						onChange={(val) => {
+							_setTimeout(val ?? 0);
+						}}
+					/>
+
+					<Input.Wrapper mb="sm" mt="xs" label="Chat Modes" description="When should links be removed?">
+						<SegmentedControl
+							name="chatmode"
+							id="chatmode"
+							mt="xs"
+							defaultValue={props.data.chatMode}
+							color="blue"
+							onChange={setChatMode}
+							value={chatMode}
+							sx={{
+								backgroundColor: theme.colors.dark[5],
+							}}
+							data={[
+								{ label: 'Live', value: 'online' },
+								{ label: 'Both', value: 'both' },
+								{ label: 'Offline', value: 'offline' },
+							]}
+						/>
+					</Input.Wrapper>
+
+					<Button
+						type="submit"
+						color="blue"
+						fullWidth
+						mt="md"
+						radius="md"
+						disabled={enabled === props.data.enabled && timeout === props.data.timeout && props.data.chatMode === chatMode}
+					>
 						Save
 					</Button>
 				</Card>
