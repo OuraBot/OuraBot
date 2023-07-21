@@ -16,7 +16,7 @@ export interface DefaultCommandOption {
 	chatMode: 'offline' | 'both' | 'online';
 }
 
-export interface ModuleKey {
+export interface Modules {
 	smartemoteonly: {
 		enabled: boolean;
 		timeout: number; // in seconds, 0 is delete
@@ -24,11 +24,15 @@ export interface ModuleKey {
 	xqclivekick: {
 		enabled: boolean;
 	};
+	links: {
+		enabled: boolean;
+		timeout: number; // in seconds, 0 is delete
+		// allowList: string[];
+		// blockList: string[];
+		// excludedPermissions: string[];
+		chatMode: 'offline' | 'both' | 'online';
+	};
 }
-
-export type Modules = {
-	[K in keyof ModuleKey]: ModuleKey[K];
-};
 
 export interface IChannel extends Schema {
 	// MongoDB ID
@@ -166,9 +170,23 @@ export const ChannelSchema = new Schema<IChannel>(
 					},
 					required: true,
 				},
+				links: {
+					type: {
+						enabled: { type: Boolean },
+						timeout: { type: Number },
+						// allowList: { type: [String] },
+						// blockList: { type: [String] },
+						// excludedPermissions: { type: [String] },
+						chatMode: { type: String },
+					},
+				},
 			},
 			required: true,
-			default: { smartemoteonly: { enabled: false, timeout: 0 }, xqclivekick: { enabled: false } },
+			default: {
+				smartemoteonly: { enabled: false, timeout: 0 },
+				xqclivekick: { enabled: false },
+				links: { enabled: false, timeout: 0, allowList: [], blockList: [], excludedPermissions: [], chatMode: 'both' },
+			},
 		},
 		alerts: {
 			type: [String],
