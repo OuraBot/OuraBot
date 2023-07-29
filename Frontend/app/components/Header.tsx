@@ -77,7 +77,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface HeaderResponsiveProps {
-	channel?: IChannel;
+	channel?: IChannel | null;
 	session?: any;
 	noMargin?: boolean;
 	premium?: boolean;
@@ -94,7 +94,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 					<Image src="/resources/LogoText.png" fit="contain" width="45%" alt="OuraBot" />
 				</a>
 				<Group spacing={5} className={classes.links}>
-					{props.channel && (
+					{props?.channel && (
 						<Menu>
 							<Menu.Target>
 								<UnstyledButton>
@@ -132,7 +132,7 @@ export function HeaderResponsive(props: HeaderResponsiveProps) {
 				<Group spacing={5} className={classes.burger}>
 					{/* <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" /> */}
 
-					{props.channel && (
+					{props?.channel && (
 						<Menu position="bottom-end">
 							<Menu.Target>
 								<UnstyledButton>

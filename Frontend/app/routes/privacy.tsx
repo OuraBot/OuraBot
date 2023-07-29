@@ -17,7 +17,10 @@ export async function loader({ request }: LoaderArgs) {
 			session,
 		};
 	} else {
-		return null;
+		return {
+			channel: null,
+			session: null,
+		};
 	}
 }
 
