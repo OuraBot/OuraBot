@@ -6,22 +6,23 @@ import * as Sentry from '@sentry/remix';
 import { useEffect } from 'react';
 import { createEmotionCache } from '@mantine/core';
 
-if (process.env.NODE_ENV === 'production') {
-	Sentry.init({
-		dsn: 'https://5c0abffe843d4fab8a7915be315b3058:5af23cd2c9b044b1852cdec606f4c999@o4505139595575296.ingest.sentry.io/4505211544076288',
-		integrations: [
-			new Sentry.BrowserTracing({
-				routingInstrumentation: Sentry.remixRouterInstrumentation(useEffect, useLocation, useMatches),
-			}),
-			new Sentry.Replay(),
-		],
-		// Performance Monitoring
-		tracesSampleRate: 0.2, // Capture 100% of the transactions, reduce in production!
-		// Session Replay
-		replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-		replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-	});
-}
+Sentry.init({
+	dsn:
+		process.env.NODE_ENV === 'production'
+			? 'https://5c0abffe843d4fab8a7915be315b3058:5af23cd2c9b044b1852cdec606f4c999@o4505139595575296.ingest.sentry.io/4505211544076288'
+			: '',
+	integrations: [
+		new Sentry.BrowserTracing({
+			routingInstrumentation: Sentry.remixRouterInstrumentation(useEffect, useLocation, useMatches),
+		}),
+		new Sentry.Replay(),
+	],
+	// Performance Monitoring
+	tracesSampleRate: 0.2, // Capture 100% of the transactions, reduce in production!
+	// Session Replay
+	replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+	replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
 
 let emotionCache = createEmotionCache({ key: 'mantine' });
 
