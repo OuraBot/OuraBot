@@ -36,6 +36,7 @@ export default function TOS() {
 					Go to Privacy Policy
 				</Button>
 				<Title order={1}>Terms of Service</Title>
+				<Text c="dimmed">Last modified on 7/31/2023</Text>
 				<Title order={3} mt="sm">
 					Agreement to Terms
 				</Title>
@@ -49,7 +50,7 @@ export default function TOS() {
 				<Title order={3}>Introduction</Title>
 				<Text ml="lg">
 					OuraBot is a "Service" by us that allows users to utilize a chatbot on the Twitch (http://twitch.tv) platform. OuraBot and we are not affiliated with
-					Twitch in any way.
+					Twitch Interactive Inc. (hereafter referred to as Twitch) in any way.
 				</Text>
 				<Title order={3}>User Terms</Title>
 				<Text ml="lg">

@@ -120,7 +120,7 @@ export function FooterLinks() {
 			</Container>
 			<Container className={classes.afterFooter}>
 				<Text color="dimmed" size="sm">
-					© 2023 OuraBot. All rights reserved. Not affiliated with Twitch
+					© 2023 OuraBot. All rights reserved. Not affiliated with Twitch Interactive
 				</Text>
 
 				<Group spacing={0} className={classes.social} position="right" noWrap>

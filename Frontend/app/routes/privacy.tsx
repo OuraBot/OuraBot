@@ -36,6 +36,7 @@ export default function TOS() {
 					Go to Terms of Service
 				</Button>
 				<Title order={1}>Privacy Policy</Title>
+				<Text c="dimmed">Last modified on 7/31/2023</Text>
 				<Text ml="lg">
 					Thank you for your interest in OuraBot, a Service operated by Auro ("we", "us", or "our"). We are committed to protecting the privacy of our users,
 					and we take this responsibility seriously. If you have any questions or concerns, please contact us using the information provided at the end of this
