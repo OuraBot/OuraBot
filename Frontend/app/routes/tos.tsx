@@ -7,6 +7,13 @@ import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { TwitchSession } from '~/services/oauth.strategy';
 
+/*
+TOS VERSIONING:
+0 = pre 7/31/2023
+1 = 8/2/2023
+... add more here
+*/
+
 export async function loader({ request }: LoaderArgs) {
 	const session: TwitchSession = (await authenticator.isAuthenticated(request))?.json;
 
@@ -36,7 +43,7 @@ export default function TOS() {
 					Go to Privacy Policy
 				</Button>
 				<Title order={1}>Terms of Service</Title>
-				<Text c="dimmed">Last modified on 7/31/2023</Text>
+				<Text c="dimmed">Last modified on 8/2/2023</Text>
 				<Title order={3} mt="sm">
 					Agreement to Terms
 				</Title>

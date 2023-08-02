@@ -41,6 +41,8 @@ export interface IChannel extends Schema {
 	login: string;
 	// Twitch Id
 	id: string;
+	// TOS Version the user agreed to
+	tos_version: number;
 	// Role (admin, ambassador, user)
 	role: number;
 	// Token for API
@@ -116,6 +118,7 @@ export const ChannelSchema = new Schema<IChannel>(
 	{
 		login: { type: String, required: true },
 		id: { type: String, required: true },
+		tos_version: { type: Number, required: true },
 		role: { type: Number, required: true, default: 0 },
 		token: { type: String, required: true },
 		managers: { type: [String], required: true, default: [] },

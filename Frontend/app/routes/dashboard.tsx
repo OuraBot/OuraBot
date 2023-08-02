@@ -12,9 +12,11 @@ import {
 	Navbar,
 	Space,
 	Title,
+	Text,
 	UnstyledButton,
 	createStyles,
 	useMantineTheme,
+	Button,
 } from '@mantine/core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
@@ -24,6 +26,8 @@ import { Category, Friends, LayoutGrid, Logout, Settings, Shield, SquaresFilled,
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { redirect } from '~/utils/redirect.server';
+
+const REQUIRED_TOS_VERSION = 1;
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -48,7 +52,35 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export async function action({ request }: ActionArgs) {
-	await authenticator.logout(request, { redirectTo: '/' });
+	console.log('hit');
+	const formData = await request.formData();
+
+	const key = formData.get('asdfhiddeninput');
+	console.log(key);
+
+	if (key === 'tos') {
+		const session = await authenticator.isAuthenticated(request, {
+			failureRedirect: '/login',
+		});
+
+		const channel = await ChannelModel.findOne({ id: session.json.id });
+
+		console.log(channel, 'asdfo');
+
+		if (!channel) {
+			return redirect('/onboarding');
+		}
+
+		channel.tos_version = REQUIRED_TOS_VERSION;
+
+		channel.markModified('tos_version');
+
+		await channel.save();
+
+		return redirect('/dashboard');
+	} else {
+		await authenticator.logout(request, { redirectTo: '/' });
+	}
 }
 
 const useStyles = createStyles((theme, _params, getRef) => {
@@ -317,10 +349,13 @@ export default function Dashboard() {
 				asideOffsetBreakpoint="sm"
 				fixed
 				padding="md"
+				// @ts-expect-error
 				navbar={
-					<Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 250 }}>
-						{links}
-					</Navbar>
+					data.channel.tos_version < REQUIRED_TOS_VERSION ? null : (
+						<Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 250 }}>
+							{links}
+						</Navbar>
+					)
 				}
 				// TODO
 				// footer={
@@ -377,15 +412,40 @@ export default function Dashboard() {
 					},
 				})}
 			>
-				<Title order={1}>{active}</Title>
-				<Space h="xs" />
-				{transition.state === 'idle' ? (
-					<Outlet />
+				{data.channel.tos_version < REQUIRED_TOS_VERSION ? (
+					<>
+						<Title order={2}>We have updated our Terms of Service</Title>
+						<Text my="xs">
+							You can read the newly updated Terms of Service{' '}
+							<Text component="a" href="/tos" target="_blank" variant="link">
+								here.
+							</Text>
+						</Text>
+						<Text>
+							By continuing to use OuraBot or by clicking the Agree button below, you agree to the updated terms. If you do not agree to them, you must
+							cease using OuraBot immediately. If you wish to have your account deleted, please email support (
+							<a href="mailto:contact@ourabot.com">contact@ourabot.com</a>)
+						</Text>
+						<Form action="/dashboard" method="post">
+							<input type="hidden" id="asdfhiddeninput" name="asdfhiddeninput" value="tos" />
+							<Button my="sm" type="submit">
+								I Agree
+							</Button>
+						</Form>
+					</>
 				) : (
-					<Center>
-						{' '}
-						<Loader />{' '}
-					</Center>
+					<>
+						<Title order={1}>{active}</Title>
+						<Space h="xs" />
+						{transition.state === 'idle' ? (
+							<Outlet />
+						) : (
+							<Center>
+								{' '}
+								<Loader />{' '}
+							</Center>
+						)}
+					</>
 				)}
 			</AppShell>
 		</>
