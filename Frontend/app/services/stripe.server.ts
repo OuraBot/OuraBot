@@ -2,9 +2,10 @@ import Stripe from 'stripe';
 
 let stripeApiKey = process.env.STRIPE_SECRET_KEY;
 
-console.log(process.env.NODE_ENV);
+// console.log(process.env.NODE_ENV);
 
-if (!stripeApiKey) throw new Error('NO API KEY FOR STRIPE!!!!!');
+if (!stripeApiKey) console.warn('no stripe api key');
+stripeApiKey = '';
 
 export const stripe = new Stripe(stripeApiKey, {
 	apiVersion: '2022-11-15',
