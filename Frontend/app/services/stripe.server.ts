@@ -2,6 +2,8 @@ import Stripe from 'stripe';
 
 let stripeApiKey = process.env.STRIPE_SECRET_KEY;
 
+console.log(process.env.NODE_ENV);
+
 if (!stripeApiKey) throw new Error('NO API KEY FOR STRIPE!!!!!');
 
 export const stripe = new Stripe(stripeApiKey, {
