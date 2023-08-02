@@ -11,7 +11,8 @@ export async function purchasePremium(quantity: number, user_db_id: string, meta
 		line_items: [
 			{
 				// Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-				price: 'price_1NSo5LHnGV3PiW2e9TUCruxg',
+				// price: 'price_1NSo5LHnGV3PiW2e9TUCruxg',
+				price: 'price_1NajOzHnGV3PiW2esbD6c2tv',
 				quantity,
 			},
 		],
