@@ -1,9 +1,6 @@
 import { connect } from 'mongoose';
 const MONGO_URI = process.env.MONGO_URI;
 
-console.log(`amongus_uri ${MONGO_URI}`);
-console.log(process.env);
-
 if (!MONGO_URI) {
 	throw new Error('MongoDB connection string is missing. Set the environment variable MONGO_URI.');
 }
