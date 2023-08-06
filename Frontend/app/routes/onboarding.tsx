@@ -43,6 +43,7 @@ export async function action({ request }: ActionArgs) {
 	await ChannelModel.create({
 		login: session.login,
 		id: session.id,
+		tos_version: 1,
 		role: 0,
 		token: token,
 		managers: [],
