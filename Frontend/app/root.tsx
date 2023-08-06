@@ -110,7 +110,7 @@ export function CatchBoundary() {
 					<Title>
 						{caught.status} {StatusCodes[caught.status as keyof typeof StatusCodes]}
 					</Title>
-					<Text>{caught.status === 404 ? 'Page not found' : (caught.data as string).replace(/"/g, '')}</Text>
+					<Text>{caught.status === 404 ? 'Page not found' : (caught.data as string)?.replace(/"/g, '')}</Text>
 					<Text>
 						Click{' '}
 						<Text variant="link" component="a" href="/">
