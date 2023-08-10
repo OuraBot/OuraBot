@@ -71,6 +71,9 @@ export async function action({ request }: ActionArgs) {
 				excludedPermissions: [],
 				chatMode: 'both',
 			},
+			livekick: {
+				enabled: false,
+			},
 		},
 		premium: {
 			orders: [],
