@@ -23,6 +23,7 @@ import { json } from '@remix-run/node';
 import { Form, Link, Outlet, PrefetchPageLinks, useLoaderData, useLocation, useTransition } from '@remix-run/react';
 import { useState } from 'react';
 import { Category, Friends, LayoutGrid, Logout, Settings, Shield, SquaresFilled, Star } from 'tabler-icons-react';
+import PremiumBadge from '~/components/PremiumBadge';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { redirect } from '~/utils/redirect.server';
@@ -232,7 +233,7 @@ const _data = [
 	{ link: '/dashboard/settings', label: 'Settings', icon: Settings },
 	{ link: '/dashboard/suggest', label: 'Suggest', icon: Friends },
 	{ link: '/dashboard/modules', label: 'Modules', icon: Category, kick: false, special: false },
-	// { link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
+	{ link: '/dashboard/kick', label: 'Kick', icon: KickIcon, kick: true },
 
 	// { link: '/dashboard/phrases', label: 'Phrases', icon: MessageCircle2 }, // TODO
 	{
@@ -435,7 +436,9 @@ export default function Dashboard() {
 					</>
 				) : (
 					<>
-						<Title order={1}>{active}</Title>
+						<Title order={1}>
+							{active} {active === 'Kick' && <PremiumBadge />}
+						</Title>
 						<Space h="xs" />
 						{transition.state === 'idle' ? (
 							<Outlet />
