@@ -32,6 +32,10 @@ export interface Modules {
 		// excludedPermissions: string[];
 		chatMode: 'offline' | 'both' | 'online';
 	};
+	livekick: {
+		enabled: boolean;
+		channel: string;
+	};
 }
 
 export interface IChannel extends Schema {
@@ -182,6 +186,12 @@ export const ChannelSchema = new Schema<IChannel>(
 						// excludedPermissions: { type: [String] },
 						chatMode: { type: String },
 					},
+				},
+				livekick: {
+					type: {
+						enabled: { type: Boolean },
+					},
+					required: true,
 				},
 			},
 			required: true,
