@@ -1,9 +1,9 @@
-import { Alert, Badge, Button, Code, Divider, Switch, Text, TextInput, Title, createStyles } from '@mantine/core';
+import { Badge, Button, Code, Divider, Modal, Space, Switch, Text, TextInput, Title, createStyles } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
 import { redirect, type ActionArgs, type LoaderArgs, type MetaFunction } from '@remix-run/server-runtime';
 import { useEffect, useState } from 'react';
-import { AlertCircle, UserCircle } from 'tabler-icons-react';
+import { AlertTriangle, CameraOff, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
@@ -216,7 +216,11 @@ export default function Kick() {
 		channel.kick.codeExpiresAt ? Math.floor((new Date(channel.kick.codeExpiresAt).getTime() - new Date().getTime()) / 1000) : 300
 	);
 	const [countingDown, setCountingDown] = useState<boolean>(false);
+	const [threeSecondCountDown, setThreeSecondCountDown] = useState<number>(5.0); // haha jk its 5 seconds
+	const [threeSecondCountingDown, setThreeSecondCountingDown] = useState<boolean>(false);
 	const [prevExpiresIn, setPrevExpiresIn] = useState<number>(expiresIn);
+	const [linkWarningModal, setLinkWarningModal] = useState<boolean>(false);
+
 	const handleClick = () => {
 		navigate('.', { replace: true });
 	};
@@ -239,7 +243,26 @@ export default function Kick() {
 			}, 1000);
 			return () => clearInterval(interval);
 		}
-	}, [countingDown]);
+	}, [expiresIn]);
+
+	// 3 second countdown
+	useEffect(() => {
+		if (threeSecondCountingDown) {
+			setThreeSecondCountDown(5.0);
+			const interval = setInterval(() => {
+				setThreeSecondCountDown((prevThreeSecondCountDown) => {
+					if (prevThreeSecondCountDown <= 0) {
+						setThreeSecondCountingDown(false);
+
+						return 0;
+					} else {
+						return prevThreeSecondCountDown - 0.1;
+					}
+				});
+			}, 100);
+			return () => clearInterval(interval);
+		}
+	}, [threeSecondCountingDown]);
 
 	return (
 		<>
@@ -288,42 +311,88 @@ export default function Kick() {
 
 				<Title order={2}>Link Account</Title>
 				{channel.kick.secretConfirmed ? <Badge color="green">Account Linked</Badge> : <Badge color="red">Account Not Linked</Badge>}
-				<Form method="post">
-					<input type="hidden" name="stage" value="username" />
-					<div className={classes.username}>
-						<TextInput
-							label="Kick Username"
-							placeholder="Username"
-							autoComplete="off"
-							id="username"
-							name="username"
-							icon={<UserCircle size={16} />}
-							required
-							error={usernameError}
-							disabled={channel.kick.slug !== ''}
-							value={username}
-							onChange={(e) => {
-								setUsername(e.currentTarget.value);
-								if (!TWITCH_REGEX.test(e.currentTarget.value)) {
-									TWITCH_REGEX.lastIndex = 0;
-									setUsernameError('Invalid username');
-								} else {
-									setUsernameError(null);
+				<div className={classes.username}>
+					<TextInput
+						label="Kick Username"
+						placeholder="Username"
+						autoComplete="off"
+						id="username"
+						name="username"
+						icon={<UserCircle size={16} />}
+						required
+						error={usernameError}
+						disabled={channel.kick.slug !== ''}
+						value={username}
+						onChange={(e) => {
+							setUsername(e.currentTarget.value);
+							if (!TWITCH_REGEX.test(e.currentTarget.value)) {
+								TWITCH_REGEX.lastIndex = 0;
+								setUsernameError('Invalid username');
+							} else {
+								setUsernameError(null);
+							}
+						}}
+					/>
+					{!channel.kick.secretConfirmed && (
+						<>
+							<Modal
+								opened={linkWarningModal}
+								onClose={() => {
+									setLinkWarningModal(false);
+								}}
+								title={
+									<Title order={2}>
+										{/* Vertically center the triangle and warning */}
+										<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+											<AlertTriangle />
+											<Text ml="xs">Warning</Text>
+										</div>
+									</Title>
 								}
-							}}
-						/>
-						{!channel.kick.secretConfirmed && (
-							<>
-								<Button my="sm" type="submit" disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}>
-									Begin Link Process
-								</Button>
-								<Alert icon={<AlertCircle size="1rem" />} title="" color="red">
+								centered
+							>
+								<Divider mb="xs" />
+
+								<Text>
+									If you are livestreaming, <u style={{ fontWeight: 'bolder' }}>do not</u> show this next screen on stream as it contains sensitive
+									information.
+								</Text>
+								<Space my="sm" />
+								<Text>
+									Kick Username: <Code>{username}</Code>
+								</Text>
+								<Form method="post">
+									<input type="hidden" name="stage" value="username" />
+									<input type="hidden" name="username" value={username} />
+									<Button
+										fullWidth
+										mt="sm"
+										type="submit"
+										disabled={threeSecondCountDown !== 0}
+										color="red"
+										leftIcon={threeSecondCountDown == 0 && <CameraOff />}
+									>
+										I am not livestreaming {threeSecondCountDown !== 0 && `(${threeSecondCountDown.toFixed(1)})`}
+									</Button>
+								</Form>
+							</Modal>
+							<Button
+								my="sm"
+								onClick={() => {
+									setLinkWarningModal(true);
+									setThreeSecondCountingDown(true);
+								}}
+								disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}
+							>
+								Begin Link Process
+							</Button>
+							{/* <Alert icon={<AlertCircle size="1rem" />} title="" color="red">
 									Don't show on stream!
-								</Alert>
-							</>
-						)}
-					</div>
-				</Form>
+								</Alert> */}
+						</>
+					)}
+				</div>
+
 				{channel.kick.secretConfirmed && (
 					<Form method="post">
 						<input type="hidden" name="stage" value="delete" />
