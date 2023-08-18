@@ -1,15 +1,16 @@
 import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
-import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
+import { redirect, type ActionArgs, type LoaderArgs, type MetaFunction } from '@remix-run/server-runtime';
 import { authenticator } from '~/services/auth.server';
-import { ActionIcon, Badge, Button, Code, Divider, Loader, Overlay, Switch, Text, TextInput, ThemeIcon, Title, Tooltip, createStyles } from '@mantine/core';
+import { ActionIcon, Badge, Button, Code, Collapse, Divider, Loader, Overlay, Switch, Text, TextInput, ThemeIcon, Title, Tooltip, createStyles } from '@mantine/core';
 import { ChannelModel, IChannel } from '~/services/models/Channel';
-import { Schema, model } from 'mongoose';
+import { Document, Schema, Types, model } from 'mongoose';
 import { Star, UserCircle } from 'tabler-icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { query } from '~/services/redis.server';
 import * as crypto from 'crypto';
 import emoji from 'react-easy-emoji';
 import PremiumBadge from '~/components/PremiumBadge';
+import { useDisclosure } from '@mantine/hooks';
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -17,9 +18,28 @@ export async function loader({ request }: LoaderArgs) {
 	});
 	const channel = await ChannelModel.findOne({ id: session.json.id });
 
+	if (!channel) return redirect('/onboarding');
+
 	const subscribed = channel.premium.orders.some((order: any) => {
 		return order.status === 'PAID' && order.expiresAt > new Date();
 	});
+
+	// channel.kick.codeExpiresAt is a Date. check if it has expired
+	if (channel.kick.codeExpiresAt && channel.kick.codeExpiresAt < new Date()) {
+		channel.kick.verificationCode = '';
+		channel.kick.id = '';
+		channel.kick.user_id = '';
+		channel.kick.slug = '';
+		channel.kick.chatroom_id = '';
+		channel.kick.chatroom_channel_id = '';
+		channel.kick.streamer_id = '';
+		channel.kick.linkedAt = null;
+		channel.kick.codeExpiresAt = null;
+		channel.kick.secretConfirmed = false;
+
+		channel.markModified('kick');
+		await channel.save();
+	}
 
 	return {
 		session,
@@ -195,6 +215,12 @@ export default function Kick() {
 	const [username, setUsername] = useState<string>(channel.kick.slug ?? '');
 	const navigate = useNavigate();
 	const [liveChecked, setLiveChecked] = useState<boolean>(channel.modules.livekick.enabled);
+	const [opened, { toggle }] = useDisclosure(false);
+	const [expiresIn, setExpiresIn] = useState<number>(
+		channel.kick.codeExpiresAt ? Math.floor((new Date(channel.kick.codeExpiresAt).getTime() - new Date().getTime()) / 1000) : 300
+	);
+	const [countingDown, setCountingDown] = useState<boolean>(false);
+	const [prevExpiresIn, setPrevExpiresIn] = useState<number>(expiresIn);
 	const handleClick = () => {
 		navigate('.', { replace: true });
 	};
@@ -202,9 +228,26 @@ export default function Kick() {
 
 	console.log(channel.kick.slug, 'channel.kick.slug');
 
+	// Decrement expiresIn every second if countingDown is true
+	useEffect(() => {
+		if (countingDown) {
+			const interval = setInterval(() => {
+				setExpiresIn((prevExpiresIn) => {
+					if (prevExpiresIn <= 0) {
+						setCountingDown(false);
+						handleClick();
+						return 0;
+					}
+					return prevExpiresIn - 1;
+				});
+			}, 1000);
+			return () => clearInterval(interval);
+		}
+	}, [countingDown]);
+
 	return (
 		<>
-			{subscribed && (
+			{!subscribed && (
 				<>
 					<Text size="lg" weight="bolder">
 						You must have Premium to use this feature.
@@ -217,7 +260,8 @@ export default function Kick() {
 					<Divider my="md" />
 				</>
 			)}
-			<div style={{ opacity: 0.4, pointerEvents: 'none', userSelect: 'none' }}>
+			{/* Not the best, however it works (right?) */}
+			<div style={subscribed ? {} : { opacity: 0.4, pointerEvents: 'none', userSelect: 'none' }}>
 				<Text>
 					<Title order={2}>Live Announcements</Title>
 					<Text>
@@ -289,16 +333,21 @@ export default function Kick() {
 				)}
 				{(data && data?.status === 200 && data?.data?.verificationCode) || (channel.kick.verificationCode && !channel.kick.secretConfirmed) ? (
 					<>
+						{countingDown ? null : setCountingDown(true)}
+						{/* <Button onClick={toggle} variant="light" color="green">
+							Show code (dont show on stream!)
+						</Button> */}
+						{/* <Collapse in={opened}> */}
 						<Text mt="sm">
 							Open your Kick chat and say <Code>!verify {data?.data?.verificationCode || channel?.kick?.verificationCode}</Code>
-						</Text>
-						<Text size="xs">Once done, press the button below to check if it worked</Text>
-
+						</Text>{' '}
+						(code expires in {expiresIn}s)<Text size="xs">Once done, press the button below to check if it worked</Text>
 						<Form method="get">
 							<Button type="submit" mt="xs">
 								Check
 							</Button>
 						</Form>
+						{/* </Collapse> */}
 					</>
 				) : null}
 			</div>
