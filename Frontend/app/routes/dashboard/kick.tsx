@@ -1,16 +1,12 @@
+import { Alert, Badge, Button, Code, Divider, Switch, Text, TextInput, Title, createStyles } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
 import { redirect, type ActionArgs, type LoaderArgs, type MetaFunction } from '@remix-run/server-runtime';
-import { authenticator } from '~/services/auth.server';
-import { ActionIcon, Badge, Button, Code, Collapse, Divider, Loader, Overlay, Switch, Text, TextInput, ThemeIcon, Title, Tooltip, createStyles } from '@mantine/core';
-import { ChannelModel, IChannel } from '~/services/models/Channel';
-import { Document, Schema, Types, model } from 'mongoose';
-import { Star, UserCircle } from 'tabler-icons-react';
 import { useEffect, useState } from 'react';
+import { AlertCircle, UserCircle } from 'tabler-icons-react';
+import { authenticator } from '~/services/auth.server';
+import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
-import * as crypto from 'crypto';
-import emoji from 'react-easy-emoji';
-import PremiumBadge from '~/components/PremiumBadge';
-import { useDisclosure } from '@mantine/hooks';
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -317,9 +313,14 @@ export default function Kick() {
 							}}
 						/>
 						{!channel.kick.secretConfirmed && (
-							<Button my="sm" type="submit" disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}>
-								Begin Link Process
-							</Button>
+							<>
+								<Button my="sm" type="submit" disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}>
+									Begin Link Process
+								</Button>
+								<Alert icon={<AlertCircle size="1rem" />} title="" color="red">
+									Don't show on stream!
+								</Alert>
+							</>
 						)}
 					</div>
 				</Form>
