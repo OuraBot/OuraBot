@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
 import { redirect, type ActionArgs, type LoaderArgs, type MetaFunction } from '@remix-run/server-runtime';
 import { useEffect, useState } from 'react';
-import { AlertTriangle, CameraOff, UserCircle } from 'tabler-icons-react';
+import { AlertTriangle, CameraOff, Message, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
 import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
@@ -408,15 +408,21 @@ export default function Kick() {
 							Show code (dont show on stream!)
 						</Button> */}
 						{/* <Collapse in={opened}> */}
+						<Divider my="xs" />
 						<Text mt="sm">
 							Open your Kick chat and say <Code>!verify {data?.data?.verificationCode || channel?.kick?.verificationCode}</Code>
 						</Text>{' '}
-						(code expires in {expiresIn}s)<Text size="xs">Once done, press the button below to check if it worked</Text>
+						<Text size="xs" color="dimmed">
+							(code expires in {expiresIn}s)
+						</Text>
 						<Form method="get">
-							<Button type="submit" mt="xs">
-								Check
+							<Button type="submit" mt="xs" leftIcon={<Message />}>
+								I sent the code in my chat
 							</Button>
 						</Form>
+						<Text mt="xs" size="xs" color="dimmed">
+							Not working? Try waiting for the code to expire and redo the link process.
+						</Text>
 						{/* </Collapse> */}
 					</>
 				) : null}
