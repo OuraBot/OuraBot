@@ -43,14 +43,6 @@ export type IvrFiSubage = {
 	};
 };
 
-export type IvrFiBot = {
-	status: string;
-	display_name: string;
-	id: string;
-	known: boolean;
-	verified: boolean;
-};
-
 export type TMIChatters = {
 	_links: any;
 	chatter_count: number;
