@@ -4,6 +4,7 @@ import OuraBot from '../../Client';
 import { Module, CommandReturn, Channel } from '../../Typings/Twitch';
 import { Emote } from '../../Typings/ThirdPartyEmotes';
 import { Modules } from '../../../../Common/src';
+import { parseChatMessage } from '@twurple/chat';
 
 export const _module = new (class module implements Module {
 	name = 'smartemoteonly';
@@ -15,7 +16,8 @@ export const _module = new (class module implements Module {
 		let isCheerMessage = false;
 
 		const emotes: string[] = [];
-		for (let part of msg.parseEmotes()) {
+		const parts = parseChatMessage(message, msg.emoteOffsets);
+		for (let part of parts) {
 			if (part.type == 'emote') {
 				emotes.push(part.name);
 			} else if (part.type == 'cheer') {
