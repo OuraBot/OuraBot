@@ -48,48 +48,48 @@ export const cmd = new (class command implements Command {
 
 		// the util functions have been migrated to the newer ones though
 
-		if (subageData.subscribed) {
+		if (subageData.meta !== null) {
 			let tier = subageData.meta.tier;
-			let dnr = subageData.meta.dnr;
+			let dnr = subageData.meta.renewsAt ? true : false;
 			let endsAt = subageData.meta?.endsAt ? 'in ' + ob.utils.timeDelta(new Date(subageData.meta.endsAt), 'auto', true) : 'never';
 
 			let renewsAt = subageData.meta?.renewsAt ? 'in ' + ob.utils.timeDelta(new Date(subageData.meta.renewsAt), 'auto', true) : 'never';
 
-			let gift = subageData.meta?.gift;
+			let gift = subageData.meta?.giftMeta ? subageData.meta.giftMeta : null;
 
 			let saReturn: string;
 
 			let streak = subageData.streak?.months ? ` with a streak of ${subageData.streak.months} months` : '';
 
-			if (subageData.hidden) {
+			if (subageData.statusHidden) {
 				if (subageData.meta.type === 'paid') {
 					if (dnr) {
 						// prettier-ignore
-						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has their subscription to ${await ob.utils.smartObfuscate(
+						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has their subscription to ${await ob.utils.smartObfuscate(
 							Channel,
-							subageData.channel,
+							subageData.channel.login,
 							user
 						)} hidden with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
 					} else {
 						// prettier-ignore
-						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has their subscription to ${await ob.utils.smartObfuscate(
+						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has their subscription to ${await ob.utils.smartObfuscate(
 							Channel,
-							subageData.channel,
+							subageData.channel.login,
 							user
 						)} hidden with a Tier with a Tier ${tier} sub ${streak} and renews ${renewsAt}`;
 					}
 				} else if (subageData.meta.type === 'gift') {
 					// prettier-ignore
-					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has their subscription to ${await ob.utils.smartObfuscate(
+					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has their subscription to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
-					)} hidden with a gifted subscription by ${gift.name} and ends ${endsAt}`;
+					)} hidden with a gifted subscription by ${gift.gifter.login} and ends ${endsAt}`;
 				} else if (subageData.meta.type === 'prime') {
 					// prettier-ignore
-					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has their subscription to ${await ob.utils.smartObfuscate(
+					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has their subscription to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
 					)} hidden with a Prime subscription and ends ${endsAt}`;
 				}
@@ -97,23 +97,23 @@ export const cmd = new (class command implements Command {
 				if (subageData.meta.type === 'paid') {
 					if (dnr) {
 						if (!subageData.meta?.endsAt) {
-							saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has been subscribed to ${await ob.utils.smartObfuscate(
+							saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has been subscribed to ${await ob.utils.smartObfuscate(
 								Channel,
-								subageData.channel,
+								subageData.channel.login,
 								user
 							)} for ${subageData.cumulative.months} month(s) with a Tier ${tier} sub ${streak}. This is a permanent sub!`;
 						}
 						// prettier-ignore
-						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has been subscribed to ${await ob.utils.smartObfuscate(
+						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has been subscribed to ${await ob.utils.smartObfuscate(
 							Channel,
-							subageData.channel,
+							subageData.channel.login,
 							user
 						)} for ${subageData.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
 					} else {
 						// prettier-ignore
-						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has been subscribed to ${await ob.utils.smartObfuscate(
+						saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has been subscribed to ${await ob.utils.smartObfuscate(
 							Channel,
-							subageData.channel,
+							subageData.channel.login,
 							user
 						)} for ${subageData.cumulative.months} month(s) with a Tier ${tier} sub ${streak}${
 							renewsAt !== 'never' ? ` and renews ${renewsAt}` : '. This is a permanent sub!'
@@ -121,16 +121,16 @@ export const cmd = new (class command implements Command {
 					}
 				} else if (subageData.meta.type === 'gift') {
 					// prettier-ignore
-					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has been subscribed to ${await ob.utils.smartObfuscate(
+					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has been subscribed to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
-					)} with a gifted subscription by ${gift.name} for ${subageData.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
+					)} with a gifted subscription by ${gift.gifter.login} for ${subageData.cumulative.months} month(s) with a Tier ${tier} sub ${streak} and ends ${endsAt}`;
 				} else if (subageData.meta.type === 'prime') {
 					// prettier-ignore
-					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has been subscribed to ${await ob.utils.smartObfuscate(
+					saReturn = `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has been subscribed to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
 					)} with a Prime subscription for ${subageData.cumulative.months} month(s) ${streak} and ends ${endsAt}`;
 				}
@@ -147,18 +147,18 @@ export const cmd = new (class command implements Command {
 				// prettier-ignore
 				return {
 					success: true,
-					message: `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has previously been subscribed to ${await ob.utils.smartObfuscate(
+					message: `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has previously been subscribed to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
 					)} for ${subageData.cumulative.months} months, however it ended ${endedAt} ago`,
 				};
 			} else {
 				return {
 					success: true,
-					message: `${await ob.utils.smartObfuscate(Channel, subageData.username, user)} has never been subscribed to ${await ob.utils.smartObfuscate(
+					message: `${await ob.utils.smartObfuscate(Channel, subageData.user.login, user)} has never been subscribed to ${await ob.utils.smartObfuscate(
 						Channel,
-						subageData.channel,
+						subageData.channel.login,
 						user
 					)}`,
 				};

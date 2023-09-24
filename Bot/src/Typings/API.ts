@@ -1,48 +1,46 @@
 // {"username":"AuroR6S","userid":"94568374","channel":"KattahSalt","channelid":"175316629","hidden":false,"subscribed":true,"followedAt":"2021-11-05T17:19:11Z","meta":{"type":"gift","tier":"1","dnr":false,"endsAt":"2022-02-13T00:42:42Z","renewsAt":null,"gift":{"isgift":true,"date":"2022-01-13T00:42:43.19561918Z","id":"451178431","name":"schweinchenxD"}},"cumulative":{"months":1,"elapsed":1,"remaining":30,"end":"2022-02-13T00:42:42Z","start":"2022-01-13T00:42:43Z"},"streak":{"months":1,"elapsed":1,"remaining":30,"end":"2022-02-13T00:42:42Z","start":"2022-01-13T00:42:43Z"}}
 
 export type IvrFiSubage = {
-	username: string;
-	userid: string;
-	channel: string;
-	channelid: string;
-	hidden: boolean;
-	subscribed: boolean;
+	user: {
+		id: string;
+		login: string;
+		displayName: string;
+	};
+	channel: {
+		id: string;
+		login: string;
+		displayName: string;
+	};
+	statusHidden: boolean;
 	followedAt: string;
+	streak: {
+		elapsedDays: number;
+		daysRemaining: number;
+		months: number;
+		end: string;
+		start: string;
+	};
+	cumulative: {
+		elapsedDays: number;
+		daysRemaining: number;
+		months: number;
+		end: string;
+		start: string;
+	};
 	meta: {
 		type: string;
 		tier: string;
-		dnr: boolean;
 		endsAt: string;
 		renewsAt: string | null;
-		gift: {
-			isgift: boolean;
-			date: string;
-			id: string;
-			name: string;
+		giftMeta: {
+			giftDate: string;
+			gifter: {
+				id: string;
+				login: string;
+				displayName: string;
+			};
 		};
 	};
-	cumulative: {
-		months: number;
-		elapsed: number;
-		remaining: number;
-		end: string;
-		start: string;
-	};
-	streak: {
-		months: number;
-		elapsed: number;
-		remaining: number;
-		end: string;
-		start: string;
-	};
-};
-
-export type IvrFiBot = {
-	status: string;
-	display_name: string;
-	id: string;
-	known: boolean;
-	verified: boolean;
 };
 
 export type TMIChatters = {
@@ -210,47 +208,108 @@ export interface UnshortenMeResponse {
 	remaining_calls: number;
 }
 
-// {"status":200,"banned":false,"displayName":"AuroR6S","login":"auror6s","id":"94568374","bio":"https://mrauro.dev/","chatColor":"#008000","logo":"https://static-cdn.jtvnw.net/jtv_user_pictures/73cca255-1a58-40a8-8cb9-983aa9392372-profile_image-600x600.png","partner":false,"affiliate":true,"bot":true,"createdAt":"2015-06-26T23:08:12.811356Z","updatedAt":"2022-02-06T02:55:25.168747Z","chatSettings":{"chatDelayMs":0,"followersOnlyDurationMinutes":null,"slowModeDurationSeconds":null,"blockLinks":false,"isSubscribersOnlyModeEnabled":false,"isEmoteOnlyModeEnabled":false,"isFastSubsModeEnabled":false,"isUniqueChatModeEnabled":false,"requireVerifiedAccount":false,"rules":["no weebs"]},"badge":[],"roles":{"isAffiliate":true,"isPartner":false,"isSiteAdmin":null,"isStaff":null},"settings":{"preferredLanguageTag":"EN"},"panels":[{"id":"112059529"},{"id":"112059545"},{"id":"112059546"},{"id":"112059539"},{"id":"112059547"},{"id":"112059550"},{"id":"112059485"},{"id":"112059456"},{"id":"112059521"},{"id":"112059513"}]}
+interface Badge {
+	setID: string;
+	title: string;
+	description: string;
+	version: string;
+}
+
+interface Roles {
+	isAffiliate: boolean;
+	isPartner: boolean;
+	isStaff: boolean | null;
+}
+
+interface ChatSettings {
+	chatDelayMs: number;
+	followersOnlyDurationMinutes: number | null;
+	slowModeDurationSeconds: number | null;
+	blockLinks: boolean;
+	isSubscribersOnlyModeEnabled: boolean;
+	isEmoteOnlyModeEnabled: boolean;
+	isFastSubsModeEnabled: boolean;
+	isUniqueChatModeEnabled: boolean;
+	requireVerifiedAccount: boolean;
+	rules: string[];
+}
+
+interface LastBroadcast {
+	startedAt: string;
+	title: string | null;
+}
+
+interface Panel {
+	id: string;
+}
+
 export interface IvrFiUser {
-	status: number;
 	banned: boolean;
 	displayName: string;
 	login: string;
 	id: string;
 	bio: string;
+	follows: any; // Assuming follows can be any type
+	followers: number;
+	profileViewCount: any; // Assuming profileViewCount can be any type
+	panelCount: number;
 	chatColor: string;
 	logo: string;
-	partner: boolean;
-	affiliate: boolean;
-	bot: boolean;
+	banner: string;
+	verifiedBot: any; // Assuming verifiedBot can be any type
 	createdAt: string;
 	updatedAt: string;
-	chatSettings: {
-		chatDelayMs: number | null;
-		followersOnlyDurationMinutes: number | null;
-		slowModeDurationSeconds: number | null;
-		blockLinks: boolean | null;
-		isSubscribersOnlyModeEnabled: boolean | null;
-		isEmoteOnlyModeEnabled: boolean | null;
-		isFastSubsModeEnabled: boolean | null;
-		isUniqueChatModeEnabled: boolean | null;
-		requireVerifiedAccount: boolean | null;
-		rules: string[] | null;
-	};
-	badge: string[];
-	roles: {
-		isAffiliate: boolean;
-		isPartner: boolean;
-		isSiteAdmin: boolean | null;
-		isStaff: boolean | null;
-	};
-	settings: {
-		preferredLanguageTag: string;
-	};
-	panels: {
-		id: string;
-	}[];
+	emotePrefix: string;
+	roles: Roles;
+	badges: Badge[];
+	chatterCount: number;
+	chatSettings: ChatSettings;
+	stream: any; // Assuming stream can be any type
+	lastBroadcast: LastBroadcast;
+	panels: Panel[];
 }
+
+// {"status":200,"banned":false,"displayName":"AuroR6S","login":"auror6s","id":"94568374","bio":"https://mrauro.dev/","chatColor":"#008000","logo":"https://static-cdn.jtvnw.net/jtv_user_pictures/73cca255-1a58-40a8-8cb9-983aa9392372-profile_image-600x600.png","partner":false,"affiliate":true,"bot":true,"createdAt":"2015-06-26T23:08:12.811356Z","updatedAt":"2022-02-06T02:55:25.168747Z","chatSettings":{"chatDelayMs":0,"followersOnlyDurationMinutes":null,"slowModeDurationSeconds":null,"blockLinks":false,"isSubscribersOnlyModeEnabled":false,"isEmoteOnlyModeEnabled":false,"isFastSubsModeEnabled":false,"isUniqueChatModeEnabled":false,"requireVerifiedAccount":false,"rules":["no weebs"]},"badge":[],"roles":{"isAffiliate":true,"isPartner":false,"isSiteAdmin":null,"isStaff":null},"settings":{"preferredLanguageTag":"EN"},"panels":[{"id":"112059529"},{"id":"112059545"},{"id":"112059546"},{"id":"112059539"},{"id":"112059547"},{"id":"112059550"},{"id":"112059485"},{"id":"112059456"},{"id":"112059521"},{"id":"112059513"}]}
+// export interface IvrFiUser {
+// 	status: number;
+// 	banned: boolean;
+// 	displayName: string;
+// 	login: string;
+// 	id: string;
+// 	bio: string;
+// 	chatColor: string;
+// 	logo: string;
+// 	partner: boolean;
+// 	affiliate: boolean;
+// 	bot: boolean;
+// 	createdAt: string;
+// 	updatedAt: string;
+// 	chatSettings: {
+// 		chatDelayMs: number | null;
+// 		followersOnlyDurationMinutes: number | null;
+// 		slowModeDurationSeconds: number | null;
+// 		blockLinks: boolean | null;
+// 		isSubscribersOnlyModeEnabled: boolean | null;
+// 		isEmoteOnlyModeEnabled: boolean | null;
+// 		isFastSubsModeEnabled: boolean | null;
+// 		isUniqueChatModeEnabled: boolean | null;
+// 		requireVerifiedAccount: boolean | null;
+// 		rules: string[] | null;
+// 	};
+// 	badge: string[];
+// 	roles: {
+// 		isAffiliate: boolean;
+// 		isPartner: boolean;
+// 		isSiteAdmin: boolean | null;
+// 		isStaff: boolean | null;
+// 	};
+// 	settings: {
+// 		preferredLanguageTag: string;
+// 	};
+// 	panels: {
+// 		id: string;
+// 	}[];
+// }
 
 export interface LogsIvrFiChannels {
 	channels: {
