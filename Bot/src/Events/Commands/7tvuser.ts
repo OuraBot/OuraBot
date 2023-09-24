@@ -1,7 +1,7 @@
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage';
 import OuraBot from '../../Client';
 import { SevenTVGQLQueryUser } from '../../Typings/API';
-import { CategoryEnum, Channel, Command, CommandReturn, PlatformEnum } from '../../Typings/Twitch';
+import { CategoryEnum, Channel, Command, CommandReturn, Permission, PlatformEnum } from '../../Typings/Twitch';
 import { SevenTVGQLQueries, SevenTVGQLUrl } from '../../Utils/API/constants';
 
 export const cmd = new (class command implements Command {
@@ -12,6 +12,8 @@ export const cmd = new (class command implements Command {
 	channelCooldown = 0;
 	category = CategoryEnum.Utility;
 	modifiablePermissions = true;
+	hidden = true;
+	permissions = [Permission.Owner];
 	platforms = [PlatformEnum.Kick, PlatformEnum.Twitch];
 	execute = async (ob: OuraBot, user: string, Channel: Channel, args: string[], _message: string, msg: TwitchPrivateMessage, alias: string): Promise<CommandReturn> => {
 		let targetUser = args[0] || user;

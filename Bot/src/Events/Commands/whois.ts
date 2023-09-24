@@ -31,12 +31,13 @@ export const cmd = new (class command implements Command {
 				message: 'Invalid user',
 			};
 
+		console.log(userResp.roles, 'aaa');
+
 		let userRoles = [];
 		if (userResp.roles.isAffiliate) userRoles.push('affiliate');
 		if (userResp.roles.isPartner) userRoles.push('partner');
 		if (userResp.roles.isStaff) userRoles.push('staff');
-		if (userResp.roles.isSiteAdmin) userRoles.push('admin');
-		if (userResp.bot) userRoles.push('bot');
+		if (userResp.verifiedBot) userRoles.push('bot');
 
 		return {
 			success: true,

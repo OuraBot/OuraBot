@@ -293,16 +293,16 @@ export default class Utils {
 
 	async resolveUserByUsername(login: string, ttl: number = 300): Promise<IvrFiUser> {
 		if (!this.TwitchUsernameRegex.test(login)) return null;
-		let user = await ob.api.get<IvrFiUser>(`https://api.ivr.fi/twitch/resolve/${login}`, ttl);
+		let user = await ob.api.get<IvrFiUser[]>(`https://api.ivr.fi/v2/twitch/user?login=${login}`, ttl);
 		if (user.error) return null;
-		return user.data.response.data;
+		return user.data.response.data[0];
 	}
 
 	async resolveUserById(id: string, ttl: number = 300): Promise<IvrFiUser> {
 		if (!this.TwitchUserIdRegex.test(id)) return null;
-		let user = await ob.api.get<IvrFiUser>(`https://api.ivr.fi/twitch/resolve/${id}?id=true`, ttl);
+		let user = await ob.api.get<IvrFiUser[]>(`https://api.ivr.fi/v2/twitch/user?id=${id}`, ttl);
 		if (user.error) return null;
-		return user.data.response.data;
+		return user.data.response.data[0];
 	}
 
 	async getSubage(login: string, channel: string): Promise<IvrFiSubage> {
