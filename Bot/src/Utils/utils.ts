@@ -194,8 +194,8 @@ export default class Utils {
 	 * @return {*}  {string}
 	 * @memberof Utils
 	 */
-	humanizeTime(ms: number, depth: 'seconds' | 'minutes' | 'hours' | 'days' | 'auto' = 'auto'): string {
-		let days, hours, minutes, seconds, milliseconds;
+	humanizeTime(ms: number, depth: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years' | 'auto' = 'auto'): string {
+		let years, months, days, hours, minutes, seconds, milliseconds;
 
 		milliseconds = ms;
 		seconds = Math.floor(milliseconds / 1000);
@@ -206,10 +206,21 @@ export default class Utils {
 		minutes = minutes % 60;
 		days = Math.floor(hours / 24);
 		hours = hours % 24;
+		months = Math.floor(days / 30);
+		days = days % 30;
+		years = Math.floor(months / 12);
+		months = months % 12;
 
-		let _ms = days == 0 && hours == 0 && minutes == 0 ? (seconds ? `.${milliseconds}` : '') : '';
+		let _ms = years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 ? (seconds ? `.${milliseconds}` : '') : '';
 
-		return ((days > 0 ? `${days}d ` : '') + (hours > 0 ? `${hours}h ` : '') + (minutes > 0 ? `${minutes}m ` : '') + (seconds > 0 ? `${seconds}${_ms}s ` : '')).trim();
+		return (
+			(years > 0 ? `${years}y ` : '') +
+			(months > 0 ? `${months}mo ` : '') +
+			(days > 0 ? `${days}d ` : '') +
+			(hours > 0 ? `${hours}h ` : '') +
+			(minutes > 0 ? `${minutes}m ` : '') +
+			(seconds > 0 ? `${seconds}${_ms}s ` : '')
+		).trim();
 	}
 
 	dateTimeToDate(dateTime: string): Date {
@@ -222,7 +233,7 @@ export default class Utils {
 	 * @param {boolean} [skipAffixes] if true, the affixes "in X hours" or "X hours ago" will be omitted
 	 * @returns {string}
 	 */
-	timeDelta(target: Date, depth: 'seconds' | 'minutes' | 'hours' | 'days' | 'auto' = 'auto', skipAffixes: boolean = false): string {
+	timeDelta(target: Date, depth: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years' | 'auto' = 'auto', skipAffixes: boolean = false): string {
 		const now = Date.now();
 		const epoch = target.getTime();
 		const future = epoch > now;
