@@ -308,7 +308,7 @@ export default class Utils {
 	async getSubage(login: string, channel: string): Promise<IvrFiSubage> {
 		if (!this.TwitchUsernameRegex.test(login)) return null;
 		if (!this.TwitchUsernameRegex.test(channel)) return null;
-		let resp = await ob.api.get<IvrFiSubage>(`https://api.ivr.fi/twitch/subage/${login}/${channel}`, 300);
+		let resp = await ob.api.get<IvrFiSubage>(`https://api.ivr.fi/v2/twitch/subage/${login}/${channel}`, 300);
 		if (resp.error) return null;
 		return resp.data.response.data;
 	}

@@ -1,39 +1,45 @@
 // {"username":"AuroR6S","userid":"94568374","channel":"KattahSalt","channelid":"175316629","hidden":false,"subscribed":true,"followedAt":"2021-11-05T17:19:11Z","meta":{"type":"gift","tier":"1","dnr":false,"endsAt":"2022-02-13T00:42:42Z","renewsAt":null,"gift":{"isgift":true,"date":"2022-01-13T00:42:43.19561918Z","id":"451178431","name":"schweinchenxD"}},"cumulative":{"months":1,"elapsed":1,"remaining":30,"end":"2022-02-13T00:42:42Z","start":"2022-01-13T00:42:43Z"},"streak":{"months":1,"elapsed":1,"remaining":30,"end":"2022-02-13T00:42:42Z","start":"2022-01-13T00:42:43Z"}}
 
 export type IvrFiSubage = {
-	username: string;
-	userid: string;
-	channel: string;
-	channelid: string;
-	hidden: boolean;
-	subscribed: boolean;
+	user: {
+		id: string;
+		login: string;
+		displayName: string;
+	};
+	channel: {
+		id: string;
+		login: string;
+		displayName: string;
+	};
+	statusHidden: boolean;
 	followedAt: string;
+	streak: {
+		elapsedDays: number;
+		daysRemaining: number;
+		months: number;
+		end: string;
+		start: string;
+	};
+	cumulative: {
+		elapsedDays: number;
+		daysRemaining: number;
+		months: number;
+		end: string;
+		start: string;
+	};
 	meta: {
 		type: string;
 		tier: string;
-		dnr: boolean;
 		endsAt: string;
 		renewsAt: string | null;
-		gift: {
-			isgift: boolean;
-			date: string;
-			id: string;
-			name: string;
+		giftMeta: {
+			giftDate: string;
+			gifter: {
+				id: string;
+				login: string;
+				displayName: string;
+			};
 		};
-	};
-	cumulative: {
-		months: number;
-		elapsed: number;
-		remaining: number;
-		end: string;
-		start: string;
-	};
-	streak: {
-		months: number;
-		elapsed: number;
-		remaining: number;
-		end: string;
-		start: string;
 	};
 };
 
