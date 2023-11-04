@@ -330,3 +330,260 @@ export interface ChattersResponse {
 		viewers: string[];
 	};
 }
+
+export interface SevenTVEmoteV3 {
+	id: string;
+	name: string;
+	flags: number;
+	timestamp: string;
+	actor_id: any;
+	data: {
+		id: string;
+		name: string;
+		flags: number;
+		lifecycle: number;
+		state: string[];
+		listed: boolean;
+		animated: boolean;
+		owner: {
+			id: string;
+			username: string;
+			display_name: string;
+			avatar_url: string;
+			style: any;
+			roles: string[];
+		};
+		host: {
+			url: string;
+			files: {
+				name: string;
+				static_name: string;
+				width: number;
+				height: number;
+				frame_count: number;
+				size: number;
+				format: string;
+			}[];
+		};
+	};
+}
+
+export interface SevenTVGlobalEmotesV3 {
+	id: string;
+	name: string;
+	flags: number;
+	tags: any[];
+	immutable: boolean;
+	privileged: boolean;
+	emotes: SevenTVEmoteV3[];
+	emote_count: number;
+	capacity: number;
+	owner: Object;
+}
+/*
+{
+	"id": "94568374",
+	"platform": "TWITCH",
+	"username": "auror6s",
+	"display_name": "AuroR6S",
+	"linked_at": 1617043555000,
+	"emote_capacity": 1000,
+	"emote_set_id": null,
+	"emote_set": {
+		"id": "630e742f3cfad7b708c476cc",
+		"name": "Emote Set",
+		"flags": 0,
+		"tags": [],
+		"immutable": false,
+		"privileged": false,
+		"emotes": [
+			{
+				"id": "60ae480e5d3fdae583b37042",
+				"name": "Hmmm",
+				"flags": 0,
+				"timestamp": 1662416308715,
+				"actor_id": "629d77a20e60c6d53da64e38",
+				"data": {
+					"id": "60ae480e5d3fdae583b37042",
+					"name": "Hmmm",
+					"flags": 0,
+					"lifecycle": 3,
+					"state": [
+						"PERSONAL",
+						"LISTED"
+					],
+					"listed": true,
+					"animated": false,
+					"owner": {
+						"id": "60ae381cb2ecb01505048cbd",
+						"username": "inlawwww",
+						"display_name": "inlawwww",
+						"avatar_url": "//cdn.7tv.app/user/60ae381cb2ecb01505048cbd/av_63daaa9334d88e3a0956111d/3x_static.webp",
+						"style": {},
+						"roles": [
+							"62b48deb791a15a25c2a0354"
+						]
+					},
+			...
+				"user": {
+		"id": "60622063452cea4685e077fb",
+		"username": "auror6s",
+		"display_name": "AuroR6S",
+		"created_at": 1617043555000,
+		"avatar_url": "//cdn.7tv.app/pp/60622063452cea4685e077fb/f4b3a99cdd7e404099dfcad5514b60d1",
+		"biography": "Bot Developerhttps://mrauro.dev/",
+		"style": {
+			"color": 401323775
+		},
+		"editors": [
+			{
+				"id": "60de6a4ee03c0b978d8c2af7",
+				"permissions": 17,
+				"visible": true,
+				"added_at": 1657657509728
+			},
+			{
+				"id": "61f49af297d743f388012ecf",
+				"permissions": 17,
+				"visible": true,
+				"added_at": 1657657509728
+			},
+			{
+				"id": "60532eaab4d31e459f727bcd",
+				"permissions": 17,
+				"visible": true,
+				"added_at": 1658121434163
+			},
+			{
+				"id": "60b6c31bf6632c3f681bfc58",
+				"permissions": 1,
+				"visible": true,
+				"added_at": 1662410735955
+			},
+			{
+				"id": "629d77a20e60c6d53da64e38",
+				"permissions": 1,
+				"visible": true,
+				"added_at": 1662411043193
+			}
+		],
+		"roles": [
+			"60b3f1ea886e63449c5263b1",
+			"62b48deb791a15a25c2a0354"
+		],
+		"connections": [
+			{
+				"id": "94568374",
+				"platform": "TWITCH",
+				"username": "auror6s",
+				"display_name": "AuroR6S",
+				"linked_at": 1617043555000,
+				"emote_capacity": 1000,
+				"emote_set_id": null,
+				"emote_set": {
+					"id": "630e742f3cfad7b708c476cc",
+					"name": "",
+					"flags": 0,
+					"tags": [],
+					"immutable": false,
+					"privileged": false,
+					"capacity": 0,
+					"owner": null
+				}
+			},
+			{
+				"id": "UCreRsdm2o6V4C9i7AQzWqIA",
+				"platform": "YOUTUBE",
+				"username": "UCreRsdm2o6V4C9i7AQzWqIA",
+				"display_name": "",
+				"linked_at": 1617043555000,
+				"emote_capacity": 300,
+				"emote_set_id": null,
+				"emote_set": {
+					"id": "630e742f3cfad7b708c476cc",
+					"name": "",
+					"flags": 0,
+					"tags": [],
+					"immutable": false,
+					"privileged": false,
+					"capacity": 0,
+					"owner": null
+				}
+			},
+			{
+				"id": "183230486762618889",
+				"platform": "DISCORD",
+				"username": "Auro#6177",
+				"display_name": "Auro",
+				"linked_at": 1658609837193,
+				"emote_capacity": 0,
+				"emote_set_id": null,
+				"emote_set": {
+					"id": "630e742f3cfad7b708c476cc",
+					"name": "",
+					"flags": 0,
+					"tags": [],
+					"immutable": false,
+					"privileged": false,
+					"capacity": 0,
+					"owner": null
+				}
+			},
+			{
+				"id": "1647653",
+				"platform": "KICK",
+				"username": "auror6s",
+				"display_name": "AuroR6S",
+				"linked_at": 1687327770213,
+				"emote_capacity": 600,
+				"emote_set_id": null,
+				"emote_set": null
+			}
+		]
+	}
+}
+*/
+export interface SevenTVUserV3 {
+	id: string;
+	platform: string;
+	username: string;
+	display_name: string;
+	linked_at: number;
+	emote_capacity: number;
+	emote_set_id: any;
+	emote_set: {
+		id: string;
+		name: string;
+		flags: number;
+		tags: any[];
+		immutable: boolean;
+		privileged: boolean;
+		emotes: SevenTVEmoteV3[];
+		emote_count: number;
+		capacity: number;
+		owner: Object;
+	};
+	user: {
+		id: string;
+		username: string;
+		display_name: string;
+		created_at: number;
+		avatar_url: string;
+		biography: string;
+		style: {
+			color: number;
+		};
+		editors: any[];
+		roles: string[];
+		connections: {
+			id: string;
+			platform: string;
+			username: string;
+			display_name: string;
+			linked_at: number;
+			emote_capacity: number;
+			emote_set_id: any;
+			emote_set: any;
+		}[];
+	};
+}

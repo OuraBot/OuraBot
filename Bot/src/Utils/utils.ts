@@ -6,7 +6,18 @@ import FormData from 'form-data';
 import fs from 'fs';
 import urlRegexSafe from 'url-regex-safe';
 import ob from '..';
-import { ChattersResponse, IvrFiSubage, IvrFiUser, LogsIvrFiChannels, SevenTVEmote, SevenTVRESTUserResponse, UnshortenMeResponse } from '../Typings/API';
+import {
+	ChattersResponse,
+	IvrFiSubage,
+	IvrFiUser,
+	LogsIvrFiChannels,
+	SevenTVEmote,
+	SevenTVEmoteV3,
+	SevenTVGlobalEmotesV3,
+	SevenTVRESTUserResponse,
+	SevenTVUserV3,
+	UnshortenMeResponse,
+} from '../Typings/API';
 import { Emote } from '../Typings/ThirdPartyEmotes';
 import { Channel, Command, hasPermission, SimplifiedChannel, TwitchUserId } from '../Typings/Twitch';
 import { CacheTimes } from './API/constants';
@@ -439,7 +450,8 @@ export default class Utils {
 	async get7tvChannelEmotes(channel: string): Promise<Emote[]> {
 		// TODO: migrate to v3 api when it arrives
 		// Auro: no
-		let resp = await ob.api.get<SevenTVEmote[]>(`https://api.7tv.app/v2/users/${channel}/emotes`, 3600);
+		// Auro (11/4/2023, post deprecation): ugh yes i guess
+		let resp = await ob.api.get<SevenTVUserV3>(`https://7tv.io/v3/users/twitch/${channel}`, 3600);
 
 		if (resp.error) {
 			if (resp.error.code === '404') return [];
@@ -447,7 +459,7 @@ export default class Utils {
 			return [];
 		}
 
-		return resp.data.response.data.map((emote: SevenTVEmote) => ({
+		return resp.data.response.data.emote_set.emotes.map((emote: SevenTVEmoteV3) => ({
 			provider: '7TV',
 			id: emote.id,
 			name: emote.name,
@@ -460,8 +472,8 @@ export default class Utils {
 
 	async get7tvGlobalmotes(): Promise<Emote[]> {
 		// TODO: migrate to v3 api when it arrives
-		let resp = await ob.api.get<SevenTVEmote[]>(
-			'https://api.7tv.app/v2/emotes/global',
+		let resp = await ob.api.get<SevenTVGlobalEmotesV3>(
+			'https://7tv.io/v3/emote-sets/global',
 			3600,
 			{
 				timeout: 5000,
@@ -474,7 +486,7 @@ export default class Utils {
 			return [];
 		}
 
-		return resp.data.response.data.map((emote: SevenTVEmote) => ({
+		return resp.data.response.data.emotes.map((emote: SevenTVEmoteV3) => ({
 			provider: '7TV',
 			id: emote.id,
 			name: emote.name,
