@@ -43,6 +43,7 @@ import gradient = require('gradient-string');
 import { Counter, Gauge, register } from 'prom-client';
 import { KickController, PusherSubscriber } from '../Utils/Kick';
 import initCycleTLS, { CycleTLSClient } from 'cycletls';
+import { ConnectedChecker } from '../Utils/ConnectedChecker';
 dotenv.config({
 	path: path.join(__dirname, '..', '..', '..', '.env'),
 });
@@ -74,6 +75,7 @@ class OuraBot {
 	cancels: Set<string>;
 	blockedUsers: SQLBlockUser[];
 	MessageHeight: MessageHeight;
+	ConnectedChecker: ConnectedChecker;
 	logger: {
 		debug: (message: any, label: string) => void;
 		info: (message: any, label: string) => void;
@@ -163,6 +165,7 @@ class OuraBot {
 		this.ReminderManager = new ReminderManager();
 		this.cancels = new Set();
 		this.MessageHeight = new MessageHeight();
+		this.ConnectedChecker = new ConnectedChecker();
 		this.uptime = {
 			url: `https://status.mrauro.dev/api/push/VEqUco8a47?status=up&msg=OK`,
 			interval: setInterval(() => {
