@@ -9,6 +9,7 @@ export class ConnectedChecker {
 
 			if (!ob.twitch.chatClient.isConnected) {
 				ob.logger.warn('Twitch chat client disconnected, reconnecting...', 'ob.connectedChecker');
+				ob.channels = [];
 				ob.twitch.chatClient.reconnect();
 			}
 		}, 1000);
