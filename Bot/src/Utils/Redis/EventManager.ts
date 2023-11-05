@@ -64,7 +64,9 @@ export class EventManager {
 			// If the event was sent by the server, this app, don't do anything
 			if (event.sender == 'SERVER') return;
 
-			ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`, 'ob.eventmanager');
+			if (event?.topic != 'Prometheus') {
+				ob.logger.debug(`event recieved ${event.operation}ing ${event.topic} [${event.uuid}]`, 'ob.eventmanager');
+			}
 			// console.log(event);
 			// console.log(JSON.stringify(event));
 
