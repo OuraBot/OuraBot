@@ -12,6 +12,6 @@ export class ConnectedChecker {
 				ob.channels = [];
 				ob.twitch.chatClient.reconnect();
 			}
-		}, 1000);
+		}, 10000);
 	}
 }

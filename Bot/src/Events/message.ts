@@ -7,6 +7,8 @@ import { Counter } from 'prom-client';
 export const event: Events = {
 	name: 'message',
 	run: async (client, _channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
+		if (!ob.channels.find((c) => c.id === msg.userInfo.userId)) return;
+
 		if (user === ob.config.login) {
 			ob.channels.find((c) => c.id === msg.userInfo.userId).isMod = msg.userInfo.isMod;
 			return;
