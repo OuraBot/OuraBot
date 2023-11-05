@@ -49,6 +49,7 @@ export class TwitchController {
 	clients: ChatClient[];
 	rateLimiter: RateLimiter;
 	joinRateLimiter: RateLimiter;
+	onNamedMessageRegistered: boolean = false;
 	private lastIndex: number = 0;
 
 	constructor(chatClient: ChatClient, apiClient: ApiClient, pubSubClient: PubSubClient, clients: ChatClient[]) {

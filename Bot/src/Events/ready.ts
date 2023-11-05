@@ -94,17 +94,21 @@ export const event: Events = {
 			}
 		}
 
-		// This is a horrible way to do this, but it works
-		ob.twitch.chatClient.irc.onNamedMessage('USERSTATE', (msg) => {
-			const channel = msg.rawParamValues[0].split(';');
+		// Don't register this event more than once (would occur when the bot would reconnect)
+		if (!ob.twitch.onNamedMessageRegistered) {
+			// This is a horrible way to do this, but it works
+			ob.twitch.chatClient.irc.onNamedMessage('USERSTATE', (msg) => {
+				ob.twitch.onNamedMessageRegistered = true;
+				const channel = msg.rawParamValues[0].split(';');
 
-			ob.channels.forEach((c) => {
-				// ob.logger.debug(`Checking if ${c.login} === ${ob.utils.sanitizeName(channel[0])}`, 'ob.twitch.events.ready');
-				if (c.login === ob.utils.sanitizeName(channel[0])) {
-					c.isMod = msg.tags.get('mod') === '1';
-					ob.logger.debug(`Updated mod status for ${c.login} to ${c.isMod}`, 'ob.twitch.events.ready');
-				}
+				ob.channels.forEach((c) => {
+					// ob.logger.debug(`Checking if ${c.login} === ${ob.utils.sanitizeName(channel[0])}`, 'ob.twitch.events.ready');
+					if (c.login === ob.utils.sanitizeName(channel[0])) {
+						c.isMod = msg.tags.get('mod') === '1';
+						ob.logger.debug(`Updated mod status for ${c.login} to ${c.isMod}`, 'ob.twitch.events.ready');
+					}
+				});
 			});
-		});
+		}
 	},
 };
