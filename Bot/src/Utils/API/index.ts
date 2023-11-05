@@ -7,7 +7,7 @@ export class API {
 		const cacheHash = ob.utils.generateMD5(url + (options ? JSON.stringify(options) : ''));
 		const cacheData = await ob.redis.get(ob.config.redisPrefix + ':' + 'cache:api:' + cacheHash);
 
-		ob.logger.info(`${cacheData ? ' CACHED:' : ''} ${url}`, 'ob.http');
+		if (url !== 'https://status.mrauro.dev/api/push/VEqUco8a47?status=up&msg=OK') ob.logger.info(`${cacheData ? ' CACHED:' : ''} ${url}`, 'ob.http');
 
 		if (cacheData) {
 			return {
