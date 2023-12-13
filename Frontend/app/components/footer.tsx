@@ -130,9 +130,6 @@ export function FooterLinks() {
 					<ActionIcon title="Terms of Service" size="lg" component="a" href="https://ourabot.com/tos" target="_blank" rel="noreferrer">
 						<ClipboardText size={18} />
 					</ActionIcon>
-					<ActionIcon title="Twitter" size="lg" component="a" href="https://twitter.com/auror6s" target="_blank" rel="noreferrer">
-						<BrandTwitter size={18} />
-					</ActionIcon>
 					<ActionIcon title="Twitch" size="lg" component="a" href="https://twitch.tv/oura_bot" target="_blank" rel="noreferrer">
 						<BrandTwitch size={18} />
 					</ActionIcon>
