@@ -133,8 +133,9 @@ export default function StreamerPage() {
 								<tr key={command.name}>
 									<td>{command.name}</td>
 									<td>{command.description}</td>
+									<td>{command.usage}</td>
 									<td>{command.permissions.join(', ')}</td>
-									<td>{command.usage}</td> <td>{command.enabled ? '✔' : '❌'}</td>
+									<td>{command.enabled ? '✔' : '❌'}</td>
 								</tr>
 							))}
 						</tbody>
