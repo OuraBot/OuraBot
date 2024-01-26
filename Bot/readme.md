@@ -29,8 +29,8 @@ You can get the 7TV auth token by opening up the network tab and viewing the hea
 	"channels": [
 		{
 			"login": "auror6s",
-			"id": "94568374"
-		}
+			"id": "94568374",
+		},
 	],
 	"owner": "auror6s",
 	"prefix": "!",
@@ -40,7 +40,7 @@ You can get the 7TV auth token by opening up the network tab and viewing the hea
 	"ambassadors": ["liptongod"],
 	"redisPrefix": "obv3", // optional
 	"spamClients": 10, // optional
-	"sqlitePath": "./sqlite.db" // optional
+	"sqlitePath": "./sqlite.db", // optional
 }
 ```
 
@@ -52,7 +52,7 @@ You can get the 7TV auth token by opening up the network tab and viewing the hea
 	"refreshToken": "asdfasdfasdfasdfasdf", // ^
 	"scope": [], // these will be autofilled when the bot starts
 	"expiresIn": 13631, // ^
-	"obtainmentTimestamp": 1644721502460 // ^
+	"obtainmentTimestamp": 1644721502460, // ^
 }
 ```
 

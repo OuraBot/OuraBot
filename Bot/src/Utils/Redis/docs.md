@@ -15,7 +15,7 @@ Each message is a stringified JSON object with the following properties:
 	"sender": "", // SERVER or CLIENT, used to differentiate between events
 	"data": {
 		// JSON data, depends on operation and topic
-	}
+	},
 }
 ```
 
