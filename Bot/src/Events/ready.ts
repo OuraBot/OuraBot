@@ -50,7 +50,9 @@ export const event: Events = {
 						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 
 						if (channel.alerts?.length > 0) {
-							channel.alerts = channel.alerts.filter((a) => a !== 'Failed to join channel. Please unban the bot with /unban oura_bot');
+							channel.alerts = channel.alerts.filter(
+								(a) => a !== 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)'
+							);
 
 							channel.markModified('alerts');
 							channel.save();
@@ -86,7 +88,7 @@ export const event: Events = {
 					.catch((err) => {
 						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
 
-						let alertMsg = 'Failed to join channel. Please unban the bot with /unban oura_bot';
+						let alertMsg = 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)';
 						if (!channel.alerts.includes(alertMsg)) {
 							channel.alerts.push(alertMsg);
 						}
