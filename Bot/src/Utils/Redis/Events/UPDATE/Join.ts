@@ -40,7 +40,7 @@ export default function handler(Event: Event): Promise<Event> {
 			}
 		} catch (err) {
 			ob.logger.warn(`Failed to join channel for the first time: ${err}`, `ob.eventmanager.update.join`);
-			let alertMsg = 'Failed to join channel. Please unban the bot with /unban oura_bot';
+			let alertMsg = 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)';
 			if (!channel.alerts.includes(alertMsg)) {
 				channel.alerts.push(alertMsg);
 			}
