@@ -31,9 +31,9 @@ export const event: Events = {
 			ob.twitch.joinRateLimiter.REFILL_TIME = 10 * 1000;
 
 			for (let channel of channels) {
-				if (channel.login == 'robich20') {
-					ob.logger.info(`Skipping banned user HARDCODED`, 'ob.twitch.events.ready');
-					return;
+				if (channel.banned?.length > 0) {
+					ob.logger.info(`Skipping banned user ${channel.login}`, 'ob.twitch.events.ready');
+					continue;
 				}
 
 				if (!ob.channels.find((c) => c.id === channel.id)) {
