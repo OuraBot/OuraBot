@@ -7,6 +7,14 @@ import { useEffect } from 'react';
 import { createEmotionCache } from '@mantine/core';
 
 Sentry.init({
+	denyUrls: ['https://ourabot.com/api/grafana/admin'],
+	beforeSendTransaction(event) {
+		if (event.transaction?.includes('/api/grafana')) {
+			return null;
+		}
+		return event;
+	},
+	ignoreTransactions: ['/api/grafana/admin'],
 	dsn:
 		process.env.NODE_ENV === 'production'
 			? 'https://5c0abffe843d4fab8a7915be315b3058:5af23cd2c9b044b1852cdec606f4c999@o4505139595575296.ingest.sentry.io/4505211544076288'
