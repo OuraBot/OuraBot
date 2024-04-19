@@ -2,7 +2,8 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import chalk from 'chalk';
 import ob from '..';
 import { Channel, Command, Events, Permission } from '../Typings/Twitch';
-import { Counter } from 'prom-client';
+import { Counter, contentType } from 'prom-client';
+import axios from 'axios';
 
 export const event: Events = {
 	name: 'message',
@@ -10,12 +11,35 @@ export const event: Events = {
 		if (!ob.channels.find((c) => c.id === msg.userInfo.userId)) return;
 
 		if (user === ob.config.login) {
-			ob.channels.find((c) => c.id === msg.userInfo.userId).isMod = msg.userInfo.isMod;
+			let channels = [...ob.channels];
+			let channel = channels.find((c) => c.id === msg.userInfo.userId);
+			channel.isMod = msg.userInfo.isMod;
+			ob.channels = channels;
+
+			ob.logger.info(`Updated mod status for ${channel.login} to ${msg.userInfo.isMod}`, 'ob.twitch.events.message');
+		}
+
+		if (!ob.channels.find((c) => c.id === msg.userInfo.userId).isMod) {
+			ob.logger.debug(`Bot is not a mod, skipping...`, 'ob.twitch.events.message');
 			return;
 		}
 
 		ob.logger.info(`${chalk.bold(`[${_channel}]`)} @${user}: ${chalk.italic(message)}`, 'ob.twitch.events.message');
 		ob.utils.startNanoStopwatch(`interal_message_delay_${msg.id}`);
+
+		if (ob.msgsSent[_channel] == undefined) ob.msgsSent[_channel] = 0;
+		ob.msgsSent[_channel]++;
+		ob.logger.debug(`Message count for ${_channel}: ${ob.msgsSent[_channel]}`, 'ob.twitch.events.message');
+
+		if (ob.msgsSent[_channel] > 1000) {
+			axios.post(`https://ntfy.sh/ban_alerts_ouvZBWFjvZG5PVBc`, `Banned ${_channel} for spamming in channel`);
+
+			ob.db.models.Channel.model
+				.findOneAndUpdate({ id: msg.channelId }, { banned: 'Spamming in channel. Contact support', alerts: ['Spamming in channel. Contact support'] })
+				.exec();
+
+			ob.twitch.chatClient.part(_channel);
+		}
 
 		ob.prometheus.messages.labels({ channel: _channel.replace('#', '') }).inc();
 
@@ -40,7 +64,7 @@ export const event: Events = {
 							ob.logger.debug(`Executing module "${module.name}" in ${channel.channel} (${channel.id})`, 'ob.twitch.events.message');
 							module.execute(ob, user, channel, message, msg, moduleData);
 						} else {
-							ob.logger.debug(`Module "${module.name}" in ${channel.channel} (${channel.id}) is disabled`, 'ob.twitch.events.message');
+							// ob.logger.debug(`Module "${module.name}" in ${channel.channel} (${channel.id}) is disabled`, 'ob.twitch.events.message');
 						}
 					} catch (e) {
 						ob.logger.warn(`Error executing module "${module.name}" in ${channel.channel} (${channel.id}): ${e}`, 'ob.twitch.events.message');
@@ -110,6 +134,7 @@ export const event: Events = {
 
 		// Command Handler
 		const prefixRegex = new RegExp(`^${channel.prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
+
 		if (prefixRegex.test(message)) {
 			const args = message.split(/\s+/);
 			const commandName = args.shift().replace(prefixRegex, '');

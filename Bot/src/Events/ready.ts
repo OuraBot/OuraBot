@@ -17,7 +17,12 @@ export const event: Events = {
 				ob.twitch.chatClient
 					.join(channel.login)
 					.then(() => {
-						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+						ob.logger.info(`Joined #${chalk.bold(channel.login)} (in debug)`, 'ob.twitch.events.ready');
+						ob.channels.push({
+							id: channel.id,
+							login: channel.login,
+							isMod: true, // debug mode so it doesn't matter
+						});
 					})
 					.catch((err) => {
 						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
