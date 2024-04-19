@@ -6,6 +6,7 @@ import EventEmitter from 'events';
 import { CacheTimes } from '../API/constants';
 import { Document, Types } from 'mongoose';
 import { IChannel } from '../../../../Common/src';
+import { HelixChannelFollower } from '@twurple/api';
 
 export class PusherSubscriber {
 	private pusher: Pusher;
@@ -35,6 +36,11 @@ export class PusherSubscriber {
 		ob.logger.info(`Found ${channels.length} channels with xqclivekick enabled`, 'ob.utils.pusher');
 
 		for (let channel of channels) {
+			if (channel.banned?.length > 0) {
+				ob.logger.info(`Skipping banned user ${channel.login}`, 'ob.utils.pusher');
+				continue;
+			}
+
 			ob.logger.info(`Sending message to ${channel.login}`, 'ob.utils.pusher');
 			ob.twitch.say(channel.login, `BrainSlug xQc is now live on Kick! https://kick.com/xqc`);
 		}
@@ -100,14 +106,11 @@ export class KickController {
 
 		conn.bind('App\\Events\\ChatMessageEvent', async (data: any) => this.handleChatMessage(JSON.parse(JSON.stringify(data))));
 
-		setTimeout(
-			() => {
-				if (!this.tempChannels.includes(channel_id)) return; // If not in the temp array then they confirmed
-				this.pusher.unsubscribe(`chatrooms.${channel_id}.v2`);
-				ob.logger.info(`Unsubscribed from ${channel_id} (it was temp)`, 'ob.kick.events.chatmessage');
-			},
-			1000 * 60 * 5
-		);
+		setTimeout(() => {
+			if (!this.tempChannels.includes(channel_id)) return; // If not in the temp array then they confirmed
+			this.pusher.unsubscribe(`chatrooms.${channel_id}.v2`);
+			ob.logger.info(`Unsubscribed from ${channel_id} (it was temp)`, 'ob.kick.events.chatmessage');
+		}, 1000 * 60 * 5);
 	}
 
 	async handleChatMessage(data: ChatMessage) {
