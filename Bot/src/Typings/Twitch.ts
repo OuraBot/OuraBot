@@ -52,6 +52,12 @@ export class TwitchController {
 	onNamedMessageRegistered: boolean = false;
 	private lastIndex: number = 0;
 
+	private recentMessages: {
+		timestamp: number;
+		channel: string;
+		message: string;
+	}[] = [];
+
 	constructor(chatClient: ChatClient, apiClient: ApiClient, pubSubClient: PubSubClient, clients: ChatClient[]) {
 		this.chatClient = chatClient;
 		this.apiClient = apiClient;
@@ -76,6 +82,18 @@ export class TwitchController {
 		});
 
 		// TODO: Subscribe to PubSubChannelRoleChangeMessage (https://github.com/twurple/twurple/commit/8f29a2b1e6e9354eb7d169114b30014f21133ade)
+	}
+
+	async sayPreventDuplicateMessages(channel: string, message: string) {
+		let timestamp = Date.now();
+		this.recentMessages.push({ timestamp, channel, message });
+		if (this.recentMessages.filter((m) => m.channel === channel && m.message === message).length > 1) return;
+
+		await this.say(channel, message);
+
+		setTimeout(() => {
+			this.recentMessages = this.recentMessages.filter((m) => m.timestamp !== timestamp);
+		}, 1000);
 	}
 
 	async say(

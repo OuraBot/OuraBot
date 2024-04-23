@@ -27,14 +27,14 @@ export default function handler(Event: Event): Promise<Event> {
 							{
 								ob.channels.find((c) => c.id === Event.userId).isMod = true;
 								ob.logger.debug(`Set ${Event.data.login} as moderator`, 'ob.eventmanager.update.join');
-								ob.twitch.say(Event.data.login, `I am now moderator; all commands are now available!`);
+								ob.twitch.sayPreventDuplicateMessages(Event.data.login, `I am now moderator; all commands are now available!`);
 							}
 							break;
 						case 'moderator_removed':
 							{
 								ob.channels.find((c) => c.id === Event.userId).isMod = false;
 								ob.logger.debug(`Removed ${Event.data.login} as moderator`, 'ob.eventmanager.update.join');
-								ob.twitch.say(Event.data.login, `I am no longer moderator; bot functionality is now limited.`);
+								ob.twitch.sayPreventDuplicateMessages(Event.data.login, `I am no longer moderator; bot functionality is now limited.`);
 							}
 							break;
 					}

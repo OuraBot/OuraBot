@@ -79,7 +79,7 @@ export const event: Events = {
 										let d = data as PubSubChannelRoleChangeMessage;
 										if (d.targetUserId == ob.config.twitch_id) {
 											ob.channels.find((c) => c.id === channel.id).isMod = true;
-											ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
+											ob.twitch.sayPreventDuplicateMessages(channel.login, `I am now moderator; all commands are now available!`);
 										}
 									}
 									break;
@@ -88,7 +88,7 @@ export const event: Events = {
 										let d = data as PubSubChannelRoleChangeMessage;
 										if (d.targetUserId == ob.config.twitch_id) {
 											ob.channels.find((c) => c.id === channel.id).isMod = false;
-											ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
+											ob.twitch.sayPreventDuplicateMessages(channel.login, `I am no longer moderator; bot functionality is now limited.`);
 										}
 									}
 									break;
