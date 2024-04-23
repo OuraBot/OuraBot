@@ -87,12 +87,15 @@ export class TwitchController {
 	async sayPreventDuplicateMessages(channel: string, message: string) {
 		let timestamp = Date.now();
 		this.recentMessages.push({ timestamp, channel, message });
+		console.log('A', this.recentMessages, timestamp, channel, message);
 		if (this.recentMessages.filter((m) => m.channel === channel && m.message === message).length > 1) return;
+		console.log('B', this.recentMessages, timestamp, channel, message);
 
 		await this.say(channel, message);
 
 		setTimeout(() => {
 			this.recentMessages = this.recentMessages.filter((m) => m.timestamp !== timestamp);
+			console.log('C', this.recentMessages, timestamp, channel, message);
 		}, 1000);
 	}
 
