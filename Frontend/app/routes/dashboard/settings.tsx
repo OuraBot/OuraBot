@@ -10,7 +10,7 @@ import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
 
 const PREFIX_REGEX = /^[a-zA-Z0-9!@#%^&*()-=_+;:'"<>,./?`~]{1,5}$/;
-const DISCORD_WEBHOOK_REGEX = /(^https:\/\/discord.com\/api\/webhooks\/[0-9]+\/.+$|^$)/;
+const DISCORD_WEBHOOK_REGEX = /(^https:\/\/(discord|discordapp).com\/api\/webhooks\/[0-9]+\/.+$|^$)/;
 const LASTFM_USERNAME_REGEX = /(^[a-zA-Z0-9_\-]{2,15}$|^$)/;
 
 export async function loader({ request }: LoaderArgs) {
