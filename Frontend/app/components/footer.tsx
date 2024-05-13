@@ -112,7 +112,7 @@ export function FooterLinks() {
 					<a href="/">
 						<Image src="/resources/LogoText.png" fit="contain" width="90%" alt="OuraBot" />
 					</a>
-					<Text size="xs" color="dimmed" className={classes.description}>
+					<Text size="xs" color="dimmed" variant="link" className={classes.description} component="a" href="https://mrauro.dev" target="_blank">
 						Made with {emoji('💙')} by Auro
 					</Text>
 				</div>
