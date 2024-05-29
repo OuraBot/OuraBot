@@ -116,6 +116,10 @@ class OuraBot {
 		commandsErrored: Counter;
 		commandsUnsuccessful: Counter;
 	};
+	msgsSent: {
+		[channelId: string]: number;
+	}; // cleared every 60 seconds
+	msgsSentInterval: NodeJS.Timeout;
 	pusher = new PusherSubscriber();
 	exec = exec;
 	execSync = execSync;
@@ -223,6 +227,10 @@ class OuraBot {
 				labelNames: ['command'],
 			}),
 		};
+		this.msgsSent = {};
+		this.msgsSentInterval = setInterval(() => {
+			this.msgsSent = {};
+		}, 1000 * 60);
 	}
 
 	public async init() {

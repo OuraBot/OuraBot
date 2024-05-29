@@ -17,7 +17,12 @@ export const event: Events = {
 				ob.twitch.chatClient
 					.join(channel.login)
 					.then(() => {
-						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+						ob.logger.info(`Joined #${chalk.bold(channel.login)} (in debug)`, 'ob.twitch.events.ready');
+						ob.channels.push({
+							id: channel.id,
+							login: channel.login,
+							isMod: true, // debug mode so it doesn't matter
+						});
 					})
 					.catch((err) => {
 						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
@@ -31,66 +36,76 @@ export const event: Events = {
 			ob.twitch.joinRateLimiter.REFILL_TIME = 10 * 1000;
 
 			for (let channel of channels) {
+				if (channel.banned?.length > 0) {
+					ob.logger.info(`Skipping banned user ${channel.login}`, 'ob.twitch.events.ready');
+					continue;
+				}
+
 				if (!ob.channels.find((c) => c.id === channel.id)) {
-					await ob.twitch.joinRateLimiter.take(channel.role > 0);
-					ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+					ob.logger.info(`Already joined #${chalk.bold(channel.login)} - *NOT* skipping (testing)`, 'ob.twitch.events.ready');
+				}
 
-					ob.channels.push({
-						id: channel.id,
-						login: channel.login,
-						isMod: false,
-					});
+				await ob.twitch.joinRateLimiter.take(channel.role > 0);
+				ob.logger.info(`Joining #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 
-					ob.twitch.chatClient
-						.join(channel.login)
-						.then(() => {
-							ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
+				ob.channels.push({
+					id: channel.id,
+					login: channel.login,
+					isMod: false,
+				});
 
-							if (channel.alerts?.length > 0) {
-								channel.alerts = channel.alerts.filter((a) => a !== 'Failed to join channel. Please unban the bot with /unban oura_bot');
+				ob.twitch.chatClient
+					.join(channel.login)
+					.then(() => {
+						ob.logger.info(`Joined #${chalk.bold(channel.login)}`, 'ob.twitch.events.ready');
 
-								channel.markModified('alerts');
-								channel.save();
-
-								ob.logger.info(`Removed join alert for ${channel.login}`, 'ob.twitch.events.ready');
-							}
-
-							ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
-								ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
-
-								switch (data.type) {
-									case 'moderator_added':
-										{
-											let d = data as PubSubChannelRoleChangeMessage;
-											if (d.targetUserId == ob.config.twitch_id) {
-												ob.channels.find((c) => c.id === channel.id).isMod = true;
-												ob.twitch.say(channel.login, `I am now moderator; all commands are now available!`);
-											}
-										}
-										break;
-									case 'moderator_removed':
-										{
-											let d = data as PubSubChannelRoleChangeMessage;
-											if (d.targetUserId == ob.config.twitch_id) {
-												ob.channels.find((c) => c.id === channel.id).isMod = false;
-												ob.twitch.say(channel.login, `I am no longer moderator; bot functionality is now limited.`);
-											}
-										}
-										break;
-								}
-							});
-						})
-						.catch((err) => {
-							ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
-
-							channel.alerts.push('Failed to join channel. Please unban the bot with /unban oura_bot');
+						if (channel.alerts?.length > 0) {
+							channel.alerts = channel.alerts.filter(
+								(a) => a !== 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)'
+							);
 
 							channel.markModified('alerts');
 							channel.save();
+
+							ob.logger.info(`Removed join alert for ${channel.login}`, 'ob.twitch.events.ready');
+						}
+
+						ob.twitch.pubsubClient.onModAction(ob.config.twitch_id, channel.id, (data) => {
+							ob.logger.debug(`Received mod action for ${channel.login}: ${data.type}`, 'ob.twitch.events.ready');
+
+							switch (data.type) {
+								case 'moderator_added':
+									{
+										let d = data as PubSubChannelRoleChangeMessage;
+										if (d.targetUserId == ob.config.twitch_id) {
+											ob.channels.find((c) => c.id === channel.id).isMod = true;
+											ob.twitch.sayPreventDuplicateMessages(channel.login, `I am now moderator; all commands are now available!`);
+										}
+									}
+									break;
+								case 'moderator_removed':
+									{
+										let d = data as PubSubChannelRoleChangeMessage;
+										if (d.targetUserId == ob.config.twitch_id) {
+											ob.channels.find((c) => c.id === channel.id).isMod = false;
+											ob.twitch.sayPreventDuplicateMessages(channel.login, `I am no longer moderator; bot functionality is now limited.`);
+										}
+									}
+									break;
+							}
 						});
-				} else {
-					ob.logger.info(`Already joined #${chalk.bold(channel.login)} - skipping`, 'ob.twitch.events.ready');
-				}
+					})
+					.catch((err) => {
+						ob.logger.warn(`Failed to join #${chalk.bold(channel.login)} (${err})`, 'ob.twitch.events.ready');
+
+						let alertMsg = 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)';
+						if (!channel.alerts.includes(alertMsg)) {
+							channel.alerts.push(alertMsg);
+						}
+
+						channel.markModified('alerts');
+						channel.save();
+					});
 			}
 		}
 

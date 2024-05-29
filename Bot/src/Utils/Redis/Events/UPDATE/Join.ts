@@ -26,13 +26,15 @@ export default function handler(Event: Event): Promise<Event> {
 						case 'moderator_added':
 							{
 								ob.channels.find((c) => c.id === Event.userId).isMod = true;
-								ob.twitch.say(Event.data.login, `I am now moderator; all commands are now available!`);
+								ob.logger.debug(`Set ${Event.data.login} as moderator`, 'ob.eventmanager.update.join');
+								ob.twitch.sayPreventDuplicateMessages(Event.data.login, `I am now moderator; all commands are now available!`);
 							}
 							break;
 						case 'moderator_removed':
 							{
 								ob.channels.find((c) => c.id === Event.userId).isMod = false;
-								ob.twitch.say(Event.data.login, `I am no longer moderator; bot functionality is now limited.`);
+								ob.logger.debug(`Removed ${Event.data.login} as moderator`, 'ob.eventmanager.update.join');
+								ob.twitch.sayPreventDuplicateMessages(Event.data.login, `I am no longer moderator; bot functionality is now limited.`);
 							}
 							break;
 					}
@@ -40,7 +42,12 @@ export default function handler(Event: Event): Promise<Event> {
 			}
 		} catch (err) {
 			ob.logger.warn(`Failed to join channel for the first time: ${err}`, `ob.eventmanager.update.join`);
-			channel.alerts.push('Failed to join channel. Please unban the bot with /unban oura_bot');
+			let alertMsg = 'Failed to join channel. Please unban the bot with "/unban oura_bot" (if this persists, please contact support)';
+			if (!channel.alerts.includes(alertMsg)) {
+				channel.alerts.push(alertMsg);
+			}
+
+			channel.markModified('alerts');
 
 			resolve({
 				...Event,

@@ -92,8 +92,8 @@ export default class Utils {
 		return this.messageContainsAscii(this.isSafeMessage ? `${noQuotations ? '' : '"'}` + message + `${noQuotations ? '' : '"'}` : '<message withheld>')
 			? '<ASCII Art>'
 			: this.isSafeMessage
-			? `${noQuotations ? '' : '"'}` + message + `${noQuotations ? '' : '"'}`
-			: '<message withheld>';
+				? `${noQuotations ? '' : '"'}` + message + `${noQuotations ? '' : '"'}`
+				: '<message withheld>';
 	}
 
 	removeAccents(str: string): string {

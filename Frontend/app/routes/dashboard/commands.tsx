@@ -35,8 +35,17 @@ export enum Permission {
 	Subscriber,
 }
 
-let PERMISSIONS: string[] = Object.keys(Permission).map((p) => p.toString());
+let PERMISSIONS: { value: string; label: string; disabled: boolean }[] = Object.keys(Permission)
+	.map((p) => p.toString())
+	.map((p) => ({
+		value: p == 'Subscriber' ? `Subscriber (Premium required) 🔒` : p,
+		label: p == 'Subscriber' ? `Subscriber (Premium required) 🔒` : p,
+		disabled: p == 'Subscriber',
+	}));
+let PERMISSIONS_IF_SUBBED = Object.keys(Permission).map((p) => p.toString());
+
 PERMISSIONS = PERMISSIONS.slice(PERMISSIONS.length / 2);
+PERMISSIONS_IF_SUBBED = PERMISSIONS_IF_SUBBED.slice(PERMISSIONS_IF_SUBBED.length / 2);
 
 const MAX_COOLDOWN_TIME = 3600; // 1 hour
 
@@ -50,10 +59,15 @@ export async function loader({ request }: LoaderArgs) {
 
 	if (commands.status !== 200) throw new Error(`QUERY Commands returned error code ${commands.status}`);
 
+	const subscribed = channel.premium.orders.some((order: any) => {
+		return order.status === 'PAID' && order.expiresAt > new Date();
+	});
+
 	return json({
 		session,
 		channel,
 		commands,
+		subscribed,
 	});
 }
 
@@ -130,7 +144,9 @@ export async function action({ request }: ActionArgs) {
 		],
 	});
 
-	return response;
+	return {
+		...response,
+	};
 }
 
 type Command = {
@@ -188,22 +204,22 @@ export default function Commands() {
 				</Tabs.List>
 
 				<Tabs.Panel pt="sm" value="utility">
-					<SearchTable commands={utilityCommands} />
+					<SearchTable commands={utilityCommands} subscribed={data.subscribed} />
 				</Tabs.Panel>
 
 				<Tabs.Panel pt="sm" value="fun">
-					<SearchTable commands={funCommands} />
+					<SearchTable commands={funCommands} subscribed={data.subscribed} />
 				</Tabs.Panel>
 
 				<Tabs.Panel pt="sm" value="moderation">
-					<SearchTable commands={moderationCommands} />
+					<SearchTable commands={moderationCommands} subscribed={data.subscribed} />
 				</Tabs.Panel>
 			</Tabs>
 		</ModalsProvider>
 	);
 }
 
-function SearchTable({ commands }: { commands: Command[] }) {
+function SearchTable({ commands, subscribed }: { commands: Command[]; subscribed: boolean }) {
 	const [search, setSearch] = useState('');
 	const [searchResults, setSearchResults] = useState(commands);
 	const modals = useModals();
@@ -283,7 +299,7 @@ function SearchTable({ commands }: { commands: Command[] }) {
 							transition="scale-y"
 							transitionTimingFunction=""
 							disabled={!command.modifiablePermissions}
-							data={PERMISSIONS}
+							data={subscribed ? PERMISSIONS_IF_SUBBED : PERMISSIONS}
 							defaultValue={command.permissions.map((p) => p.toString())}
 						/>
 						<Button type="submit" fullWidth mt="md">

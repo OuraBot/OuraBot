@@ -6,6 +6,7 @@ import EventEmitter from 'events';
 import { CacheTimes } from '../API/constants';
 import { Document, Types } from 'mongoose';
 import { IChannel } from '../../../../Common/src';
+import { HelixChannelFollower } from '@twurple/api';
 
 export class PusherSubscriber {
 	private pusher: Pusher;
@@ -35,6 +36,11 @@ export class PusherSubscriber {
 		ob.logger.info(`Found ${channels.length} channels with xqclivekick enabled`, 'ob.utils.pusher');
 
 		for (let channel of channels) {
+			if (channel.banned?.length > 0) {
+				ob.logger.info(`Skipping banned user ${channel.login}`, 'ob.utils.pusher');
+				continue;
+			}
+
 			ob.logger.info(`Sending message to ${channel.login}`, 'ob.utils.pusher');
 			ob.twitch.say(channel.login, `BrainSlug xQc is now live on Kick! https://kick.com/xqc`);
 		}

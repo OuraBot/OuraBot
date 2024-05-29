@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/remix';
 import { useEffect } from 'react';
 
 Sentry.init({
+	denyUrls: ['https://ourabot.com/api/grafana/admin'],
 	dsn:
 		process.env.NODE_ENV === 'production'
 			? 'https://5c0abffe843d4fab8a7915be315b3058:5af23cd2c9b044b1852cdec606f4c999@o4505139595575296.ingest.sentry.io/4505211544076288'
@@ -14,6 +15,13 @@ Sentry.init({
 	integrations: [],
 	// Performance Monitoring
 	tracesSampleRate: 0.2, // Capture 100% of the transactions, reduce in production!
+	beforeSendTransaction(event) {
+		if (event.transaction?.includes('/api/grafana')) {
+			return null;
+		}
+		return event;
+	},
+	ignoreTransactions: ['/api/grafana/admin'],
 });
 
 const server = createStylesServer();
