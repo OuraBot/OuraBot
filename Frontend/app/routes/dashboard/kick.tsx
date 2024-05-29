@@ -1,16 +1,12 @@
+import { Badge, Button, Code, Divider, Modal, Space, Switch, Text, TextInput, Title, createStyles } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
-import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/server-runtime';
+import { redirect, type ActionArgs, type LoaderArgs, type MetaFunction } from '@remix-run/server-runtime';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, CameraOff, Message, UserCircle } from 'tabler-icons-react';
 import { authenticator } from '~/services/auth.server';
-import { Badge, Button, Code, Divider, Loader, Text, TextInput, Title, createStyles } from '@mantine/core';
-import { ChannelModel, IChannel } from '~/services/models/Channel';
-import { Schema, model } from 'mongoose';
-import { UserCircle } from 'tabler-icons-react';
-import { useState } from 'react';
+import { ChannelModel } from '~/services/models/Channel';
 import { query } from '~/services/redis.server';
-import * as crypto from 'crypto';
-import emoji from 'react-easy-emoji';
-
-/*
 
 export async function loader({ request }: LoaderArgs) {
 	const session = await authenticator.isAuthenticated(request, {
@@ -18,9 +14,33 @@ export async function loader({ request }: LoaderArgs) {
 	});
 	const channel = await ChannelModel.findOne({ id: session.json.id });
 
+	if (!channel) return redirect('/onboarding');
+
+	const subscribed = channel.premium.orders.some((order: any) => {
+		return order.status === 'PAID' && order.expiresAt > new Date();
+	});
+
+	// channel.kick.codeExpiresAt is a Date. check if it has expired
+	if (channel.kick.codeExpiresAt && channel.kick.codeExpiresAt < new Date()) {
+		channel.kick.verificationCode = '';
+		channel.kick.id = '';
+		channel.kick.user_id = '';
+		channel.kick.slug = '';
+		channel.kick.chatroom_id = '';
+		channel.kick.chatroom_channel_id = '';
+		channel.kick.streamer_id = '';
+		channel.kick.linkedAt = null;
+		channel.kick.codeExpiresAt = null;
+		channel.kick.secretConfirmed = false;
+
+		channel.markModified('kick');
+		await channel.save();
+	}
+
 	return {
 		session,
 		channel,
+		subscribed,
 	};
 }
 
@@ -139,6 +159,26 @@ export async function action({ request }: ActionArgs) {
 				};
 			}
 			break;
+
+		case 'livenotification':
+			{
+				const rawliveenabled = formData.get('liveenabled');
+				const liveenabled: boolean = rawliveenabled == 'on' ? true : false;
+
+				channel.modules.livekick.enabled = liveenabled;
+
+				channel.markModified('modules.livekick');
+
+				await channel.save();
+
+				returnData = {
+					status: 200,
+					data: {
+						message: 'success',
+					},
+				};
+			}
+			break;
 	}
 
 	return returnData;
@@ -165,11 +205,22 @@ const TWITCH_REGEX = /^[a-zA-Z0-9_]{2,25}$/;
 
 export default function Kick() {
 	const data = useActionData();
-	const { channel } = useLoaderData();
+	const { channel, subscribed } = useLoaderData();
 	const { classes } = useStyles();
 	const [usernameError, setUsernameError] = useState<string | null>(null);
 	const [username, setUsername] = useState<string>(channel.kick.slug ?? '');
 	const navigate = useNavigate();
+	const [liveChecked, setLiveChecked] = useState<boolean>(channel.modules.livekick.enabled);
+	const [opened, { toggle }] = useDisclosure(false);
+	const [expiresIn, setExpiresIn] = useState<number>(
+		channel.kick.codeExpiresAt ? Math.floor((new Date(channel.kick.codeExpiresAt).getTime() - new Date().getTime()) / 1000) : 300
+	);
+	const [countingDown, setCountingDown] = useState<boolean>(false);
+	const [threeSecondCountDown, setThreeSecondCountDown] = useState<number>(5.0); // haha jk its 5 seconds
+	const [threeSecondCountingDown, setThreeSecondCountingDown] = useState<boolean>(false);
+	const [prevExpiresIn, setPrevExpiresIn] = useState<number>(expiresIn);
+	const [linkWarningModal, setLinkWarningModal] = useState<boolean>(false);
+
 	const handleClick = () => {
 		navigate('.', { replace: true });
 	};
@@ -177,96 +228,231 @@ export default function Kick() {
 
 	console.log(channel.kick.slug, 'channel.kick.slug');
 
+	// Decrement expiresIn every second if countingDown is true
+	useEffect(() => {
+		if (countingDown) {
+			const interval = setInterval(() => {
+				setExpiresIn((prevExpiresIn) => {
+					if (prevExpiresIn <= 0) {
+						setCountingDown(false);
+						handleClick();
+						return 0;
+					}
+					return prevExpiresIn - 1;
+				});
+			}, 1000);
+			return () => clearInterval(interval);
+		}
+	}, [expiresIn]);
+
+	// 3 second countdown
+	useEffect(() => {
+		if (threeSecondCountingDown) {
+			setThreeSecondCountDown(5.0);
+			const interval = setInterval(() => {
+				setThreeSecondCountDown((prevThreeSecondCountDown) => {
+					if (prevThreeSecondCountDown <= 0) {
+						setThreeSecondCountingDown(false);
+
+						return 0;
+					} else {
+						return prevThreeSecondCountDown - 0.1;
+					}
+				});
+			}, 100);
+			return () => clearInterval(interval);
+		}
+	}, [threeSecondCountingDown]);
+
 	return (
 		<>
-			<Text>
-				Use certain parts of OuraBot on{' '}
-				<Text variant="link" component="a" href="https://kick.com" target="_blank">
-					Kick.com
+			{!subscribed && (
+				<>
+					<Text size="lg" weight="bolder">
+						You must have Premium to use this feature.
+					</Text>
+					<Text size="md" weight="bold">
+						<Text variant="link" component="a" href="/dashboard/premium" target="_blank">
+							Click here for more info (only $4)
+						</Text>
+					</Text>
+					<Divider my="md" />
+				</>
+			)}
+			{/* Not the best, however it works (right?) */}
+			<div style={subscribed ? {} : { opacity: 0.4, pointerEvents: 'none', userSelect: 'none' }}>
+				<Text>
+					<Title order={2}>Live Announcements</Title>
+					<Text>
+						Notify your Twitch chat whenever you go live on{' '}
+						<Text variant="link" component="a" href="https://kick.com" target="_blank">
+							Kick.com
+						</Text>
+					</Text>
+					<Form method="post">
+						<input type="hidden" name="stage" value="livenotification" />
+						<div className={classes.username}>
+							<Switch
+								name="liveenabled"
+								id="liveenabled"
+								mt="xs"
+								label="Enabled"
+								checked={liveChecked}
+								onChange={() => setLiveChecked(!liveChecked)}
+								disabled={!subscribed || !channel.kick.secretConfirmed}
+							/>
+							<Button type="submit" disabled={liveChecked === channel.modules.livekick.enabled || !subscribed || !channel.kick.secretConfirmed}>
+								Save
+							</Button>
+						</div>
+					</Form>
 				</Text>
 				<Divider my="sm" />
+
 				<Title order={2}>Link Account</Title>
-				{/{data ? JSON.stringify(data) : <Loader />}/}
 				{channel.kick.secretConfirmed ? <Badge color="green">Account Linked</Badge> : <Badge color="red">Account Not Linked</Badge>}
-				<Form method="post">
-					<input type="hidden" name="stage" value="username" />
-					<div className={classes.username}>
-						<TextInput
-							label="Kick Username"
-							placeholder="Username"
-							autoComplete="off"
-							id="username"
-							name="username"
-							icon={<UserCircle size={16} />}
-							required
-							error={usernameError}
-							disabled={channel.kick.slug !== ''}
-							value={username}
-							onChange={(e) => {
-								setUsername(e.currentTarget.value);
-								if (!TWITCH_REGEX.test(e.currentTarget.value)) {
-									TWITCH_REGEX.lastIndex = 0;
-									setUsernameError('Invalid username');
-								} else {
-									setUsernameError(null);
+				<div className={classes.username}>
+					<TextInput
+						label="Kick Username"
+						placeholder="Username"
+						autoComplete="off"
+						id="username"
+						name="username"
+						icon={<UserCircle size={16} />}
+						required
+						error={usernameError}
+						disabled={channel.kick.slug !== ''}
+						value={username}
+						onChange={(e) => {
+							setUsername(e.currentTarget.value);
+							if (!TWITCH_REGEX.test(e.currentTarget.value)) {
+								TWITCH_REGEX.lastIndex = 0;
+								setUsernameError('Invalid username');
+							} else {
+								setUsernameError(null);
+							}
+						}}
+					/>
+					{!channel.kick.secretConfirmed && (
+						<>
+							<Modal
+								opened={linkWarningModal}
+								onClose={() => {
+									setLinkWarningModal(false);
+								}}
+								title={
+									<Title order={2}>
+										{/* Vertically center the triangle and warning */}
+										<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+											<AlertTriangle />
+											<Text ml="xs">Warning</Text>
+										</div>
+									</Title>
 								}
-							}}
-						/>
-						<Button my="sm" type="submit" disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}>
-							Begin Link Process
+								centered
+							>
+								<Divider mb="xs" />
+
+								<Text>
+									If you are livestreaming, <u style={{ fontWeight: 'bolder' }}>do not</u> show this next screen on stream as it contains sensitive
+									information.
+								</Text>
+								<Space my="sm" />
+								<Text>
+									Kick Username: <Code>{username}</Code>
+								</Text>
+								<Form method="post">
+									<input type="hidden" name="stage" value="username" />
+									<input type="hidden" name="username" value={username} />
+									<Button
+										fullWidth
+										mt="sm"
+										type="submit"
+										disabled={threeSecondCountDown !== 0}
+										color="red"
+										leftIcon={threeSecondCountDown == 0 && <CameraOff />}
+									>
+										I am not livestreaming {threeSecondCountDown !== 0 && `(${threeSecondCountDown.toFixed(1)})`}
+									</Button>
+								</Form>
+							</Modal>
+							<Button
+								my="sm"
+								onClick={() => {
+									setLinkWarningModal(true);
+									setThreeSecondCountingDown(true);
+								}}
+								disabled={usernameError !== null || username === '' || channel.kick.slug !== ''}
+							>
+								Begin Link Process
+							</Button>
+							{/* <Alert icon={<AlertCircle size="1rem" />} title="" color="red">
+									Don't show on stream!
+								</Alert> */}
+						</>
+					)}
+				</div>
+
+				{channel.kick.secretConfirmed && (
+					<Form method="post">
+						<input type="hidden" name="stage" value="delete" />
+						<Button type="submit" color="red" size="xs" compact variant="outline" disabled={channel.kick.slug === ''} my="sm">
+							Unlink Account
 						</Button>
-					</div>
-				</Form>
-				<Form method="post">
-					<input type="hidden" name="stage" value="delete" />
-					<Button type="submit" color="red" size="xs" compact variant="outline" disabled={channel.kick.slug === ''}>
-						Change Username
-					</Button>
-				</Form>
+					</Form>
+				)}
 				{(data && data?.status === 200 && data?.data?.verificationCode) || (channel.kick.verificationCode && !channel.kick.secretConfirmed) ? (
 					<>
+						{countingDown ? null : setCountingDown(true)}
+						{/* <Button onClick={toggle} variant="light" color="green">
+							Show code (dont show on stream!)
+						</Button> */}
+						{/* <Collapse in={opened}> */}
+						<Divider my="xs" />
 						<Text mt="sm">
 							Open your Kick chat and say <Code>!verify {data?.data?.verificationCode || channel?.kick?.verificationCode}</Code>
+						</Text>{' '}
+						<Text size="xs" color="dimmed">
+							(code expires in {expiresIn}s)
 						</Text>
-						<Text size="xs">Once done, press the button below to check if it worked</Text>
-
 						<Form method="get">
-							<Button type="submit" mt="xs">
-								Check
+							<Button type="submit" mt="xs" leftIcon={<Message />}>
+								I sent the code in my chat
 							</Button>
 						</Form>
+						<Text mt="xs" size="xs" color="dimmed">
+							Not working? Try waiting for the code to expire and redo the link process.
+						</Text>
+						{/* </Collapse> */}
 					</>
 				) : null}
-			</Text>
-		
-			</>
-			);
+			</div>
+		</>
+	);
 }
 
 function generateRandomString(): string {
 	const length = 16;
 	const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	let randomString = '';
-	
+
 	for (let i = 0; i < length; i++) {
 		const randomIndex = Math.floor(Math.random() * characters.length);
 		randomString += characters.charAt(randomIndex);
 	}
-	
+
 	return randomString;
 }
 
-*/
-
-export default function Kick() {
-	return (
-		<>
-			<Text>
-				You aren't supposed to be here {emoji(`🤦‍♂️`)}, but I'll let you in on a secret. Kick support is coming soon. Just don't tell anyone {emoji(`🤫`)}
-			</Text>
-			<Button component="a" href="/dashboard/" mt="sm">
-				Go Back
-			</Button>
-		</>
-	);
-}
+// export default function Kick() {
+// 	return (
+// 		<>
+// 			<Text>
+// 				You aren't supposed to be here {emoji(`🤦‍♂️`)}, but I'll let you in on a secret. Kick support is coming soon. Just don't tell anyone {emoji(`🤫`)}
+// 			</Text>
+// 			<Button component="a" href="/dashboard/" mt="sm">
+// 				Go Back
+// 			</Button>
+// 		</>
+// 	);
+// }
