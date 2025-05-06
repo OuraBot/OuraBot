@@ -10,11 +10,11 @@ support. There is no warranty or support provided and the developers are not res
 
 ## Features
 
--   Advanced moderation tools for Twitch chat.
--   Customizable commands and modules.
--   Integration with third-party APIs and services.
--   Redis-based event management for real-time communication.
--   Modular and extensible architecture.
+- Advanced moderation tools for Twitch chat.
+- Customizable commands and modules.
+- Integration with third-party APIs and services.
+- Redis-based event management for real-time communication.
+- Modular and extensible architecture.
 
 ![Homepage](homepage.png) ![Modules](modules.png) ![Suggest](suggest.png) ![Kick Beta](kick_beta.png)
 

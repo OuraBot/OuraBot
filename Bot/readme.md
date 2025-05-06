@@ -10,11 +10,11 @@ required for deployment. It is shared to demonstrate the bot's capabilities and 
 
 ## Features
 
--   Advanced moderation tools for Twitch chat.
--   Customizable commands and modules.
--   Integration with third-party APIs and services.
--   Redis-based event management for real-time communication.
--   Modular and extensible architecture.
+- Advanced moderation tools for Twitch chat.
+- Customizable commands and modules.
+- Integration with third-party APIs and services.
+- Redis-based event management for real-time communication.
+- Modular and extensible architecture.
 
 ## License
 
